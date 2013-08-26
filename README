@@ -1,0 +1,7 @@
+druntime:
+	do suboru src/gc/gc.d & src/gcstub/gc.d pridat:
+		extern(C) void* malloc(size_t sz, uint ba = 0);
+		extern(C) void* calloc(size_t sz, uint ba = 0);
+		extern(C) void* realloc(void* p, size_t sz, uint ba = 0);
+		extern(C) void free(void* p);
+	a prepisat dane gc_... funkcie aby pouzivali nase volania

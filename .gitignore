@@ -1,0 +1,4 @@
+/Obj/Kernel/MemoryManager/*.o
+*.o
+/Build/Linker.map
+*.bin
