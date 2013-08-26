@@ -1,0 +1,63 @@
+﻿/**
+ * Copyright (c) Rikarin and contributors. All rights reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+module Library.LibraryLoader;
+
+import Library;
+
+
+abstract class LibraryLoader {
+    private __gshared LinkedList!LibraryLoader _libraries;
+
+    private string _name;
+    protected void* _base;
+
+    protected bool CheckMagic();
+    protected void* Relocate(string[] args);
+    protected bool GetSymbol(string name, ref void* ret, ref long size);
+
+    protected this(/* atring searchDir, string[] args*/) {
+        _libraries.Add(this);
+    }
+
+    protected ~this() {
+        _libraries.Remove(this);
+    }
+
+
+
+
+    static LibraryLoader Load(string name, string searchDir, string[] args) {
+
+        //relocate...
+        //if ok _libra..Add...
+        return null;
+    }
+
+    static LibraryLoader Find(string name) {
+        foreach (x; _libraries) {
+            if (x.Value._name == name)
+                return x.Value;
+        }
+
+        return null;
+    }
+
+    static bool GetSymbol(string name, ref void* value, ref long size, void* ignoreBase) {
+        //Local exports...
+
+        foreach(x; _libraries) {
+            if (x.Value._base == ignoreBase)
+                continue;
+
+            if (x.Value.GetSymbol(name, value, size))
+                return true;
+        }
+
+        return false;
+    }
+}
