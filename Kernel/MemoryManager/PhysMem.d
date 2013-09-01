@@ -11,12 +11,13 @@ import MemoryManager.Memory;
 class PhysMem {
 static:
 	private __gshared BitArray frames;
-	
-private __gshared long add;
+	private __gshared ulong pointer;
+
 
 	void Init() {
-	//	frames = new BitArray(0x2_000_000, false);
-add = 0;
+		frames = new BitArray(0x1_000_000, false);
+		pointer = 0;
+
 		Paging.KernelPaging = new Paging();
 		for (ulong i = 0; i < 0x4_000_000; i += 0x1000)
 			Paging.KernelPaging.AllocFrame(cast(VirtualAddress)i, false, true);
@@ -25,6 +26,7 @@ add = 0;
 		for (ulong i = 0x4_000_000; i < 0x30_000_000; i += 0x1000)
 			Paging.KernelPaging.AllocFrame(cast(VirtualAddress)i, false, true);
 
+		pointer = ~1UL;
 		Log.Result(true);
 	}
 
@@ -32,14 +34,8 @@ add = 0;
 		if (page.Present)
 			return;//throw new MemoryException();
 
-		long index = add++;//frames.FirstFreeBit();
-
-		/*import System.Convert;
-		import Core.Log;
-		Log.PrintSP("\nid: " ~ Convert.ToString(index));
-*/
-
-	//	frames[index] = true;
+		long index = pointer != ~1UL ? pointer++ : frames.FirstFreeBit();
+		frames[index] = true;
 
 		page.Present = true;
 		page.Address = index;

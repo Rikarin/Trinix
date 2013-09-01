@@ -29,7 +29,6 @@ Framework:
 	convert - prerobit na vlastny string bez alloc
 
 System:
-	PhysMem -> BitArray
 	MP
 	VTManager
 	dorobit IDT
@@ -38,12 +37,9 @@ System:
 
 	Dorobit heap & delete!!
 	timer APIC
-	VT Manager!!!
 	Az potom VFS a syscall mgr
-	devvice - register device...
 	dorobit string
 	Panic - vypis Rx registrov, inak vsetko O.K.
-	Dorobit random
 	dorobit pipeDev
 ++/
 
@@ -63,7 +59,7 @@ extern(C) void StartSystem() {
 
 	Log.Print("Initializing kernel heap");
 	//Memory.KernelHeap = new Heap();
-	//Memory.KernelHeap.Create(cast(ulong)PageAllocator.AllocPage(), Heap.MIN_SIZE + 0x1000000, 0x10000, Paging.KernelPaging);
+	//Memory.KernelHeap.Create(cast(ulong)PageAllocator.AllocPage(), Heap.MIN_SIZE, 0x10000, Paging.KernelPaging);
 	//PageAllocator.IsInit = true;
 	Log.Result(false);
 
@@ -73,7 +69,7 @@ extern(C) void StartSystem() {
 	Log.Print("Starting multiple cores");
 	Log.Result(true);
 	Multiprocessor.BootCores();
-asm { sti; }
+
 
 //==================== MANAGERS ====================
 	Log.Print("Initializing device manger");
@@ -104,7 +100,6 @@ asm { sti; }
 	Log.Print("Init complete, starting terminal");
 	Log.Result(false);
 
-	
 	/*
 		new FSNode...
 		Directory.AddNode(FSNode)...
@@ -118,19 +113,8 @@ asm { sti; }
 
 	*/
 
-
 	//setup display mode
 	//Display.SetMode(textOutput.GetModes()[0]);
-
-	/*import System.Collections.BitArray;
-	BitArray ba = new BitArray(0x100000);
-	foreach (i; 0 .. 100) {
-		long idx = ba.FirstFreeBit();
-
-		import System.Convert;
-		Log.PrintSP("\nid: " ~ Convert.ToString(idx));
-		ba[idx] = true;
-	}*/
 
 	while (true) {}
 }

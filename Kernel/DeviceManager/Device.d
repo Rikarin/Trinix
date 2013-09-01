@@ -48,8 +48,8 @@ static:
 	}
 
 	void RegisterDevice(DeviceProto dev, DeviceInfo info) {
-		//UnregisterDevice(dev);
-		//devices.Add(Data(dev, info));
+		UnregisterDevice(dev);
+		devices.Add(Data(dev, info));
 	}
 
 	bool RequestIRQ(DeviceProto dev, uint irq) {

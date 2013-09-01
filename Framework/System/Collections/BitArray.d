@@ -4,7 +4,7 @@ import System.SystemException;
 
 class BitArray {
 private:
-	long[] bits;
+	ulong[] bits;
 
 	long IndexFromBit(long bit) { return bit / 64; }
 	long OffsetFromBit(long bit) { return bit % 64; }
@@ -26,7 +26,7 @@ public:
 		if (bits is null)
 			throw new ArgumentNullException();
 
-		this.bits = new long[bits.bits.length];
+		this.bits = new ulong[bits.bits.length];
 		foreach (long i, x; bits.bits)
 			this.bits[i] = x;
 	}
@@ -35,44 +35,44 @@ public:
 		if (bits == null)
 			throw new ArgumentNullException();
 
-		this.bits = new long[IndexFromBit(bits.length) + 1];
+		this.bits = new ulong[IndexFromBit(bits.length) + 1];
 
 		foreach (i; 0 .. bits.length)
-			this.bits[IndexFromBit(i)] |= (1 << OffsetFromBit(i));
+			this.bits[IndexFromBit(i)] |= (1UL << OffsetFromBit(i));
 	}
 
 	this(byte[] bytes) {
 		if (bytes == null)
 			throw new ArgumentNullException();
 
-		bits = new long[IndexFromByte(bytes.length) + 1];
+		bits = new ulong[IndexFromByte(bytes.length) + 1];
 
 		foreach (i; 0 .. bits.length)
-			bits[IndexFromByte(i)] |= (1 << OffsetFromByte(i));
+			bits[IndexFromByte(i)] |= (1UL << OffsetFromByte(i));
 	}
 	
 	this(long count) {
 		if (count < 0)
 			throw new ArgumentOutOfRangeException();
 
-		bits = new long[IndexFromBit(count) + 1];
+		bits = new ulong[IndexFromBit(count) + 1];
 	}
 
 	this(int[] values) {
 		if (values == null)
 			throw new ArgumentNullException();
 
-		bits = new long[IndexFromInt(values.length) + 1];
+		bits = new ulong[IndexFromInt(values.length) + 1];
 
 		foreach (i; 0 .. bits.length)
-			bits[IndexFromInt(i)] |= (1 << OffsetFromInt(i));
+			bits[IndexFromInt(i)] |= (1UL << OffsetFromInt(i));
 	}
 
 	this(long count, bool value) {
 		if (count < 0)
 			throw new ArgumentOutOfRangeException();
 
-		bits = new long[IndexFromBit(count) + 1];
+		bits = new ulong[IndexFromBit(count) + 1];
 		SetAll(value);
 	}
 
@@ -83,7 +83,7 @@ public:
 		if (size <= 0)
 			throw new ArgumentOutOfRangeException();
 
-		this.bits = new long[IndexFromBit(size) + 1];
+		this.bits = new ulong[IndexFromBit(size) + 1];
 		foreach (i; 0 .. this.bits.length)
 			this.bits[i] = bits.bits[i];
 	}
@@ -135,9 +135,9 @@ public:
 			throw new ArgumentOutOfRangeException();
 
 		if (value)
-			bits[IndexFromBit(index)] |= (1 << OffsetFromBit(index));
+			bits[IndexFromBit(index)] |= (1UL << OffsetFromBit(index));
 		else
-			bits[IndexFromBit(index)] &= ~(1 << OffsetFromBit(index));
+			bits[IndexFromBit(index)] &= ~(1UL << OffsetFromBit(index));
 	}
 
 	void SetAll(bool value) {
@@ -149,14 +149,14 @@ public:
 		if (index < 0 || index > Count)
 			throw new ArgumentOutOfRangeException();
 
-		return (bits[IndexFromBit(index)] & (1 << OffsetFromBit(index))) != 0;
+		return (bits[IndexFromBit(index)] & (1UL << OffsetFromBit(index))) != 0;
 	}
 
 	long FirstFreeBit() {
 		foreach (i; 0 .. bits.length) {
 			if (bits[i] != 0xFFFF_FFFF_FFFF_FFFF) {
-				foreach (j; 0 .. 64) {
-					if (!(bits[i] & (1 << j)))
+				foreach(j; 0 .. 64) {
+					if (!(bits[i] & (1UL << j)))
 						return i * 64 + j;
 				}
 			}

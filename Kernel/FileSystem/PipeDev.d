@@ -19,7 +19,7 @@ public:
 	this(ulong length, string name = "pipe") { 
 		super(name);
 		this.length = length;
-		//time...
+		//todo time...
 
 		buffer = new byte[length];
 		mutex = new Mutex();
