@@ -55,12 +55,7 @@ static:
 		Log.Result(IDT.Install());
 		
 		Log.Print(" - Installing stack");
-		//InstallStack();
-		Log.Result(false);
-		
-		Log.Print(" - Enabling interrupts");
-		Port.Sti();
-		Log.Result(true);
+		Log.Result(InstallStack());
 		
 		Log.Print(" - Enabling FPU");
 		Port.EnableFPU();
@@ -307,7 +302,7 @@ static:
 		return true;
 	}
 	
-	void InstallStack() {
+	bool InstallStack() {
 		ubyte* stack = PageAllocator.AllocPage();
 		ubyte* currentStack = cast(ubyte *)0x19000 - 0x1000;
 		
@@ -330,5 +325,7 @@ static:
 
 			ret;
 		}
+
+		return true;
 	}
 }

@@ -82,7 +82,6 @@ class PS2Keyboard : KeyboardProto {
 	override void IRQHandler(ref InterruptStack r) {
 		mutex.WaitOne();
 
-
         uint makeState = 0;
 		bool upState = false;
 

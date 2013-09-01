@@ -88,7 +88,7 @@ private:
 		if (Scan(cast(ubyte *)0xE0000 + cast(ulong)Memory.VirtualStart, cast(ubyte *)0xFFFFF + cast(ulong)Memory.VirtualStart))
 			return true;
 
-		foreach(region; Memory.RegionInfo)
+		foreach(region; Memory.RegionInfo[0 .. Memory.NumRegions])
 			if (region.Type == RegionType.Reserved)
 				if (Scan(region.VirtualStart, region.VirtualStart + region.Length))
 					return true;
@@ -97,8 +97,7 @@ private:
 	}
 
 	bool Scan(ubyte* start, ubyte* end) {
-		ubyte* currentByte = start;
-		for(; currentByte < end - 8; currentByte += 16) {
+		for(ubyte* currentByte = start; currentByte < end - 8; currentByte += 16) {
 			if (cast(char)*(currentByte + 0) == 'R' &&
 					cast(char)*(currentByte + 1) == 'S' &&
 					cast(char)*(currentByte + 2) == 'D' &&
@@ -123,9 +122,8 @@ private:
 		if (ptrRSDT.Signature[0] == 'R' &&
 				ptrRSDT.Signature[1] == 'S' &&
 				ptrRSDT.Signature[2] == 'D' &&
-				ptrRSDT.Signature[3] == 'T') {
+				ptrRSDT.Signature[3] == 'T')
 			return true;
-		}
 
 		return false;
 	}
@@ -137,9 +135,8 @@ private:
 		if (ptrXSDT.Signature[0] == 'X' &&
 				ptrXSDT.Signature[1] == 'S' &&
 				ptrXSDT.Signature[2] == 'D' &&
-				ptrXSDT.Signature[3] == 'T') {
+				ptrXSDT.Signature[3] == 'T')
 			return true;
-		}
 
 		return false;
 	}
@@ -348,11 +345,9 @@ private:
 	}	
 	
 	void ReadMADT() {
-		ubyte* curByte = (cast(ubyte *)ptrMADT) + MADT.sizeof;
+		ubyte* curByte = (cast(ubyte *)ptrMADT) + MADT.sizeof - 4;
 		ubyte* endByte = curByte + (ptrMADT.Length - MADT.sizeof);
 		endByte--;
-
-		curByte -= 4; //qemu bug?!?
 		
 		Info.LocalAPICAddress = cast(PhysicalAddress)ptrMADT.LocalAPICAddr;
 		while(curByte < endByte) {

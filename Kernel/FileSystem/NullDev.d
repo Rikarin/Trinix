@@ -1,17 +1,16 @@
-module FileSystem.ZeroDev;
+module FileSystem.NullDev;
 
 import VFS.CharNode;
 import VFS.DirectoryNode;
 
 
-class ZeroDev : CharNode {
-	this() { 
-		super("zero");
+class NullDev : CharNode {
+	this(string name = "null") { 
+		super(name);
 	}
 
 	override long Read(ulong start, out byte[] data) {
-		data[] = 0;
-		return 1;
+		return 0;
 	}
 
 	override long Write(ulong start, in byte[] data) {

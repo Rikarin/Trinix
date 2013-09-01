@@ -82,7 +82,7 @@ static:
 		}
 	}
 	
-	void WriteMSR(ulong MSR, ulong value) {
+	void WriteMSR(ulong msr, ulong value) {
 		ulong hi, lo;
 		lo = value & 0xFFFFFFFF;
 		hi = value >> 32UL;
@@ -90,16 +90,16 @@ static:
 		asm {
 			mov RDX, hi;
 			mov RAX, lo;
-			mov RCX, MSR;
+			mov RCX, msr;
 			wrmsr;
 		}
 	}
 
-	ulong ReadMSR(uint MSR) {
+	ulong ReadMSR(uint msr) {
 		uint hi, lo;
 
 		asm {
-			mov ECX, MSR;
+			mov ECX, msr;
 			rdmsr;
 
 			mov hi, EDX;

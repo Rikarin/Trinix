@@ -11,9 +11,8 @@ class IOAPIC {
 public:
 static:
 	bool Init() {
-		foreach (uint i, x; irqToPin) irqToPin[i]  = i;
-		foreach (i, x; irqToIOAPIC) irqToIOAPIC[i] = 0;
-		foreach (i, x; pinToIOAPIC) pinToIOAPIC[i] = 0;
+		pinToIOAPIC[] = 0;
+		irqToIOAPIC[] = 0;
 		numPins = 0;
 
 		PIC.Disable();
@@ -65,17 +64,8 @@ static:
 
 
 private:
-
-	/*
-	__gshared uint irqToPin[16]     = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-	__gshared uint irqToIOAPIC[16]  = [0];
-	__gshared uint pinToIOAPIC[256] = [0];
-	__gshared uint numPins = 0;
-
-	*/
-	__gshared uint irqToPin[16];
+	__gshared uint irqToPin[16] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 	__gshared uint irqToIOAPIC[16];
-
 	__gshared uint pinToIOAPIC[256];
 	__gshared uint numPins;
 

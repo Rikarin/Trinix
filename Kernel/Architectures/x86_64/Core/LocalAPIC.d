@@ -12,6 +12,10 @@ class LocalAPIC {
 public:
 static:
 	bool Init() {
+		curCoreId = 0;
+		logicalIDToAPICId[] = 0;
+		APICIdToLogicalID[] = 0;
+
 		apLock = new Mutex(false);
 		InitLocalAPIC(Info.LocalAPICAddress);
 		Install();
@@ -67,10 +71,10 @@ static:
 
 private:
 	__gshared Mutex apLock;
-	__gshared uint curCoreId = 0;
+	__gshared uint curCoreId;
 
-	__gshared uint[256] logicalIDToAPICId = [0];
-	__gshared uint[256] APICIdToLogicalID = [0];
+	__gshared uint[256] logicalIDToAPICId;
+	__gshared uint[256] APICIdToLogicalID;
 
 
 	enum DeliveryMode {

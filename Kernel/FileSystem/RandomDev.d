@@ -6,8 +6,8 @@ import Devices.Random;
 
 
 class RandomDev : CharNode {
-	this() { 
-		super("random");
+	this(string name = "random") { 
+		super(name);
 		length = 1024;
 	}
 

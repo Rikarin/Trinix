@@ -72,8 +72,8 @@ extern(C) void StartSystem() {
 
 	Log.Print("Starting multiple cores");
 	Log.Result(true);
-	Multiprocessor.BootCores(); 
-
+	Multiprocessor.BootCores();
+asm { sti; }
 
 //==================== MANAGERS ====================
 	Log.Print("Initializing device manger");
@@ -104,7 +104,7 @@ extern(C) void StartSystem() {
 	Log.Print("Init complete, starting terminal");
 	Log.Result(false);
 
-
+	
 	/*
 		new FSNode...
 		Directory.AddNode(FSNode)...
@@ -132,8 +132,6 @@ extern(C) void StartSystem() {
 		ba[idx] = true;
 	}*/
 
-	//assert("testik");
-
 	while (true) {}
 }
 
@@ -141,6 +139,7 @@ extern(C) void StartSystem() {
 
 
 /* I don't know wat is it
+it's sysenter/sysexit script lol
 
 __gshared const ulong FSBASE_MSR = 0xc000_0100;
 __gshared const ulong GSBASE_MSR = 0xc000_0101;

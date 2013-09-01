@@ -43,10 +43,8 @@ static:
 	}
 
 	void EOI(uint irq) {
-		if (irq > 7) {
-			Port.Write!(byte)(0x20, 0x20);
+		if (irq > 7)
 			Port.Write!(byte)(0xA0, 0x20);
-		} else
-			Port.Write!(byte)(0x20, 0x20);
+		Port.Write!(byte)(0x20, 0x20);
 	}
 }

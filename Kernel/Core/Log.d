@@ -31,7 +31,7 @@ static:
 	
 	void Print(string msg, ushort color = 0x700) {
 		foreach (char s; msg) {
-			if (pos == 2000) {
+			if (pos >= 2000) {
 				address[0 .. 1920] = address[80 .. 2000];
 				address[1920 .. 2000] = 0;
 				pos -= 80;

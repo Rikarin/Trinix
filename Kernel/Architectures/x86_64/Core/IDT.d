@@ -105,7 +105,7 @@ private:
 	}
 	
 	void SetGate(uint num, SystemSegmentType gateType, ulong funcPtr, ushort dplFlags, ushort istFlags) {
-		with(entries[num]) {
+		with (entries[num]) {
 			TargetLo = funcPtr & 0xFFFF;
 			Segment = 0x08;
 			ist = istFlags;

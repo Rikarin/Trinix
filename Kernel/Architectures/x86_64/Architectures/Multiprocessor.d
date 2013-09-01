@@ -30,10 +30,11 @@ public:
 		Log.Result(LocalAPIC.Init());
 
 		Log.Print(" - IOAPIC Initialize");
-		bool ret = IOAPIC.Init();
+		Log.Result(IOAPIC.Init());
 
+		Log.Print(" - Enabling interrupts");
 		Port.Sti();
-		return ret;
+		return true;
 	}
 
 	@property uint CPUCount() {

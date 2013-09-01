@@ -124,18 +124,14 @@ LongMode:
     mov gs, ax
 
     ;mov rsp, 0xFFFFFFFFC0015000
-    mov rsp, 0x7FFFF
+    mov rsp, 0x19000
     mov rbp, rsp
-
-    ;push qword 0xFFFFFFFFC0007000
-    ;push qword 0x7000
-    ;push word [MemRegCount]
 
     ;push qword vbe_controller_info
     ;mov rax, video_mode_description
     ;or rax, 0xFFFFFFFFC0000000
     ;push rax
 
-    ;mov rdi, rsp
+    mov rdi, rsp
     ;jmp 0xFFFFFFFFC0100000
     jmp 0x100000

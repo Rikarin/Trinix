@@ -24,6 +24,10 @@ static:
 		
 		PageAllocator.Init();
 		Log.Result(true);
+
+		//Get memory map
+		Log.Print(" - Loading memory regions");
+		Log.Result(Memory.LoadMemoryRegions());
 		
 		//GDT
 		Log.Print(" - Initializing GDT");

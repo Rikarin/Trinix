@@ -18,13 +18,13 @@ SECTIONS {
         data = .; _data = .; __data = .;
         *(.data)
 		
-  /*      start_ctors = .; 
+        start_ctors = .; 
 		*(.ctor*) 
 		end_ctors = .;
         
 		start_dtors = .; 
 		*(.dtor*) 
-		end_dtors = .;*/
+		end_dtors = .;
     }
 
     .bss :{

@@ -55,7 +55,7 @@ bloader:
 
 debug: all
 	@qemu-system-x86_64 -hda Build/Boot.bin -boot c -m 512 -serial /dev/ttyS0 \
-	-vga std -monitor stdio #-smp 4 #-s -S
+	-vga std -monitor stdio #-smp 8 #-s -S
 	
 	
 runtime:
