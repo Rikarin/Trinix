@@ -38,8 +38,8 @@ static:
 	void Init() {
 		Log.Result(true);
 		
-		Log.Print(" - Enabling NX support");
-		Port.WriteMSR(0xC0000080, Port.ReadMSR(0xC0000080) | 0x800UL);
+		Log.Print(" - Enabling NX & SCE support");
+		Port.WriteMSR(0xC0000080, Port.ReadMSR(0xC0000080) | 0x801UL);
 		Log.Result(true);
 		
 		Log.Print(" - Verifying PC");
