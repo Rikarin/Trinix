@@ -103,27 +103,8 @@ extern(C) void StartSystem() {
 
 
 
-/* pipe test
-
-	import FileSystem.PipeDev;
-	auto pipe = new PipeDev(1024, "test");
-
-	byte[5] t = [5, 10, 20, 50, 80];
-	pipe.Write(0, t);
-
-	byte[] ret = new byte[2];
-	pipe.Read(0, ret);
-
-Log.Print("ok");
-	import System.Convert;
-
-	foreach (x; ret) {
-		Log.Print("\ntest: " ~ Convert.ToString(cast(ulong)x));
-	}
-*/
-
 	//setup display mode
-	Display.SetMode(textOutput.GetModes()[0]);
+	//Display.SetMode(textOutput.GetModes()[0]);
 
 
 
@@ -145,21 +126,21 @@ Log.Print("ok");
 }
 
 
+	/* pipe test
 
-	/* init serial dev for VFS
+	import FileSystem.PipeDev;
+	auto pipe = new PipeDev(1024, "test");
 
-	*/
+	byte[5] t = [5, 10, 20, 50, 80];
+	pipe.Write(0, t);
 
+	byte[] ret = new byte[2];
+	pipe.Read(0, ret);
 
-		/*
-		new FSNode...
-		Directory.AddNode(FSNode)...
+Log.Print("ok");
+	import System.Convert;
 
-		or
-
-		Directory.CreateFile/CreateDirectory = ret Dirnode or filenode
-
-		FSNode nulld = new NullDev();
-		DirectoryNode.AddChildNode(nulld);
-
-	*/
+	foreach (x; ret) {
+		Log.Print("\ntest: " ~ Convert.ToString(cast(ulong)x));
+	}
+*/

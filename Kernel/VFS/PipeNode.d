@@ -16,4 +16,7 @@ abstract class PipeNode : FSNode {
 	void Close();
 	long Read(ulong start, out byte[] data);
 	long Write(ulong start, in byte[] data);
+
+	//Syscalls
+	override bool Accesible() { return true; }
 }

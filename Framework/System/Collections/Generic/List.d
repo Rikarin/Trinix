@@ -12,6 +12,7 @@ class List(T) {
 	@property T back()     { return array[count]; }
 	@property bool empty() { return !count; }
 	void popFront()        { RemoveAt(0); }
+	void popBack()         { RemoveAt(count - 1); }
 
 	
 	@property long Capacity() 	{ return array.length; }

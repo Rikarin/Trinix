@@ -32,4 +32,7 @@ class FileNode : FSNode {
 	long Write(ulong start, in byte[] data) {
 		return fs.Write(this, start, data);
 	}
+
+	//Syscalls
+	bool Accesible(ulong[]) { return true; }
 }

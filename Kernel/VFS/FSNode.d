@@ -17,7 +17,7 @@ enum FSType : ubyte {
 	APPLICATION = 0x80
 }
 
-abstract class FSNode /* : Resource */ {
+abstract class FSNode : Resource {
 protected:
 	string name;
 	FileSystemProto fs;
@@ -36,8 +36,9 @@ public:
 	//@property bool Used() { return false; }
 
 	this() {
-		/*const CallTable[] callTable = [
-			{FNIF_GETNAME,   &GetNameSC},
+		const CallTable[] callTable = [
+			{0, null}
+		/*	{FNIF_GETNAME,   &GetNameSC},
 			{FNIF_TYPE,      &TypeSC},
 			{FNIF_GETPARENT, &GetParentSC},
 			{FNIF_GETLENGTH, &GetLengthSC},
@@ -46,8 +47,10 @@ public:
 			{FNIF_GETPERM,   &GetParentSC},
 			{FNIF_GETPATH,   &GetPathSC},
 			{FNIF_SETCWD,    &SetCwdSC},
-			{FNIF_REMOVE,    &RemovableSC}
-		];*/
+			{FNIF_REMOVE,    &RemovableSC}*/
+		];
+
+		super(FNIF_OBJTYPE, callTable);
 	}
 
 	@property string Name() { return name; }
@@ -132,12 +135,11 @@ public:
 
 
 private:
-	/*public static ulong SCall(ulong[] params) {
+	public static ulong SCall(ulong[] params) {
 		return 0;
 	}
 
-	bool Accesible(ulong[]) { return Readable(); }
-	ulong RemovableSC(ulong[]) { return Removable(); }
+	/*ulong RemovableSC(ulong[]) { return Removable(); }
 	ulong TypeSC(ulong[]) { return Type(); }
 
 	ulong GetNameSC(ulong[]) {//TODO

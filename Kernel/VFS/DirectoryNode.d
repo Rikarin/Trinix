@@ -67,6 +67,7 @@ public:
 		this.atime  = atime;
 		this.ctime  = ctime;
 		this.mtime  = mtime;
+		super();
 	}
 
 	~this() {
@@ -186,6 +187,8 @@ public:
 
 	//TODO create file...
 
+	//Syscalls
+	override bool Accesible() { return true; }
 /*private:
 	ulong GetIdxChildSC(ulong[] params) {
 		if (!Runnable())

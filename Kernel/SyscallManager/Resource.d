@@ -37,17 +37,17 @@ private:
 
 
 	ulong DoCall(ulong id, ulong[] params) {
-		foreach (x; callTables) {
+		foreach_reverse (x; callTables) {
 			if (x.id == id)
 				return x.CallBack(params);
 		}
+		
 		return ~0UL;
 	}
 
 
 protected:
 	abstract bool Accesible();
-	this() {}
 
 	this(ulong type, const CallTable[] ct) {
 		callTables = new List!(CallTable)();
@@ -59,7 +59,7 @@ protected:
 	}
 
 	~this() {
-		//delete lock;
+		delete lock;
 		Res.Unregister(this);
 	}
 
