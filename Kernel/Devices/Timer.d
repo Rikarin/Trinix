@@ -27,8 +27,10 @@ public:
 		ticks = 0;
 		seconds = 0;
 
-		Device.RegisterDevice(this, DeviceInfo("Timer", DeviceTypes.System));
+		Device.RegisterDevice(this, DeviceInfo("Timer", DeviceType.System));
 		Device.RequestIRQ(this, 0);
+
+		SetFrequency(frequency);
 	}
 
 	void SetFrequency(ubyte frequency) {

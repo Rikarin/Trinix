@@ -11,6 +11,9 @@ import Architectures.x86_64.Core.Info;
 class LocalAPIC {
 public:
 static:
+	__gshared ApicRegisterSpace* apicRegisters;
+
+
 	bool Init() {
 		curCoreId = 0;
 		logicalIDToAPICId[] = 0;
@@ -30,8 +33,8 @@ static:
 		Port.Write!(byte)(0x22, 0x70);
 		Port.Write!(byte)(0x23, 0x01);
 		
-		apicRegisters.LogicalDestination    = (1 << GetLocalAPICId()) << 24;
 		apicRegisters.DestinationFormat     = 0xFFFFFFFF;
+		apicRegisters.LogicalDestination    = (1 << GetLocalAPICId()) << 24;
 		apicRegisters.TaskPriority          = 0x0;
 		apicRegisters.SpuriousIntVector    |= 0x10F;
 		apicRegisters.Lint0LocalVectorTable = 0x722;
@@ -216,14 +219,12 @@ private:
 		/* 0350 */ uint Lint0LocalVectorTable;	ubyte[12] padding53;
 		/* 0360 */ uint Lint1LocalVectorTable;	ubyte[12] padding54;
 		/* 0370 */ uint ErrorLocalVectorTable;	ubyte[12] padding55;
-		/* 0380 */ uint tmrInitialCount;		ubyte[12] padding56;
-		/* 0390 */ uint tmrCurrentCount;		ubyte[12] padding57;
+		/* 0380 */ uint TmrInitialCount;		ubyte[12] padding56;
+		/* 0390 */ uint TmrCurrentCount;		ubyte[12] padding57;
 		/* 03a0 */ uint Reserved15;				ubyte[12] padding58;
 		/* 03b0 */ uint Reserved16;				ubyte[12] padding59;
 		/* 03c0 */ uint Reserved17;				ubyte[12] padding60;
 		/* 03d0 */ uint Reserved18;				ubyte[12] padding61;
-		/* 03e0 */ uint tmrDivideConfiguration;	ubyte[12] padding62;
+		/* 03e0 */ uint TmrDivideConfiguration;	ubyte[12] padding62;
 	}
-
-	__gshared ApicRegisterSpace* apicRegisters;
 }

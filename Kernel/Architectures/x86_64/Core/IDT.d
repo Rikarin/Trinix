@@ -167,7 +167,7 @@ private:
 	mixin(GenerateISRs!(15, 39));
 	
 	void Dispatch(InterruptStack* stack) {
-		bool switchTask = stack.IntNumber == 32;
+	//	bool switchTask = stack.IntNumber == 32;
 
 		import Core.Log;
 		import System.Convert;
@@ -176,6 +176,12 @@ private:
 		Log.PrintSP(" @cs: " ~ Convert.ToString(stack.CS, 16));
 		Log.PrintSP(" @ss: " ~ Convert.ToString(stack.SS, 16));
 		Log.PrintSP("\n");
+
+		import Architectures.Core;
+		PIC.EOI(cast(uint)stack.IntNumber - 32);
+		LocalAPIC.EOI();
+
+		return;
 
 		if (stack.IntNumber < 32) {
 			asm { cli; hlt; }

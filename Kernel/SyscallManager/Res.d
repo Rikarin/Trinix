@@ -19,7 +19,7 @@ private:
 	//	{FNIF_OBJTYPE, &FSNode.SCall}
 	];
 	
-	List!(Resource) resources;
+	__gshared List!(Resource) resources;
 
 
 public:
@@ -29,11 +29,11 @@ public:
 	}
 
 	void Register(Resource res) {
-		//resources.Add(res);
+		resources.Add(res);
 	}
 
 	void Unregister(Resource res) {
-		//resources.Remove(res);
+		resources.Remove(res);
 	}
 
 	ulong Call(ulong resource, ulong id, ulong[] params) {
