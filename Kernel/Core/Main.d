@@ -32,7 +32,6 @@ System:
 	MP
 	VTManager
 	dorobit IDT
-	dorobit ScanModes v Display
 	VirtualTerminal SC a doladit Read()
 
 	Dorobit heap & delete!!
@@ -40,7 +39,8 @@ System:
 	Az potom VFS a syscall mgr
 	dorobit string
 	Panic - vypis Rx registrov, inak vsetko O.K.
-	dorobit pipeDev
+	dorobit pipeDev, opravit, task switch
+	dorobit Serialdev, inak vsetko funguje
 ++/
 
 extern(C) void StartSystem() {
@@ -100,7 +100,46 @@ extern(C) void StartSystem() {
 	Log.Print("Init complete, starting terminal");
 	Log.Result(false);
 
-	/*
+
+
+/* pipe test
+
+	import FileSystem.PipeDev;
+	auto pipe = new PipeDev(1024, "test");
+
+	byte[5] t = [5, 10, 20, 50, 80];
+	pipe.Write(0, t);
+
+	byte[] ret = new byte[2];
+	pipe.Read(0, ret);
+
+Log.Print("ok");
+	import System.Convert;
+
+	foreach (x; ret) {
+		Log.Print("\ntest: " ~ Convert.ToString(cast(ulong)x));
+	}
+*/
+
+	//setup display mode
+	Display.SetMode(textOutput.GetModes()[0]);
+
+	while (true) {}
+}
+
+
+
+	/* init serial dev for VFS
+	import FileSystem.SerialDev;
+	import Devices.Port.SerialPort;
+	new SerialDev("ttyS0", new SerialPort(SerialPort.COM1));
+	new SerialDev("ttyS1", new SerialPort(SerialPort.COM2));
+	new SerialDev("ttyS2", new SerialPort(SerialPort.COM3));
+	new SerialDev("ttyS3", new SerialPort(SerialPort.COM4));
+	*/
+
+
+		/*
 		new FSNode...
 		Directory.AddNode(FSNode)...
 
@@ -112,12 +151,3 @@ extern(C) void StartSystem() {
 		DirectoryNode.AddChildNode(nulld);
 
 	*/
-
-	import SyscallManager.Syscall;
-	Syscall.Init();
-
-	//setup display mode
-	//Display.SetMode(textOutput.GetModes()[0]);
-
-	while (true) {}
-}

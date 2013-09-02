@@ -14,8 +14,6 @@ class SerialPort {
 		COM4 = 0x2E8
 	}
 
-	@property bool IsOpen() { return open; }
-
 	this() { }
 
 	this(short port) {
@@ -39,10 +37,6 @@ class SerialPort {
 		open = true;
 	}
 
-	/*void Close() {
-		open = false;
-	}*/
-
 	bool Recieved() {
 		return (Port.Read!(byte)(cast(short)(port + 5)) & 1) != 0;
 	}
@@ -52,20 +46,7 @@ class SerialPort {
 	}
 
 	char Read() {
-		while (!Recieved()) { }
-		return Port.Read!(byte)(port);
-	}
-
-	string ReadLine() {
-		string ret;
-		char r;
-
-		do {
-			r = Read();
-			ret = ret ~ r;
-		} while (r != '\n');
-
-		return ret;
+		return Recieved() ? Port.Read!(byte)(port) : 0;
 	}
 
 	void Write(char c) {

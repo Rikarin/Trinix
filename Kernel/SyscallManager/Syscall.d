@@ -14,13 +14,12 @@ static:
 		STAR_MSR   = 0xc000_0081,
 		LSTAR_MSR  = 0xc000_0082,
 		SFMASK_MSR = 0xc000_0084,
-		STAR       = 0x003b_0010_0000_0000,
-		STAR2      = 0x0810_0810_0000_0000
+		STAR       = 0x001B_0000_0000_0000
 	}
 
 	void Init() {
 		Port.WriteMSR(Registers.LSTAR_MSR, cast(ulong)&SyscallHandler);
-		Port.WriteMSR(Registers.STAR_MSR, Registers.STAR2);
+		Port.WriteMSR(Registers.STAR_MSR, Registers.STAR);
 		Port.WriteMSR(Registers.SFMASK_MSR, 0);
 
 		ulong stack = cast(ulong)PageAllocator.AllocPage() + 0x1000;
@@ -28,8 +27,9 @@ static:
 
 		long addr = cast(ulong)&test;
 		asm {
+			cli;
 			mov RCX, addr;
-			mov RDX, 0x123456;
+			mov RDX, 0x456789;
 			sysret;
 		}
 	}
@@ -110,7 +110,6 @@ static:
 		asm {
 			naked;
 			mov R11, 0x123456;
-			cli;
-			hlt;
+			jmp $;
 		}
 	}

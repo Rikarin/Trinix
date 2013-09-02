@@ -11,8 +11,8 @@ import System.Convert;
 void Panic(string msg, ref InterruptStack stack) {
 	Port.Cli();
 	SimpleVT vt = new SimpleVT(Display.TextRows(), 60);
-    SimpleVT rt = new SimpleVT(Display.TextRows(), 29);
-	//VT.UnmapAll();
+   // SimpleVT rt = new SimpleVT(Display.TextRows(), 29);
+	VT.UnmapAll();
 	vt.Map(0, 0);
     //rt.Map(5, 60);
 
@@ -181,7 +181,7 @@ void Panic(string msg, ref InterruptStack stack) {
 
 //==============================================================================
     //R8
-    rt.WriteLine("\n");
+ /*   rt.WriteLine("\n");
     rt.Write(" [ R8: ");
     rt.SetColor(ConsoleColor.DarkCyan);
     WriteReg(rt, stack.R8);
@@ -228,7 +228,11 @@ void Panic(string msg, ref InterruptStack stack) {
     rt.SetColor(ConsoleColor.DarkCyan);
     WriteReg(rt, stack.R14);
     rt.SetColor(ConsoleColor.Gray);
-    rt.Write(" ] ");
+    rt.Write(" ] ");*/
+
+    asm {
+        hlt;
+    }
 }
 
 void WriteReg(ref SimpleVT vt, ulong value, ulong length = 16) {

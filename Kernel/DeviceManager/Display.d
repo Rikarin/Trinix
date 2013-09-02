@@ -86,7 +86,6 @@ static:
 
 		foreach (x; d) {
 			DisplayMode[] dm = (cast(DisplayProto)x).GetModes();
-
 			foreach (y; dm)
 				modes.Add(y);
 		}
