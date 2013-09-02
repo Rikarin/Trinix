@@ -27,6 +27,7 @@ Framework:
 	-Wchar atd.
 	Color - FromKnownColor name, ToUpper...
 	convert - prerobit na vlastny string bez alloc
+	list - search a delete
 
 System:
 	MP
@@ -124,18 +125,29 @@ Log.Print("ok");
 	//setup display mode
 	Display.SetMode(textOutput.GetModes()[0]);
 
+
+
+	//VFS test
+	import VFS.DirectoryNode;
+	import FileSystem.SerialDev;
+	import Devices.Port.SerialPort;
+
+	auto root = new DirectoryNode("/", null);
+	auto devs = new DirectoryNode("Devices", null);
+	root.AddNode(devs);
+
+	devs.AddNode(new SerialDev("ttyS0", new SerialPort(SerialPort.COM1)));
+	devs.AddNode(new SerialDev("ttyS1", new SerialPort(SerialPort.COM2)));
+	devs.AddNode(new SerialDev("ttyS2", new SerialPort(SerialPort.COM3)));
+	devs.AddNode(new SerialDev("ttyS3", new SerialPort(SerialPort.COM4)));
+
 	while (true) {}
 }
 
 
 
 	/* init serial dev for VFS
-	import FileSystem.SerialDev;
-	import Devices.Port.SerialPort;
-	new SerialDev("ttyS0", new SerialPort(SerialPort.COM1));
-	new SerialDev("ttyS1", new SerialPort(SerialPort.COM2));
-	new SerialDev("ttyS2", new SerialPort(SerialPort.COM3));
-	new SerialDev("ttyS3", new SerialPort(SerialPort.COM4));
+
 	*/
 
 

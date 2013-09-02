@@ -32,7 +32,7 @@ protected:
 
 public:
 	@property FSType Type();
-	//@property bool Removable();
+	bool Removable() { return true; } //if we can remove node from directory tree
 	//@property bool Used() { return false; }
 
 	this() {

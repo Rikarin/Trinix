@@ -22,7 +22,6 @@ class FileNode : FSNode {
 
 	
 	@property override FSType Type() { return FSType.FILE; }
-	//@property override bool Removable() { return true; }
 	//@property override bool Used() { return readers || writers; }
 	//bool IsWritableFS() { return fs.IsWritable(); }
 

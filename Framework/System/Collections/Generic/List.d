@@ -39,6 +39,9 @@ class List(T) {
 	}
 	
 	~this() {
+	//	foreach (x; array)
+	//		delete x;
+
 		delete array;
 	}
 	
@@ -66,10 +69,8 @@ class List(T) {
 	}
 	
 	void Clear() {
-		static if (is(T == class)) {
-			foreach (x; array)
-				delete x;
-		}
+	//	foreach (x; array)
+	//		delete x;
 
 		array[0 .. $] = null;
 		count = 0;
@@ -135,8 +136,7 @@ class List(T) {
 		if (index < 0 || index > count)
 			throw new ArgumentOutOfRangeException();
 		
-		static if (is(T == class))
-			delete array[index];
+	//	delete array[index];
 
 		array[index .. $] = array[index + 1 .. $];
 		count--;
@@ -150,10 +150,8 @@ class List(T) {
 			throw new ArgumentException();
 		
 
-		static if (is(T == class)) {
-			foreach (i; index .. (index + count))
-				delete array[i];
-		}
+	//	foreach (i; index .. (index + count))
+	//		delete array[i];
 
 		array[index .. $] = array[index + count .. $];
 		this.count -= count;

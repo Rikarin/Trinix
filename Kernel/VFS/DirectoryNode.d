@@ -9,36 +9,79 @@ import System.IFace;
 class DirectoryNode : FSNode {
 protected:
 	List!(FSNode) childrens;
-	bool isLoaded;
-	DirectoryNode mounts;
+	bool isLoaded = false;
+	DirectoryNode mounts = null;
 
 
 public:
 	@property override FSType Type() { return mounts ? FSType.MOUNTPOINT : FSType.DIRECTORY; }
-/*	@property ref List!(FSNode) Childrens() { return childrens; }
-	void Mount(DirectoryNode childRoot) { mounts = childRoot; }
 	void Unmount() { mounts = null; }
 
 
-	this(string name, FileSystemProto fs, uint perms = 0b111111111, ulong uid = 0, ulong gid = 0) {
+	@property override string Name() {
+		if (name == "/" && parent)
+			return parent.Name;
+		return name;
+	}
+
+	@property override ulong Length() {
+		if (mounts)
+			return mounts.Length;
+
+		if (!LoadContent())
+			return 0;
+
+		return length;
+	}
+
+	@property override DirectoryNode Parent() {
+		if (name == "/" && parent)
+			return parent.Parent;
+
+		return parent;
+	}
+
+	@property List!(FSNode) Childrens() {
+		if (mounts)
+			mounts.Childrens;
+
+		if (!isLoaded)
+			LoadContent();
+
+		return childrens;
+	}
+
+	this(string name, FileSystemProto fs, uint perms = 0b111111111, ulong uid = 0, ulong gid = 0, ulong atime = 0, ulong mtime = 0, ulong ctime = 0) {
 		/*const CallTable[] callTable = [
 			{FNIF_GETIDXCHILD, &GetIdxChildSC},
 			{FNIF_GETNAME, &GetNameChildSC}
 		];*/
-
-/*		super(name, fs, 0, perms, uid, gid);
 		//AddCallTable(callTable);
 
-		childrens = new List!(FSNode)();
-		isLoaded = false;
-		mounts = null;
+		childrens   = new List!(FSNode)();
+		this.name   = name;
+		this.fs     = fs;
+		this.perms  = perms;
+		this.uid    = uid;
+		this.gid    = gid;
+		this.atime  = atime;
+		this.ctime  = ctime;
+		this.mtime  = mtime;
 	}
 
 	~this() {
-		//delete childrens; TODO
-		
 		if (name == "/" && parent)
 			(cast(DirectoryNode)parent).Unmount();
+
+		delete childrens;
+	}
+
+	bool Mount(DirectoryNode childRoot) {
+		if (!Mountpointable()) {
+			mounts = childRoot;
+			return true;
+		}
+		return false;
 	}
 
 	bool LoadContent() {
@@ -56,50 +99,12 @@ public:
 		isLoaded = true;
 		return ret;
 	}
-	
-	@property override string Name() {
-		if (name == "/" && parent)
-			return parent.Name;
-		return name;
-	}
 
-	@property override ulong Length() {
-		if (mounts)
-			return mounts.Length;
-
-		if (!LoadContent())
-			return 0;
-		return length;
-	}
-
-	@property override FSNode Parent() {
-		if (name == "/" && parent)
-			return parent.Parent;
-		return parent;
-	}
-
-	@property override bool Removable() {
+	override bool Removable() {
 		if (!LoadContent())
 			return false;
+
 		return !childrens.Count && mounts is null;
-	}
-
-	bool Unmontable() {
-		if (!isLoaded)
-			return true;
-
-		if (mounts)
-			return false;
-
-		foreach (x; childrens) {
-			if (x.Type == FS_MOUNTPOINT) {
-				if (!(cast(DirectoryNode)x).Unmontable())
-					return false;
-				else if (!x.Removable())
-					return false;
-			}
-		}
-		return true;
 	}
 
 	bool Mountpointable() {
@@ -137,21 +142,12 @@ public:
 		return null;
 	}
 
-	List!(FSNode) GetChildrens() {
-		if (mounts)
-			mounts.GetChildrens();
-
-		if (!isLoaded)
-			LoadContent();
-
-		return childrens;
-	}
-
 	DirectoryNode CreateDirectory(string name) {
 		if (mounts)
 			mounts.CreateDirectory(name);
 
 		DirectoryNode ret = fs.CreateDirectory(this, name);
+		childrens.Add(ret);
 		length = childrens.Count;
 		return ret;
 	}
@@ -183,9 +179,13 @@ public:
 		return false;
 	}
 
+	void AddNode(FSNode node) {
+		childrens.Add(node);
+		length++;
+	}
+
 	//TODO create file...
 
-*/
 /*private:
 	ulong GetIdxChildSC(ulong[] params) {
 		if (!Runnable())
