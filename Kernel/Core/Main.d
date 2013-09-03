@@ -19,6 +19,7 @@ import VTManager.VT;
 
 import SyscallManager.Res;
 
+import Devices.Timer;
 import Devices.Keyboard.PS2Keyboard;
 import Devices.Display.VGATextOutput;
 
@@ -38,7 +39,6 @@ System:
 	VirtualTerminal SC a doladit Read()
 
 	Dorobit heap & delete!!
-	timer APIC
 	Az potom VFS a syscall mgr
 	dorobit string
 	Panic - vypis Rx registrov, inak vsetko O.K.
@@ -91,10 +91,9 @@ extern(C) void StartSystem() {
 	Log.Result(Res.Init());
 	
 //==================== DEVICES ====================
-	//Log.Print("Initializing timer ticks = 100Hz");
-	//import Devices.Timer;
-	//new Timer(100);
-	//Log.Result(true);
+	Log.Print("Initializing timer ticks = 100Hz");
+	new Timer(100);
+	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
 	new PS2Keyboard();
@@ -112,51 +111,15 @@ extern(C) void StartSystem() {
 	//setup display mode
 	//Display.SetMode(textOutput.GetModes()[0]);
 
-	import Architectures.Core;
-	import Architectures.Port;
-
-	/*PIC.EOI(0);
-	LocalAPIC.EOI();
-	IOAPIC.UnmaskIRQ(0, 0);
-	PIC.EOI(0);
-	LocalAPIC.EOI();*/
-
-	//LocalAPIC.EOI();
-
-
-	//APIC timer test...
-	LocalAPIC.apicRegisters.PerformanceCounterLVT = 4 << 8;
-
-	LocalAPIC.apicRegisters.SpuriousIntVector = 39 | 0x100;
-	LocalAPIC.apicRegisters.TmrLocalVectorTable = 32;
-	LocalAPIC.apicRegisters.TmrDivideConfiguration = 0x03;
-
-	Port.Write!(ubyte)(0x61, (Port.Read!(ubyte)(0x61) & 0xFD) | 1);
-	Port.Write!(ubyte)(0x43, 0xB2);
-
-	Port.Write!(ubyte)(0x42, 0x9B);
-	Port.Read!(ubyte)(0x60);
-	Port.Write!(ubyte)(0x42, 0x2E);
-
-	//reset
-	ubyte tmp = Port.Read!(ubyte)(0x61) & 0xFE;
-	Port.Write!(ubyte)(0x61, tmp);
-	Port.Write!(ubyte)(0x61, tmp | 1);
-	LocalAPIC.apicRegisters.TmrInitialCount = 0xFFFFFFFF;
-
-	while (!(Port.Read!(ubyte)(0x61) & 0x20)) { }
-	LocalAPIC.apicRegisters.TmrLocalVectorTable = 0x10000;
-
-	uint tmp2 = ((0xFFFFFFFF - LocalAPIC.apicRegisters.TmrCurrentCount) + 1) * 16 * 100;
-	tmp = cast(ubyte)(tmp2 / 100 / 16);
-
-	LocalAPIC.apicRegisters.TmrInitialCount = tmp < 16 ? 16 : tmp;
-	LocalAPIC.apicRegisters.TmrLocalVectorTable = 32 | 0x20000;
-	LocalAPIC.apicRegisters.TmrDivideConfiguration = 0x03;
 
 
 	while (true) {}
 }
+
+
+
+
+
 
 	/*
 	//VFS test
