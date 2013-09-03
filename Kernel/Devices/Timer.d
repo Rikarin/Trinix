@@ -63,7 +63,7 @@ public:
 		ubyte tmp = cast(ubyte)(div / frequency / 16);
 
 		//sanity check, now tmp holds appropriate number of ticks, use it as APIC timer counter initializer
-		LocalAPIC.apicRegisters.TmrInitialCount = (tmp < 16 ? 16 : tmp); * 0x1000;
+		LocalAPIC.apicRegisters.TmrInitialCount = (tmp < 16 ? 16 : tmp) * 0x1000;
 		//finally re-enable timer in periodic mode
 		LocalAPIC.apicRegisters.TmrLocalVectorTable = 32 | 0x20000;
 		//setting divide value register again not needed by the manuals
@@ -77,8 +77,9 @@ public:
 		if (ticks == frequency) {
 			ticks = 0;
 			seconds++;
-			import Core.Log; Log.PrintSP("@");
 		}
+
+		//task switch and wakeup...
 
 		PIC.EOI(0);
 		LocalAPIC.EOI();

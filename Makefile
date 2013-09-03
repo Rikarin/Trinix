@@ -1,4 +1,4 @@
-DFLAGS = -c -m64 -release -property -Idruntime/import -IKernel -IFramework -IKernel/Architectures/x86_64
+DFLAGS = -c -m64 -release -property -Idruntime/import -IKernel -IFramework -IKernel/Architectures/x86_64 -debug=only
 CFLAGS = -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -c -g
 LDFLAGS = -T Kernel/Architectures/x86_64/Linker.ld -Map Build/Linker.map
 ASFLAGS = -f elf64
@@ -48,7 +48,9 @@ clean:
 
 link:
 	@mkdir -p Build
-	@ld $(LDFLAGS) -o $(OUT_DIR)/Kernel.bin $(OBJS) druntime/lib/libdruntime-linux64.a
+
+	@echo $$(($$(cat buildnum) + 1)) > buildnum
+	@echo "Build number: " $$(cat buildnum)
 
 bloader:
 	@cd BootLoader; make -s
@@ -76,3 +78,9 @@ $(OBJ_DIR)/%.s.o: $(SRC_DIR)/%.s
 	@echo "[ASM]   " $< " ---> " $@
 	@mkdir -p $(@D)
 	@nasm -o $@ $< $(ASFLAGS)
+
+
+	#$(($(cat build_number) + 1)) > build_number
+
+
+#	@ld $(LDFLAGS) -o $(OUT_DIR)/Kernel.bin $(OBJS) druntime/lib/libdruntime-linux64.a

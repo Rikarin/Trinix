@@ -12,7 +12,7 @@ private:
 	Mutex mutex;
 
 	byte[] buffer;
-	long writePtr, readPtr;
+	public long writePtr, readPtr;
 
 
 public:

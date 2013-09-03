@@ -19,14 +19,17 @@ static:
 		Port.Write!(byte)(0x3D4, 0x0E);
 		Port.Write!(byte)(0x3D5, 0);
 		
-		sp = new LogSerialPort(SerialPort.COM1);
+		debug (only)
+			sp = new LogSerialPort(SerialPort.COM1);
+
 		address = cast(ushort *)0xB8000;
 		pos = 0;
 		
 		foreach (i; 0 .. 2000)
 			address[i] = 0;
 
-		sp.WriteLine("\nBooting...");
+		debug (only)
+			sp.WriteLine("\nBooting...");
 	}
 	
 	void Print(string msg, ushort color = 0x700) {
@@ -38,7 +41,9 @@ static:
 			}
 			address[pos++] = s | color;
 		}
-		sp.Write(msg);
+
+		debug (only)
+			sp.Write(msg);
 	}
 	
 	void Result(bool val) {
@@ -58,7 +63,7 @@ static:
 		}
 	}
 
-	void PrintSP(string text) { sp.Write(text); }
+	void PrintSP(string text) { debug (only) sp.Write(text); }
 }
 
 class LogSerialPort : SerialPort {

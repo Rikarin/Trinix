@@ -167,23 +167,23 @@ private:
 	mixin(GenerateISRs!(15, 39));
 	
 	void Dispatch(InterruptStack* stack) {
-		bool switchTask = stack.IntNumber == 32;
-
-		if (stack.IntNumber != 32) {
-			import Core.Log;
-			import System.Convert;
-			Log.PrintSP("@irq: " ~ Convert.ToString(stack.IntNumber, 16));
-			Log.PrintSP(" @rip: " ~ Convert.ToString(stack.RIP, 16));
-			Log.PrintSP(" @cs: " ~ Convert.ToString(stack.CS, 16));
-			Log.PrintSP(" @ss: " ~ Convert.ToString(stack.SS, 16));
-			Log.PrintSP("\n");
+		debug (only) {
+			if (stack.IntNumber != 32) {
+				import Core.Log;
+				import System.Convert;
+				
+				Log.PrintSP("@irq: " ~ Convert.ToString(stack.IntNumber, 16));
+				Log.PrintSP(" @rip: " ~ Convert.ToString(stack.RIP, 16));
+				Log.PrintSP(" @cs: " ~ Convert.ToString(stack.CS, 16));
+				Log.PrintSP(" @ss: " ~ Convert.ToString(stack.SS, 16));
+				Log.PrintSP("\n");
+			}
 		}
 
-		if (stack.IntNumber < 32) {
+		if (stack.IntNumber < 32)
 			asm { cli; hlt; }
-		} else if (stack.IntNumber < 48) {
+		else if (stack.IntNumber < 48)
 			Device.Handler(*stack);
-		}
 	}
 	
 	void isrIgnore() {

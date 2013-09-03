@@ -45,7 +45,7 @@ private:
     			partitions.Add(new Partition(dev, cast(ubyte)(i + 1), entry[i].StartLBA, entry[i].Size));
     	}
 
-        //delete mbr;
+        delete mbr;
     }
 
 
