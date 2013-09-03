@@ -40,7 +40,7 @@ public:
 	}
 
 	override long Read(ulong start, byte[] data) {
-		ulong collected = 0;
+		ulong collected;
 
 		while (!collected) {
 			//mutex.WaitOne();

@@ -17,6 +17,7 @@ private:
 
 public:
 	this() {
+		Port.Cli();
 		ubyte code, status = Port.Read!(ubyte)(0x64);
 		while ((status & 1) == 1) {
 			Port.Read!(ubyte)(0x60);
@@ -72,6 +73,7 @@ public:
 			status = Port.Read!(ubyte)(0x64);
 		}
 		Port.Write!(ubyte)(0x60, 0xF4);
+		Port.Sti();
 
 		
 		pipe = new PipeDev(128, "keyboard");
@@ -82,8 +84,8 @@ public:
 	}
 
 	override void IRQHandler(ref InterruptStack r) {
-        uint makeState = 0;
-		bool upState = false;
+        uint makeState;
+		bool upState;
 
 		ubyte data = Port.Read!(ubyte)(0x60);
 		if (!data)

@@ -107,19 +107,11 @@ extern(C) void StartSystem() {
 	Log.Result(false);
 
 
-	import VFS.PipeNode;
-
-	byte[] tmp = new byte[1];
-	while (true) {
-		(cast(PipeNode)Device.DevFS.childrens[0]).Read(0, tmp);
-		import System.Convert;
-		Log.PrintSP("\ntest: " ~ Convert.ToString(tmp[0]));
-		tmp[0] = 0;
-	}
-
-
 	//setup display mode
 	//Display.SetMode(textOutput.GetModes()[0]);
+
+	//import Devices.Mouse.PS2Mouse;
+	//new PS2Mouse(); need to fix...
 
 
 /*

@@ -10,6 +10,7 @@ enum DeviceType {
 	Default,
 	System,
 	Keyboard,
+	Mouse,
 	Display
 }
 
@@ -18,7 +19,7 @@ struct DeviceInfo {
 	string Name;
 	DeviceType Type;
 }
-	
+
 
 class Device {
 private:
