@@ -9,12 +9,12 @@ class ZeroDev : CharNode {
 		super(name);
 	}
 
-	override long Read(ulong start, out byte[] data) {
+	override long Read(ulong start, byte[] data) {
 		data[0] = 0;
 		return 1;
 	}
 
-	override long Write(ulong start, in byte[] data) {
+	override long Write(ulong start, byte[] data) {
 		return 0;
 	}
 }

@@ -12,8 +12,8 @@ abstract class CharNode : FSNode {
 		this.name   = name;
 	}
 
-	long Read(ulong start, out byte[] data);
-	long Write(ulong start, in byte[] data);
+	long Read(ulong start, byte[] data);
+	long Write(ulong start, byte[] data);
 
 	//Syscalls
 	override bool Accesible() { return true; }

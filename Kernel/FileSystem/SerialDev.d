@@ -15,7 +15,7 @@ class SerialDev : CharNode {
 		//time... todo
 	}
 
-	override long Read(ulong start, out byte[] data) {
+	override long Read(ulong start, byte[] data) {
 		foreach(ref x; data) {
 			while (!dev.Recieved()) {} //Task.Switch... todo
 			x = dev.Read();
@@ -24,7 +24,7 @@ class SerialDev : CharNode {
 		return data.length;
 	}
 
-	override long Write(ulong start, in byte[] data) {
+	override long Write(ulong start, byte[] data) {
 		foreach (x; data)
 			dev.Write(x);
 

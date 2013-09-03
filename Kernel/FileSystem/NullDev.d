@@ -9,11 +9,11 @@ class NullDev : CharNode {
 		super(name);
 	}
 
-	override long Read(ulong start, out byte[] data) {
+	override long Read(ulong start, byte[] data) {
 		return 0;
 	}
 
-	override long Write(ulong start, in byte[] data) {
+	override long Write(ulong start, byte[] data) {
 		return 0;
 	}
 }

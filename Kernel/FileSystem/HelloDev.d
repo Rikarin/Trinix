@@ -12,14 +12,14 @@ class HelloDev : CharNode {
 		length = 12;
 	}
 
-	override long Read(ulong start, out byte[] data) {
+	override long Read(ulong start, byte[] data) {
 		foreach (long i, ref x; data)
 			x = hello[start++ % 12];
 			
 		return data.length;
 	}
 
-	override long Write(ulong start, in byte[] data) {
+	override long Write(ulong start, byte[] data) {
 		return data.length;
 	}
 }

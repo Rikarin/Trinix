@@ -19,7 +19,7 @@ private:
 	List!(CachedBlock) cache;
 
 
-	bool GetCache(ulong block, out byte[] data) {
+	bool GetCache(ulong block, byte[] data) {
 		for (ulong i = 0; i < cache.Count; i++) {
 			if (cache[i].id == block && cache[i].LastUse != cast(Time)0) {
 				cache[i].LastUse = Timing.CurrentTime();
@@ -30,7 +30,7 @@ private:
 		return false;
 	}
 
-	bool SetCache(ulong block, in byte[] data, bool dirty = false) {
+	bool SetCache(ulong block, byte[] data, bool dirty = false) {
 		CachedBlock* best;
 
 		foreach (x; cache) {
@@ -73,7 +73,7 @@ public:
 		}
 	}
 
-	bool Read(ulong start, out byte[] data) {
+	bool Read(ulong start, byte[] data) {
 		if (data.length <= dev.BlockSize()) {
 			if (GetCache(start, data))
 				return true;
@@ -87,7 +87,7 @@ public:
 			return dev.Read(start, data);
 	}
 
-	bool Write(ulong start, in byte[] data) {
+	bool Write(ulong start, byte[] data) {
 		if (data.length <= dev.BlockSize()) {
 			if (!SetCache(start, data, true))
 				return dev.Write(start, data);

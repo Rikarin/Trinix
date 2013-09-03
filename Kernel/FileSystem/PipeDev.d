@@ -39,8 +39,8 @@ public:
 			refcount--;
 	}
 
-	override long Read(ulong start, out byte[] data) {
-		long collected;
+	override long Read(ulong start, byte[] data) {
+		ulong collected;
 
 		while (!collected) {
 			mutex.WaitOne();
@@ -54,13 +54,13 @@ public:
 		return collected;
 	}
 
-	override long Write(ulong start, in byte[] data) {
-		long written;
+	override long Write(ulong start, byte[] data) {
+		ulong written;
 
 		while (written < data.length) {
 			mutex.WaitOne();
 
-			while (FreeSpace() > 0 && written < length) {
+			while (FreeSpace() > 0 && written < data.length) {
 				buffer[writePtr] = data[written];
 				IncrementWrite();
 				written++;

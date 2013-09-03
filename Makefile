@@ -52,6 +52,8 @@ link:
 	@echo $$(($$(cat buildnum) + 1)) > buildnum
 	@echo "Build number: " $$(cat buildnum)
 
+	@ld $(LDFLAGS) -o $(OUT_DIR)/Kernel.bin $(OBJS) druntime/lib/libdruntime-linux64.a
+
 bloader:
 	@cd BootLoader; make -s
 
@@ -78,9 +80,3 @@ $(OBJ_DIR)/%.s.o: $(SRC_DIR)/%.s
 	@echo "[ASM]   " $< " ---> " $@
 	@mkdir -p $(@D)
 	@nasm -o $@ $< $(ASFLAGS)
-
-
-	#$(($(cat build_number) + 1)) > build_number
-
-
-#	@ld $(LDFLAGS) -o $(OUT_DIR)/Kernel.bin $(OBJS) druntime/lib/libdruntime-linux64.a

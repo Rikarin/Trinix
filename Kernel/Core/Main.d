@@ -120,39 +120,8 @@ potom jednoducho sa nastavy fd k danemu proceu ktory bude symlinkovat na kb
 
 */
 
-
-
-	import FileSystem.PipeDev;
-	import System.Convert;
-
-	auto pipe = new PipeDev(1024, "test");
-
-	byte[5] t = [5, 10, 20, 50, 80];
-	Log.Print("\nwrite: " ~ Convert.ToString(cast(ulong)pipe.writePtr));
-	pipe.Write(0, t);
-
-	Log.Print("\nwrite: " ~ Convert.ToString(cast(ulong)pipe.writePtr));
-
-
-
-	byte[] ret = new byte[2];
-	pipe.Read(0, ret);
-
-Log.Print("ok");
-	
-
-	foreach (x; ret) {
-		Log.Print("\ntest: " ~ Convert.ToString(cast(ulong)x));
-	}
-
-
 	while (true) {}
 }
-
-
-
-
-
 
 	/*
 	//VFS test
