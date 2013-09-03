@@ -7,8 +7,8 @@ import System.IFace;
 
 
 class DirectoryNode : FSNode {
-protected:
-	List!(FSNode) childrens;
+package:
+	public List!(FSNode) childrens;
 	bool isLoaded = false;
 	DirectoryNode mounts = null;
 
@@ -51,7 +51,7 @@ public:
 		return childrens;
 	}
 
-	this(string name, FileSystemProto fs, uint perms = 0b111111111, ulong uid = 0, ulong gid = 0, ulong atime = 0, ulong mtime = 0, ulong ctime = 0) {
+	this(string name, FileSystemProto fs, uint perms = 0b110100100, ulong uid = 0, ulong gid = 0, ulong atime = 0, ulong mtime = 0, ulong ctime = 0) {
 		/*const CallTable[] callTable = [
 			{FNIF_GETIDXCHILD, &GetIdxChildSC},
 			{FNIF_GETNAME, &GetNameChildSC}
@@ -89,7 +89,7 @@ public:
 		if (mounts)
 			return mounts.LoadContent();
 
-		if(isLoaded)
+		if(isLoaded || fs is null)
 			return true;
 
 		bool ret = fs.LoadContent(this);
@@ -147,8 +147,14 @@ public:
 		if (mounts)
 			mounts.CreateDirectory(name);
 
-		DirectoryNode ret = fs.CreateDirectory(this, name);
-		childrens.Add(ret);
+		DirectoryNode ret;
+		if (fs !is null)
+			 ret = fs.CreateDirectory(this, name);
+		else {
+			ret = new DirectoryNode(name, null);
+			AddNode(ret);
+		}
+
 		length = childrens.Count;
 		return ret;
 	}
@@ -182,6 +188,7 @@ public:
 
 	void AddNode(FSNode node) {
 		childrens.Add(node);
+		node.parent = this;
 		length++;
 	}
 

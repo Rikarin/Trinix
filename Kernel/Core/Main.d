@@ -13,7 +13,6 @@ import Architectures.CPU;
 
 import DeviceManager.Device;
 import DeviceManager.Display;
-import DeviceManager.Keyboard;
 
 import VTManager.VT;
 
@@ -45,14 +44,13 @@ System:
 	dorobit pipeDev, opravit, task switch
 	dorobit Serialdev, inak vsetko funguje
 	timer - wakeup and task switch
+	pipedev task swich
 ++/
-
 
 extern(C) void StartSystem() {
 	Log.Init();
 	//For debug print malloc and free
 	//Memory.test = 123456789;
-
 	Log.Print("Initializing Architecture: x86_64");
 	Architecture.Init();
 
@@ -77,20 +75,20 @@ extern(C) void StartSystem() {
 
 
 //==================== MANAGERS ====================
+	Log.Print("Initializing system calls database");
+	Log.Result(Res.Init());
+
 	Log.Print("Initializing device manger");
 	Log.Result(Device.Init());
 	
-	Log.Print("Initializing keyboard manger");
-	Log.Result(Keyboard.Init());
+//	Log.Print("Initializing keyboard manger");
+	//Log.Result(Keyboard.Init());
 
 	Log.Print("Initializing display manger");
 	Log.Result(Display.Init());
 
 	Log.Print("Initializing VT manager");
 	Log.Result(VT.Init());
-
-	Log.Print("Initializing syscall database");
-	Log.Result(Res.Init());
 	
 //==================== DEVICES ====================
 	Log.Print("Initializing timer ticks = 100Hz");
@@ -108,6 +106,16 @@ extern(C) void StartSystem() {
 	Log.Print("Init complete, starting terminal");
 	Log.Result(false);
 
+
+	import VFS.PipeNode;
+
+	byte[] tmp = new byte[1];
+	while (true) {
+		(cast(PipeNode)Device.DevFS.childrens[0]).Read(0, tmp);
+		import System.Convert;
+		Log.PrintSP("\ntest: " ~ Convert.ToString(tmp[0]));
+		tmp[0] = 0;
+	}
 
 
 	//setup display mode

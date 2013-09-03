@@ -3,6 +3,7 @@ module DeviceManager.Device;
 import System.Collections.Generic.All;
 import Architectures.Core : InterruptStack;
 import Devices.DeviceProto;
+import VFS.DirectoryNode;
 
 
 enum DeviceType {
@@ -27,15 +28,18 @@ private:
 	}
 	
 	__gshared List!(Data) devices;
-	__gshared DeviceProto IRQHandler[16]; 
+	__gshared DeviceProto IRQHandler[16];
 	
 	
 public:
 static:
+	__gshared DirectoryNode DevFS;
+
+
 	bool Init() {
 		devices = new List!(Data)();
-		foreach (i, d; IRQHandler)
-			IRQHandler[i] = null;
+		DevFS = new DirectoryNode("dev", null);
+		IRQHandler[] = null;
 
 		return true;
 	}

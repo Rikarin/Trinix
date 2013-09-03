@@ -50,7 +50,7 @@ link:
 	@mkdir -p Build
 
 	@echo $$(($$(cat buildnum) + 1)) > buildnum
-	@echo "Build number: " $$(cat buildnum)
+	@echo "Build number:" $$(cat buildnum)
 
 	@ld $(LDFLAGS) -o $(OUT_DIR)/Kernel.bin $(OBJS) druntime/lib/libdruntime-linux64.a
 

@@ -3,23 +3,21 @@ module Devices.Keyboard.PS2Keyboard;
 import Architectures.Core;
 import Architectures.Port;
 import DeviceManager.Device;
-import DeviceManager.Keyboard;
-import Devices.Keyboard.KeyboardProto;
 import Devices.Keyboard.KeyCodes;
+import Devices.DeviceProto;
+import FileSystem.PipeDev;
 
 import System.Threading.All;
 
 
-class PS2Keyboard : KeyboardProto {
-	private ubyte keyset;
-	private Mutex mutex;
+class PS2Keyboard : DeviceProto {
+private:
+	ubyte keyset;
+	PipeDev pipe;
 
-
+public:
 	this() {
-		mutex = new Mutex();
-		ubyte status, code;
-
-		status = Port.Read!(ubyte)(0x64);
+		ubyte code, status = Port.Read!(ubyte)(0x64);
 		while ((status & 1) == 1) {
 			Port.Read!(ubyte)(0x60);
 			status = Port.Read!(ubyte)(0x64);
@@ -75,13 +73,15 @@ class PS2Keyboard : KeyboardProto {
 		}
 		Port.Write!(ubyte)(0x60, 0xF4);
 
+		
+		pipe = new PipeDev(128, "keyboard");
+		Device.DevFS.AddNode(pipe);
+
 		Device.RequestIRQ(this, 1);
 		Device.RegisterDevice(this, DeviceInfo("Standard PS2 keyboard", DeviceType.Keyboard));
 	}
 
 	override void IRQHandler(ref InterruptStack r) {
-		mutex.WaitOne();
-
         uint makeState = 0;
 		bool upState = false;
 
@@ -112,15 +112,12 @@ class PS2Keyboard : KeyboardProto {
 			}
 		}
 
-		Keyboard.KeyHandler(key, upState);
+		byte[1] tmp;
+		tmp[0] = upState ? -key : key;
+		pipe.Write(0, tmp);
 
 		PIC.EOI(1);
 		LocalAPIC.EOI();
-		mutex.Release();
-	}
-
-	override void UpdateLeds(ubyte status) {
-		Port.Write!(ubyte)(0x60, status);
 	}
 
 	Key Set1Translate[256] = [

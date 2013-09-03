@@ -18,7 +18,7 @@ enum FSType : ubyte {
 }
 
 abstract class FSNode : Resource {
-protected:
+package:
 	string name;
 	FileSystemProto fs;
 	DirectoryNode parent;

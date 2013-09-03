@@ -40,15 +40,17 @@ public:
 	}
 
 	override long Read(ulong start, byte[] data) {
-		ulong collected;
+		ulong collected = 0;
 
 		while (!collected) {
-			mutex.WaitOne();
+			//mutex.WaitOne();
 			while (UnreadCount() > 0 && collected < data.length) {
 				data[collected++] = buffer[readPtr];
 				IncrementRead();
+				break;
 			}
-			mutex.Release();
+			//mutex.Release();
+			//task switch
 		}
 
 		return collected;

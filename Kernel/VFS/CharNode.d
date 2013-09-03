@@ -8,7 +8,7 @@ abstract class CharNode : FSNode {
 	override @property FSType Type() { return FSType.CHARDEVICE; }
 
 	this(string name) {
-		this.perms  = 0xFFFF;
+		this.perms  = 0b110100100;
 		this.name   = name;
 	}
 

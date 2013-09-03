@@ -172,11 +172,10 @@ private:
 				import Core.Log;
 				import System.Convert;
 				
-				Log.PrintSP("@irq: " ~ Convert.ToString(stack.IntNumber, 16));
+				Log.PrintSP("\n@irq: " ~ Convert.ToString(stack.IntNumber, 16));
 				Log.PrintSP(" @rip: " ~ Convert.ToString(stack.RIP, 16));
 				Log.PrintSP(" @cs: " ~ Convert.ToString(stack.CS, 16));
 				Log.PrintSP(" @ss: " ~ Convert.ToString(stack.SS, 16));
-				Log.PrintSP("\n");
 			}
 		}
 

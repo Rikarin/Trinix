@@ -6,7 +6,7 @@ import VFS.FileSystemProto;
 
 
 class FileNode : FSNode {
-	this(string name, FileSystemProto fs, ulong length, uint perms = 0b111111111, ulong uid = 0, ulong gid = 0, ulong atime = 0, ulong mtime = 0, ulong ctime = 0) {
+	this(string name, FileSystemProto fs, ulong length, uint perms = 0b110100100, ulong uid = 0, ulong gid = 0, ulong atime = 0, ulong mtime = 0, ulong ctime = 0) {
 		super();
 
 		this.name   = name;

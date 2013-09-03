@@ -3,7 +3,6 @@ module VTManager.VirtualTerminal;
 import System.Threading.All;
 import Devices.Keyboard.KeyCodes;
 import SyscallManager.Resource;
-import DeviceManager.Keyboard;
 
 
 abstract class VirtualTerminal /* : Resource */ {
@@ -52,7 +51,7 @@ public:
         bool big = capsed;
 
         while (true) {
-        	Key k = Keyboard.GetKey();
+        	Key k = Key.Null;//Keyboard.GetKey();
 
             switch (k) {
             	case Key.Null:
