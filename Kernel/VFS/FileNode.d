@@ -25,11 +25,11 @@ class FileNode : FSNode {
 	//@property override bool Used() { return readers || writers; }
 	//bool IsWritableFS() { return fs.IsWritable(); }
 
-	long Read(ulong start, byte[] data) {
+	override long Read(ulong start, byte[] data) {
 		return fs.Read(this, start, data);
 	}
 
-	long Write(ulong start, byte[] data) {
+	override long Write(ulong start, byte[] data) {
 		return fs.Write(this, start, data);
 	}
 

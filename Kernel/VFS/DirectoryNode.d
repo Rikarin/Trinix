@@ -16,6 +16,8 @@ package:
 public:
 	@property override FSType Type() { return mounts ? FSType.MOUNTPOINT : FSType.DIRECTORY; }
 	void Unmount() { mounts = null; }
+	override long Read(ulong start, byte[] data) { return 0; }
+	override long Write(ulong start, byte[] data) { return 0; }
 
 
 	@property override string Name() {

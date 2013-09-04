@@ -33,7 +33,9 @@ package:
 public:
 	@property FSType Type();
 	bool Removable() { return true; } //if we can remove node from directory tree
-	//@property bool Used() { return false; }
+	
+	long Read(ulong start, byte[] data);
+	long Write(ulong start, byte[] data);
 
 	this() {
 		const CallTable[] callTable = [

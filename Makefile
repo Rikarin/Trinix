@@ -17,6 +17,7 @@ _SRC += $(wildcard Kernel/MemoryManager/*.[d|c|s])
 _SRC += $(wildcard Kernel/DeviceManager/*.[d|c|s])
 _SRC += $(wildcard Kernel/VTManager/*.[d|c|s])
 _SRC += $(wildcard Kernel/SyscallManager/*.[d|c|s])
+_SRC += $(wildcard Kernel/TaskManager/*.[d|c|s])
 
 _SRC += $(wildcard Kernel/FileSystem/*.[d|c|s])
 

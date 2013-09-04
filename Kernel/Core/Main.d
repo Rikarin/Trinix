@@ -117,6 +117,7 @@ extern(C) void StartSystem() {
 /*
 Keyboard dm zmazat a kb pripojit do /dev
 potom jednoducho sa nastavy fd k danemu proceu ktory bude symlinkovat na kb
+odstranit vt manager a pridat tty
 
 */
 

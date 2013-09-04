@@ -13,14 +13,16 @@ class List(T) {
 	@property bool empty() { return !count; }
 	void popFront()        { RemoveAt(0); }
 	void popBack()         { RemoveAt(count - 1); }
-
 	
+
 	@property long Capacity() 	{ return array.length; }
 	@property long Count() 		{ return count; }
-	
+
 
 	void opIndexAssign(T value, long index) { array[index] = value; }
 	T opIndex(long index) { return array[index]; }
+	T[] opSlice(long i, long j) { return array[i .. j]; }
+	long opDollar() { return count; }
 
 	
 	private void Resize() {
