@@ -8,8 +8,23 @@ import System.Convert;
 alias ubyte* PhysicalAddress;
 alias ubyte* VirtualAddress;
 
-extern(C) void* malloc(ulong size, uint ba) { if (Memory.test == 123456789) Log.PrintSP("$"); return cast(void *)PageAllocator.AllocPage(cast(uint)size / 0x1000); }
-extern(C) void free(void *ptr) { if (Memory.test == 123456789) Log.PrintSP("#"); }
+extern(C) void* malloc(ulong size, uint ba) { 
+	if (Memory.test == 123456789) 
+		Log.PrintSP("$"); 
+
+	if (PageAllocator.IsInit)
+		return Memory.KernelHeap.Alloc(size);
+	else
+		return cast(void *)PageAllocator.AllocPage(cast(uint)size / 0x1000); 
+}
+
+extern(C) void free(void* ptr) {
+	if (Memory.test == 123456789)
+		Log.PrintSP("#");
+
+	if (PageAllocator.IsInit)
+		Memory.KernelHeap.Free(ptr);
+}
 
 
 enum RegionType: uint {

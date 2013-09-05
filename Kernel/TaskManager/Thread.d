@@ -30,7 +30,7 @@ public:
 
 	bool Runnable() { return true; } // todo
 
-	/*this(uint a) { }
+	this(uint a) { }
 	this(ulong delegate(void* offset) ThreadEntry, void* data) {
 		//super();
 
@@ -39,7 +39,7 @@ public:
 
 		//userStack.address = 
 		//userStack.size... todo
-	}*/
+	}
 
 //Syscalls
 //	override bool Accesible() { return true; }

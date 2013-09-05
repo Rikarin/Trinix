@@ -73,8 +73,6 @@ public:
 		
 		RemoveFromIndex(header);
 		if (header.size > (newSize + Header.sizeof + Footer.sizeof)) {
-			header.size = newSize;
-			
 			Footer *newFooter = cast(Footer *)(header + newSize - Footer.sizeof);
 			newFooter.header = header;
 			newFooter.magic = MAGIC;
@@ -82,8 +80,9 @@ public:
 			Header *newHeader = cast(Header *)(header + newSize);
 			newHeader.isHole = true;
 			newHeader.magic = MAGIC;
-			newHeader.size = (cast(ulong)footer - cast(ulong)newHeader + Footer.sizeof);
-			
+			newHeader.size = header.size - newSize;
+
+			header.size = newSize;			
 			footer.header = newHeader;
 			footer.magic = MAGIC;
 			
@@ -257,11 +256,11 @@ public:
 	}
 
 	private void InsertIntoIndex(Header *header) {
-		if ((index.size * (Header *).sizeof + cast(ulong)index.size) >= start)
+		if ((index.size * (Header *).sizeof + cast(ulong)index.data) >= start)
 			return;
 
 		uint iter = 0;
-		for (; iter < index.size && cast(ulong)index.data[iter] >= start; iter++)
+		while (iter < index.size && cast(ulong)index.data[iter] < header.size)
 			if (index.data[iter++] == header)
 				return;
 

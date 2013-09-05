@@ -1,9 +1,9 @@
-[GLOBAL read_rip]
+[global read_rip]
 read_rip:
     pop rax
     jmp rax
 
-[GLOBAL idle_task]
+[global idle_task]
 idle_task:
     sti
     hlt

@@ -44,7 +44,6 @@ System:
 	dorobit pipeDev, opravit, task switch
 	dorobit Serialdev, inak vsetko funguje
 	timer - wakeup and task switch
-	pipedev task swich
 ++/
 
 extern(C) void StartSystem() {
@@ -61,8 +60,8 @@ extern(C) void StartSystem() {
 	CPU.Init();
 
 	Log.Print("Initializing kernel heap");
-	//Memory.KernelHeap = new Heap();
-	//Memory.KernelHeap.Create(cast(ulong)PageAllocator.AllocPage(), Heap.MIN_SIZE, 0x10000, Paging.KernelPaging);
+	Memory.KernelHeap = new Heap();
+	Memory.KernelHeap.Create(cast(ulong)PageAllocator.AllocPage(), Heap.MIN_SIZE, 0x10000, Paging.KernelPaging);
 	//PageAllocator.IsInit = true;
 	Log.Result(false);
 
@@ -72,7 +71,6 @@ extern(C) void StartSystem() {
 	Log.Print("Starting multiple cores");
 	Log.Result(true);
 	Multiprocessor.BootCores();
-
 
 //==================== MANAGERS ====================
 	Log.Print("Initializing system calls database");
@@ -84,24 +82,24 @@ extern(C) void StartSystem() {
 //	Log.Print("Initializing keyboard manger");
 	//Log.Result(Keyboard.Init());
 
-	Log.Print("Initializing display manger");
-	Log.Result(Display.Init());
+	//Log.Print("Initializing display manger");
+	//Log.Result(Display.Init());
 
-	Log.Print("Initializing VT manager");
-	Log.Result(VT.Init());
+	//Log.Print("Initializing VT manager");
+	//Log.Result(VT.Init());
 	
 //==================== DEVICES ====================
 	Log.Print("Initializing timer ticks = 100Hz");
-	new Timer(100);
+	//new Timer(100);
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
 	new PS2Keyboard();
 	Log.Result(true);
 
-	Log.Print("Initializing VGA text output driver");
-	VGATextOutput textOutput = new VGATextOutput();
-	Log.Result(true);
+	//Log.Print("Initializing VGA text output driver");
+	//VGATextOutput textOutput = new VGATextOutput();
+	//Log.Result(true);
 
 	Log.Print("Init complete, starting terminal");
 	Log.Result(false);
@@ -139,9 +137,3 @@ odstranit vt manager a pridat tty
 	devs.AddNode(new SerialDev("ttyS2", new SerialPort(SerialPort.COM3)));
 	devs.AddNode(new SerialDev("ttyS3", new SerialPort(SerialPort.COM4)));
 	*/
-
-
-	/* pipe test
-
-
-*/
