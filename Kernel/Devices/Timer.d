@@ -4,6 +4,7 @@ import Architectures.Port;
 import Architectures.Core;
 import DeviceManager.Device;
 import Devices.DeviceProto;
+import TaskManager.Task;
 
 
 class Timer : DeviceProto {
@@ -79,9 +80,10 @@ public:
 			seconds++;
 		}
 
-		//task switch and wakeup...
-
 		PIC.EOI(0);
 		LocalAPIC.EOI();
+
+		//task switch and wakeup...
+		Task.Switch();
 	}
 }

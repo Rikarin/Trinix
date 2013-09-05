@@ -5,15 +5,19 @@ import VFS.DirectoryNode;
 import SyscallManager.Resource;
 import TaskManager.Thread;
 import TaskManager.Task;
+import Architectures.Paging;
 
 import System.Collections.Generic.All;
 
 
 class Process /*: Resource*/ {
+private:
+	this() { }
+
 package:
+	ulong id; //unique ID for each process
 	Process parent;
-	ubyte state;
-	long retval;
+	State state;
 
 	string name;
 	string description;
@@ -21,22 +25,32 @@ package:
 	ulong uid;
 
 	DirectoryNode cwd;
+	Paging paging;
 	List!(Thread) threads;
 	List!(FSNode) descriptors;
 
 public:
-	enum Status {
+	enum State : ubyte {
 		Zombie,
 		Running,
-		Starting,
-		Finished
+		Stopped
 	}
 
-
-	this(uint a) { }
-
-	static void Init() {
+	static Process Init() {
 		if (Task.Threads.Count)
-			return;
+			return null;
+
+		Process ret     = new Process();
+		ret.id          = Task.NewPID();
+		ret.name        = "Init";
+		ret.description = "Shit happens...";
+
+		ret.descriptors = new List!(FSNode)();
+		//ret.threads     = new List!(Thread)();
+
+		//add descriptors... todo
+		//ret.threads.Add(new Thread());
+
+		return ret;
 	}
 }
