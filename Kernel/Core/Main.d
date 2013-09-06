@@ -76,7 +76,6 @@ extern(C) void StartSystem() {
 
 	Log.Print("Initializing VFS manger");
 	Log.Result(VFS.Init());
-	VFS.Root.AddNode(DeviceManager.DevFS);
 
 //==================== DEVICES ====================
 	Log.Print("Initializing timer ticks = 100Hz");
@@ -111,19 +110,3 @@ odstranit vt manager a pridat tty
 
 	while (true) {}
 }
-
-	/*
-	//VFS test
-	import VFS.DirectoryNode;
-	import FileSystem.SerialDev;
-	import Devices.Port.SerialPort;
-
-	auto root = new DirectoryNode("/", null);
-	auto devs = new DirectoryNode("Devices", null);
-	root.AddNode(devs);
-
-	devs.AddNode(new SerialDev("ttyS0", new SerialPort(SerialPort.COM1)));
-	devs.AddNode(new SerialDev("ttyS1", new SerialPort(SerialPort.COM2)));
-	devs.AddNode(new SerialDev("ttyS2", new SerialPort(SerialPort.COM3)));
-	devs.AddNode(new SerialDev("ttyS3", new SerialPort(SerialPort.COM4)));
-	*/
