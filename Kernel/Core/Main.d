@@ -83,7 +83,7 @@ extern(C) void StartSystem() {
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
-	new PS2Keyboard();
+	//new PS2Keyboard();
 	Log.Result(true);
 
 	//Log.Print("Initializing VGA text output driver");
@@ -100,6 +100,7 @@ extern(C) void StartSystem() {
 	//import Devices.Mouse.PS2Mouse;
 	//new PS2Mouse(); need to fix...
 
+	VFS.PrintTree(VFS.Root);
 
 /*
 Keyboard dm zmazat a kb pripojit do /dev

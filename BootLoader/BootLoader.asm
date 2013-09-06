@@ -101,7 +101,7 @@ VBEPacket:
     .number dw 0x3        ; Number of block to load
     .dest   dd 0x7E00     ; Destination address
     .buffer dq 0x1        ; Position on disk
-count:      dw 300         ; count * 65KB
+count:      dw 200         ; count * 65KB
 address:    dd 0x100000   ; Kernel address
 MemRegCount: dw 0
 

@@ -1,1 +1,0 @@
-"qemu-system-x86_64.exe" -L . -m 512 -boot c -hda C:\Users\Bloodman\Desktop\System\Build\Boot.bin -hdb disk2.img -hdc test.img -std-vga

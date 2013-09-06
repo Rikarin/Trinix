@@ -7,7 +7,7 @@ import TaskManager.Process;
 import TaskManager.Task;
 
 
-class Thread /*: Resource*/ {
+class Thread : Resource {
 package:
 	static const auto STACK_SIZE = 0x1000;
 
@@ -23,7 +23,7 @@ package:
 		ubyte irq;
 	}
 
-	this() { }
+	this() { super(0, null); }
 
 public:
 	enum State : ubyte {
@@ -33,9 +33,8 @@ public:
 	}
 
 
-	//this(uint a) { }
 	this(ulong delegate(void* offset) ThreadEntry, void* data) {
-		//super();
+		super(0, null);
 
 		parent = Task.CurrentProcess;
 		kernelStack = (new byte[STACK_SIZE]).ptr;
@@ -45,7 +44,7 @@ public:
 
 	bool Valid(State state) {
 		//todo pridat to ze ak time,signal alebo irq prislo tak aby to prebudilo vlakno
-		if (state == this.state)
+		if (state == this.state && parent.state != Process.State.Stopped)
 			return true;
 		return false;
 	}
@@ -57,5 +56,5 @@ public:
 
 
 //Syscalls
-//	override bool Accesible() { return true; }
+	override bool Accesible() { return true; }
 }

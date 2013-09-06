@@ -11,13 +11,14 @@ extern(C) ulong read_rip();
 class Task {
 static:
 private:
-	ulong pid;
+	__gshared ulong pid;
 
 package:
-	List!(Process) Procs;
-	List!(Thread) Threads;
-	Thread currentThread;
-	Thread idleThread;
+	__gshared List!(Process) Procs;
+	__gshared List!(Thread) Threads;
+	__gshared Thread currentThread;
+	__gshared Thread idleThread;
+
 
 public:
 	@property ulong NewPID() { return pid++; }
@@ -27,7 +28,7 @@ public:
 
 	this() {
 		Procs = new List!(Process)();
-		//Threads = new List!(Thread)();
+		Threads = new List!(Thread)();
 
 		Process.Init();
 		currentThread = Threads[0];

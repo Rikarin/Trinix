@@ -3,17 +3,17 @@ module TaskManager.Process;
 import VFSManager.FSNode;
 import VFSManager.DirectoryNode;
 import SyscallManager.Resource;
-import TaskManager.Thread;
 import TaskManager.Task;
+import TaskManager.Thread;
 import Architectures.Paging;
 import Core.DeviceManager;
 
 import System.Collections.Generic.All;
 
 
-class Process /*: Resource*/ {
+class Process : Resource {
 private:
-	this() { }
+	this() { super(0, null); }
 
 package:
 	ulong id; //unique ID for each process
@@ -28,7 +28,7 @@ package:
 
 	DirectoryNode cwd;
 	Paging paging;
-	List!(Thread) threads;
+	List!(Thread *) threads; //prerobit na ref todo
 	List!(FSNode) descriptors;
 
 public:
@@ -49,7 +49,10 @@ public:
 		ret.mask        = 0x12; //022 in oct
 
 		ret.descriptors = new List!(FSNode)();
-		//ret.threads     = new List!(Thread)();
+		ret.threads     = new List!(Thread *)();
+
+		new List!(Thread)();
+		new List!(Thread)();
 
 		ret.descriptors.Add(DeviceManager.DevFS.Childrens[0]); //keyboard stdin
 		ret.descriptors.Add(DeviceManager.DevFS.Childrens[1]); //tty stdout
@@ -57,4 +60,9 @@ public:
 
 		return ret;
 	}
+
+
+
+//Syscalls
+	override bool Accesible() { return true; }
 }
