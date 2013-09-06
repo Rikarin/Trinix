@@ -13,7 +13,6 @@ package:
 
 	ulong rsp, rbp, rip;
 	State state;
-	uint mask;
 	Process parent;
 
 	WaitUnion waitFor;

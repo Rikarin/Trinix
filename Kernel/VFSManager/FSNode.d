@@ -1,8 +1,8 @@
-module VFS.FSNode;
+module VFSManager.FSNode;
 
 import SyscallManager.Resource;
-import VFS.FileSystemProto;
-import VFS.DirectoryNode;
+import VFSManager.FileSystemProto;
+import VFSManager.DirectoryNode;
 import System.IFace;
 
 
@@ -34,8 +34,8 @@ public:
 	@property FSType Type();
 	bool Removable() { return true; } //if we can remove node from directory tree
 	
-	long Read(ulong start, byte[] data);
-	long Write(ulong start, byte[] data);
+	long Read(ulong offset, byte[] data);
+	long Write(ulong offset, byte[] data);
 
 	this() {
 		const CallTable[] callTable = [

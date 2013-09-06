@@ -1,6 +1,6 @@
 module Architectures.x86_64.Core.IDT;
 
-import DeviceManager.Device;
+import Core.DeviceManager;
 import System.Collections.All;
 import Architectures.CPU;
 import Architectures.Core;
@@ -182,7 +182,7 @@ private:
 		if (stack.IntNumber < 32)
 			asm { cli; hlt; }
 		else if (stack.IntNumber < 48)
-			Device.Handler(*stack);
+			DeviceManager.Handler(*stack);
 	}
 	
 	void isrIgnore() {

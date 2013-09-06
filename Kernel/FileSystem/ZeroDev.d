@@ -1,7 +1,7 @@
 module FileSystem.ZeroDev;
 
-import VFS.CharNode;
-import VFS.DirectoryNode;
+import VFSManager.CharNode;
+import VFSManager.DirectoryNode;
 
 
 class ZeroDev : CharNode {
@@ -9,12 +9,12 @@ class ZeroDev : CharNode {
 		super(name);
 	}
 
-	override long Read(ulong start, byte[] data) {
+	override long Read(ulong offset, byte[] data) {
 		data[0] = 0;
 		return 1;
 	}
 
-	override long Write(ulong start, byte[] data) {
+	override long Write(ulong offset, byte[] data) {
 		return 0;
 	}
 }

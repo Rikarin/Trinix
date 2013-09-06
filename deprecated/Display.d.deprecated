@@ -9,14 +9,6 @@ import System.ConsoleColor;
 import System.Drawing.All;
 
 
-struct DisplayMode {
-	ushort TextCols, TextRows;
-	ushort GraphicWidth, GraphicHeight, GraphicDepth;
-	ushort Identifier;
-	DisplayProto Dev;
-}
-
-
 class Display {
 public:
 static:

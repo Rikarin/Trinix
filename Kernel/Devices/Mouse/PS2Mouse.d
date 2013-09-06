@@ -2,7 +2,7 @@ module Devices.Mouse.PS2Mouse;
 
 import Architectures.Core;
 import Architectures.Port;
-import DeviceManager.Device;
+import Core.DeviceManager;
 import Devices.DeviceProto;
 import FileSystem.PipeDev;
 
@@ -75,10 +75,10 @@ public:
 		LocalAPIC.EOI();
 
 		pipe = new PipeDev(0x1C00, "mouse");
-		Device.DevFS.AddNode(pipe);
+		DeviceManager.DevFS.AddNode(pipe);
 
-		Device.RequestIRQ(this, 12);
-		Device.RegisterDevice(this, DeviceInfo("Standard PS2 mouse", DeviceType.Mouse));
+		DeviceManager.RequestIRQ(this, 12);
+		DeviceManager.RegisterDevice(this, DeviceInfo("Standard PS2 mouse", DeviceType.Mouse));
 	}
 
 	override void IRQHandler(ref InterruptStack r) {

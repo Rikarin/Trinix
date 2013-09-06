@@ -1,4 +1,4 @@
-module VFS.BlockCache;
+module VFSManager.BlockCache;
 
 import Devices.BlockDeviceProto;
 import Architectures.Timing;
@@ -73,26 +73,26 @@ public:
 		}
 	}
 
-	bool Read(ulong start, byte[] data) {
+	bool Read(ulong offset, byte[] data) {
 		if (data.length <= dev.BlockSize()) {
-			if (GetCache(start, data))
+			if (GetCache(offset, data))
 				return true;
 
-			if (!dev.Read(start, data))
+			if (!dev.Read(offset, data))
 				return false;
 
-			SetCache(start, data);
+			SetCache(offset, data);
 			return true;
 		} else
-			return dev.Read(start, data);
+			return dev.Read(offset, data);
 	}
 
-	bool Write(ulong start, byte[] data) {
+	bool Write(ulong offset, byte[] data) {
 		if (data.length <= dev.BlockSize()) {
-			if (!SetCache(start, data, true))
-				return dev.Write(start, data);
+			if (!SetCache(offset, data, true))
+				return dev.Write(offset, data);
 			return true;
 		} else
-			return dev.Write(start, data);
+			return dev.Write(offset, data);
 	}
 }

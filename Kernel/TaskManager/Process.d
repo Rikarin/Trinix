@@ -1,11 +1,12 @@
 module TaskManager.Process;
 
-import VFS.FSNode;
-import VFS.DirectoryNode;
+import VFSManager.FSNode;
+import VFSManager.DirectoryNode;
 import SyscallManager.Resource;
 import TaskManager.Thread;
 import TaskManager.Task;
 import Architectures.Paging;
+import Core.DeviceManager;
 
 import System.Collections.Generic.All;
 
@@ -18,10 +19,11 @@ package:
 	ulong id; //unique ID for each process
 	Process parent;
 	State state;
+	uint mask;
 
 	string name;
 	string description;
-	string cmdline;
+	string[] cmdline;
 	ulong uid;
 
 	DirectoryNode cwd;
@@ -44,11 +46,13 @@ public:
 		ret.id          = Task.NewPID();
 		ret.name        = "Init";
 		ret.description = "Shit happens...";
+		ret.mask        = 0x12; //022 in oct
 
 		ret.descriptors = new List!(FSNode)();
 		//ret.threads     = new List!(Thread)();
 
-		//add descriptors... todo
+		ret.descriptors.Add(DeviceManager.DevFS.Childrens[0]); //keyboard stdin
+		ret.descriptors.Add(DeviceManager.DevFS.Childrens[1]); //tty stdout
 		//ret.threads.Add(new Thread());
 
 		return ret;

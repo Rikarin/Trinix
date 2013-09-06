@@ -1,8 +1,8 @@
-module VFS.FileNode;
+module VFSManager.FileNode;
 
-import VFS.FSNode;
-import VFS.DirectoryNode;
-import VFS.FileSystemProto;
+import VFSManager.FSNode;
+import VFSManager.DirectoryNode;
+import VFSManager.FileSystemProto;
 
 
 class FileNode : FSNode {
@@ -25,12 +25,12 @@ class FileNode : FSNode {
 	//@property override bool Used() { return readers || writers; }
 	//bool IsWritableFS() { return fs.IsWritable(); }
 
-	override long Read(ulong start, byte[] data) {
-		return fs.Read(this, start, data);
+	override long Read(ulong offset, byte[] data) {
+		return fs.Read(this, offset, data);
 	}
 
-	override long Write(ulong start, byte[] data) {
-		return fs.Write(this, start, data);
+	override long Write(ulong offset, byte[] data) {
+		return fs.Write(this, offset, data);
 	}
 
 	//Syscalls

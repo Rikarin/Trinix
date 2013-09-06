@@ -2,7 +2,7 @@ module Devices.Keyboard.PS2Keyboard;
 
 import Architectures.Core;
 import Architectures.Port;
-import DeviceManager.Device;
+import Core.DeviceManager;
 import Devices.Keyboard.KeyCodes;
 import Devices.DeviceProto;
 import FileSystem.PipeDev;
@@ -77,10 +77,10 @@ public:
 
 		
 		pipe = new PipeDev(128, "keyboard");
-		Device.DevFS.AddNode(pipe);
+		DeviceManager.DevFS.AddNode(pipe);
 
-		Device.RequestIRQ(this, 1);
-		Device.RegisterDevice(this, DeviceInfo("Standard PS2 keyboard", DeviceType.Keyboard));
+		DeviceManager.RequestIRQ(this, 1);
+		DeviceManager.RegisterDevice(this, DeviceInfo("Standard PS2 keyboard", DeviceType.Keyboard));
 	}
 
 	override void IRQHandler(ref InterruptStack r) {

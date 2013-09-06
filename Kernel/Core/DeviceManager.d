@@ -1,9 +1,9 @@
-module DeviceManager.Device;
+module Core.DeviceManager;
 
 import System.Collections.Generic.All;
 import Architectures.Core : InterruptStack;
 import Devices.DeviceProto;
-import VFS.DirectoryNode;
+import VFSManager.DirectoryNode;
 
 
 enum DeviceType {
@@ -21,7 +21,7 @@ struct DeviceInfo {
 }
 
 
-class Device {
+class DeviceManager {
 private:
 	struct Data {
 		DeviceProto dev;

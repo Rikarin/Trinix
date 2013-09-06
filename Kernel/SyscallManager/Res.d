@@ -4,7 +4,7 @@ import System.Collections.Generic.All;
 import SyscallManager.Resource;
 
 import System.IFace;
-import VFS.FSNode;
+import VFSManager.FSNode;
 
 
 class Res {

@@ -1,13 +1,19 @@
 module Devices.Display.DisplayProto;
 
-import DeviceManager.Display;
 import Devices.DeviceProto;
-
 import System.Drawing.All;
 import System.ConsoleColor;
 
 
 abstract class DisplayProto : DeviceProto {
+	struct DisplayMode {
+		ushort TextCols, TextRows;
+		ushort GraphicWidth, GraphicHeight, GraphicDepth;
+		ushort Identifier;
+		DisplayProto Dev;
+	}
+
+	
 	~this() {}
 
 	 DisplayMode[] GetModes();

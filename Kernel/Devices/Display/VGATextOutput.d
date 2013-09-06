@@ -2,8 +2,7 @@ module Devices.Display.VGATextOutput;
 
 import Architectures.Port;
 import Devices.Display.DisplayProto;
-import DeviceManager.Device;
-import DeviceManager.Display;
+import Core.DeviceManager;
 
 import System.ConsoleColor;
 
@@ -14,7 +13,7 @@ class VGATextOutput : DisplayProto {
 
 	this() {
 		columns = 80;
-		Device.RegisterDevice(this, DeviceInfo("Standard VGA text output", DeviceType.Display));
+		DeviceManager.RegisterDevice(this, DeviceInfo("Standard VGA text output", DeviceType.Display));
 	}
 
 	 override DisplayMode[] GetModes() {

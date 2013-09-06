@@ -1,8 +1,8 @@
 module Devices.Timer;
 
+import Core.DeviceManager;
 import Architectures.Port;
 import Architectures.Core;
-import DeviceManager.Device;
 import Devices.DeviceProto;
 import TaskManager.Task;
 
@@ -54,8 +54,8 @@ public:
 		div = ((0xFFFFFFFF - LocalAPIC.apicRegisters.TmrCurrentCount) + 1) * 16 * 100;
 
 
-		Device.RegisterDevice(this, DeviceInfo("Timer", DeviceType.System));
-		Device.RequestIRQ(this, 0);
+		DeviceManager.RegisterDevice(this, DeviceInfo("Timer", DeviceType.System));
+		DeviceManager.RequestIRQ(this, 0);
 		SetFrequency(frequency);
 	}
 
@@ -83,7 +83,7 @@ public:
 		PIC.EOI(0);
 		LocalAPIC.EOI();
 
-		//task switch and wakeup...
+		Task.Wakeup();
 		Task.Switch();
 	}
 }

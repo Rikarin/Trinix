@@ -1,7 +1,7 @@
 module FileSystem.HelloDev;
 
-import VFS.CharNode;
-import VFS.DirectoryNode;
+import VFSManager.CharNode;
+import VFSManager.DirectoryNode;
 
 
 class HelloDev : CharNode {
@@ -12,14 +12,14 @@ class HelloDev : CharNode {
 		length = 12;
 	}
 
-	override long Read(ulong start, byte[] data) {
+	override long Read(ulong offset, byte[] data) {
 		foreach (long i, ref x; data)
-			x = hello[start++ % 12];
+			x = hello[offset++ % 12];
 			
 		return data.length;
 	}
 
-	override long Write(ulong start, byte[] data) {
+	override long Write(ulong offset, byte[] data) {
 		return data.length;
 	}
 }

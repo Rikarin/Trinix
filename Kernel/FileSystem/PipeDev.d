@@ -1,7 +1,7 @@
 module Filesystem.PipeDev;
 
-import VFS.PipeNode;
-import VFS.DirectoryNode;
+import VFSManager.PipeNode;
+import VFSManager.DirectoryNode;
 import Devices.Random;
 import System.Threading.All;
 
@@ -39,7 +39,7 @@ public:
 			refcount--;
 	}
 
-	override long Read(ulong start, byte[] data) {
+	override long Read(ulong offset, byte[] data) {
 		ulong collected;
 
 		while (!collected) {
@@ -56,7 +56,7 @@ public:
 		return collected;
 	}
 
-	override long Write(ulong start, byte[] data) {
+	override long Write(ulong offset, byte[] data) {
 		ulong written;
 
 		while (written < data.length) {

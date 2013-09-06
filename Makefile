@@ -14,10 +14,9 @@ _SRC += $(wildcard Kernel/Architectures/x86_64/Specs/*.[d|c|s])
 _SRC += $(wildcard Kernel/Architectures/x86_64/Architectures/*.[d|c|s])
 
 _SRC += $(wildcard Kernel/MemoryManager/*.[d|c|s])
-_SRC += $(wildcard Kernel/DeviceManager/*.[d|c|s])
-_SRC += $(wildcard Kernel/VTManager/*.[d|c|s])
 _SRC += $(wildcard Kernel/SyscallManager/*.[d|c|s])
 _SRC += $(wildcard Kernel/TaskManager/*.[d|c|s])
+_SRC += $(wildcard Kernel/VFSManager/*.[d|c|s])
 
 _SRC += $(wildcard Kernel/FileSystem/*.[d|c|s])
 
@@ -28,7 +27,6 @@ _SRC += $(wildcard Kernel/Devices/Display/*.[d|c|s])
 _SRC += $(wildcard Kernel/Devices/Port/*.[d|c|s])
 
 _SRC += $(wildcard Kernel/Core/*.[d|c|s])
-_SRC += $(wildcard Kernel/VFS/*.[d|c|s])
 _SRC += $(wildcard Kernel/Resources/Keymaps/*.[d|c|s])
 
 _SRC += $(wildcard Framework/System/*.[d|c|s])

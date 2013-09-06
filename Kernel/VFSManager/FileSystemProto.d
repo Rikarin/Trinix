@@ -1,9 +1,9 @@
-module VFS.FileSystemProto;
+module VFSManager.FileSystemProto;
 
-import VFS.FSNode;
-import VFS.DirectoryNode;
-import VFS.FileNode;
-import VFS.Partition;
+import VFSManager.FSNode;
+import VFSManager.DirectoryNode;
+import VFSManager.FileNode;
+import VFSManager.Partition;
 
 
 abstract class FileSystemProto {
@@ -29,8 +29,8 @@ public:
 	bool SetModifiedTime(FSNode node, ulong time);
 	bool SetAccessedTime(FSNode node, ulong time);
 
-	long Read(FileNode file, ulong start, byte[] data);
-	long Write(FileNode file, ulong start, byte[] data);
+	long Read(FileNode file, ulong offset, byte[] data);
+	long Write(FileNode file, ulong offset, byte[] data);
 
 	bool LoadContent(DirectoryNode dir);
 	FileNode CreateFile(DirectoryNode parent, string name);

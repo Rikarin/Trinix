@@ -89,4 +89,8 @@ public:
 			jmp RCX;
 		}
 	}
+
+	void Wakeup() {
+
+	}
 }

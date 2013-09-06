@@ -1,7 +1,7 @@
-module VFS.Partition;
+module VFSManager.Partition;
 
 import Devices.BlockDeviceProto;
-import VFS.BlockCache;
+import VFSManager.BlockCache;
 
 
 class Partition {
@@ -28,11 +28,11 @@ public:
 		this.count = count;
 	}
 
-	bool Read(ulong start, byte[] data) {
-		return cache.Read(start + this.start, data);
+	bool Read(ulong offset, byte[] data) {
+		return cache.Read(offset + this.start, data);
 	}
 
-	bool Write(ulong start, byte[] data) {
-		return cache.Write(start + this.start, data);
+	bool Write(ulong offset, byte[] data) {
+		return cache.Write(offset + this.start, data);
 	}
 }

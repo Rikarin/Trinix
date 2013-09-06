@@ -1,8 +1,8 @@
-module VFS.DirectoryNode;
+module VFSManager.DirectoryNode;
 
 import System.Collections.Generic.All;
-import VFS.FileSystemProto;
-import VFS.FSNode;
+import VFSManager.FileSystemProto;
+import VFSManager.FSNode;
 import System.IFace;
 
 
@@ -16,8 +16,8 @@ package:
 public:
 	@property override FSType Type() { return mounts ? FSType.MOUNTPOINT : FSType.DIRECTORY; }
 	void Unmount() { mounts = null; }
-	override long Read(ulong start, byte[] data) { return 0; }
-	override long Write(ulong start, byte[] data) { return 0; }
+	override long Read(ulong offset, byte[] data) { return 0; }
+	override long Write(ulong offset, byte[] data) { return 0; }
 
 
 	@property override string Name() {

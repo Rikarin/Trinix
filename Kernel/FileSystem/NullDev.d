@@ -1,7 +1,7 @@
 module FileSystem.NullDev;
 
-import VFS.CharNode;
-import VFS.DirectoryNode;
+import VFSManager.CharNode;
+import VFSManager.DirectoryNode;
 
 
 class NullDev : CharNode {
@@ -9,11 +9,11 @@ class NullDev : CharNode {
 		super(name);
 	}
 
-	override long Read(ulong start, byte[] data) {
+	override long Read(ulong offset, byte[] data) {
 		return 0;
 	}
 
-	override long Write(ulong start, byte[] data) {
+	override long Write(ulong offset, byte[] data) {
 		return 0;
 	}
 }

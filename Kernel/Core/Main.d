@@ -1,6 +1,7 @@
 module Core.Main;
 
 import Core.Log;
+import Core.DeviceManager;
 import MemoryManager.Memory;
 import MemoryManager.PageAllocator;
 import MemoryManager.PhysMem;
@@ -11,11 +12,7 @@ import Architectures.Paging;
 import Architectures.Main;
 import Architectures.CPU;
 
-import DeviceManager.Device;
-import DeviceManager.Display;
-
-import VTManager.VT;
-
+import VFSManager.VFS;
 import SyscallManager.Res;
 
 import Devices.Timer;
@@ -33,9 +30,7 @@ Framework:
 
 System:
 	MP
-	VTManager
 	dorobit IDT
-	VirtualTerminal SC a doladit Read()
 
 	Dorobit heap & delete!!
 	Az potom VFS a syscall mgr
@@ -77,17 +72,12 @@ extern(C) void StartSystem() {
 	Log.Result(Res.Init());
 
 	Log.Print("Initializing device manger");
-	Log.Result(Device.Init());
-	
-//	Log.Print("Initializing keyboard manger");
-	//Log.Result(Keyboard.Init());
+	Log.Result(DeviceManager.Init());
 
-	//Log.Print("Initializing display manger");
-	//Log.Result(Display.Init());
+	Log.Print("Initializing VFS manger");
+	Log.Result(VFS.Init());
+	VFS.Root.AddNode(DeviceManager.DevFS);
 
-	//Log.Print("Initializing VT manager");
-	//Log.Result(VT.Init());
-	
 //==================== DEVICES ====================
 	Log.Print("Initializing timer ticks = 100Hz");
 	//new Timer(100);
