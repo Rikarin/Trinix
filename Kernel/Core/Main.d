@@ -83,7 +83,7 @@ extern(C) void StartSystem() {
 
 //==================== DEVICES ====================
 	Log.Print("Initializing timer ticks = 100Hz");
-//	new Timer(100);
+	new Timer(100);
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
@@ -107,19 +107,11 @@ extern(C) void StartSystem() {
 	VFS.PrintTree(VFS.Root);
 
 
-//	import TaskManager.Thread;
-//	auto t = new Thread(&test, null);
+	import TaskManager.Thread;
+	auto t = new Thread(&test, null);
 
-asm { int 28; }
 
-//	while (true) asm { int 29; }
-
-/*
-Keyboard dm zmazat a kb pripojit do /dev
-potom jednoducho sa nastavy fd k danemu proceu ktory bude symlinkovat na kb
-odstranit vt manager a pridat tty
-
-*/
+	while (true) asm { int 29; }
 
 	while (true) {}
 }

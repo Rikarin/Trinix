@@ -34,8 +34,8 @@ public:
 		Process.Init();
 		currentThread = Threads[0];
 
-		idleThread = null;//new Thread(cast(void function(void *))&idle_task, null);
-		//Threads.Add(idleThread);
+		idleThread = new Thread(cast(void function(void *))&idle_task, null);
+		Threads.Add(idleThread);
 
 		return true;
 	}
@@ -45,13 +45,14 @@ public:
 			currentThread = Threads[0];
 
 		long idx = Threads.IndexOf(currentThread) + 1;
+
 		foreach (x; Threads[idx .. $]) {
-			if (x.Valid(state) && x != idleThread)
+			if (x.Valid(state) && x !is idleThread)
 				return x;
 		}
 
 		foreach (x; Threads[0 .. idx]) {
-			if (x.Valid(state) && x != idleThread)
+			if (x.Valid(state) && x !is idleThread)
 				return x;
 		}
 
@@ -94,6 +95,7 @@ public:
 			mov RBP, RAX;
 			mov RSP, RBX;
 			mov RAX, 0xFEEDCAFEUL;
+			sti;
 			jmp RCX;
 		}
 	}
