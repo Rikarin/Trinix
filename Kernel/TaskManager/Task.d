@@ -6,6 +6,7 @@ import System.Collections.Generic.All;
 import Architectures.Port;
 
 extern(C) ulong read_rip();
+extern(C) void idle_task();
 
 
 class Task {
@@ -26,20 +27,24 @@ public:
 	@property Process CurrentProcess() { return currentThread.parent; }
 
 
-	this() {
+	bool Init() {
 		Procs = new List!(Process)();
 		Threads = new List!(Thread)();
 
 		Process.Init();
 		currentThread = Threads[0];
-		//todo idle thread
+
+		idleThread = null;//new Thread(cast(void function(void *))&idle_task, null);
+		//Threads.Add(idleThread);
+
+		return true;
 	}
 
 	Thread NextThread(Thread.State state) {
 		if (currentThread is null)
 			currentThread = Threads[0];
 
-		long idx = Threads.IndexOf(currentThread);
+		long idx = Threads.IndexOf(currentThread) + 1;
 		foreach (x; Threads[idx .. $]) {
 			if (x.Valid(state) && x != idleThread)
 				return x;
@@ -61,7 +66,7 @@ public:
 		}
 
 		rip = read_rip();
-		if (rip == 0xFEEDCAFE) {
+		if (rip == 0xFEEDCAFEUL) {
 			//signals etc...
 			return;
 		}
@@ -69,7 +74,6 @@ public:
 		CurrentThread.rsp = rsp;
 		CurrentThread.rbp = rbp;
 		CurrentThread.rip = rip;
-
 
 		//Run new thread
 		currentThread = NextThread(Thread.State.Running);
@@ -83,10 +87,13 @@ public:
 		//dake picoviny zo signalmi
 
 		asm {
-			mov RBP, rbp;
-			mov RSP, rsp;
+			mov RAX, rbp;
+			mov RBX, rsp;
 			mov RCX, rip;
-			mov RAX, 0xFEEDCAFE;
+
+			mov RBP, RAX;
+			mov RSP, RBX;
+			mov RAX, 0xFEEDCAFEUL;
 			jmp RCX;
 		}
 	}

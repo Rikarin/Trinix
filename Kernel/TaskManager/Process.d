@@ -1,5 +1,6 @@
 module TaskManager.Process;
 
+import VFSManager.VFS;
 import VFSManager.FSNode;
 import VFSManager.DirectoryNode;
 import SyscallManager.Resource;
@@ -11,9 +12,9 @@ import Core.DeviceManager;
 import System.Collections.Generic.All;
 
 
-class Process : Resource {
+class Process /*: Resource */{
 private:
-	this() { super(0, null); }
+	this() {/*super(0, null);*/ }
 
 package:
 	ulong id; //unique ID for each process
@@ -47,6 +48,8 @@ public:
 		ret.name        = "Init";
 		ret.description = "Shit happens...";
 		ret.mask        = 0x12; //022 in oct
+		ret.paging      = Paging.KernelPaging;
+		ret.cwd         = VFS.Root;
 
 		ret.descriptors = new List!(FSNode)();
 		ret.threads     = new List!(Thread *)();
@@ -56,7 +59,16 @@ public:
 
 		ret.descriptors.Add(DeviceManager.DevFS.Childrens[0]); //keyboard stdin
 		ret.descriptors.Add(DeviceManager.DevFS.Childrens[1]); //tty stdout
-		//ret.threads.Add(new Thread());
+
+		Thread t = new Thread();
+		t.parent = ret;
+		t.state = Thread.State.Running;
+		t.kernelStack = (new byte[0x1000]).ptr;
+		t.SetKernelStack();
+		ret.threads.Add(&t);
+
+		Task.Procs.Add(ret);
+		Task.Threads.Add(t);
 
 		return ret;
 	}
@@ -64,5 +76,5 @@ public:
 
 
 //Syscalls
-	override bool Accesible() { return true; }
+//	override bool Accesible() { return true; }
 }

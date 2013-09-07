@@ -7,7 +7,7 @@ import TaskManager.Process;
 import TaskManager.Task;
 
 
-class Thread : Resource {
+class Thread /*: Resource*/ {
 package:
 	static const auto STACK_SIZE = 0x1000;
 
@@ -23,7 +23,7 @@ package:
 		ubyte irq;
 	}
 
-	this() { super(0, null); }
+	this() { /*super(0, null);*/ }
 
 public:
 	enum State : ubyte {
@@ -32,14 +32,29 @@ public:
 		Waiting,
 	}
 
+	this(void function(void* offset) ThreadEntry, void* data) {
+		//super(0, null);
+		Exec(cast(ulong)ThreadEntry, data);
+	}
 
-	this(ulong delegate(void* offset) ThreadEntry, void* data) {
-		super(0, null);
 
+	private void Exec(ulong offset, void* data) {
 		parent = Task.CurrentProcess;
+		parent.threads.Add(&this);
+
 		kernelStack = (new byte[STACK_SIZE]).ptr;
+		state = State.Running;
+
+		rbp = rsp = cast(ulong)kernelStack;
+		rip = offset;
 
 		//userStack.ptr = process.heap.alloc..;
+
+		Task.Threads.Add(this);
+	}
+
+	static void run() { 
+		while (true) { }
 	}
 
 	bool Valid(State state) {
@@ -54,7 +69,6 @@ public:
 	}
 
 
-
 //Syscalls
-	override bool Accesible() { return true; }
+	//override bool Accesible() { return true; }
 }

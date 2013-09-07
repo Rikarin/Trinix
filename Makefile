@@ -1,6 +1,6 @@
 DFLAGS = -c -m64 -release -property -Idruntime/import -IKernel -IFramework -IKernel/Architectures/x86_64 -debug=only
 CFLAGS = -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -c -g
-LDFLAGS = -T Kernel/Architectures/x86_64/Linker.ld #-Map Build/Linker.map
+LDFLAGS = -T Kernel/Architectures/x86_64/Linker.ld -Map Build/Linker.map
 ASFLAGS = -f elf64
 
 OBJ_DIR = Obj
