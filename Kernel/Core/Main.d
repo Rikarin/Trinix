@@ -40,6 +40,7 @@ System:
 	dorobit pipeDev, opravit, task switch
 	dorobit Serialdev, inak vsetko funguje
 	timer - wakeup and task switch
+	Res - resources list...
 ++/
 
 extern(C) void StartSystem() {
@@ -108,14 +109,11 @@ extern(C) void StartSystem() {
 
 
 	import TaskManager.Thread;
-	auto t = new Thread(&test, null);
-
-
-	while (true) asm { int 29; }
+	//auto t = new Thread(&test, null);
 
 	while (true) {}
 }
 
 void test(void *) {
-	while (true) asm { int 28; }
+	while (true) { } //asm { int 28; }
 }

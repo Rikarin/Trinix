@@ -39,8 +39,8 @@ static:
 
 		page.Present = true;
 		page.Address = index;
-		page.User = user;
-		page.ReadWrite = writable;
+		page.User = true; //todo pre testovanie multitaskingu
+		page.ReadWrite = true; //todo
 	}
 	
 	void FreeFrame(ref PTE page) {

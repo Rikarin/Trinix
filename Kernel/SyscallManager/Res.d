@@ -24,7 +24,7 @@ private:
 
 public:
 	bool Init() {
-		resources = new List!(Resource)();
+		resources = new List!(Resource)(200);
 		return true;
 	}
 

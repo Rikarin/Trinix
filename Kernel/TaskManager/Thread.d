@@ -1,6 +1,7 @@
 module TaskManager.Thread;
 
 import Architectures.Core;
+import Architectures.CPU;
 import SyscallManager.Resource;
 import MemoryManager.Memory;
 import TaskManager.Process;
@@ -43,18 +44,69 @@ public:
 		parent.threads.Add(&this);
 
 		kernelStack = (new byte[STACK_SIZE]).ptr;
+		userStack   = (new byte[STACK_SIZE]).ptr; //process.heap.alloc..;
 		state = State.Running;
 
-		rbp = rsp = cast(ulong)kernelStack;
-		rip = offset;
+		ulong* stack = cast(ulong *)kernelStack + STACK_SIZE;
+		rbp = cast(ulong)stack;
+		stack--;
+		*stack = cast(ulong)offset;
+		stack--;
+		*stack = cast(ulong)data;
+		stack--;
+		*stack = cast(ulong)userStack;
+		stack--;
+		*stack = 0;
 
-		//userStack.ptr = process.heap.alloc..;
+		rsp = cast(ulong)stack;
+		rip = cast(ulong)&run;
 
 		Task.Threads.Add(this);
 	}
 
-	static void run() { 
-		while (true) { }
+	static void run() {
+		ulong* stack;
+		void* data;
+		ulong enter;
+
+		asm {
+			mov RAX, [RBP + 16];
+			mov stack, RAX;
+
+			mov RAX, [RBP + 24];
+			mov data, RAX;
+
+			mov RAX, [RBP + 32];
+			mov enter, RAX;
+		}
+
+		stack += STACK_SIZE;
+		stack--;
+		*stack = cast(ulong)data;
+		stack--;
+		*stack = 0;
+
+		asm {
+			xor RAX, RAX;
+			mov AX, 0x1B;
+			mov DS, AX;
+			mov ES, AX;
+			mov FS, AX;
+			mov GS, AX;
+			mov SS, AX;
+
+			push RAX;
+			push stack;
+
+			pushfq;
+			pop RAX;
+			or RAX, 0x200UL;
+			push RAX;
+
+			push 0x23UL;
+			push enter;
+			jmp _CPU_iretq;
+		}
 	}
 
 	bool Valid(State state) {

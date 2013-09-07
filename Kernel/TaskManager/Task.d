@@ -95,7 +95,6 @@ public:
 			mov RBP, RAX;
 			mov RSP, RBX;
 			mov RAX, 0xFEEDCAFEUL;
-			sti;
 			jmp RCX;
 		}
 	}
