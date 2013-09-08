@@ -12,6 +12,7 @@ import Architectures.x86_64.Core.LocalAPIC;
 extern(C) void _CPU_iretq();
 extern(C) void _CPU_refresh_iretq();
 extern(C) void _CPU_load_cr3();
+extern(C) void _CPU_swapgs();
 
 class CPU {
 public:

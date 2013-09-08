@@ -1,6 +1,7 @@
 module SyscallManager.Syscall;
 
 import Core.Log;
+import Architectures.CPU;
 import Architectures.Port;
 import MemoryManager.PageAllocator;
 import MemoryManager.Memory;
@@ -9,45 +10,48 @@ import MemoryManager.Memory;
 class Syscall {
 static:
 	enum Registers : ulong {
-		FSBASE_MSR = 0xc000_0100,
-		GSBASE_MSR = 0xc000_0101,
-		STAR_MSR   = 0xc000_0081,
-		LSTAR_MSR  = 0xc000_0082,
-		SFMASK_MSR = 0xc000_0084,
-		STAR       = 0x001B_0008_0000_0000
+		IA32_STAR          = 0xc000_0081,
+		IA32_LSTAR         = 0xc000_0082,
+		IA32_FMASK         = 0xc000_0084,
+		IA32_FS_BASE       = 0xc000_0100,
+		IA32_GS_BASE       = 0xc000_0101,
+		IA32_KERNEL_GSBASE = 0xc000_0102,
+
+		STAR               = 0x001B_0008_0000_0000
 	}
 
-	void Init() {
-		Port.WriteMSR(Registers.LSTAR_MSR, cast(ulong)&SyscallHandler);
-		Port.WriteMSR(Registers.STAR_MSR, Registers.STAR);
-		Port.WriteMSR(Registers.SFMASK_MSR, 0);
-		Port.WriteMSR(Registers.GSBASE_MSR, cast(ulong)(new byte[0x1000]).ptr + 0x1000);
 
+	bool Init() {
+		Port.WriteMSR(Registers.IA32_LSTAR, cast(ulong)&SyscallHandler);
+		Port.WriteMSR(Registers.IA32_STAR, Registers.STAR);
+		Port.WriteMSR(Registers.IA32_FMASK, 0);
+		Port.WriteMSR(Registers.IA32_KERNEL_GSBASE, cast(ulong)(new byte[0x1000]).ptr + 0x1000);
+		Port.WriteMSR(Registers.IA32_GS_BASE, cast(ulong)(new byte[0x1000]).ptr + 0x1000);
 
+		return true;
 	}
 
 	void SyscallHandler() {
 		asm {
 			naked;
+			call _CPU_swapgs;
+			//	mov [GS:16], RSP;
+			//mov RSP, [GS:0];
 
-			push RCX;
+			//GS.Kernel.Base: 0xD8B010
+
+			cli; hlt;
+
+		//	push RCX;
 			call SyscallDispatcher;
-			pop RCX;
+		//	pop RCX;
+
+			call _CPU_swapgs;
 			sysret;
 		}
 	}
 
-	/*
-struct InterruptStack {
-align(1):
-	ulong R15, R14, R13, R12, R11, R10, R9, R8;
-	ulong RBP, RDI, RSI, RDX, RCX, RBX, RAX;
-	ulong IntNumber, ErrorCode;
-	ulong RIP, CS, Flags, RSP, SS;
-}
-	*/
-
-	extern(C) void SyscallDispatcher(ulong ID, void* ret, void* params) {
+	extern(C) void SyscallDispatcher(ulong* data) {
 		Log.Print("test");
 	// RCX holds the return address for the system call, which is useful
 	// for certain system calls (such as fork)

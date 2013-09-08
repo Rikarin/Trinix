@@ -13,8 +13,9 @@ import Architectures.Main;
 import Architectures.CPU;
 
 import VFSManager.VFS;
-import SyscallManager.Res;
 import TaskManager.Task;
+import SyscallManager.Res;
+import SyscallManager.Syscall;
 
 import Devices.Timer;
 import Devices.Keyboard.PS2Keyboard;
@@ -41,6 +42,7 @@ System:
 	dorobit Serialdev, inak vsetko funguje
 	timer - wakeup and task switch
 	Res - resources list...
+	syscall handler
 ++/
 
 extern(C) void StartSystem() {
@@ -72,6 +74,9 @@ extern(C) void StartSystem() {
 //==================== MANAGERS ====================
 	Log.Print("Initializing system calls database");
 	Log.Result(Res.Init());
+
+	Log.Print("Initializing syscall handler");
+	Log.Result(Syscall.Init());
 
 	Log.Print("Initializing device manger");
 	Log.Result(DeviceManager.Init());
@@ -111,29 +116,11 @@ extern(C) void StartSystem() {
 	import TaskManager.Thread;
 	auto t = new Thread(cast(void function())&test);
 
-	import SyscallManager.Syscall;
-	//Syscall.Init();
-
-
-
-	/*asm {
-		mov RAX, 0x123;
-		mov RBX, 0x456;
-		mov RCX, 0x789;
-		mov RDX, 0xABC;
-		mov R8, 0xDEF;
-
-		syscall;
-//		syscall;
-//		syscall;
-	}*/
-
-
-
 	while (true) {}
 }
 
 
 extern(C) void test() {
-	while (true) asm { int 28; }
+	//asm { syscall; }
+	while (true) { }
 }

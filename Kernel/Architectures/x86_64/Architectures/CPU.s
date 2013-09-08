@@ -3,6 +3,8 @@ global _CPU_refresh_iretq
 global _CPU_iretq
 global _CPU_lidt
 global _CPU_load_cr3
+global _CPU_swapgs
+
 
 _CPU_refresh_iretq:
 	mov RAX, 0x10
@@ -29,4 +31,8 @@ _CPU_iretq:
 	
 _CPU_load_cr3:
 	mov CR3, RAX
+	ret
+
+_CPU_swapgs:
+	swapgs
 	ret
