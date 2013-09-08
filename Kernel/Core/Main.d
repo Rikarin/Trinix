@@ -114,13 +114,15 @@ extern(C) void StartSystem() {
 
 
 	import TaskManager.Thread;
-	auto t = new Thread(cast(void function())&test);
+	//auto t = new Thread(cast(void function())&test);
 
 	while (true) {}
 }
 
 
 extern(C) void test() {
+
+	//asm {int 0x15;}
 	//asm { syscall; }
 	while (true) { }
 }

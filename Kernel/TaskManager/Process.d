@@ -58,7 +58,6 @@ public:
 		new List!(Thread)();
 
 		ret.descriptors.Add(DeviceManager.DevFS.Childrens[0]); //keyboard stdin
-		ret.descriptors.Add(DeviceManager.DevFS.Childrens[1]); //tty stdout
 
 		Thread t = new Thread();
 		t.parent = ret;
