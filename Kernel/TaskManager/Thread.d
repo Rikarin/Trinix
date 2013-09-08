@@ -33,7 +33,7 @@ public:
 		Waiting,
 	}
 
-	this(void function(void* offset) ThreadEntry, void* data) {
+	this(void function() ThreadEntry, void* data = null) {
 		//super(0, null);
 		Exec(cast(ulong)ThreadEntry, data);
 	}
@@ -47,14 +47,19 @@ public:
 		userStack   = (new byte[STACK_SIZE]).ptr; //process.heap.alloc..;
 		state = State.Running;
 
+		//Set user stack
+		ulong* ustack = cast(ulong *)userStack + STACK_SIZE;
+		ustack--;
+		*ustack = cast(ulong)data;
+		ustack--;
+
+		//Set kernel stack
 		ulong* stack = cast(ulong *)kernelStack + STACK_SIZE;
 		rbp = cast(ulong)stack;
 		stack--;
 		*stack = cast(ulong)offset;
 		stack--;
-		*stack = cast(ulong)data;
-		stack--;
-		*stack = cast(ulong)userStack;
+		*stack = cast(ulong)ustack;
 		stack--;
 		*stack = 0;
 
@@ -65,8 +70,7 @@ public:
 	}
 
 	static void run() {
-		ulong* stack;
-		void* data;
+		ulong stack;
 		ulong enter;
 
 		asm {
@@ -74,26 +78,16 @@ public:
 			mov stack, RAX;
 
 			mov RAX, [RBP + 24];
-			mov data, RAX;
-
-			mov RAX, [RBP + 32];
 			mov enter, RAX;
 		}
 
-		stack += STACK_SIZE;
-		stack--;
-		*stack = cast(ulong)data;
-		stack--;
-		*stack = 0;
-
 		asm {
 			xor RAX, RAX;
-			mov AX, 0x1B;
+			mov AX, 0x23;
 			mov DS, AX;
 			mov ES, AX;
 			mov FS, AX;
 			mov GS, AX;
-			mov SS, AX;
 
 			push RAX;
 			push stack;
@@ -103,7 +97,7 @@ public:
 			or RAX, 0x200UL;
 			push RAX;
 
-			push 0x23UL;
+			push 0x1BUL;
 			push enter;
 			jmp _CPU_iretq;
 		}

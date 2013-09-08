@@ -191,7 +191,7 @@ class Paging {
 	}
 	
 	void AllocFrame(VirtualAddress address, bool user, bool writable) {
-		PhysMem.AllocFrame(GetPage(address), user, writable);
+		PhysMem.AllocFrame(GetPage(address, user), user, writable);
 	}
 
 	void FreeFrame(VirtualAddress address) {
@@ -206,7 +206,7 @@ class Paging {
 
 	ubyte[] MapRegion(PhysicalAddress pAdd, VirtualAddress vAdd, ulong length) {
 		for (ulong i = 0; i < length; i += 0x1000) {
-			auto pt = &GetPage(vAdd + i); //chyba
+			auto pt = &GetPage(vAdd + i);
 
 			pt.pml = 0;
 			pt.Present = true;
@@ -250,7 +250,7 @@ private:
 		return pt.Entries[start[0]].Location;
 	}
 	
-	ref PTE GetPage(VirtualAddress address) {
+	ref PTE GetPage(VirtualAddress address, bool usermode = false) {
 		ulong add = cast(ulong)address;
 	
 		ushort[4] start;
@@ -259,9 +259,9 @@ private:
 		start[1] = (add >> 21) & 511; //PDE
 		start[0] = (add >> 12) & 511; //PTE
 		
-		auto pdpt = root.GetOrCreateTable(start[3]);
-		auto pd = pdpt.GetOrCreateTable(start[2]);
-		auto pt = pd.GetOrCreateTable(start[1]);
+		auto pdpt = root.GetOrCreateTable(start[3], usermode);
+		auto pd = pdpt.GetOrCreateTable(start[2], usermode);
+		auto pt = pd.GetOrCreateTable(start[1], usermode);
 		
 		return pt.Entries[start[0]];
 	}

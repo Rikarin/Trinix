@@ -57,8 +57,8 @@ extern(C) void StartSystem() {
 	CPU.Init();
 
 	Log.Print("Initializing kernel heap");
-	Memory.KernelHeap = new Heap();
-	Memory.KernelHeap.Create(cast(ulong)PageAllocator.AllocPage(), Heap.MIN_SIZE, 0x10000, Paging.KernelPaging);
+	//Memory.KernelHeap = new Heap();
+	//Memory.KernelHeap.Create(cast(ulong)PageAllocator.AllocPage(), Heap.MIN_SIZE, 0x10000, Paging.KernelPaging);
 	//PageAllocator.IsInit = true;
 	Log.Result(false);
 
@@ -109,11 +109,31 @@ extern(C) void StartSystem() {
 
 
 	import TaskManager.Thread;
-	//auto t = new Thread(&test, null);
+	auto t = new Thread(cast(void function())&test);
+
+	import SyscallManager.Syscall;
+	//Syscall.Init();
+
+
+
+	/*asm {
+		mov RAX, 0x123;
+		mov RBX, 0x456;
+		mov RCX, 0x789;
+		mov RDX, 0xABC;
+		mov R8, 0xDEF;
+
+		syscall;
+//		syscall;
+//		syscall;
+	}*/
+
+
 
 	while (true) {}
 }
 
-void test(void *) {
-	while (true) { } //asm { int 28; }
+
+extern(C) void test() {
+	while (true) asm { int 28; }
 }

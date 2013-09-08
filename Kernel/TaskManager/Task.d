@@ -34,7 +34,7 @@ public:
 		Process.Init();
 		currentThread = Threads[0];
 
-		idleThread = new Thread(cast(void function(void *))&idle_task, null);
+		idleThread = new Thread(cast(void function())&idle_task);
 		Threads.Add(idleThread);
 
 		return true;

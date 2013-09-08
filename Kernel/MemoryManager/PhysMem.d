@@ -20,11 +20,11 @@ static:
 
 		Paging.KernelPaging = new Paging();
 		for (ulong i = 0; i < 0x4_000_000; i += 0x1000)
-			Paging.KernelPaging.AllocFrame(cast(VirtualAddress)i, false, true);
+			Paging.KernelPaging.AllocFrame(cast(VirtualAddress)i, true, true); //true for testing tasks...
 		Paging.KernelPaging.Install();
 
 		for (ulong i = 0x4_000_000; i < 0x30_000_000; i += 0x1000)
-			Paging.KernelPaging.AllocFrame(cast(VirtualAddress)i, false, true);
+			Paging.KernelPaging.AllocFrame(cast(VirtualAddress)i, true, true);
 
 		pointer = ~1UL;
 		Log.Result(true);
@@ -39,8 +39,8 @@ static:
 
 		page.Present = true;
 		page.Address = index;
-		page.User = true; //todo pre testovanie multitaskingu
-		page.ReadWrite = true; //todo
+		page.User = user;
+		page.ReadWrite = writable;
 	}
 	
 	void FreeFrame(ref PTE page) {

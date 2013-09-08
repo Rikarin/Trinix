@@ -10,7 +10,6 @@ _CPU_refresh_iretq:
 	mov ES, AX
 	mov FS, AX
 	mov GS, AX
-	mov SS, AX
 	
 	push RAX
 	push RSP

@@ -176,10 +176,14 @@ private:
 				Log.PrintSP(" @rip: " ~ Convert.ToString(stack.RIP, 16));
 				Log.PrintSP(" @cs: " ~ Convert.ToString(stack.CS, 16));
 				Log.PrintSP(" @ss: " ~ Convert.ToString(stack.SS, 16));
+				if (stack.IntNumber == 0xE)
+					Log.PrintSP(" @ERR: " ~ Convert.ToString(stack.ErrorCode, 16));
 			}
 		}
 
-		if (stack.IntNumber < 32) { }
+		if (stack.IntNumber < 32) {
+			asm { cli; hlt; }
+		}
 		else if (stack.IntNumber < 48)
 			DeviceManager.Handler(*stack);
 	}
