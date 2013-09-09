@@ -3,6 +3,7 @@ module FileSystem.SerialDev;
 import VFSManager.CharNode;
 import VFSManager.DirectoryNode;
 import Devices.Port.SerialPort;
+import TaskManager.Task;
 
 
 class SerialDev : CharNode {
@@ -17,7 +18,7 @@ class SerialDev : CharNode {
 
 	override long Read(ulong offset, byte[] data) {
 		foreach(ref x; data) {
-			while (!dev.Recieved()) {} //Task.Switch... todo
+			while (!dev.Recieved()) Task.Switch();
 			x = dev.Read();
 		}
 

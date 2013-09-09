@@ -41,7 +41,7 @@ public:
 		return true;
 	}
 
-	Thread NextThread(Thread.State state) {
+	private Thread NextThread(Thread.State state) {
 		if (currentThread is null)
 			currentThread = Threads[0];
 
@@ -100,7 +100,22 @@ public:
 		}
 	}
 
-	void Wakeup() {
+	/*
+		queue is extern list of sleeping threads.
+		for ex. if 3 threads are w8ing for input so they call sleep for theyselfs and
+		w8 for any1 call write func who call wakeup func who wakes up all sleeping threads
+	*/
+	void Sleep(List!(Thread) queue) {
+		queue.Add(CurrentThread);
+		CurrentThread.state = Thread.State.Sleeping;
+	}
+
+	void Wakeup(List!(Thread) queue) {
+		foreach (x; queue)
+			x.state = Thread.State.Running;
+	}
+
+	void WakeupSleepers(ulong seconds, ulong ms) {
 
 	}
 }

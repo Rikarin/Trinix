@@ -114,14 +114,25 @@ extern(C) void StartSystem() {
 
 
 	import TaskManager.Thread;
-	//auto t = new Thread(cast(void function())&test);
+	auto t = new Thread(cast(void function())&test);
+
+
+	/*import VFSManager.PipeNode;
+	byte[] tmp = new byte[1];
+	while (true) {
+		(cast(PipeNode)DeviceManager.DevFS.childrens[0]).Read(0, tmp);
+		import System.Convert;
+		Log.PrintSP("\ntest: " ~ Convert.ToString(tmp[0]));
+		tmp[0] = 0;
+	}*/
+
 
 	while (true) {}
 }
 
 
 extern(C) void test() {
-
+	while (true) Log.PrintSP("a");
 	//asm {int 0x15;}
 	//asm { syscall; }
 	while (true) { }

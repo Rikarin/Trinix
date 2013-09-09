@@ -83,7 +83,7 @@ public:
 		PIC.EOI(0);
 		LocalAPIC.EOI();
 
-		Task.Wakeup();
+		Task.WakeupSleepers(seconds, (ticks * 0x1000) / frequency);
 		Task.Switch();
 	}
 }

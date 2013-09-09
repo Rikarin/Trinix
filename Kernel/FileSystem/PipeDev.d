@@ -4,15 +4,19 @@ import VFSManager.PipeNode;
 import VFSManager.DirectoryNode;
 import Devices.Random;
 import System.Threading.All;
+import System.Collections.Generic.All;
+import TaskManager.Thread;
+import TaskManager.Task;
 
 
 class PipeDev : PipeNode {
 private:
+	List!(Thread) waitingQueue;
 	long refcount;
 	Mutex mutex;
 
 	byte[] buffer;
-	public long writePtr, readPtr;
+	long writePtr, readPtr;
 
 
 public:
@@ -21,11 +25,13 @@ public:
 		this.length = length;
 		//todo time...
 
+		waitingQueue = new List!(Thread)();
 		buffer = new byte[length];
 		mutex = new Mutex();
 	}
 
 	~this() {
+		delete waitingQueue;
 		delete buffer;
 		delete mutex;
 	}
@@ -43,14 +49,17 @@ public:
 		ulong collected;
 
 		while (!collected) {
-			//mutex.WaitOne();
+			mutex.WaitOne();
 			while (UnreadCount() > 0 && collected < data.length) {
 				data[collected++] = buffer[readPtr];
 				IncrementRead();
 				break;
 			}
-			//mutex.Release();
-			//task switch
+
+			mutex.Release();
+			Task.Wakeup(waitingQueue);
+			if (!collected)
+				Task.Sleep(waitingQueue);
 		}
 
 		return collected;
@@ -67,7 +76,12 @@ public:
 				IncrementWrite();
 				written++;
 			}
+
 			mutex.Release();
+			Task.Wakeup(waitingQueue);
+			if (written < data.length)
+				Task.Sleep(waitingQueue);
+
 		}
 
 		return written;

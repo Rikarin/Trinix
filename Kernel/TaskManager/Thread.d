@@ -26,20 +26,20 @@ package:
 
 	this() { /*super(0, null);*/ }
 
+
 public:
 	enum State : ubyte {
 		Zombie,
+		Starting,
 		Running,
 		Waiting,
+		WaitingIRQ,
+		Sleeping,
 	}
 
 	this(void function() ThreadEntry, void* data = null) {
 		//super(0, null);
-		Exec(cast(ulong)ThreadEntry, data);
-	}
-
-
-	private void Exec(ulong offset, void* data) {
+		
 		parent = Task.CurrentProcess;
 		parent.threads.Add(&this);
 
@@ -57,7 +57,7 @@ public:
 		ulong* stack = cast(ulong *)kernelStack + STACK_SIZE;
 		rbp = cast(ulong)stack;
 		stack--;
-		*stack = cast(ulong)offset;
+		*stack = cast(ulong)ThreadEntry;
 		stack--;
 		*stack = cast(ulong)ustack;
 		stack--;
@@ -104,7 +104,6 @@ public:
 	}
 
 	bool Valid(State state) {
-		//todo pridat to ze ak time,signal alebo irq prislo tak aby to prebudilo vlakno
 		if (state == this.state && parent.state != Process.State.Stopped)
 			return true;
 		return false;
