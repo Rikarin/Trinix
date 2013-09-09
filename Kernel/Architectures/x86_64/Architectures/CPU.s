@@ -13,8 +13,9 @@ _CPU_refresh_iretq:
 	mov FS, AX
 	mov GS, AX
 	
+	mov RDX, RSP
 	push RAX
-	push RSP
+	push RDX
 	pushfq
 	push 0x08
 	
@@ -23,7 +24,6 @@ _CPU_refresh_iretq:
 	iretq
 	
 	.r:
-		pop RAX	
 		ret
 
 _CPU_iretq:

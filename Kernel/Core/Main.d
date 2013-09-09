@@ -75,8 +75,8 @@ extern(C) void StartSystem() {
 	Log.Print("Initializing system calls database");
 	Log.Result(Res.Init());
 
-	Log.Print("Initializing syscall handler");
-	Log.Result(Syscall.Init());
+	//Log.Print("Initializing syscall handler");
+	//Log.Result(Syscall.Init());
 
 	Log.Print("Initializing device manger");
 	Log.Result(DeviceManager.Init());
@@ -126,14 +126,15 @@ extern(C) void StartSystem() {
 		tmp[0] = 0;
 	}*/
 
+	//problem niekde v GDT, TSS alebo IDT
 
 	while (true) {}
 }
 
 
 extern(C) void test() {
-	while (true) Log.PrintSP("a");
-	//asm {int 0x15;}
+	//while (true) Log.PrintSP("a");
+	asm {naked; int 0x5;}
 	//asm { syscall; }
 	while (true) { }
 }

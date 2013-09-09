@@ -59,7 +59,7 @@ package:
 		ushort Base		= 0x0000;
 		ubyte BaseMid	= 0x00;
 		ubyte Flags1	= 0b00011011;
-		ubyte Flags2	= 0b10100000;
+		ubyte Flags2	= 0xCF;//0b10100000;
 		ubyte BaseHigh 	= 0x00;
 
 		mixin(Bitfield!(Flags1, "zero3", 2, "c", 1, "ones0", 2, "dpl", 2, "p", 1));
@@ -72,7 +72,7 @@ package:
 		ushort Base		= 0x0000;
 		ubyte BaseMid	= 0x00;
 		ubyte Flags1	= 0b00010011;
-		ubyte Flags2	= 0b10101111;
+		ubyte Flags2	= 0xCF;//0b10101111;
 		ubyte BaseHigh 	= 0x00;
 
 		mixin(Bitfield!(Flags1, "zero4", 5, "dpl", 2, "p", 1));

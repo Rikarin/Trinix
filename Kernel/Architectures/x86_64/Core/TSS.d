@@ -20,7 +20,7 @@ static:
 		TaskStateSegment* tss = cast(TaskStateSegment *)PageAllocator.AllocPage();
 		*tss = TaskStateSegment.init;
 		Segments[CPU.Identifier] = tss;
-		GDT.Tables[CPU.Identifier].SetSystemSegment((tssBase >> 3), 0x67, cast(ulong)tss, SystemSegmentType.AvailableTSS, 0, true, false, false);
+		GDT.Tables[CPU.Identifier].SetSystemSegment((tssBase >> 3), TaskStateSegment.sizeof, cast(ulong)tss, SystemSegmentType.AvailableTSS, 0, true, false, false);
 		
 		asm {
 			ltr tssBase;

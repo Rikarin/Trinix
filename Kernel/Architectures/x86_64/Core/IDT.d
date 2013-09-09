@@ -60,8 +60,8 @@ static:
 		
 		mixin(GenerateIDT!(40));
 		
-		SetSystemGate(3, &isr3, StackType.Debug);
-		SetInterruptGate(8, &isrIgnore);
+		//SetSystemGate(3, &isr3, StackType.Debug);
+		//SetInterruptGate(8, &isrIgnore);
 		return true;
 	}
 	
@@ -99,7 +99,7 @@ private:
 		ushort Flags;
 		ushort TargetMid;
 		uint   TargetHi;
-		uint   Reserved = 0;
+		uint   Reserved;
 
 		mixin(Bitfield!(Flags, "ist", 3, "Zero0", 5, "Type", 4, "Zero1", 1, "dpl", 2, "p", 1));
 	}
@@ -130,7 +130,7 @@ private:
 		const char[] GenerateISR = `
 			void isr` ~ num.stringof[0 .. $ - 2] ~ `() {
 				asm {
-					naked; ` ~
+					naked; cli;` ~
 					(needDummyError ? `push 0UL;` : ``) ~
 					`push ` ~ num.stringof ~ `;` ~
 					`jmp isr_common;` ~
@@ -148,13 +148,20 @@ private:
 				~ GenerateISRs!(start + 1, end, needDummyError);
 	}
 
-	
+	void isr5() {
+		asm {
+			naked;
+			cli;
+			hlt;
+		}
+	}
+
 	mixin(GenerateISR!(0));
 	mixin(GenerateISR!(1));
 	mixin(GenerateISR!(2));
 	mixin(GenerateISR!(3));
 	mixin(GenerateISR!(4));
-	mixin(GenerateISR!(5));
+	//mixin(GenerateISR!(5));
 	mixin(GenerateISR!(6));
 	mixin(GenerateISR!(7));
 	mixin(GenerateISR!(8, false));
@@ -176,15 +183,14 @@ private:
 				Log.PrintSP(" @rip: " ~ Convert.ToString(stack.RIP, 16));
 				Log.PrintSP(" @cs: " ~ Convert.ToString(stack.CS, 16));
 				Log.PrintSP(" @ss: " ~ Convert.ToString(stack.SS, 16));
-				if (stack.IntNumber == 0xE)
+				if (stack.IntNumber == 0xE || stack.IntNumber == 0xD)
 					Log.PrintSP(" @ERR: " ~ Convert.ToString(stack.ErrorCode, 16));
 			}
 		}
 
 		if (stack.IntNumber < 32) {
-			asm { cli; hlt; }
-		}
-		else if (stack.IntNumber < 48)
+		//	asm { cli; hlt; }
+		} else if (stack.IntNumber < 48)
 			DeviceManager.Handler(*stack);
 	}
 	
@@ -201,6 +207,13 @@ private:
 	extern(C) void isr_common() {
 		asm {
 			naked;
+			// Set data registers
+			mov AX, 0x10;
+			mov DS, AX;
+			mov ES, AX;
+			mov FS, AX;
+			mov GS, AX;
+			mov SS, AX;
 
 			// Save context
 			push RAX;
@@ -219,7 +232,7 @@ private:
 			push R14;
 			push R15;
 
-			// Run dispatcher			
+			// Run dispatcher
 			mov RDI, RSP;
 			call Dispatch;
 
@@ -241,6 +254,7 @@ private:
 			pop RAX;
 
 			add RSP, 16;
+			sti;
 			jmp _CPU_iretq;
 		}
 	}
