@@ -51,7 +51,6 @@ static:
 		CoprocessorFault,
 		AlignmentCheck,
 		MachineCheck,
-		Syscall = 128,
 	}
 	
 	bool Init() {
@@ -130,7 +129,7 @@ private:
 		const char[] GenerateISR = `
 			void isr` ~ num.stringof[0 .. $ - 2] ~ `() {
 				asm {
-					naked; cli;` ~
+					naked; ` ~
 					(needDummyError ? `push 0UL;` : ``) ~
 					`push ` ~ num.stringof ~ `;` ~
 					`jmp isr_common;` ~
@@ -148,20 +147,12 @@ private:
 				~ GenerateISRs!(start + 1, end, needDummyError);
 	}
 
-	void isr5() {
-		asm {
-			naked;
-			cli;
-			hlt;
-		}
-	}
-
 	mixin(GenerateISR!(0));
 	mixin(GenerateISR!(1));
 	mixin(GenerateISR!(2));
 	mixin(GenerateISR!(3));
 	mixin(GenerateISR!(4));
-	//mixin(GenerateISR!(5));
+	mixin(GenerateISR!(5));
 	mixin(GenerateISR!(6));
 	mixin(GenerateISR!(7));
 	mixin(GenerateISR!(8, false));
@@ -213,7 +204,6 @@ private:
 			mov ES, AX;
 			mov FS, AX;
 			mov GS, AX;
-			mov SS, AX;
 
 			// Save context
 			push RAX;
@@ -254,7 +244,6 @@ private:
 			pop RAX;
 
 			add RSP, 16;
-			sti;
 			jmp _CPU_iretq;
 		}
 	}

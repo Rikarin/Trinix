@@ -115,7 +115,7 @@ extern(C) void StartSystem() {
 
 	import TaskManager.Thread;
 	auto t = new Thread(cast(void function())&test);
-
+	t.Start();
 
 	/*import VFSManager.PipeNode;
 	byte[] tmp = new byte[1];
@@ -134,7 +134,8 @@ extern(C) void StartSystem() {
 
 extern(C) void test() {
 	//while (true) Log.PrintSP("a");
-	asm {naked; int 0x5;}
+	//asm {naked; int 5;}
+	//asm {naked; push RAX;}
 	//asm { syscall; }
 	while (true) { }
 }

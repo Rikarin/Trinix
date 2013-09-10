@@ -13,8 +13,7 @@ enum FSType : ubyte {
 	BLOCKDEVICE = 0x08,
 	PIPE        = 0x10,
 	SYMLINK     = 0x20,
-	MOUNTPOINT  = 0x40,
-	APPLICATION = 0x80
+	MOUNTPOINT  = 0x40
 }
 
 abstract class FSNode : Resource {

@@ -59,7 +59,7 @@ public:
 			mutex.Release();
 			Task.Wakeup(waitingQueue);
 			if (!collected)
-				Task.Sleep(waitingQueue);
+				Task.CurrentThread.Sleep(waitingQueue);
 		}
 
 		return collected;
@@ -80,7 +80,7 @@ public:
 			mutex.Release();
 			Task.Wakeup(waitingQueue);
 			if (written < data.length)
-				Task.Sleep(waitingQueue);
+				Task.CurrentThread.Sleep(waitingQueue);
 
 		}
 

@@ -60,6 +60,10 @@ public:
 		return idleThread;
 	}
 
+	void Reap(Thread thread) {
+		
+	}
+
 	void Switch() {
 		ulong rsp, rbp, rip;
 		asm {
@@ -69,6 +73,10 @@ public:
 
 		rip = read_rip();
 		if (rip == 0xFEEDCAFEUL) {
+			foreach (x; Threads) {
+				if (x.Valid(Thread.State.Zombie))
+					Reap(x);
+			}
 			//signals etc...
 			return;
 		}
@@ -105,17 +113,21 @@ public:
 		for ex. if 3 threads are w8ing for input so they call sleep for theyselfs and
 		w8 for any1 call write func who call wakeup func who wakes up all sleeping threads
 	*/
-	void Sleep(List!(Thread) queue) {
-		queue.Add(CurrentThread);
-		CurrentThread.state = Thread.State.Sleeping;
-	}
-
 	void Wakeup(List!(Thread) queue) {
 		foreach (x; queue)
 			x.state = Thread.State.Running;
 	}
 
-	void WakeupSleepers(ulong seconds, ulong ms) {
+	void WakeupSleepers(ulong time) {
+			foreach (x; Threads) {
+				if (x.Valid(Thread.State.Waiting) && x.waitFor.time >= time)
+					x.state = Thread.State.Running;
+			}
+	}
 
+	void Exit(long retval) {
+		CurrentThread.retval = retval;
+		CurrentThread.state = Thread.State.Zombie;
+		Switch();
 	}
 }

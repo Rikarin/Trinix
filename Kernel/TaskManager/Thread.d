@@ -6,6 +6,7 @@ import SyscallManager.Resource;
 import MemoryManager.Memory;
 import TaskManager.Process;
 import TaskManager.Task;
+import System.Collections.Generic.All;
 
 
 class Thread /*: Resource*/ {
@@ -13,6 +14,7 @@ package:
 	static const auto STACK_SIZE = 0x1000;
 
 	ulong rsp, rbp, rip;
+	long retval;
 	State state;
 	Process parent;
 
@@ -32,9 +34,8 @@ public:
 		Zombie,
 		Starting,
 		Running,
-		Waiting,
-		WaitingIRQ,
-		Sleeping,
+		Waiting,    //time wait
+		Sleeping,   //wait for driver resume
 	}
 
 	this(void function() ThreadEntry, void* data = null) {
@@ -45,7 +46,7 @@ public:
 
 		kernelStack = (new byte[STACK_SIZE]).ptr;
 		userStack   = (new byte[STACK_SIZE]).ptr; //process.heap.alloc..;
-		state = State.Running;
+		state = State.Starting;
 
 		//Set user stack
 		ulong* ustack = cast(ulong *)userStack + STACK_SIZE;
@@ -111,6 +112,20 @@ public:
 
 	void SetKernelStack() {
 		TSS.Table.RSP0 = kernelStack + STACK_SIZE;
+	}
+
+	void Sleep(List!(Thread) queue) {
+		state = State.Sleeping;
+		queue.Add(this);
+	}
+
+	void WaitTime(ulong time) {
+		state = State.Waiting;
+		waitFor.time = time;
+	}
+
+	void Start() {
+		state = State.Running;
 	}
 
 

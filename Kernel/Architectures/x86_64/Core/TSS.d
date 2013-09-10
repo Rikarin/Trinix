@@ -10,7 +10,7 @@ import MemoryManager.PageAllocator;
 
 class TSS
 {
-	private __gshared ushort tssBase = 0x30;
+	private __gshared ushort tssBase = 0x28;
 	private __gshared TaskStateSegment*[256] Segments;
 	
 static:
@@ -20,7 +20,7 @@ static:
 		TaskStateSegment* tss = cast(TaskStateSegment *)PageAllocator.AllocPage();
 		*tss = TaskStateSegment.init;
 		Segments[CPU.Identifier] = tss;
-		GDT.Tables[CPU.Identifier].SetSystemSegment((tssBase >> 3), TaskStateSegment.sizeof, cast(ulong)tss, SystemSegmentType.AvailableTSS, 0, true, false, false);
+		GDT.Tables[CPU.Identifier].SetSystemSegment((tssBase >> 3), 0x67, cast(ulong)tss, SystemSegmentType.AvailableTSS, 0, true, false, false);
 		
 		asm {
 			ltr tssBase;
