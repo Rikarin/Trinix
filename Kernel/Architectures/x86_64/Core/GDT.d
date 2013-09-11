@@ -55,7 +55,7 @@ package:
 	
 	struct CodeSegmentDescriptor {
 	align(1):
-		ushort Limit	= 0x0000;
+		ushort Limit	= 0xFFFF;
 		ushort Base		= 0x0000;
 		ubyte BaseMid	= 0x00;
 		ubyte Flags1	= 0b11111101;

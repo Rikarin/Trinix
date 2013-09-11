@@ -179,6 +179,56 @@ class Paging {
 		root = cast(PageLevel!(4) *)PageAllocator.AllocPage(2);
 		*root = (PageLevel!(4)).init;
 	}
+
+	this(Paging other) {
+		root = cast(PageLevel!(4) *)PageAllocator.AllocPage(2);
+		*root = (PageLevel!(4)).init;	
+
+		foreach (i; 0 .. 512) {
+			if (other.root.Entries[i].Present) {
+				foreach (j; 0 .. 512) {
+					if (other.root.Tables[i].Entries[j].Present) {
+						foreach (k; 0 .. 512) {
+							if (other.root.Tables[i].Tables[j].Entries[k].Present) {
+								foreach (m; 0 .. 512) {
+									if (other.root.Tables[i].Tables[j].Tables[k].Entries[m].Present) {
+										PTE pres = other.root.Tables[i].Tables[j].Tables[k].Entries[m];
+
+										ulong address = (cast(ulong)i << 39) | (j << 30) | (k << 21) | (m << 12);
+										PTE pte = GetPage(cast(VirtualAddress)address);
+
+										pte.Present = 1;
+										pte.Address = address;
+										pte.User = pres.User;
+										pte.ReadWrite = pres.ReadWrite;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	~this() {
+		foreach (i; 0 .. 512) {
+			if (root.Entries[i].Present) {
+				foreach (j; 0 .. 512) {
+					if (root.Tables[i].Entries[j].Present) {
+						foreach (k; 0 .. 512) {
+							if (root.Tables[i].Tables[j].Entries[k].Present) {
+								delete root.Tables[i].Tables[j].Tables[k];
+							}
+						}
+						delete root.Tables[i].Tables[j];
+					}
+				}
+				delete root.Tables[i];
+			}
+		}
+		delete root;
+	}
 	
 	void Install() {
 		ulong adr = cast(ulong)GetPhysicalAddress(cast(VirtualAddress)root);

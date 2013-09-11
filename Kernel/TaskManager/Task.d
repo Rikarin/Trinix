@@ -73,10 +73,10 @@ public:
 
 		rip = read_rip();
 		if (rip == 0xFEEDCAFEUL) {
-			foreach (x; Threads) {
+		/*	foreach (x; Threads) {
 				if (x.Valid(Thread.State.Zombie))
 					Reap(x);
-			}
+			}*/
 			//signals etc...
 			return;
 		}
@@ -92,7 +92,7 @@ public:
 		rip = CurrentThread.rip;
 
 		CurrentThread.SetKernelStack();
-		//CurrentProcess.paging.Install();
+		CurrentProcess.paging.Install();
 
 		//dake picoviny zo signalmi
 

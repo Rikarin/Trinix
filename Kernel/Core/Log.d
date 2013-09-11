@@ -63,7 +63,14 @@ static:
 		}
 	}
 
-	void PrintSP(string text) { debug (only) sp.Write(text); }
+	debug (only) {
+		void PrintSP(string text) { sp.Write(text); }
+		
+		void Debug(string text) {
+			sp.Write("[ DEBUG ]");
+			sp.WriteLine(text);
+		}
+	}
 }
 
 class LogSerialPort : SerialPort {
