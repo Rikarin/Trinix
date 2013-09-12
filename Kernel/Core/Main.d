@@ -131,6 +131,9 @@ extern(C) void StartSystem() {
 	while (true) {}
 }
 
+extern(C) void apEntry() {
+	while (true) { }
+}
 
 extern(C) void test() {
 	//while (true) Log.PrintSP("a");

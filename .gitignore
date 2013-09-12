@@ -1,4 +1,6 @@
 /Obj/Kernel/MemoryManager/*.o
 *.o
-/Build/Linker.map
 *.bin
+/Build/Linker.map
+/Disk/TrinityOS-Kernel
+/TrinityOS.img

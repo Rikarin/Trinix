@@ -1,14 +1,6 @@
-DFLAGS = -c -m64 -release -property -Idruntime/import -IKernel -IFramework -IKernel/Architectures/x86_64 -debug=only
-CFLAGS = -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -c -g
-LDFLAGS = -T Kernel/Architectures/x86_64/Linker.ld -Map Build/Linker.map
-ASFLAGS = -f elf64
-
-OBJ_DIR = Obj
-SRC_DIR = .
-OUT_DIR = Build
-
-_SRC = Kernel/Start.s
+#_SRC = Kernel/Boot.s Kernel/Start.s
 _SRC += $(wildcard Kernel/Architectures/x86_64/*.[d|c|s])
+_SRCa += $(wildcard Kernel/Architectures/x86_64/Boot/*.[d|c|s])
 _SRC += $(wildcard Kernel/Architectures/x86_64/Core/*.[d|c|s])
 _SRC += $(wildcard Kernel/Architectures/x86_64/Specs/*.[d|c|s])
 _SRC += $(wildcard Kernel/Architectures/x86_64/Architectures/*.[d|c|s])
@@ -35,45 +27,92 @@ _SRC += $(wildcard Framework/System/Collections/Generic/*.[d|c|s])
 _SRC += $(wildcard Framework/System/Threading/*.[d|c|s])
 _SRC += $(wildcard Framework/System/Drawing/*.[d|c|s])
 
-OBJS = $(patsubst %,$(OBJ_DIR)/%,$(_SRC:=.o))
+OBJS = $(patsubst %,$(OBJ_DIR)/%,$(_SRCa:=.o))
 
 
-all: $(OBJS) link bloader
-	@cat Build/BootLoader.bin > Build/Boot.bin
-	@cat Build/Kernel.bin >> Build/Boot.bin
-	@cat Build/Kernel.bin >> Build/Boot.bin
 
-clean:
-	@rm -rf $(OBJ_DIR) $(OUT_DIR)/*
+#############
+#   Flags   #
+#############
+DFLAGS = -c -m64 -release -property -Idruntime/import -IKernel -IFramework -IKernel/Architectures/x86_64 -debug=only
+CFLAGS = -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -c -g
+LDFLAGS = -T Kernel/Architectures/x86_64/Linker.ld -Map Linker.map
+ASFLAGS = -f elf64
 
-link:
-	@mkdir -p Build
 
+
+###################
+#   Directories   #
+###################
+OBJ_DIR = Obj
+SRC_DIR = .
+OUT_DIR = Build
+
+
+
+#################
+#   Variables   #
+#################
+EMU = qemu-system-x86_64
+GENEXT = genext2fs
+DISK_SIZE = 12207 #524288
+
+
+
+all: $(OBJS) Disk/TrinityOS-Kernel
+
+
+
+##############
+#   Linker   #
+##############
+Disk/TrinityOS-Kernel: $(OBJS)
 	@echo $$(($$(cat buildnum) + 1)) > buildnum
 	@echo "Build number:" $$(cat buildnum)
+	@ld $(LDFLAGS) -o Disk/TrinityOS-Kernel $(OBJS) druntime/lib/libdruntime-linux64.a
 
-	@ld $(LDFLAGS) -o $(OUT_DIR)/Kernel.bin $(OBJS) druntime/lib/libdruntime-linux64.a
 
-bloader:
-	@cd BootLoader; make -s
 
-debug: all
-	@qemu-system-x86_64 -hda Build/Boot.bin -boot c -m 512 -serial /dev/ttyS0 \
+#############
+#   Debug   #
+#############
+debug: all TrinityOS.img
+	@${EMU} -hda TrinityOS.img -boot c -m 512 -serial /dev/ttyS0 \
 	-vga std -monitor stdio #-smp 8 #-s -S
 	
 
+
+#################
+#   D runtime   #
+#################
 runtime:
 	@cd druntime; make -f posix.mak MODEL=64
 
 
 
-TrinityOS.img:
+##################
+#   Disk image   #
+##################
+TrinityOS.img: Disk/TrinityOS-Kernel
 	@echo "Generating a Hard Disk image..."
 	@rm -f TrinityOS.img
-	
+	#@${GENEXT} -B 4096 -d Disk -q -b ${DISK_SIZE} -N 4096 TrinityOS.img
+	@grub-mkrescue -o TrinityOS.img Disk
+	@echo "Hard disk image is ready!"
+
 
 	
+#############
+#   Clean   #
+#############
+clean:
+	@rm -rf $(OBJ_DIR)
 
+
+
+###############
+#   Generic   #
+###############
 $(OBJ_DIR)/%.d.o: $(SRC_DIR)/%.d
 	@echo "[ D ]   " $< " ---> " $@
 	@mkdir -p $(@D)

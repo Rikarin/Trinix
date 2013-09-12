@@ -1,0 +1,77 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+                0xffff800000000000                kernel_VMA = 0xffff800000000000
+                0x0000000000100000                kernel_LMA = 0x100000
+                0x0000000000100000                . = kernel_LMA
+                0x0000000000100000                _kernelLMA = .
+                0x0000000000100000                _boot = .
+
+.text_boot      0x0000000000100000    0x37000
+ Obj/Kernel/Architectures/x86_64/Boot/Boot.s.o(.text)
+ .text          0x0000000000100000    0x37000 Obj/Kernel/Architectures/x86_64/Boot/Boot.s.o
+                0x0000000000100000                _start
+                0x0000000000100000                start
+                0x0000000000100028                start32
+                0x0000000000101000                pGDT32
+                0x0000000000102000                pml4_base
+                0x0000000000137000                _eboot = .
+                0xffff800000137000                . = (. + kernel_VMA)
+                0xffff800000137000                _text = .
+                0xffff800000137000                _kernel = .
+                0xffff800000000000                _kernelVMA = kernel_VMA
+
+.text           0xffff800000137000    0x12000 load address 0x0000000000237000
+                0xffff800000137000                code = .
+ *(.text)
+ .text          0xffff800000137000    0x11002 Obj/Kernel/Architectures/x86_64/Boot/Load.s.o
+                0xffff800000137000                start64
+                0xffff800000137054                start64_ap
+                0xffff800000138000                _stack
+ *(.text*)
+ *(.rodata*)
+ *(.rdata*)
+                0xffff800000149000                . = ALIGN (0x1000)
+ *fill*         0xffff800000148002      0xffe 00
+                0xffff800000149000                _etext = .
+                0xffff800000149000                PROVIDE (etext, .)
+
+.data           0xffff800000149000        0x0 load address 0x0000000000249000
+                0xffff800000149000                data = .
+                0xffff800000149000                _data = .
+ *(.data)
+                0xffff800000149000                start_ctors = .
+ *(.ctor*)
+                0xffff800000149000                end_ctors = .
+                0xffff800000149000                start_dtors = .
+ *(.dtor*)
+                0xffff800000149000                end_dtors = .
+                0xffff800000149000                . = ALIGN (0x1000)
+                0xffff800000149000                _edata = .
+                0xffff800000149000                PROVIDE (edata, .)
+
+.bss            0xffff800000149000        0x0 load address 0x0000000000249000
+                0xffff800000149000                sbss = .
+                0xffff800000149000                bss = .
+                0xffff800000149000                _bss = .
+ *(.bss)
+                0xffff800000149000                . = ALIGN (0x1000)
+                0xffff800000149000                _ebss = .
+                0xffff800000149000                ebss = .
+
+.ehframe        0xffff800000149000        0x0 load address 0x0000000000249000
+                0xffff800000149000                ehframe = .
+ *(.ehframe)
+                0xffff800000149000                . = ALIGN (0x1000)
+                0xffff800000149000                _end = .
+                0xffff800000149000                PROVIDE (end, .)
+                0xffff800000149000                _ekernel = .
+LOAD Obj/Kernel/Architectures/x86_64/Boot/Boot.s.o
+LOAD Obj/Kernel/Architectures/x86_64/Boot/Load.s.o
+LOAD druntime/lib/libdruntime-linux64.a
+OUTPUT(Disk/TrinityOS-Kernel binary)
