@@ -1,7 +1,7 @@
-OUTPUT_FORMAT("binary")
+OUTPUT_FORMAT(binary) /*elf64-x86-64*/
 ENTRY(_start)
 
-kernel_VMA = 0xffff800000000000;
+kernel_VMA = 0xFFFF800000000000;
 kernel_LMA = 0x100000;
 
 

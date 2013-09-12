@@ -1,5 +1,4 @@
 extern void *malloc(long sz, int ba);
-extern void* _Dmodule_ref;
 
 void *memcpy(void *dest, void *src, unsigned long num) {
 	unsigned long i = 0;

@@ -1,6 +1,6 @@
 #_SRC = Kernel/Boot.s Kernel/Start.s
 _SRC += $(wildcard Kernel/Architectures/x86_64/*.[d|c|s])
-_SRCa += $(wildcard Kernel/Architectures/x86_64/Boot/*.[d|c|s])
+_SRC += $(wildcard Kernel/Architectures/x86_64/Boot/*.[d|c|s])
 _SRC += $(wildcard Kernel/Architectures/x86_64/Core/*.[d|c|s])
 _SRC += $(wildcard Kernel/Architectures/x86_64/Specs/*.[d|c|s])
 _SRC += $(wildcard Kernel/Architectures/x86_64/Architectures/*.[d|c|s])
@@ -27,7 +27,7 @@ _SRC += $(wildcard Framework/System/Collections/Generic/*.[d|c|s])
 _SRC += $(wildcard Framework/System/Threading/*.[d|c|s])
 _SRC += $(wildcard Framework/System/Drawing/*.[d|c|s])
 
-OBJS = $(patsubst %,$(OBJ_DIR)/%,$(_SRCa:=.o))
+OBJS = $(patsubst %,$(OBJ_DIR)/%,$(_SRC:=.o))
 
 
 
@@ -70,6 +70,7 @@ Disk/TrinityOS-Kernel: $(OBJS)
 	@echo $$(($$(cat buildnum) + 1)) > buildnum
 	@echo "Build number:" $$(cat buildnum)
 	@ld $(LDFLAGS) -o Disk/TrinityOS-Kernel $(OBJS) druntime/lib/libdruntime-linux64.a
+	#druntime/obj/64/libdruntime-linux64-ut.o
 
 
 
