@@ -66,7 +66,7 @@ static:
 	
 	bool Install() {
 		asm {
-			lidt [idtBase];
+			lidt idtBase;
 		}
 		return true;
 	}
@@ -108,7 +108,7 @@ private:
 			TargetLo = funcPtr & 0xFFFF;
 			Segment = 0x08;
 			ist = istFlags;
-			p = 1;
+			p = true;
 			dpl = dplFlags;
 			Type = cast(uint)gateType;
 			TargetMid = (funcPtr >> 16) & 0xFFFF;

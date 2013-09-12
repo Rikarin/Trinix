@@ -36,7 +36,7 @@ public:
 		currentThread = Threads[0];
 
 		idleThread = new Thread(cast(void function())&idle_task);
-		Threads.Add(idleThread);
+		idleThread.rip = cast(ulong)&idle_task;
 
 		return true;
 	}
@@ -119,10 +119,10 @@ public:
 	}
 
 	void WakeupSleepers(ulong time) {
-			foreach (x; Threads) {
-				if (x.Valid(Thread.State.Waiting) && x.waitFor.time >= time)
-					x.state = Thread.State.Running;
-			}
+		/*foreach (x; Threads) {
+			if (x.Valid(Thread.State.Waiting) && x.waitFor.time >= time)
+				x.state = Thread.State.Running;
+		}*/
 	}
 
 	void Exit(long retval) {

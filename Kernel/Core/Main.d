@@ -110,7 +110,7 @@ extern(C) void StartSystem() {
 	//import Devices.Mouse.PS2Mouse;
 	//new PS2Mouse(); need to fix...
 
-	VFS.PrintTree(VFS.Root);
+	//VFS.PrintTree(VFS.Root);
 
 
 	import TaskManager.Thread;
@@ -134,7 +134,7 @@ extern(C) void StartSystem() {
 
 extern(C) void test() {
 	//while (true) Log.PrintSP("a");
-	//asm {naked; int 5;}
+	asm {naked; int 5;}
 	//asm {naked; push RAX;}
 	//asm { syscall; }
 	while (true) { }

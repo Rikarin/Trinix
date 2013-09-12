@@ -140,11 +140,11 @@ template PageLevel(ubyte L) {
 			}
 			
 			void SetTable(uint index, PageLevel!(L - 1)* address, bool usermode = false) {
-				Entries[index].pml = cast(ulong)address;
-				Entries[index].Present = 1;
-				Entries[index].ReadWrite = 1;
-				Entries[index].User = usermode;
-				Tables[index] = address;
+				Entries[index].Address   = cast(ulong)address >> 12;
+				Entries[index].Present   = true;
+				Entries[index].ReadWrite = true;
+				Entries[index].User      = usermode;
+				Tables[index]            = address;
 			}
 			
 			PageLevel!(L - 1)* GetOrCreateTable(uint index, bool usermode = false) {
@@ -197,7 +197,7 @@ class Paging {
 										ulong address = (cast(ulong)i << 39) | (j << 30) | (k << 21) | (m << 12);
 										PTE pte = GetPage(cast(VirtualAddress)address);
 
-										pte.Present = 1;
+										pte.Present = true;
 										pte.Address = address;
 										pte.User = pres.User;
 										pte.ReadWrite = pres.ReadWrite;
@@ -258,7 +258,6 @@ class Paging {
 		for (ulong i = 0; i < length; i += 0x1000) {
 			auto pt = &GetPage(vAdd + i);
 
-			pt.pml = 0;
 			pt.Present = true;
 			pt.ReadWrite = true;
 			pt.Address = (cast(ulong)pAdd >> 12) + i;

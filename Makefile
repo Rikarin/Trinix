@@ -61,9 +61,17 @@ debug: all
 	@qemu-system-x86_64 -hda Build/Boot.bin -boot c -m 512 -serial /dev/ttyS0 \
 	-vga std -monitor stdio #-smp 8 #-s -S
 	
-	
+
 runtime:
 	@cd druntime; make -f posix.mak MODEL=64
+
+
+
+TrinityOS.img:
+	@echo "Generating a Hard Disk image..."
+	@rm -f TrinityOS.img
+	
+
 	
 
 $(OBJ_DIR)/%.d.o: $(SRC_DIR)/%.d

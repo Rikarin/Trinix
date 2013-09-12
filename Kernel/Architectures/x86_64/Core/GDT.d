@@ -23,7 +23,7 @@ static:
 		
 		GDTBase gdtBase = gdt.gdtBase;
 		asm {
-			lgdt [gdtBase];
+			lgdt gdtBase;
 			call _CPU_refresh_iretq;
 		}
 		return true;
@@ -45,6 +45,11 @@ package:
 		//User
 		Tables[table].SetCodeSegment(3, true, 3, true);
 		Tables[table].SetDataSegment(4, true, 3);
+
+		Tables[table].Entries[1].CodeSegment.Flags1 = 0x9A;
+		Tables[table].Entries[2].DataSegment.Flags1 = 0x92;
+		Tables[table].Entries[3].CodeSegment.Flags1 = 0xFA;
+		Tables[table].Entries[4].DataSegment.Flags1 = 0xF2;
 	}
 	
 	struct GDTBase {
@@ -136,6 +141,7 @@ package:
 		void SetSystemSegment(uint index, uint limit, ulong base, SystemSegmentType segType, ubyte DPL, bool present, bool avail, bool granularity) {
 			Entries[index].SystemSegmentLo = SystemSegmentDescriptor.init;
 			Entries[index + 1].SystemSegmentHi = SystemSegmentExtension.init;
+			limit += base;
 
 			with (Entries[index].SystemSegmentLo) {
 				BaseLo = (base & 0xFFFF);
