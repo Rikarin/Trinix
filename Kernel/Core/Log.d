@@ -18,10 +18,11 @@ static:
 		Port.Write!(byte)(0x3D5, 0);
 		Port.Write!(byte)(0x3D4, 0x0E);
 		Port.Write!(byte)(0x3D5, 0);
-		
+
 		debug (only)
 			sp = new LogSerialPort(SerialPort.COM1);
 
+asm {hlt;}
 		address = cast(ushort *)0xB8000;
 		pos = 0;
 		

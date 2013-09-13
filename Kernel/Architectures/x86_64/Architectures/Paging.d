@@ -163,7 +163,7 @@ template PageLevel(ubyte L) {
 			}
 			
 			private PageTableEntry!("secondary")[512] Entries;
-			private PageLevel!(L - 1)*[512] Tables = null;
+			private PageLevel!(L - 1)*[512] Tables;
 		}
 	}
 }

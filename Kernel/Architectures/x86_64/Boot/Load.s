@@ -1,77 +1,28 @@
 [section .text]
 [bits 64]
 
-; include useful definitions
-; multiboot definitions
-%define MULTIBOOT_HEADER_MAGIC 0x1BADB002
-%define MULTIBOOT_HEADER_FLAGS 0x00010003
-
-; where is the kernel?
-%define KERNEL_VMA_BASE 0xFFFF800000000000
-%define KERNEL_LMA_BASE 0x100000
-
-; the gdt entry to use for the kernel
-%define CS_KERNEL 0x10
-%define STACK_SIZE 0x4000
-
-
-
-
-
-;extern StartSystem, apEntry
+extern StartSystem, apEntry, start_ctors, end_ctors
 global start64
 
 start64:
-	; Initialize the 64 bit stack pointer.
-	mov rsp, ((_stack - KERNEL_VMA_BASE) + STACK_SIZE)
+	mov RBP, _stack
 
-	; Set up the stack for the return.
-	push CS_KERNEL
+	static_ctors_loop:
+		mov rbx, start_ctors + 0x100000 ;need to fix
+		jmp .test
 
-	; RAX - the address to return to
-	mov rax, KERNEL_VMA_BASE >> 32
-	shl rax, 32
-	or rax, long_entry - (KERNEL_VMA_BASE & 0xffffffff00000000)
-	push rax
-	ret
+		.body:
+			call [rbx]
+			add rbx, 8
 
+		.test:
+			cmp rbx, end_ctors
+			jb .body
 
-long_entry:
-	; set up a 64 bit virtual stack
-	mov rax, KERNEL_VMA_BASE >> 32
-	shl rax, 32
-	or rax, _stack - (KERNEL_VMA_BASE & 0xffffffff00000000)
-	mov rsp, rax
-
-	; set cpu flags
-	push 0
-	lss eax, [rsp]
-	popf
-
-	; set the input/output permission level to 3
-	; it will allow all access
-	pushf
-	pop rax
-	or rax, 0x3000
-	push rax
-	popf
-
-	; update the multiboot struct to point to a
-	; virtual address
-	add rsi, (KERNEL_VMA_BASE & 0xffffffff)
-
-	; push the parameters (just in case)
-	push rsi
-	push rdi
-
-	; clear rbp
-	xor rbp, rbp
-	
-	; call StartSystem
 	call StartSystem
 
-; we should not get here
 
+; we should not get here
 haltloop:
 	hlt
 	jmp haltloop
@@ -83,15 +34,13 @@ haltloop:
 global start64_ap
 start64_ap:
 	; Initialize the 64 bit stack pointer.
-	mov rsp, ((_stack - KERNEL_VMA_BASE) + STACK_SIZE)
+	;mov rsp, ((_stack - KERNEL_VMA_BASE) + STACK_SIZE)
 
-	; Set up the stack for the return.
-	push CS_KERNEL
 
 	; RAX - the address to return to
-	mov rax, KERNEL_VMA_BASE >> 32
+	;mov rax, KERNEL_VMA_BASE >> 32
 	shl rax, 32
-	or rax, long_entry_ap - (KERNEL_VMA_BASE & 0xffffffff00000000)
+	;or rax, long_entry_ap - (KERNEL_VMA_BASE & 0xffffffff00000000)
 	push rax
 
 	; Go into canonical higher half
@@ -107,9 +56,9 @@ long_entry_ap:
 	; need an identity mapping of this region
 
 	; set up a 64 bit virtual stack
-	mov rax, KERNEL_VMA_BASE >> 32
+	;mov rax, KERNEL_VMA_BASE >> 32
 	shl rax, 32
-	or rax, _stack - (KERNEL_VMA_BASE & 0xffffffff00000000)
+	;or rax, _stack - (KERNEL_VMA_BASE & 0xffffffff00000000)
 	mov rsp, rax
 
 	; set cpu flags
@@ -138,11 +87,6 @@ global _stack
 align 4096
 
 _stack:
-%rep STACK_SIZE
+%rep 0x4000
 dd 0
 %endrep
-
-[bits 64]
-StartSystem:
-apEntry:
-jmp $

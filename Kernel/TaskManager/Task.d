@@ -47,10 +47,10 @@ public:
 
 		long idx = Threads.IndexOf(currentThread) + 1;
 
-		foreach (x; Threads[idx .. $]) {
-			if (x.Valid(state) && x !is idleThread)
-				return x;
-		}
+	//	foreach (x; Threads[idx .. $]) {
+		//	if (x.Valid(state) && x !is idleThread)
+		//		return x;
+	//	}
 
 		foreach (x; Threads[0 .. idx]) {
 			if (x.Valid(state) && x !is idleThread)

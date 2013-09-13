@@ -1,7 +1,7 @@
 module Core.DeviceManager;
 
 import System.Collections.Generic.All;
-import Architectures.Core : InterruptStack;
+import Architectures.Core;
 import Devices.DeviceProto;
 import VFSManager.DirectoryNode;
 

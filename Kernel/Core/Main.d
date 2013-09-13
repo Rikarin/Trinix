@@ -47,6 +47,13 @@ System:
 
 extern(C) void StartSystem() {
 	Log.Init();
+
+asm {
+		mov RAX, 0x123456;
+		cli;
+		hlt;
+	}
+	
 	//For debug print malloc and free
 	//Memory.test = 123456789;
 	Log.Print("Initializing Architecture: x86_64");

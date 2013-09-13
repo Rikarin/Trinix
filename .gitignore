@@ -3,4 +3,4 @@
 *.bin
 /Build/Linker.map
 /Disk/TrinityOS-Kernel
-/TrinityOS.img
+/TrinityOS.iso

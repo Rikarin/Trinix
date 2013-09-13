@@ -47,7 +47,7 @@ static:
 		//	pop RCX;
 
 			call _CPU_swapgs;
-			sysret;
+		//	sysret;
 		}
 	}
 

@@ -1,4 +1,3 @@
-#_SRC = Kernel/Boot.s Kernel/Start.s
 _SRC += $(wildcard Kernel/Architectures/x86_64/*.[d|c|s])
 _SRC += $(wildcard Kernel/Architectures/x86_64/Boot/*.[d|c|s])
 _SRC += $(wildcard Kernel/Architectures/x86_64/Core/*.[d|c|s])
@@ -32,7 +31,7 @@ OBJS = $(patsubst %,$(OBJ_DIR)/%,$(_SRC:=.o))
 
 
 #############
-#   Flags   #
+#   Flags   # 
 #############
 DFLAGS = -c -m64 -release -property -Idruntime/import -IKernel -IFramework -IKernel/Architectures/x86_64 -debug=only
 CFLAGS = -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -c -g
@@ -70,7 +69,6 @@ Disk/TrinityOS-Kernel: $(OBJS)
 	@echo $$(($$(cat buildnum) + 1)) > buildnum
 	@echo "Build number:" $$(cat buildnum)
 	@ld $(LDFLAGS) -o Disk/TrinityOS-Kernel $(OBJS) druntime/lib/libdruntime-linux64.a
-	#druntime/obj/64/libdruntime-linux64-ut.o
 
 
 
@@ -78,7 +76,7 @@ Disk/TrinityOS-Kernel: $(OBJS)
 #   Debug   #
 #############
 debug: all TrinityOS.img
-	@${EMU} -hda TrinityOS.img -boot c -m 512 -serial /dev/ttyS0 \
+	@${EMU} -hda TrinityOS.iso -boot c -m 512 -serial /dev/ttyS0 \
 	-vga std -monitor stdio #-smp 8 #-s -S
 	
 
@@ -92,13 +90,12 @@ runtime:
 
 
 ##################
-#   Disk image   #
+#   Disk image   # #@${GENEXT} -B 4096 -d Disk -q -b ${DISK_SIZE} -N 4096 TrinityOS.img
 ##################
 TrinityOS.img: Disk/TrinityOS-Kernel
 	@echo "Generating a Hard Disk image..."
 	@rm -f TrinityOS.img
-	#@${GENEXT} -B 4096 -d Disk -q -b ${DISK_SIZE} -N 4096 TrinityOS.img
-	@grub-mkrescue -o TrinityOS.img Disk
+	@grub-mkrescue -o TrinityOS.iso Disk
 	@echo "Hard disk image is ready!"
 
 
