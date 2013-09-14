@@ -24,6 +24,9 @@ static:
 
 		Paging.KernelPaging.Install();
 
+		new testik[1];
+		asm {hlt;}
+
 		pointer = ~1UL;
 		Log.Result(true);
 	}
@@ -48,4 +51,9 @@ static:
 		frames[page.Address] = false;
 		page.Present = false;
 	}
+}
+class testik {
+int a;
+this() {a = 5;}
+
 }
