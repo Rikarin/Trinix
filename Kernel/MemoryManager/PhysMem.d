@@ -22,9 +22,6 @@ static:
 		for (ulong i = 0xC00_0000; i < 0xCFF_0000; i += 0x1000)
 			Paging.KernelPaging.AllocFrame(cast(VirtualAddress)i, false, true);
 
-		for (ulong i = 0; i < 0x1_0000; i += 0x1000)
-			Paging.KernelPaging.AllocFrame(cast(VirtualAddress)i, false, true);
-
 		Paging.KernelPaging.Install();
 
 		pointer = ~1UL;
