@@ -24,7 +24,8 @@ private:
 
 public:
 	bool Init() {
-		resources = new List!(Resource)(200);
+		new testik[1];
+		//resources = new List!(Resource)();
 		return true;
 	}
 
@@ -50,4 +51,8 @@ public:
 				return resources[resource].Call(id, params);
 		}
 	}
+}
+
+class testik {
+this() {}
 }

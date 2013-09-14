@@ -22,8 +22,7 @@ static:
 		debug (only)
 			sp = new LogSerialPort(SerialPort.COM1);
 
-asm {hlt;}
-		address = cast(ushort *)0xB8000;
+		address = cast(ushort *)0xC0B8000;
 		pos = 0;
 		
 		foreach (i; 0 .. 2000)
@@ -80,5 +79,5 @@ class LogSerialPort : SerialPort {
 		Open();
 	}
 
-	new(ulong add) { return cast(void *)0x10000; } //this is for Log init...
+	new(ulong add) { return cast(void *)0xC010000; } //this is for Log init...
 }

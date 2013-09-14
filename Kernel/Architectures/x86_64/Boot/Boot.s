@@ -80,7 +80,7 @@ start32:
 	; Load the 32 bit GDT
 	lgdt [pGDT32]
 
-	jmp 0x10:(start64 + 0x100000) ;need to fix
+	jmp 0x10:start64
 
 
 ; Data Structures Follow

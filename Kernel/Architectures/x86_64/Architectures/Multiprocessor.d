@@ -24,6 +24,7 @@ public:
 		//		return false;
 			return false;
 		}
+
 		Log.Result(true);
 		
 		Log.Print(" - Local APIC Initialize");

@@ -12,7 +12,7 @@ static:
 
 
 	void Init() {
-		curPos = cast(VirtualAddress)((Memory.Length & ~0xFFFUL) + 0x1000) - Memory.Length;
+		curPos += 0x1000;
 		initialize = false;
 	}
 	
@@ -26,7 +26,7 @@ static:
 			curPos += 0x1000 * count;
 		} else
 			ret = cast(ulong)Memory.KernelHeap.Alloc(0x1000 * count);
-		
+
 		return cast(VirtualAddress)ret;
 	}
 }

@@ -305,28 +305,24 @@ static:
 	
 	bool InstallStack() {
 		ubyte* stack = PageAllocator.AllocPage();
-		ubyte* currentStack = cast(ubyte *)0x19000 - 0x1000;
+		ubyte* currentStack = cast(ubyte *)0x20000 - 0x1000;
 		
 		stack[0 .. 0x1000] = currentStack[0 .. 0x1000];
 		Stacks[Identifier] = cast(ubyte *)stack + 0x1000;
 		TSS.Table.RSP0 = Stacks[Identifier];
 
-
 		asm {
 			naked;
-			mov RAX, RSP;
-			and RAX, 0xFFF;
-			add RAX, stack;
-			mov RSP, RAX;
-
 			mov RAX, RBP;
 			and RAX, 0xFFF;
 			add RAX, stack;
 			mov RBP, RAX;
 
+			mov RAX, RSP;
+			and RAX, 0xFFF;
+			add RAX, stack;
+			mov RSP, RAX;
 			ret;
 		}
-
-		return true;
 	}
 }

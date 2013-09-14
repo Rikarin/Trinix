@@ -139,15 +139,15 @@ template PageLevel(ubyte L) {
 				return Tables[index];
 			}
 			
-			void SetTable(uint index, PageLevel!(L - 1)* address, bool usermode = false) {
-				Entries[index].Address   = cast(ulong)address >> 12;
+			void SetTable(uint index, PageLevel!(L - 1)* address) {
+				Entries[index].Address   = cast(ulong)Paging.KernelPaging.GetPhysicalAddress(cast(VirtualAddress)address) >> 12;
 				Entries[index].Present   = true;
 				Entries[index].ReadWrite = true;
-				Entries[index].User      = usermode;
+				Entries[index].User      = true;
 				Tables[index]            = address;
 			}
 			
-			PageLevel!(L - 1)* GetOrCreateTable(uint index, bool usermode = false) {
+			PageLevel!(L - 1)* GetOrCreateTable(uint index) {
 				PageLevel!(L - 1)* ret = Tables[index];
 				
 				if (ret == null) {
@@ -156,7 +156,7 @@ template PageLevel(ubyte L) {
 					else
 						ret = cast(PageLevel!(L - 1) *)PageAllocator.AllocPage(2);
 					*ret = (PageLevel!(L - 1)).init;
-					SetTable(index, ret, usermode);
+					SetTable(index, ret);
 				}
 				
 				return ret;
@@ -233,15 +233,14 @@ class Paging {
 	void Install() {
 		ulong adr = cast(ulong)GetPhysicalAddress(cast(VirtualAddress)root);
 
-
 		asm {
 			mov RAX, adr;
-			call _CPU_load_cr3;
+			mov CR3, EAX;
 		}
 	}
 	
 	void AllocFrame(VirtualAddress address, bool user, bool writable) {
-		PhysMem.AllocFrame(GetPage(address, user), user, writable);
+		PhysMem.AllocFrame(GetPage(address), user, writable);
 	}
 
 	void FreeFrame(VirtualAddress address) {
@@ -267,6 +266,22 @@ class Paging {
 		return vAdd[diff .. diff + length];
 	}
 
+	ref PTE GetPage(VirtualAddress address) {
+		ulong add = cast(ulong)address;
+	
+		ushort[4] start;
+		start[3] = (add >> 39) & 511; //PML4E
+		start[2] = (add >> 30) & 511; //PDPTE
+		start[1] = (add >> 21) & 511; //PDE
+		start[0] = (add >> 12) & 511; //PTE
+		
+		auto pdpt = root.GetOrCreateTable(start[3]);
+		auto pd = pdpt.GetOrCreateTable(start[2]);
+		auto pt = pd.GetOrCreateTable(start[1]);
+		
+		return pt.Entries[start[0]];
+	}
+
 
 private:
 	PhysicalAddress GetPhysicalAddress(VirtualAddress address) {
@@ -282,39 +297,22 @@ private:
 		if (root.Entries[start[3]].Present)
 			pdpt = root.Tables[start[3]];
 		else
-			return address;
+			return cast(PhysicalAddress)(add & 0xFF_FFFF);
 			
 		PageLevel!(2)* pd;
 		if (pdpt.Entries[start[2]].Present)
 			pd = pdpt.Tables[start[2]];
 		else
-			return address;
+			return cast(PhysicalAddress)(add & 0xFF_FFFF);
 			
 		PageLevel!(1)* pt;
 		if (pd.Entries[start[1]].Present)
 			pt = pd.Tables[start[1]];
 		else
-			return address;
+			return cast(PhysicalAddress)(add & 0xFF_FFFF);
 			
 		return pt.Entries[start[0]].Location;
 	}
-	
-	ref PTE GetPage(VirtualAddress address, bool usermode = false) {
-		ulong add = cast(ulong)address;
-	
-		ushort[4] start;
-		start[3] = (add >> 39) & 511; //PML4E
-		start[2] = (add >> 30) & 511; //PDPTE
-		start[1] = (add >> 21) & 511; //PDE
-		start[0] = (add >> 12) & 511; //PTE
-		
-		auto pdpt = root.GetOrCreateTable(start[3], usermode);
-		auto pd = pdpt.GetOrCreateTable(start[2], usermode);
-		auto pt = pd.GetOrCreateTable(start[1], usermode);
-		
-		return pt.Entries[start[0]];
-	}
-
 
 	void PageFaultHandler(InterruptStack *stack) {
 		import Core.Log;

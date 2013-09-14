@@ -28,10 +28,6 @@ _CPU_refresh_iretq:
 
 _CPU_iretq:
 	iretq
-	
-_CPU_load_cr3:
-	mov CR3, RAX
-	ret
 
 _CPU_swapgs:
 	swapgs

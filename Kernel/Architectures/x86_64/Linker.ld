@@ -8,27 +8,15 @@ kernel_LMA = 0x100000;
 SECTIONS {
 	. = kernel_LMA;
 
-    _kernelLMA = .;
-
-
-    _boot = .;
-
     .text_boot : {
         Obj/Kernel/Architectures/x86_64/Boot/Boot.s.o (.text)
     }
-    _eboot = .;
+
+    . += kernel_VMA;
 
 
-
-    . = . + kernel_VMA;
-
-    _text = .;
-    _kernel = .;
-    _kernelVMA = kernel_VMA;
-
-
-    .text : AT(ADDR(.text) - kernel_VMA + kernel_LMA) {
-        code = .;
+    .text : AT(ADDR(.text) - kernel_VMA) {
+        _code = .;
 		*(.text)
         *(.text*)
 		
@@ -41,8 +29,7 @@ SECTIONS {
     _etext = .; PROVIDE(etext = .);
 
 
-    .data : AT(ADDR(.data) - kernel_VMA + kernel_LMA) {
-        data = .;
+    .data : AT(ADDR(.data) - kernel_VMA) {
         _data = .;
 
         *(.data)
@@ -61,10 +48,7 @@ SECTIONS {
     _edata = .; PROVIDE (edata = .);
 
 
-
-    .bss : AT(ADDR(.bss) - kernel_VMA + kernel_LMA) {
-        sbss = .;
-        bss = .; 
+    .bss : AT(ADDR(.bss) - kernel_VMA) {
         _bss = .;
 
         *(.bss)
@@ -76,7 +60,7 @@ SECTIONS {
     ebss = .;
 
 	
-	.ehframe : AT(ADDR(.ehframe) - kernel_VMA + kernel_LMA) {
+	.ehframe : AT(ADDR(.ehframe) - kernel_VMA) {
 		ehframe = .;
 		*(.ehframe)
 

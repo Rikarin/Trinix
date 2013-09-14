@@ -5,10 +5,11 @@ extern StartSystem, apEntry, start_ctors, end_ctors
 global start64
 
 start64:
-	mov RBP, _stack
+	mov RBP, 0x20000
+	mov RSP, RBP
 
 	static_ctors_loop:
-		mov rbx, start_ctors + 0x100000 ;need to fix
+		mov rbx, start_ctors
 		jmp .test
 
 		.body:

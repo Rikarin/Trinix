@@ -48,24 +48,20 @@ System:
 extern(C) void StartSystem() {
 	Log.Init();
 
-asm {
-		mov RAX, 0x123456;
-		cli;
-		hlt;
-	}
-	
 	//For debug print malloc and free
 	//Memory.test = 123456789;
 	Log.Print("Initializing Architecture: x86_64");
 	Architecture.Init();
 
+	Log.Print("Initializing CPU");
+	CPU.Init();
+	asm { mov RBP, RSP; }
+
 	Log.Print("Initializing Physical Memory & Paging");
 	PhysMem.Init();
 
-	Log.Print("Initializing CPU");
-	CPU.Init();
-
 	Log.Print("Initializing kernel heap");
+
 	//Memory.KernelHeap = new Heap();
 	//Memory.KernelHeap.Create(cast(ulong)PageAllocator.AllocPage(), Heap.MIN_SIZE, 0x10000, Paging.KernelPaging);
 	//PageAllocator.IsInit = true;
@@ -81,7 +77,7 @@ asm {
 //==================== MANAGERS ====================
 	Log.Print("Initializing system calls database");
 	Log.Result(Res.Init());
-
+asm {hlt;}
 	//Log.Print("Initializing syscall handler");
 	//Log.Result(Syscall.Init());
 

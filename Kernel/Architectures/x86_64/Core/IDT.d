@@ -180,7 +180,7 @@ private:
 		}
 
 		if (stack.IntNumber < 32) {
-		//	asm { cli; hlt; }
+			asm { cli; hlt; }
 		} else if (stack.IntNumber < 48)
 			DeviceManager.Handler(*stack);
 	}

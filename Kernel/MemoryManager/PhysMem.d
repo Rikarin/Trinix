@@ -19,12 +19,13 @@ static:
 		pointer = 0;
 
 		Paging.KernelPaging = new Paging();
-		for (ulong i = 0; i < 0x4_000_000; i += 0x1000)
-			Paging.KernelPaging.AllocFrame(cast(VirtualAddress)i, true, true); //true for testing tasks...
-		Paging.KernelPaging.Install();
+		for (ulong i = 0xC00_0000; i < 0xCFF_0000; i += 0x1000)
+			Paging.KernelPaging.AllocFrame(cast(VirtualAddress)i, false, true);
 
-		for (ulong i = 0x4_000_000; i < 0x30_000_000; i += 0x1000)
-			Paging.KernelPaging.AllocFrame(cast(VirtualAddress)i, true, true);
+		for (ulong i = 0; i < 0x1_0000; i += 0x1000)
+			Paging.KernelPaging.AllocFrame(cast(VirtualAddress)i, false, true);
+
+		Paging.KernelPaging.Install();
 
 		pointer = ~1UL;
 		Log.Result(true);
