@@ -80,7 +80,14 @@ start32:
 	; Load the 32 bit GDT
 	lgdt [pGDT32]
 
-	jmp 0x10:start64
+	mov AX, 0x10
+	mov ES, AX
+	mov SS, AX
+	mov DS, AX
+	mov FS, AX
+	mov GS, AX
+	
+	jmp 0x08:start64
 
 
 ; Data Structures Follow
@@ -95,11 +102,8 @@ dq GDT_TABLE
 
 GDT_TABLE:
 dq 0x0000000000000000	; Null Descriptor
-dq 0x00cf9a000000ffff	; CS_KERNEL32
-dq 0x00af9a000000ffff,0	; CS_KERNEL
-dq 0x00af93000000ffff,0	; DS_KERNEL
-dq 0x00affa000000ffff,0	; CS_USER
-dq 0x00aff3000000ffff,0	; DS_USER
+dq 0x00209a000000ffff	; CS_KERNEL
+dq 0x002092000000ffff	; SS_KERNEL
 GDT_END:
 
 

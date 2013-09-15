@@ -27,7 +27,8 @@ static:
 
 		//Get memory map
 		Log.Print(" - Loading memory regions");
-		Log.Result(Memory.LoadMemoryRegions());
+		//Log.Result(Memory.LoadMemoryRegions());
+		Log.Result(false);
 		
 		//GDT
 		Log.Print(" - Initializing GDT");
