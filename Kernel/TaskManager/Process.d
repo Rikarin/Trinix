@@ -29,7 +29,7 @@ package:
 
 	DirectoryNode cwd;
 	Paging paging;
-	List!(Thread *) threads; //prerobit na ref todo
+	List!(Thread) threads;
 	List!(FSNode) descriptors;
 
 public:
@@ -52,10 +52,7 @@ public:
 		ret.cwd         = VFS.Root;
 
 		ret.descriptors = new List!(FSNode)();
-		ret.threads     = new List!(Thread *)();
-
-		new List!(Thread)();
-		new List!(Thread)();
+		ret.threads     = new List!(Thread)();
 
 		ret.descriptors.Add(DeviceManager.DevFS.Childrens[0]); //keyboard stdin
 
@@ -64,7 +61,7 @@ public:
 		t.state = Thread.State.Running;
 		t.kernelStack = (new byte[0x1000]).ptr;
 		t.SetKernelStack();
-		ret.threads.Add(&t);
+		ret.threads.Add(t);
 
 		Task.Procs.Add(ret);
 		Task.Threads.Add(t);

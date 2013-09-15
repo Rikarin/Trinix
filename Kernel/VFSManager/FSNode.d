@@ -4,6 +4,7 @@ import SyscallManager.Resource;
 import VFSManager.FileSystemProto;
 import VFSManager.DirectoryNode;
 import System.IFace;
+import System.DateTime;
 
 
 enum FSType : ubyte {
@@ -26,7 +27,7 @@ package:
 	uint perms; //User/Group/Other -> RWX RWX RWX
 	ulong uid, gid;
 
-	ulong atime, mtime, ctime;
+	DateTime atime, mtime, ctime;
 
 
 public:
@@ -62,9 +63,9 @@ public:
 	@property FileSystemProto FileSystem() { return fs; }
 	@property DirectoryNode Parent() { return parent; }
 
-	@property ulong CreatedTime() { return ctime; }
-	@property ulong AccessedTime() { return atime; }
-	@property ulong ModifiedTime() { return mtime; }
+	@property DateTime CreatedTime() { return ctime; }
+	@property DateTime AccessedTime() { return atime; }
+	@property DateTime ModifiedTime() { return mtime; }
 
 //	bool Readable() { return false; } //add User user = 0 TODO
 	//bool Writable() { return false; } //TODO
@@ -110,7 +111,7 @@ public:
 		return ret;
 	}
 
-	bool SetCreatedTime(ulong time) {
+	bool SetCreatedTime(DateTime time) {
 		bool ret = fs is null ? true : fs.SetCreatedTime(this, time);
 		if (ret)
 			ctime = time;
@@ -118,7 +119,7 @@ public:
 		return ret;
 	}
 
-	bool SetModifiedTime(ulong time) {
+	bool SetModifiedTime(DateTime time) {
 		bool ret = fs is null ? true : fs.SetModifiedTime(this, time);
 		if (ret)
 			mtime = time;
@@ -126,7 +127,7 @@ public:
 		return ret;
 	}
 
-	bool setAccessedTime(ulong time) {
+	bool setAccessedTime(DateTime time) {
 		bool ret = fs is null ? true : fs.SetAccessedTime(this, time);
 		if (ret)
 			atime = time;

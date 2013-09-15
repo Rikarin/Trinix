@@ -3,10 +3,11 @@ module VFSManager.FileNode;
 import VFSManager.FSNode;
 import VFSManager.DirectoryNode;
 import VFSManager.FileSystemProto;
+import System.DateTime;
 
 
 class FileNode : FSNode {
-	this(string name, FileSystemProto fs, ulong length, uint perms = 0b110100100, ulong uid = 0, ulong gid = 0, ulong atime = 0, ulong mtime = 0, ulong ctime = 0) {
+	this(string name, FileSystemProto fs, ulong length, uint perms = 0b110100100, ulong uid = 0, ulong gid = 0, DateTime atime = null, DateTime mtime = null, DateTime ctime = null) {
 		super();
 
 		this.name   = name;

@@ -7,6 +7,7 @@ import MemoryManager.Memory;
 import TaskManager.Process;
 import TaskManager.Task;
 import System.Collections.Generic.All;
+import System.DateTime;
 
 
 class Thread /*: Resource*/ {
@@ -22,7 +23,7 @@ package:
 	byte* userStack, kernelStack;
 
 	union WaitUnion {
-		ulong time;
+		DateTime time;
 		ubyte irq;
 	}
 
@@ -42,7 +43,7 @@ public:
 		//super(0, null);
 		
 		parent = Task.CurrentProcess;
-		parent.threads.Add(&this);
+		parent.threads.Add(this);
 
 		kernelStack = (new byte[STACK_SIZE]).ptr;
 		userStack   = (new byte[STACK_SIZE]).ptr; //process.heap.alloc..;
@@ -119,7 +120,7 @@ public:
 		queue.Add(this);
 	}
 
-	void WaitTime(ulong time) {
+	void WaitTime(DateTime time) {
 		state = State.Waiting;
 		waitFor.time = time;
 	}

@@ -130,7 +130,7 @@ extern(C) void StartSystem() {
 
 	//problem niekde v GDT, TSS alebo IDT
 
-//	while (true) Log.PrintSP(":");
+	//while (true) Log.PrintSP(":");
 
 	while (true) {}
 }
@@ -140,9 +140,8 @@ extern(C) void apEntry() {
 }
 
 extern(C) void test() {
-	while (true) {
-		//pajpa.Write(0, ['a', 'b', 'c']);
-	}// Log.PrintSP("a");
+	//while (true) Log.PrintSP("a");
+	Log.PrintSP("a");
 	//asm {naked; int 6;}
 	//asm {naked; push RAX;}
 	//asm { syscall; }

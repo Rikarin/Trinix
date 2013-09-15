@@ -4,6 +4,7 @@ import System.Collections.Generic.All;
 import VFSManager.FileSystemProto;
 import VFSManager.FSNode;
 import System.IFace;
+import System.DateTime;
 
 
 class DirectoryNode : FSNode {
@@ -53,7 +54,7 @@ public:
 		return childrens;
 	}
 
-	this(string name, FileSystemProto fs, uint perms = 0b110100100, ulong uid = 0, ulong gid = 0, ulong atime = 0, ulong mtime = 0, ulong ctime = 0) {
+	this(string name, FileSystemProto fs, uint perms = 0b110100100, ulong uid = 0, ulong gid = 0, DateTime atime = null, DateTime mtime = null, DateTime ctime = null) {
 		/*const CallTable[] callTable = [
 			{FNIF_GETIDXCHILD, &GetIdxChildSC},
 			{FNIF_GETNAME, &GetNameChildSC}

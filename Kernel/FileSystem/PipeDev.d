@@ -7,6 +7,7 @@ import System.Threading.All;
 import System.Collections.Generic.All;
 import TaskManager.Thread;
 import TaskManager.Task;
+import System.DateTime;
 
 
 class PipeDev : PipeNode {
@@ -23,7 +24,7 @@ public:
 	this(ulong length, string name = "pipe") { 
 		super(name);
 		this.length = length;
-		//todo time...
+		atime = ctime = mtime = DateTime.Now;
 
 		waitingQueue = new List!(Thread)();
 		buffer = new byte[length];

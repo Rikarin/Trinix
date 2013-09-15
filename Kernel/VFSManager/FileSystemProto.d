@@ -4,6 +4,7 @@ import VFSManager.FSNode;
 import VFSManager.DirectoryNode;
 import VFSManager.FileNode;
 import VFSManager.Partition;
+import System.DateTime;
 
 
 abstract class FileSystemProto {
@@ -25,9 +26,9 @@ public:
 	bool SetGID(FSNode node, ulong gid);
 	bool SetParent(FSNode node, DirectoryNode parent);
 
-	bool SetCreatedTime(FSNode node, ulong time);
-	bool SetModifiedTime(FSNode node, ulong time);
-	bool SetAccessedTime(FSNode node, ulong time);
+	bool SetCreatedTime(FSNode node, DateTime time);
+	bool SetModifiedTime(FSNode node, DateTime time);
+	bool SetAccessedTime(FSNode node, DateTime time);
 
 	long Read(FileNode file, ulong offset, byte[] data);
 	long Write(FileNode file, ulong offset, byte[] data);

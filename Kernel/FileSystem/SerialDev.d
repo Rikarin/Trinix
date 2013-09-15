@@ -4,6 +4,7 @@ import VFSManager.CharNode;
 import VFSManager.DirectoryNode;
 import Devices.Port.SerialPort;
 import TaskManager.Task;
+import System.DateTime;
 
 
 class SerialDev : CharNode {
@@ -13,7 +14,7 @@ class SerialDev : CharNode {
 	this(string name, SerialPort device) { 
 		super(name);
 		dev = device;
-		//time... todo
+		atime = ctime = mtime = DateTime.Now;
 	}
 
 	override long Read(ulong offset, byte[] data) {

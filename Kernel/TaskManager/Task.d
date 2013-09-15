@@ -4,6 +4,7 @@ import TaskManager.Process;
 import TaskManager.Thread;
 import System.Collections.Generic.All;
 import Architectures.Port;
+import System.DateTime;
 
 extern(C) ulong read_rip();
 extern(C) void idle_task();
@@ -73,12 +74,10 @@ public:
 
 		rip = read_rip();
 		if (rip == 0xFEEDCAFEUL) {
-			//foreach (x; Threads) {
-			//	import Core.Log;
-			//	Log.PrintSP("*");
-			//	if (x.Valid(Thread.State.Zombie))
-			//		Reap(x);
-			//}
+			foreach (x; Threads[0 .. $]) {
+				if (x !is null && x.Valid(Thread.State.Zombie))
+					Reap(x);
+			}
 			//signals etc...
 			return;
 		}
@@ -120,11 +119,11 @@ public:
 			x.state = Thread.State.Running;
 	}
 
-	void WakeupSleepers(ulong time) {
-		/*foreach (x; Threads) {
-			if (x.Valid(Thread.State.Waiting) && x.waitFor.time >= time)
+	void WakeupSleepers(DateTime time) {
+		foreach (x; Threads[0 .. $]) {
+			if (x !is null && x.Valid(Thread.State.Waiting) && x.waitFor.time >= time)
 				x.state = Thread.State.Running;
-		}*/
+		}
 	}
 
 	void Exit(long retval) {

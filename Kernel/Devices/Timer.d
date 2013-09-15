@@ -5,6 +5,7 @@ import Architectures.Port;
 import Architectures.Core;
 import Devices.DeviceProto;
 import TaskManager.Task;
+import System.DateTime;
 
 
 class Timer : DeviceProto {
@@ -83,7 +84,7 @@ public:
 		PIC.EOI(0);
 		LocalAPIC.EOI();
 
-		Task.WakeupSleepers((seconds * 1000) + (ticks * 0x1000) / frequency);
+		Task.WakeupSleepers(DateTime.Now);
 		Task.Switch();
 	}
 }
