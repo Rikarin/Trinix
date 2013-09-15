@@ -10,6 +10,7 @@ import Architectures.x86_64.Core.Descriptor;
 
 struct InterruptStack {
 align(1):
+	ulong DS;
 	ulong R15, R14, R13, R12, R11, R10, R9, R8;
 	ulong RBP, RDI, RSI, RDX, RCX, RBX, RAX;
 	ulong IntNumber, ErrorCode;
@@ -59,7 +60,7 @@ static:
 		
 		mixin(GenerateIDT!(40));
 		
-		//SetSystemGate(3, &isr3, StackType.Debug);
+		SetSystemGate(3, &isr3, StackType.Debug);
 		//SetInterruptGate(8, &isrIgnore);
 		return true;
 	}
@@ -172,6 +173,7 @@ private:
 				
 				Log.PrintSP("\n@irq: " ~ Convert.ToString(stack.IntNumber, 16));
 				Log.PrintSP(" @rip: " ~ Convert.ToString(stack.RIP, 16));
+			//	Log.PrintSP(" @rsp: " ~ Convert.ToString(stack.RSP, 16));
 				Log.PrintSP(" @cs: " ~ Convert.ToString(stack.CS, 16));
 				Log.PrintSP(" @ss: " ~ Convert.ToString(stack.SS, 16));
 				if (stack.IntNumber == 0xE || stack.IntNumber == 0xD)
@@ -198,13 +200,6 @@ private:
 	extern(C) void isr_common() {
 		asm {
 			naked;
-			// Set data registers
-			mov AX, 0x10;
-			mov DS, AX;
-			mov ES, AX;
-			mov FS, AX;
-			mov GS, AX;
-
 			// Save context
 			push RAX;
 			push RBX;
@@ -222,9 +217,28 @@ private:
 			push R14;
 			push R15;
 
+			// Save data segments
+			mov AX, DS;
+			push RAX;
+
+			// Set data registers
+			mov AX, 0x10;
+			mov DS, AX;
+			mov ES, AX;
+			mov FS, AX;
+			mov GS, AX;
+			mov SS, AX;
+
 			// Run dispatcher
 			mov RDI, RSP;
 			call Dispatch;
+
+			// Restore data segments
+			pop RAX;
+			mov DS, AX;
+			mov ES, AX;
+			mov FS, AX;
+			mov GS, AX;
 
 			// Restore context
 			pop R15;

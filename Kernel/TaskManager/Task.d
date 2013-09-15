@@ -47,10 +47,10 @@ public:
 
 		long idx = Threads.IndexOf(currentThread) + 1;
 
-	//	foreach (x; Threads[idx .. $]) {
-		//	if (x.Valid(state) && x !is idleThread)
-		//		return x;
-	//	}
+		foreach (x; Threads[idx .. $]) {
+			if (x.Valid(state) && x !is idleThread)
+				return x;
+		}
 
 		foreach (x; Threads[0 .. idx]) {
 			if (x.Valid(state) && x !is idleThread)
@@ -73,10 +73,12 @@ public:
 
 		rip = read_rip();
 		if (rip == 0xFEEDCAFEUL) {
-		/*	foreach (x; Threads) {
-				if (x.Valid(Thread.State.Zombie))
-					Reap(x);
-			}*/
+			//foreach (x; Threads) {
+			//	import Core.Log;
+			//	Log.PrintSP("*");
+			//	if (x.Valid(Thread.State.Zombie))
+			//		Reap(x);
+			//}
 			//signals etc...
 			return;
 		}

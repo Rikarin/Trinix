@@ -46,10 +46,10 @@ package:
 		Tables[table].SetCodeSegment(3, true, 3, true);
 		Tables[table].SetDataSegment(4, true, 3);
 
-		Tables[table].Entries[1].CodeSegment.Flags1 = 0x9A;
+		/*Tables[table].Entries[1].CodeSegment.Flags1 = 0x9A;
 		Tables[table].Entries[2].DataSegment.Flags1 = 0x92;
 		Tables[table].Entries[3].CodeSegment.Flags1 = 0xFA;
-		Tables[table].Entries[4].DataSegment.Flags1 = 0xF2;
+		Tables[table].Entries[4].DataSegment.Flags1 = 0xF2;*/
 	}
 	
 	struct GDTBase {

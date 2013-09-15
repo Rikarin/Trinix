@@ -32,18 +32,16 @@ Framework:
 
 System:
 	MP
-	dorobit IDT
-
 	Dorobit heap & delete!!
 	Az potom VFS a syscall mgr
 	dorobit string
 	Panic - vypis Rx registrov, inak vsetko O.K.
-	dorobit pipeDev, opravit, task switch
-	dorobit Serialdev, inak vsetko funguje
-	timer - wakeup and task switch
 	Res - resources list...
 	syscall handler
 ++/
+import FileSystem.PipeDev;
+__gshared PipeDev pajpa;
+
 
 extern(C) void StartSystem() {
 	Log.Init();
@@ -77,9 +75,9 @@ extern(C) void StartSystem() {
 //==================== MANAGERS ====================
 	Log.Print("Initializing system calls database");
 	Log.Result(Res.Init());
-asm {hlt;}
-	//Log.Print("Initializing syscall handler");
-	//Log.Result(Syscall.Init());
+
+	Log.Print("Initializing syscall handler");
+	Log.Result(Syscall.Init());
 
 	Log.Print("Initializing device manger");
 	Log.Result(DeviceManager.Init());
@@ -113,8 +111,9 @@ asm {hlt;}
 	//import Devices.Mouse.PS2Mouse;
 	//new PS2Mouse(); need to fix...
 
-	//VFS.PrintTree(VFS.Root);
+	VFS.PrintTree(VFS.Root);
 
+	//pajpa = new PipeDev(0x1000, "pajpa");
 
 	import TaskManager.Thread;
 	auto t = new Thread(cast(void function())&test);
@@ -131,6 +130,8 @@ asm {hlt;}
 
 	//problem niekde v GDT, TSS alebo IDT
 
+//	while (true) Log.PrintSP(":");
+
 	while (true) {}
 }
 
@@ -139,8 +140,10 @@ extern(C) void apEntry() {
 }
 
 extern(C) void test() {
-	//while (true) Log.PrintSP("a");
-	asm {naked; int 5;}
+	while (true) {
+		//pajpa.Write(0, ['a', 'b', 'c']);
+	}// Log.PrintSP("a");
+	//asm {naked; int 6;}
 	//asm {naked; push RAX;}
 	//asm { syscall; }
 	while (true) { }

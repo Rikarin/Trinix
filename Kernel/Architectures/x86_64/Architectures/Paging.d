@@ -282,8 +282,6 @@ class Paging {
 		return pt.Entries[start[0]];
 	}
 
-
-private:
 	PhysicalAddress GetPhysicalAddress(VirtualAddress address) {
 		ulong add = cast(ulong)address;
 	
@@ -314,6 +312,8 @@ private:
 		return pt.Entries[start[0]].Location;
 	}
 
+
+private:
 	void PageFaultHandler(InterruptStack *stack) {
 		import Core.Log;
 		Log.Print(" ==== Page Fault ====", 0x200);

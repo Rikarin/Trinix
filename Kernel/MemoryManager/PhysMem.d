@@ -19,8 +19,8 @@ static:
 		pointer = 0;
 
 		Paging.KernelPaging = new Paging();
-		for (ulong i = 0xC00_0000; i < 0xCFF_0000; i += 0x1000)
-			Paging.KernelPaging.AllocFrame(cast(VirtualAddress)i, false, true);
+		for (ulong i = 0xC00_0000; i < 0xFFF_0000; i += 0x1000)
+			Paging.KernelPaging.AllocFrame(cast(VirtualAddress)i, true, true); //true for test task manager
 
 		Paging.KernelPaging.Install();
 
