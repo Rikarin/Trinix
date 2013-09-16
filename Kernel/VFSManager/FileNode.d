@@ -35,5 +35,5 @@ class FileNode : FSNode {
 	}
 
 	//Syscalls
-	bool Accesible(ulong[]) { return true; }
+	override bool Accesible() { return true; }
 }

@@ -39,6 +39,33 @@ static:
 				
 			Log.Print("- ");
 			Log.Print(x.Name);
+
+			switch (x.Type) {
+				case FSType.DIRECTORY:
+					Log.Print("(D)");
+					break;
+				case FSType.MOUNTPOINT:
+					Log.Print("(M)");
+					break;
+				case FSType.PIPE:
+					Log.Print("(P)");
+					break;
+				case FSType.CHARDEVICE:
+					Log.Print("(C)");
+					break;
+				case FSType.BLOCKDEVICE:
+					Log.Print("(B)");
+					break;
+				case FSType.FILE:
+					Log.Print("(F)");
+					break;
+				case FSType.SYMLINK:
+					Log.Print("(S)");
+					break;
+				default:
+					Log.Print("(ERROR)");
+			}
+
 			Log.Print("\n");
 
 			if (x.Type & (FSType.DIRECTORY | FSType.MOUNTPOINT))

@@ -10,15 +10,13 @@ import System.DateTime;
 abstract class FileSystemProto {
 	private string identifier;
 
-protected:
+public:
 	bool isWritable;
 	DirectoryNode rootNode;
 	bool Unmount();
 
-
-public:
-	 bool IsWritable() { return isWritable; }
-	 DirectoryNode RootNode() { return rootNode; }
+	bool IsWritable() { return isWritable; }
+	DirectoryNode RootNode() { return rootNode; }
 
 	bool SetName(FSNode node, string name);
 	bool SetPermissions(FSNode node, uint perms);

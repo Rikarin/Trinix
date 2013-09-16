@@ -3,6 +3,7 @@ module VFSManager.DirectoryNode;
 import System.Collections.Generic.All;
 import VFSManager.FileSystemProto;
 import VFSManager.FSNode;
+import VFSManager.FileNode;
 import System.IFace;
 import System.DateTime;
 
@@ -81,7 +82,7 @@ public:
 	}
 
 	bool Mount(DirectoryNode childRoot) {
-		if (!Mountpointable()) {
+		if (Mountpointable()) {
 			mounts = childRoot;
 			return true;
 		}
@@ -152,13 +153,27 @@ public:
 
 		DirectoryNode ret;
 		if (fs !is null)
-			 ret = fs.CreateDirectory(this, name);
+			ret = fs.CreateDirectory(this, name);
 		else {
 			ret = new DirectoryNode(name, null);
 			AddNode(ret);
 		}
 
 		length = childrens.Count;
+		return ret;
+	}
+
+	FileNode CreateFile(string name) {
+		if (mounts)
+			mounts.CreateFile(name);
+
+		FileNode ret;
+		if (fs !is null)
+			ret = fs.CreateFile(this, name);
+		else
+			ret = null;
+
+		length = Childrens.Count;
 		return ret;
 	}
 
@@ -195,7 +210,6 @@ public:
 		length++;
 	}
 
-	//TODO create file...
 
 	//Syscalls
 	override bool Accesible() { return true; }

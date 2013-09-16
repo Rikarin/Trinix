@@ -90,7 +90,7 @@ extern(C) void StartSystem() {
 
 //==================== DEVICES ====================
 	Log.Print("Initializing timer ticks = 100Hz");
-	new Timer(100);
+	//new Timer(100);
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
@@ -116,8 +116,8 @@ extern(C) void StartSystem() {
 	//pajpa = new PipeDev(0x1000, "pajpa");
 
 	import TaskManager.Thread;
-	auto t = new Thread(cast(void function())&test);
-	t.Start();
+	//auto t = new Thread(cast(void function())&test);
+	//t.Start();
 
 	/*import VFSManager.PipeNode;
 	byte[] tmp = new byte[1];
@@ -128,7 +128,15 @@ extern(C) void StartSystem() {
 		tmp[0] = 0;
 	}*/
 
-	//problem niekde v GDT, TSS alebo IDT
+	
+	import FileSystem.TmpFS;
+	auto dir = VFS.Root.CreateDirectory("tmp");
+	TmpFS.Mount(null);
+
+	dir.CreateDirectory("testik");
+
+
+	VFS.PrintTree(VFS.Root);
 
 	//while (true) Log.PrintSP(":");
 
@@ -141,7 +149,7 @@ extern(C) void apEntry() {
 
 extern(C) void test() {
 	//while (true) Log.PrintSP("a");
-	Log.PrintSP("a");
+//	Log.PrintSP("a");
 	//asm {naked; int 6;}
 	//asm {naked; push RAX;}
 	//asm { syscall; }
