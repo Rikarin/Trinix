@@ -53,7 +53,7 @@ extern(C) void StartSystem() {
 
 	Log.Print("Initializing CPU");
 	CPU.Init();
-	asm { mov RBP, RSP; }
+	//asm { mov RBP, RSP; }
 
 	Log.Print("Initializing Physical Memory & Paging");
 	PhysMem.Init();
@@ -111,11 +111,11 @@ extern(C) void StartSystem() {
 	//import Devices.Mouse.PS2Mouse;
 	//new PS2Mouse(); need to fix...
 
-	VFS.PrintTree(VFS.Root);
+	//VFS.PrintTree(VFS.Root);
 
 	//pajpa = new PipeDev(0x1000, "pajpa");
 
-	import TaskManager.Thread;
+	//import TaskManager.Thread;
 	//auto t = new Thread(cast(void function())&test);
 	//t.Start();
 
@@ -131,7 +131,8 @@ extern(C) void StartSystem() {
 	
 	import FileSystem.TmpFS;
 	auto dir = VFS.Root.CreateDirectory("tmp");
-	TmpFS.Mount(null);
+
+	TmpFS.Mount(dir);
 
 	dir.CreateDirectory("testik");
 
