@@ -38,6 +38,7 @@ System:
 	Panic - vypis Rx registrov, inak vsetko O.K.
 	Res - resources list...
 	syscall handler
+	implementovat user permissions z VFSka
 ++/
 import FileSystem.PipeDev;
 __gshared PipeDev pajpa;

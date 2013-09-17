@@ -14,6 +14,7 @@ class Thread /*: Resource*/ {
 package:
 	static const auto STACK_SIZE = 0x1000;
 
+	ulong id; //unique ID for each thread
 	ulong rsp, rbp, rip;
 	long retval;
 	State state;
@@ -38,6 +39,8 @@ public:
 		Waiting,    //time wait
 		Sleeping,   //wait for driver resume
 	}
+
+	@property ulong ID() { return id; }
 
 	this(void function() ThreadEntry, void* data = null) {
 		//super(0, null);

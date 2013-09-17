@@ -13,7 +13,7 @@ extern(C) void idle_task();
 class Task {
 static:
 private:
-	__gshared ulong pid;
+	__gshared ulong pid, tid;
 
 
 package:
@@ -25,8 +25,10 @@ package:
 
 public:
 	@property ulong NewPID() { return pid++; }
+	@property ulong NewTID() { return tid++; }
 	@property Thread CurrentThread() { return currentThread; }
 	@property Process CurrentProcess() { return currentThread.parent; }
+	@property List!(Thread) GetAllThreads() { return Threads; }
 
 
 	bool Init() {

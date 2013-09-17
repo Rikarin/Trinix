@@ -5,8 +5,9 @@ import Core.DeviceManager;
 import VFSManager.FSNode;
 import VFSManager.DirectoryNode;
 
-import FileSystem.SerialDev;
 import FileSystem.TmpFS;
+import FileSystem.ProcFS;
+import FileSystem.SerialDev;
 import Devices.Port.SerialPort;
 
 
@@ -26,6 +27,10 @@ static:
 
 		Log.Print(" - Mounting TmpFS");
 		TmpFS.Mount(VFS.Root.CreateDirectory("tmp"));
+		Log.Result(true);
+
+		Log.Print(" - Mounting ProcFS");
+		ProcFS.Mount(VFS.Root.CreateDirectory("proc"));
 		Log.Result(true);
 
 		Log.Print(" - Setting up serial devices ttyS0 - ttyS3");
