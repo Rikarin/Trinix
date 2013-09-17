@@ -2,15 +2,16 @@ module Core.Main;
 
 import Core.Log;
 import Core.DeviceManager;
-import MemoryManager.Memory;
-import MemoryManager.PageAllocator;
-import MemoryManager.PhysMem;
-import MemoryManager.Heap;
 
-import Architectures.Multiprocessor;
-import Architectures.Paging;
-import Architectures.Main;
+import MemoryManager.Heap;
+import MemoryManager.Memory;
+import MemoryManager.PhysMem;
+import MemoryManager.PageAllocator;
+
 import Architectures.CPU;
+import Architectures.Main;
+import Architectures.Paging;
+import Architectures.Multiprocessor;
 
 import VFSManager.VFS;
 import TaskManager.Task;
@@ -28,7 +29,7 @@ Framework:
 	-Wchar atd.
 	Color - FromKnownColor name, ToUpper...
 	convert - prerobit na vlastny string bez alloc
-	list - search a delete
+	list - search
 
 System:
 	MP
