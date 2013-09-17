@@ -158,8 +158,7 @@ public:
 			ret = new DirectoryNode(name, null);
 			AddNode(ret);
 		}
-
-		length = childrens.Count;
+		
 		return ret;
 	}
 
@@ -173,7 +172,6 @@ public:
 		else
 			ret = null;
 
-		length = Childrens.Count;
 		return ret;
 	}
 

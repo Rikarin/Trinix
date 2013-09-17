@@ -53,7 +53,6 @@ extern(C) void StartSystem() {
 
 	Log.Print("Initializing CPU");
 	CPU.Init();
-	//asm { mov RBP, RSP; }
 
 	Log.Print("Initializing Physical Memory & Paging");
 	PhysMem.Init();
@@ -134,7 +133,10 @@ extern(C) void StartSystem() {
 
 	TmpFS.Mount(dir);
 
-	dir.CreateDirectory("testik");
+	//dir.CreateDirectory("testik");
+	auto file = dir.CreateFile("lol");
+
+//	file.Write(0, cast(byte[])"i have a small dick");
 
 
 	VFS.PrintTree(VFS.Root);
