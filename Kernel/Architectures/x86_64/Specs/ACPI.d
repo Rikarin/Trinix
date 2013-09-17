@@ -156,12 +156,12 @@ private:
 		}
 	}
 
-	void FindDescriptors() {
+	void FindDescriptors() { //TODO fix
 		ulong* endByte = cast(ulong *)((cast(ubyte *)ptrXSDT) + ptrXSDT.Length);
 		ulong* curByte = cast(ulong *)(ptrXSDT + 1);
 
 		for (; curByte < endByte; curByte++) {
-			DescriptorHeader* curTable = cast(DescriptorHeader*)((*curByte) + cast(ulong)Memory.VirtualStart);
+			DescriptorHeader* curTable = cast(DescriptorHeader *)Paging.KernelPaging.MapRegion(cast(PhysicalAddress)(*curByte), MADT.sizeof);
 
 			if (curTable.Signature[0] == 'A' &&
 					curTable.Signature[1] == 'P' &&

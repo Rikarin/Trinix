@@ -58,7 +58,8 @@ DISK_SIZE = 12207 #524288
 
 
 
-all: $(OBJS) Disk/TrinityOS-Kernel
+all: Disk/TrinityOS-Kernel
+iso: TrinityOS.iso
 
 
 
@@ -75,7 +76,7 @@ Disk/TrinityOS-Kernel: $(OBJS)
 #############
 #   Debug   #
 #############
-debug: all TrinityOS.img
+debug: all TrinityOS.iso
 	@${EMU} -hda TrinityOS.iso -boot c -m 512 -serial /dev/ttyS0 \
 	-vga std -monitor stdio #-smp 8 #-s -S
 	
@@ -92,9 +93,9 @@ runtime:
 ##################
 #   Disk image   # #@${GENEXT} -B 4096 -d Disk -q -b ${DISK_SIZE} -N 4096 TrinityOS.img
 ##################
-TrinityOS.img: Disk/TrinityOS-Kernel
+TrinityOS.iso: Disk/TrinityOS-Kernel
 	@echo "Generating a Hard Disk image..."
-	@rm -f TrinityOS.img
+	@rm -f TrinityOS.iso
 	@grub-mkrescue -o TrinityOS.iso Disk
 	@echo "Hard disk image is ready!"
 
@@ -105,6 +106,8 @@ TrinityOS.img: Disk/TrinityOS-Kernel
 #############
 clean:
 	@rm -rf $(OBJ_DIR)
+	@rm -rf TrinityOS.iso
+	@rm -rf Disk/TrinityOS-Kernel
 
 
 

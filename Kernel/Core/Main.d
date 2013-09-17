@@ -40,6 +40,7 @@ System:
 	syscall handler
 	implementovat user permissions z VFSka
 ++/
+
 import FileSystem.PipeDev;
 __gshared PipeDev pajpa;
 
@@ -117,10 +118,7 @@ extern(C) void StartSystem() {
 		tmp[0] = 0;
 	}*/
 
-
 	VFS.PrintTree(VFS.Root);
-
-	//while (true) Log.PrintSP(":");
 
 	while (true) {}
 }
@@ -149,3 +147,74 @@ extern(C) void test() {
 	//import Devices.Mouse.PS2Mouse;
 	//new PS2Mouse(); need to fix...
 */
+
+
+
+
+/*
+	struct aast {
+		int a;
+		int b;
+		int c;
+	}
+
+	aast struktura;
+	struktura.a = 5;
+	struktura.b = 10;
+	struktura.c = 56;
+
+	PrintStruct(struktura);
+
+
+
+void PrintStruct(T)(ref T s, bool recursive = false, ulong indent = 0) {
+	void tabs() {
+		for(ulong i = 0; i < indent; i++)
+			Log.Print("\t");
+	}
+
+	alias FieldNames!(T) fieldNames;
+
+	tabs();
+	indent++;
+
+	kprintfln!(T.stringof ~ " ({})")(&s, false);
+
+	foreach(i, _; s.tupleof) {
+		static if(is(typeof(s.tupleof[i]) == struct) ||
+			(isPointerType!(typeof(s.tupleof[i])) && is(typeof(*s.tupleof[i]) == struct))) {
+			tabs();
+
+			if(recursive) {
+				putstr(fieldNames[i]);
+				putstr(": ");
+
+				static if(isPointerType!(typeof(s.tupleof[i]))) {
+					if(s.tupleof[i] is null)
+						putstr("(null)\n");
+					else {
+						putchar('\n');
+						printStruct(*s.tupleof[i], true, indent, false);
+					}
+				} else {
+					putchar('\n');
+					printStruct(s.tupleof[i], true, indent, false);
+				}
+			} else {
+				static if(isPointerType!(typeof(s.tupleof[i]))) {
+					kprintfln!(fieldNames[i] ~ " = {x}")(s.tupleof[i], false);
+				} else {
+					kprintfln!(fieldType.stringof ~ " " ~ fieldNames[i] ~ " (struct)", false);
+				}
+			}
+		} else {
+			tabs();
+
+			static if(isIntType!(typeof(s.tupleof[i]))) {
+				kprintfln!(fieldNames[i] ~ " = 0x{x}")(s.tupleof[i], false);
+			} else {
+				kprintfln!(fieldNames[i] ~ " = {}")(s.tupleof[i], false);
+			}
+		}
+	}
+}*/

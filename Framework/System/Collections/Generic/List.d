@@ -15,8 +15,8 @@ class List(T) {
 	void popBack()         { RemoveAt(count - 1); }
 	
 
-	@property long Capacity() 	{ return array.length; }
-	@property long Count() 		{ return count; }
+	@property long Capacity() { return array.length; }
+	@property long Count()    { return count; }
 
 
 	void opIndexAssign(T value, long index) { array[index] = value; }
@@ -42,8 +42,9 @@ class List(T) {
 	}
 	
 	~this() {
-	//	foreach (x; array)
-	//		delete x;
+		static if (!is (T == struct))
+			foreach (x; array)
+				delete x;
 
 		delete array;
 	}
@@ -72,8 +73,9 @@ class List(T) {
 	}
 	
 	void Clear() {
-	//	foreach (x; array)
-	//		delete x;
+		static if (!is (T == struct))
+			foreach (x; array)
+				delete x;
 
 		array[0 .. $] = null;
 		count = 0;
@@ -139,7 +141,8 @@ class List(T) {
 		if (index < 0 || index > count)
 			throw new ArgumentOutOfRangeException();
 		
-	//	delete array[index];
+		static if (!is (T == struct))	
+			delete array[index];
 
 		array[index .. $] = array[index + 1 .. $];
 		count--;
@@ -152,9 +155,9 @@ class List(T) {
 		if (this.count < count - index || this.count < index)
 			throw new ArgumentException();
 		
-
-	//	foreach (i; index .. (index + count))
-	//		delete array[i];
+		static if (!is (T == struct))
+			foreach (i; index .. (index + count))
+				delete array[i];
 
 		array[index .. $] = array[index + count .. $];
 		this.count -= count;
