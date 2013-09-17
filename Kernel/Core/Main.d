@@ -89,54 +89,32 @@ extern(C) void StartSystem() {
 
 //==================== DEVICES ====================
 	Log.Print("Initializing timer ticks = 100Hz");
-	//new Timer(100);
+	new Timer(100);
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
 	//new PS2Keyboard();
 	Log.Result(true);
 
-	//Log.Print("Initializing VGA text output driver");
-	//VGATextOutput textOutput = new VGATextOutput();
-	//Log.Result(true);
-
 	Log.Print("Init complete, starting terminal");
 	Log.Result(false);
 
 
-	//setup display mode
-	//Display.SetMode(textOutput.GetModes()[0]);
+	/*pajpa = new PipeDev(0x1000, "pajpa");
 
-	//import Devices.Mouse.PS2Mouse;
-	//new PS2Mouse(); need to fix...
+	import TaskManager.Thread;
+	auto t = new Thread(cast(void function())&test);
+	t.Start();
 
-	//VFS.PrintTree(VFS.Root);
+	import VFSManager.PipeNode;
+	import System.Convert;
 
-	//pajpa = new PipeDev(0x1000, "pajpa");
-
-	//import TaskManager.Thread;
-	//auto t = new Thread(cast(void function())&test);
-	//t.Start();
-
-	/*import VFSManager.PipeNode;
 	byte[] tmp = new byte[1];
 	while (true) {
-		(cast(PipeNode)DeviceManager.DevFS.childrens[0]).Read(0, tmp);
-		import System.Convert;
+		pajpa.Read(0, tmp);
 		Log.PrintSP("\ntest: " ~ Convert.ToString(tmp[0]));
 		tmp[0] = 0;
 	}*/
-
-	
-	import FileSystem.TmpFS;
-	auto dir = VFS.Root.CreateDirectory("tmp");
-
-	TmpFS.Mount(dir);
-
-	//dir.CreateDirectory("testik");
-	auto file = dir.CreateFile("lol");
-
-//	file.Write(0, cast(byte[])"i have a small dick");
 
 
 	VFS.PrintTree(VFS.Root);
@@ -151,10 +129,22 @@ extern(C) void apEntry() {
 }
 
 extern(C) void test() {
-	//while (true) Log.PrintSP("a");
+//	while (true) pajpa.Write(0, ['x']);
 //	Log.PrintSP("a");
 	//asm {naked; int 6;}
 	//asm {naked; push RAX;}
 	//asm { syscall; }
 	while (true) { }
 }
+
+/* DEPRECATED:
+	//Log.Print("Initializing VGA text output driver");
+	//VGATextOutput textOutput = new VGATextOutput();
+	//Log.Result(true);
+
+	//setup display mode
+	//Display.SetMode(textOutput.GetModes()[0]);
+
+	//import Devices.Mouse.PS2Mouse;
+	//new PS2Mouse(); need to fix...
+*/

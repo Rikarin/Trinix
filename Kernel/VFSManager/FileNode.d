@@ -27,10 +27,16 @@ class FileNode : FSNode {
 	//bool IsWritableFS() { return fs.IsWritable(); }
 
 	override long Read(ulong offset, byte[] data) {
+		if (fs is null)
+			return 0;
+
 		return fs.Read(this, offset, data);
 	}
 
 	override long Write(ulong offset, byte[] data) {
+		if (fs is null)
+			return 0;
+		
 		return fs.Write(this, offset, data);
 	}
 

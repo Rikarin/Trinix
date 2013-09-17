@@ -6,6 +6,7 @@ import VFSManager.FSNode;
 import VFSManager.DirectoryNode;
 
 import FileSystem.SerialDev;
+import FileSystem.TmpFS;
 import Devices.Port.SerialPort;
 
 
@@ -21,6 +22,10 @@ static:
 
 		Log.Print(" - Setting up DevFS");
 		VFS.Root.AddNode(DeviceManager.DevFS);
+		Log.Result(true);
+
+		Log.Print(" - Mounting TmpFS");
+		TmpFS.Mount(VFS.Root.CreateDirectory("tmp"));
 		Log.Result(true);
 
 		Log.Print(" - Setting up serial devices ttyS0 - ttyS3");

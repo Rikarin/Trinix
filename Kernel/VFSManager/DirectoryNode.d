@@ -149,13 +149,14 @@ public:
 
 	DirectoryNode CreateDirectory(string name) {
 		if (mounts)
-			mounts.CreateDirectory(name);
+			return mounts.CreateDirectory(name);
 
 		DirectoryNode ret;
 		if (fs !is null)
 			ret = fs.CreateDirectory(this, name);
 		else {
 			ret = new DirectoryNode(name, null);
+			ret.ctime = ret.mtime = ret.atime = DateTime.Now;
 			AddNode(ret);
 		}
 		
@@ -164,15 +165,12 @@ public:
 
 	FileNode CreateFile(string name) {
 		if (mounts)
-			mounts.CreateFile(name);
+			return mounts.CreateFile(name);
 
-		FileNode ret;
-		if (fs !is null)
-			ret = fs.CreateFile(this, name);
-		else
-			ret = null;
+		if (fs is null)
+			return null;
 
-		return ret;
+		return fs.CreateFile(this, name);
 	}
 
 	bool Remove(FSNode child) {
