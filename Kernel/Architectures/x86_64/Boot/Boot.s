@@ -44,7 +44,7 @@ MbHdr:
  
 	; End Of Tags
 	DW	0, 0
-	DD	8
+	DD	0
 HdrEnd:
 
 
