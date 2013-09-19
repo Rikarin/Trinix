@@ -3,6 +3,7 @@ module FileSystem.TTY;
 import System.Collections.Generic.All;
 import VFSManager.PipeNode;
 import TaskManager.Process;
+import System.Termios;
 
 
 class TTY {
@@ -12,8 +13,8 @@ package:
 	PTYDev master;
 	TTYDev slave;
 
-	//window size
-	//termios
+	WinSize size;
+	Termios termios;
 
 	Queue!char inQueue;
 	Queue!char outQueue;
