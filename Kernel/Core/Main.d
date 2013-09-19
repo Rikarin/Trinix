@@ -138,6 +138,9 @@ extern(C) void test() {
 	while (true) { }
 }
 
+
+
+
 /* DEPRECATED:
 	//Log.Print("Initializing VGA text output driver");
 	//VGATextOutput textOutput = new VGATextOutput();
@@ -149,14 +152,6 @@ extern(C) void test() {
 	//import Devices.Mouse.PS2Mouse;
 	//new PS2Mouse(); need to fix...
 */
-
-class testclass {
-	int x;
-
-	this(int a) {
-		x = a;
-	}
-}
 
 
 /*

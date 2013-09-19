@@ -11,7 +11,7 @@ import Architectures.CPU;
 import Architectures.x86_64.Core.IDT;
 
 
-alias PageTableEntry!("primary") PTE;
+alias PageTableEntry!"primary" PTE;
 
 enum AccessMode : uint {
 	Read 			= 0,
@@ -133,7 +133,7 @@ template PageLevel(ubyte L) {
 				return cast(void *)Entries[index].Location;
 			}
 			
-			private PageTableEntry!("primary")[512] Entries;
+			private PageTableEntry!"primary"[512] Entries;
 		} else {
 			PageLevel!(L - 1)* GetTable(uint index) {
 				return Tables[index];
@@ -162,7 +162,7 @@ template PageLevel(ubyte L) {
 				return ret;
 			}
 			
-			private PageTableEntry!("secondary")[512] Entries;
+			private PageTableEntry!"secondary"[512] Entries;
 			private PageLevel!(L - 1)*[512] Tables;
 		}
 	}
@@ -171,18 +171,18 @@ template PageLevel(ubyte L) {
 class Paging {
 	public __gshared Paging KernelPaging;
 
-	private PageLevel!(4)* root;
+	private PageLevel!4* root;
 	private VirtualAddress regions = cast(VirtualAddress)0xFFF_0000_0000;
 
 	
 	this() {
-		root = cast(PageLevel!(4) *)PageAllocator.AllocPage(2);
-		*root = (PageLevel!(4)).init;
+		root = cast(PageLevel!4 *)PageAllocator.AllocPage(2);
+		*root = (PageLevel!4).init;
 	}
 
 	this(Paging other) {
-		root = cast(PageLevel!(4) *)PageAllocator.AllocPage(2);
-		*root = (PageLevel!(4)).init;	
+		root = cast(PageLevel!4 *)PageAllocator.AllocPage(2);
+		*root = (PageLevel!4).init;	
 
 		foreach (i; 0 .. 512) {
 			if (other.root.Entries[i].Present) {
@@ -291,19 +291,19 @@ class Paging {
 		start[1] = (add >> 21) & 511; //PDE
 		start[0] = (add >> 12) & 511; //PTE
 		
-		PageLevel!(3)* pdpt;
+		PageLevel!3* pdpt;
 		if (root.Entries[start[3]].Present)
 			pdpt = root.Tables[start[3]];
 		else
 			return cast(PhysicalAddress)(add & 0xFF_FFFF);
 			
-		PageLevel!(2)* pd;
+		PageLevel!2* pd;
 		if (pdpt.Entries[start[2]].Present)
 			pd = pdpt.Tables[start[2]];
 		else
 			return cast(PhysicalAddress)(add & 0xFF_FFFF);
 			
-		PageLevel!(1)* pt;
+		PageLevel!1* pt;
 		if (pd.Entries[start[1]].Present)
 			pt = pd.Tables[start[1]];
 		else

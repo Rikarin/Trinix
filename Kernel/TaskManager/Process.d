@@ -29,8 +29,8 @@ package:
 
 	DirectoryNode cwd;
 	Paging paging;
-	List!(Thread) threads;
-	List!(FSNode) descriptors;
+	List!Thread threads;
+	List!FSNode descriptors;
 
 public:
 	enum State : ubyte {
@@ -51,8 +51,8 @@ public:
 		ret.paging      = Paging.KernelPaging;
 		ret.cwd         = VFS.Root;
 
-		ret.descriptors = new List!(FSNode)();
-		ret.threads     = new List!(Thread)();
+		ret.descriptors = new List!FSNode();
+		ret.threads     = new List!Thread();
 
 		ret.descriptors.Add(DeviceManager.DevFS.Childrens[0]); //keyboard stdin
 

@@ -31,22 +31,22 @@ public:
 		//initialize PIT Ch 2 in one-shot mode
 		//waiting 1 sec could slow down boot time considerably,
 		//so we'll wait 1/100 sec, and multiply the counted ticks
-		Port.Write!(ubyte)(0x61, (Port.Read!(ubyte)(0x61) & 0xFD) | 1);
-		Port.Write!(ubyte)(0x43, 0xB2);
+		Port.Write!ubyte(0x61, (Port.Read!ubyte(0x61) & 0xFD) | 1);
+		Port.Write!ubyte(0x43, 0xB2);
 
-		Port.Write!(ubyte)(0x42, 0x9B);
-		Port.Read!(ubyte)(0x60);
-		Port.Write!(ubyte)(0x42, 0x2E);
+		Port.Write!ubyte(0x42, 0x9B);
+		Port.Read!ubyte(0x60);
+		Port.Write!ubyte(0x42, 0x2E);
 
 		//reset PIT one-shot counter (start counting)
-		div = Port.Read!(ubyte)(0x61) & 0xFE;
-		Port.Write!(ubyte)(0x61, div);
-		Port.Write!(ubyte)(0x61, div | 1);
+		div = Port.Read!ubyte(0x61) & 0xFE;
+		Port.Write!ubyte(0x61, div);
+		Port.Write!ubyte(0x61, div | 1);
 		//reset APIC timer (set counter to -1)
 		LocalAPIC.apicRegisters.TmrInitialCount = 0xFFFFFFFF;
 
 		//now wait until PIT counter reaches zero
-		while (!(Port.Read!(ubyte)(0x61) & 0x20)) { }
+		while (!(Port.Read!ubyte(0x61) & 0x20)) { }
 
 		//stop APIC timer
 		LocalAPIC.apicRegisters.TmrLocalVectorTable = 0x10000;

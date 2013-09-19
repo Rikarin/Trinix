@@ -49,10 +49,10 @@ class VGATextOutput : DisplayProto {
 	 override void MoveCursor(ushort line, ushort column) {
 	 	uint csrLocation = line * columns + column;
 
-	 	Port.Write!(ubyte)(0x3D4, 14);
-	 	Port.Write!(ubyte)(0x3D5, csrLocation >> 8);
-	 	Port.Write!(ubyte)(0x3D4, 15);
-	 	Port.Write!(ubyte)(0x3D5, csrLocation & 0xFF);
+	 	Port.Write!ubyte(0x3D4, 14);
+	 	Port.Write!ubyte(0x3D5, csrLocation >> 8);
+	 	Port.Write!ubyte(0x3D4, 15);
+	 	Port.Write!ubyte(0x3D5, csrLocation & 0xFF);
 	 }
 
 	 override void Clear() {

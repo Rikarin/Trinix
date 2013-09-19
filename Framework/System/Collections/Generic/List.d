@@ -215,7 +215,7 @@ class List(T) {
 		if (match is null)
 			throw new ArgumentNullException();
 	
-		List!T ret = new List!(T);
+		List!T ret = new List!T;
 		Item!(long, T) item = new Item!(long, T)();
 
 		for (long i = 0; i < count; i++) {

@@ -19,12 +19,12 @@ private:
 	//	{FNIF_OBJTYPE, &FSNode.SCall}
 	];
 	
-	__gshared List!(Resource) resources;
+	__gshared List!Resource resources;
 
 
 public:
 	bool Init() {
-		resources = new List!(Resource)(0x200);
+		resources = new List!Resource(0x200);
 		return true;
 	}
 

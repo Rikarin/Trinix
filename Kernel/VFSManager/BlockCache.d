@@ -16,7 +16,7 @@ private:
 	}
 
 	BlockDeviceProto dev;
-	List!(CachedBlock) cache;
+	List!CachedBlock cache;
 
 
 	bool GetCache(ulong block, byte[] data) {
@@ -57,7 +57,7 @@ private:
 public:
 	this(BlockDeviceProto dev) {
 		this.dev = dev;
-		cache = new List!(CachedBlock)();
+		cache = new List!CachedBlock();
 	}
 
 	~this() {

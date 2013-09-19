@@ -28,7 +28,7 @@ private:
 		DeviceInfo info;
 	}
 	
-	__gshared List!(Data) devices;
+	__gshared List!Data devices;
 	__gshared DeviceProto IRQHandler[16];
 	
 	
@@ -38,7 +38,7 @@ static:
 
 
 	bool Init() {
-		devices = new List!(Data)();
+		devices = new List!Data();
 		DevFS = new DirectoryNode("dev", null);
 		IRQHandler[] = null;
 
@@ -89,8 +89,8 @@ static:
 	}
 
 
-	List!(DeviceProto) GetDevsByType(DeviceType type) {
-		List!(DeviceProto) ret = new List!(DeviceProto)();
+	List!DeviceProto GetDevsByType(DeviceType type) {
+		List!DeviceProto ret = new List!DeviceProto();
 
 		foreach (x; devices) {
 			if (x.info.Type == type)

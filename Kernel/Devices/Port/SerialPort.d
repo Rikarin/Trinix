@@ -26,32 +26,32 @@ class SerialPort {
 	}
 
 	void Open() {
-		Port.Write!(byte)(cast(short)(port + 1), 0x00);
-		Port.Write!(byte)(cast(short)(port + 3), 0x80);
-		Port.Write!(byte)(cast(short)(port + 0), 0x03);
-		Port.Write!(byte)(cast(short)(port + 1), 0x00);
-		Port.Write!(byte)(cast(short)(port + 3), 0x03);
-		Port.Write!(byte)(cast(short)(port + 2), 0xC7);
-		Port.Write!(byte)(cast(short)(port + 4), 0x0B);
+		Port.Write!ubyte(cast(short)(port + 1), 0x00);
+		Port.Write!ubyte(cast(short)(port + 3), 0x80);
+		Port.Write!ubyte(cast(short)(port + 0), 0x03);
+		Port.Write!ubyte(cast(short)(port + 1), 0x00);
+		Port.Write!ubyte(cast(short)(port + 3), 0x03);
+		Port.Write!ubyte(cast(short)(port + 2), 0xC7);
+		Port.Write!ubyte(cast(short)(port + 4), 0x0B);
 		
 		open = true;
 	}
 
 	bool Recieved() {
-		return (Port.Read!(byte)(cast(short)(port + 5)) & 1) != 0;
+		return (Port.Read!ubyte(cast(short)(port + 5)) & 1) != 0;
 	}
 
 	bool IsTransmitEmpty() {
-		return (Port.Read!(byte)(cast(short)(port + 5)) & 0x20) != 0;
+		return (Port.Read!ubyte(cast(short)(port + 5)) & 0x20) != 0;
 	}
 
 	char Read() {
-		return Recieved() ? Port.Read!(byte)(port) : 0;
+		return Recieved() ? Port.Read!ubyte(port) : 0;
 	}
 
 	void Write(char c) {
 		while (!IsTransmitEmpty()) { }
-		Port.Write!(byte)(port, c);
+		Port.Write!ubyte(port, c);
 	}
 
 	void Write(string text) {

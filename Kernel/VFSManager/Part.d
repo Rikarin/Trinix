@@ -25,8 +25,8 @@ private:
         mixin(Bitfield!(_endSC, "EndSector", 6, "EndCylinder", 10));
     };
 
-    __gshared List!(BlockDeviceProto) devices;
-    __gshared List!(Partition) partitions;
+    __gshared List!BlockDeviceProto devices;
+    __gshared List!Partition partitions;
 
 
     void ReadPartTable(BlockDeviceProto dev) {

@@ -18,37 +18,37 @@ private:
 public:
 	this() {
 		Port.Cli();
-		ubyte code, status = Port.Read!(ubyte)(0x64);
+		ubyte code, status = Port.Read!ubyte(0x64);
 		while ((status & 1) == 1) {
-			Port.Read!(ubyte)(0x60);
-			status = Port.Read!(ubyte)(0x64);
+			Port.Read!ubyte(0x60);
+			status = Port.Read!ubyte(0x64);
 		}
 
-		Port.Write!(ubyte)(0x60, 0xF2);
+		Port.Write!ubyte(0x60, 0xF2);
 		do {
-			status = Port.Read!(ubyte)(0x64);
+			status = Port.Read!ubyte(0x64);
 		} while (!(status & 1));
 
 		while ((status & 1) == 1) {
-			code   = Port.Read!(ubyte)(0x60);
-			status = Port.Read!(ubyte)(0x64);
+			code   = Port.Read!ubyte(0x60);
+			status = Port.Read!ubyte(0x64);
 		}
 
 		if (code == 0x41)
 			keyset = 1;
 		else {
-			Port.Write!(ubyte)(0x60, 0xF0);
-			Port.Write!(ubyte)(0x60, 0x00);
+			Port.Write!ubyte(0x60, 0xF0);
+			Port.Write!ubyte(0x60, 0x00);
 
 			do {
-				status = Port.Read!(ubyte)(0x64);
+				status = Port.Read!ubyte(0x64);
 			} while (!(status & 1));
 
 
-			status = Port.Read!(ubyte)(0x64);
+			status = Port.Read!ubyte(0x64);
 			while ((status & 1) == 1) {
-				code   = Port.Read!(ubyte)(0x60);
-				status = Port.Read!(ubyte)(0x64);
+				code   = Port.Read!ubyte(0x60);
+				status = Port.Read!ubyte(0x64);
 			}
 
 			if (code == 0x43)
@@ -67,12 +67,12 @@ public:
 		PIC.EOI(1);
 		LocalAPIC.EOI();
 
-		status = Port.Read!(ubyte)(0x64);
+		status = Port.Read!ubyte(0x64);
 		while ((status & 1) == 1) {
-			Port.Read!(ubyte)(0x60);
-			status = Port.Read!(ubyte)(0x64);
+			Port.Read!ubyte(0x60);
+			status = Port.Read!ubyte(0x64);
 		}
-		Port.Write!(ubyte)(0x60, 0xF4);
+		Port.Write!ubyte(0x60, 0xF4);
 		Port.Sti();
 
 		
@@ -87,7 +87,7 @@ public:
         uint makeState;
 		bool upState;
 
-		ubyte data = Port.Read!(ubyte)(0x60);
+		ubyte data = Port.Read!ubyte(0x60);
 		if (!data)
 			return;
 

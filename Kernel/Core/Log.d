@@ -14,10 +14,10 @@ static:
 	
 	void Init() {
 		//Hide cursor
-		Port.Write!(byte)(0x3D4, 0x0F);
-		Port.Write!(byte)(0x3D5, 0);
-		Port.Write!(byte)(0x3D4, 0x0E);
-		Port.Write!(byte)(0x3D5, 0);
+		Port.Write!byte(0x3D4, 0x0F);
+		Port.Write!byte(0x3D5, 0);
+		Port.Write!byte(0x3D4, 0x0E);
+		Port.Write!byte(0x3D5, 0);
 
 		debug (only)
 			sp = new LogSerialPort(SerialPort.COM1);

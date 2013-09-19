@@ -16,7 +16,7 @@ template BitfieldImpl(const char[] typeStr, const char[] nameStr, int offset, Ar
 	else {
 		const Name = Args[0];
 		const Size = Args[1];
-		const Mask = Bitmask!(Size);
+		const Mask = Bitmask!Size;
 
 		const char[] Getter = "@property public " ~ typeStr ~ " " ~ Name ~ "() { return (" ~ nameStr ~ " >> " ~ Itoh!(offset) ~ ") & " ~ Itoh!(Mask) ~ "; } \n";
 
@@ -41,7 +41,7 @@ template Digits(long i) {
 
 template IntToStr(ulong i, int base) {
 	static if(i >= base)
-		const char[] IntToStr = IntToStr!(i / base, base) ~ Digits!(base)[i % base];
+		const char[] IntToStr = IntToStr!(i / base, base) ~ Digits!base[i % base];
 	else
-		const char[] IntToStr = "" ~ Digits!(base)[i % base];
+		const char[] IntToStr = "" ~ Digits!base[i % base];
 }

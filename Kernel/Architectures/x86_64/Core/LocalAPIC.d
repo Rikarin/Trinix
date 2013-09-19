@@ -30,8 +30,8 @@ static:
 	}
 	
 	void Install() {
-		Port.Write!(byte)(0x22, 0x70);
-		Port.Write!(byte)(0x23, 0x01);
+		Port.Write!byte(0x22, 0x70);
+		Port.Write!byte(0x23, 0x01);
 		
 		apicRegisters.DestinationFormat     = 0xFFFFFFFF;
 		apicRegisters.LogicalDestination    = (1 << GetLocalAPICId()) << 24;

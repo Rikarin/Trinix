@@ -31,7 +31,7 @@ static:
 	byte ToByte(short value)  { return cast(byte)value; }
 	byte ToByte(int value)    { return cast(byte)value; }
 	byte ToByte(long value)   { return cast(byte)value; }
-	byte ToByte(string value, int fromBase = 10) { return ConvertFromString!(byte)(value, fromBase); }
+	byte ToByte(string value, int fromBase = 10) { return ConvertFromString!byte(value, fromBase); }
 
 	char ToChar(bool value)   { throw new InvalidCastException(); }
 	char ToChar(char value)   { return cast(char)value; }
@@ -59,7 +59,7 @@ static:
 	double ToDouble(short value)  { return cast(double)value; }
 	double ToDouble(int value)    { return cast(double)value; }
 	double ToDouble(long value)   { return cast(double)value; }
-	double ToDouble(string value, int fromBase = 10) { return ConvertFromString!(double)(value, fromBase); }
+	double ToDouble(string value, int fromBase = 10) { return ConvertFromString!double(value, fromBase); }
 
 	short ToInt16(bool value)   { return value ? 1 : 0; }
 	short ToInt16(char value)   { return cast(short)value; }
@@ -73,7 +73,7 @@ static:
 	short ToInt16(short value)  { return cast(short)value; }
 	short ToInt16(int value)    { return cast(short)value; }
 	short ToInt16(long value)   { return cast(short)value; }
-	short ToInt16(string value, int fromBase = 10) { return ConvertFromString!(short)(value, fromBase); }
+	short ToInt16(string value, int fromBase = 10) { return ConvertFromString!short(value, fromBase); }
 
 	int ToInt32(bool value)   { return value ? 1 : 0; }
 	int ToInt32(char value)   { return cast(int)value; }
@@ -87,7 +87,7 @@ static:
 	int ToInt32(short value)  { return cast(int)value; }
 	int ToInt32(int value)    { return cast(int)value; }
 	int ToInt32(long value)   { return cast(int)value; }
-	int ToInt32(string value, int fromBase = 10) { return ConvertFromString!(int)(value, fromBase); }
+	int ToInt32(string value, int fromBase = 10) { return ConvertFromString!int(value, fromBase); }
 
 	long ToInt64(bool value)   { return value ? 1 : 0; }
 	long ToInt64(char value)   { return cast(long)value; }
@@ -101,7 +101,7 @@ static:
 	long ToInt64(short value)  { return cast(long)value; }
 	long ToInt64(int value)    { return cast(long)value; }
 	long ToInt64(long value)   { return cast(long)value; }
-	long ToInt64(string value, int fromBase) { return ConvertFromString!(long)(value, fromBase); }
+	long ToInt64(string value, int fromBase) { return ConvertFromString!long(value, fromBase); }
 
 	ubyte ToUByte(bool value)   { return value ? 1 : 0; }
 	ubyte ToUByte(char value)   { return cast(ubyte)value; }
@@ -115,7 +115,7 @@ static:
 	ubyte ToUByte(short value)  { return cast(ubyte)value; }
 	ubyte ToUByte(int value)    { return cast(ubyte)value; }
 	ubyte ToUByte(long value)   { return cast(ubyte)value; }
-	ubyte ToUByte(string value, int fromBase = 10) { return ConvertFromString!(ubyte)(value, fromBase); }
+	ubyte ToUByte(string value, int fromBase = 10) { return ConvertFromString!ubyte(value, fromBase); }
 	
 	ushort ToUInt16(bool value)   { return value ? 1 : 0; }
 	ushort ToUInt16(char value)   { return cast(ushort)value; }
@@ -129,7 +129,7 @@ static:
 	ushort ToUInt16(short value)  { return cast(ushort)value; }
 	ushort ToUInt16(int value)    { return cast(ushort)value; }
 	ushort ToUInt16(long value)   { return cast(ushort)value; }
-	ushort ToUInt16(string value, int fromBase = 10) { return ConvertFromString!(ushort)(value, fromBase); }
+	ushort ToUInt16(string value, int fromBase = 10) { return ConvertFromString!ushort(value, fromBase); }
 
 	uint ToUInt32(bool value)   { return value ? 1 : 0; }
 	uint ToUInt32(char value)   { return cast(uint)value; }
@@ -143,7 +143,7 @@ static:
 	uint ToUInt32(short value)  { return cast(uint)value; }
 	uint ToUInt32(int value)    { return cast(uint)value; }
 	uint ToUInt32(long value)   { return cast(uint)value; }
-	uint ToUInt32(string value, int fromBase = 10) { return ConvertFromString!(uint)(value, fromBase); }
+	uint ToUInt32(string value, int fromBase = 10) { return ConvertFromString!uint(value, fromBase); }
 
 	ulong ToUInt64(bool value)   { return value ? 1 : 0; }
 	ulong ToUInt64(char value)   { return cast(ulong)value; }
@@ -157,7 +157,7 @@ static:
 	ulong ToUInt64(short value)  { return cast(ulong)value; }
 	ulong ToUInt64(int value)    { return cast(ulong)value; }
 	ulong ToUInt64(long value)   { return cast(ulong)value; }
-	ulong ToUInt64(string value, int fromBase) { return ConvertFromString!(ulong)(value, fromBase); }
+	ulong ToUInt64(string value, int fromBase) { return ConvertFromString!ulong(value, fromBase); }
 
 
 	string ToString(bool value)   { return value ? "True" : "False"; }

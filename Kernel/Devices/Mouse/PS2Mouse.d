@@ -34,36 +34,36 @@ private:
 
 	void Wait(byte type) {
 	    foreach (i; 0 .. 100000) {
-	        if ((Port.Read!(byte)(Bits.STATUS) & (type ? Bits.BBIT : Bits.ABIT)) == (type ? 1 : 0))
+	        if ((Port.Read!byte(Bits.STATUS) & (type ? Bits.BBIT : Bits.ABIT)) == (type ? 1 : 0))
 	            return;
 	    }
 	}
 
 	void Write(int value) {
     	Wait(1);
-    	Port.Write!(byte)(Bits.STATUS, Bits.WRITE);
+    	Port.Write!ubyte(Bits.STATUS, Bits.WRITE);
     	Wait(1);
-    	Port.Write!(byte)(Bits.PORT, value);
+    	Port.Write!ubyte(Bits.PORT, value);
 	}
 
 	byte Read() {
     	Wait(0);
-    	return Port.Read!(byte)(Bits.PORT);
+    	return Port.Read!ubyte(Bits.PORT);
 	}
 
 public:
 	this() {
 		Port.Cli();
 		Wait(1);
-		Port.Write!(byte)(Bits.STATUS, 0xA8);
+		Port.Write!ubyte(Bits.STATUS, 0xA8);
 		Wait(1);
-		Port.Write!(byte)(Bits.STATUS, 0x20);
+		Port.Write!ubyte(Bits.STATUS, 0x20);
 		Wait(0);
-		byte status = Port.Read!(byte)(Bits.PORT) | 2;
+		byte status = Port.Read!ubyte(Bits.PORT) | 2;
 		Wait(1);
-		Port.Write!(byte)(Bits.STATUS, 0x60);
+		Port.Write!ubyte(Bits.STATUS, 0x60);
 		Wait(1);
-		Port.Write!(byte)(Bits.PORT, status);
+		Port.Write!ubyte(Bits.PORT, status);
 		Write(0xF6);
 		Read();
 		Write(0xF4);
@@ -87,8 +87,8 @@ public:
 
 		byte status;
 		do {
-			status = Port.Read!(byte)(Bits.STATUS);
-			byte mouseIn = Port.Read!(byte)(Bits.PORT);
+			status = Port.Read!ubyte(Bits.STATUS);
+			byte mouseIn = Port.Read!ubyte(Bits.PORT);
 			if (status & Bits.F_BIT) {
 				final switch (pointer) {
 					case 0:

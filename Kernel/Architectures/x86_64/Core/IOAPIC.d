@@ -84,8 +84,8 @@ private:
 
 	void InitUnit(ubyte ioAPICID, PhysicalAddress ioAPICAddress, bool hasIMCR) {
 		if (hasIMCR) {
-			Port.Write!(byte)(0x22, 0x70);
-			Port.Write!(byte)(0x23, 0x01);
+			Port.Write!byte(0x22, 0x70);
+			Port.Write!byte(0x23, 0x01);
 		}
 
 		ubyte* IOAPICVirtAddr = Paging.KernelPaging.MapRegion(ioAPICAddress, 0x1000).ptr;

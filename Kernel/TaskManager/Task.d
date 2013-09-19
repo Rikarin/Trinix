@@ -17,8 +17,8 @@ private:
 
 
 package:
-	__gshared List!(Process) Procs;
-	__gshared List!(Thread) Threads;
+	__gshared List!Process Procs;
+	__gshared List!Thread Threads;
 	__gshared Thread currentThread;
 	__gshared Thread idleThread;
 
@@ -28,12 +28,12 @@ public:
 	@property ulong NewTID() { return tid++; }
 	@property Thread CurrentThread() { return currentThread; }
 	@property Process CurrentProcess() { return currentThread.parent; }
-	@property List!(Thread) GetAllThreads() { return Threads; }
+	@property List!Thread GetAllThreads() { return Threads; }
 
 
 	bool Init() {
-		Procs = new List!(Process)();
-		Threads = new List!(Thread)();
+		Procs = new List!Process();
+		Threads = new List!Thread();
 
 		Process.Init();
 		currentThread = Threads[0];
@@ -116,7 +116,7 @@ public:
 		for ex. if 3 threads are w8ing for input so they call sleep for theyselfs and
 		w8 for any1 call write func who call wakeup func who wakes up all sleeping threads
 	*/
-	void Wakeup(List!(Thread) queue) {
+	void Wakeup(List!Thread queue) {
 		foreach (x; queue)
 			x.state = Thread.State.Running;
 	}

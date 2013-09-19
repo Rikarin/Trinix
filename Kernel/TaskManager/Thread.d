@@ -118,7 +118,7 @@ public:
 		TSS.Table.RSP0 = kernelStack + STACK_SIZE;
 	}
 
-	void Sleep(List!(Thread) queue) {
+	void Sleep(List!Thread queue) {
 		state = State.Sleeping;
 		queue.Add(this);
 	}

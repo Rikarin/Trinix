@@ -10,7 +10,7 @@ import System.DateTime;
 
 class DirectoryNode : FSNode {
 package:
-	public List!(FSNode) childrens;
+	public List!FSNode childrens;
 	bool isLoaded = false;
 	DirectoryNode mounts = null;
 
@@ -62,7 +62,7 @@ public:
 		];*/
 		//AddCallTable(callTable);
 
-		childrens   = new List!(FSNode)();
+		childrens   = new List!FSNode();
 		this.name   = name;
 		this.fs     = fs;
 		this.perms  = perms;

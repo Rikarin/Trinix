@@ -12,7 +12,7 @@ import System.DateTime;
 
 class PipeDev : PipeNode {
 private:
-	List!(Thread) waitingQueue;
+	List!Thread waitingQueue;
 	long refcount;
 	Mutex mutex;
 
@@ -26,7 +26,7 @@ public:
 		this.length = length;
 		atime = ctime = mtime = DateTime.Now;
 
-		waitingQueue = new List!(Thread)();
+		waitingQueue = new List!Thread();
 		buffer = new byte[length];
 		mutex = new Mutex();
 	}
