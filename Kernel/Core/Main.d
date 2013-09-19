@@ -119,7 +119,27 @@ extern(C) void StartSystem() {
 		tmp[0] = 0;
 	}*/
 
-	VFS.PrintTree(VFS.Root);
+	//VFS.PrintTree(VFS.Root);
+
+	import System.Collections.Generic.List;
+	auto ll = new List!(testclass)();
+
+	ll.Add(new testclass(1));
+	ll.Add(new testclass(2));
+	ll.Add(new testclass(3));
+	ll.Add(new testclass(4));
+	ll.Add(new testclass(5));
+
+	foreach (x; ll) {
+		import System.Convert;
+		Log.Print(Convert.ToString(x.x));
+	}
+
+	foreach (x; ll) {
+		import System.Convert;
+		Log.Print(Convert.ToString(x.x));
+	}
+
 
 	while (true) {}
 }
@@ -149,7 +169,13 @@ extern(C) void test() {
 	//new PS2Mouse(); need to fix...
 */
 
+class testclass {
+	int x;
 
+	this(int a) {
+		x = a;
+	}
+}
 
 
 /*

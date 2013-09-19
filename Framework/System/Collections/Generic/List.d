@@ -8,11 +8,12 @@ class List(T) {
 	private long count;
 
 	//foreach
-	@property T front()    { return array[0]; }
+	private ulong mback, mfront;
+	@property T front()    { return array[mfront]; }
 	@property T back()     { return array[count]; }
-	@property bool empty() { return !count; }
-	void popFront()        { RemoveAt(0); }
-	void popBack()         { RemoveAt(count - 1); }
+	@property bool empty() { return count == mfront; }
+	void popFront()        { mfront++; }
+	void popBack()         { mback++; }
 	
 
 	@property long Capacity() { return array.length; }
@@ -27,9 +28,9 @@ class List(T) {
 	
 	private void Resize() {
 		T[] newArray = new T[Capacity * 2];
-		newArray[] = array;
+		newArray[] = array[0 .. $];
 
-		delete array;
+		//delete array;
 		array = newArray;
 	}
 	

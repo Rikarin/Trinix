@@ -18,7 +18,7 @@ extern(C) void* malloc(ulong size, uint ba) {
 		return cast(void *)PageAllocator.AllocPage(cast(uint)size / 0x1000); 
 }
 
-extern(C) void free(void* ptr) {
+extern(C) void free(void* ptr) { return;
 	if (Memory.test == 123456789)
 		Log.PrintSP("#");
 
