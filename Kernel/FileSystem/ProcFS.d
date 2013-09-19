@@ -60,11 +60,11 @@ class ProcFS : FileSystemProto {
 		return true;
 	}
 
-	override long Read(FileNode file, ulong offset, byte[] data) {
+	override ulong Read(FileNode file, ulong offset, byte[] data) {
 		return 0;
 	}
 
-	override long Write(FileNode file, ulong offset, byte[] data) {
+	override ulong Write(FileNode file, ulong offset, byte[] data) {
 		return 0;
 	}
 }

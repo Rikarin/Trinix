@@ -17,7 +17,7 @@ class SerialDev : CharNode {
 		atime = ctime = mtime = DateTime.Now;
 	}
 
-	override long Read(ulong offset, byte[] data) {
+	override ulong Read(ulong offset, byte[] data) {
 		foreach(ref x; data) {
 			while (!dev.Recieved()) 
 				Task.Switch();
@@ -28,7 +28,7 @@ class SerialDev : CharNode {
 		return data.length;
 	}
 
-	override long Write(ulong offset, byte[] data) {
+	override ulong Write(ulong offset, byte[] data) {
 		foreach (x; data)
 			dev.Write(x);
 

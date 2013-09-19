@@ -54,7 +54,7 @@ class TmpFS : FileSystemProto {
 	override bool LoadContent(DirectoryNode dir) { return true; }
 	override Partition GetPartition() { return null; }
 
-	override long Read(FileNode file, ulong offset, byte[] data) {
+	override ulong Read(FileNode file, ulong offset, byte[] data) {
 		if (file.Length <= offset)
 			return 0;
 
@@ -66,7 +66,7 @@ class TmpFS : FileSystemProto {
 		return len;
 	}
 
-	override long Write(FileNode file, ulong offset, byte[] data) {
+	override ulong Write(FileNode file, ulong offset, byte[] data) {
 		TmpFileNode node = cast(TmpFileNode)file;
 		ulong end = offset + data.length;
 

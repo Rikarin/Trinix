@@ -11,14 +11,14 @@ class RandomDev : CharNode {
 		length = 1024;
 	}
 
-	override long Read(ulong offset, byte[] data) {
+	override ulong Read(ulong offset, byte[] data) {
 		foreach (ref x; data)
 			x = Random.Number & 0xFF;
 
 		return data.length;
 	}
 
-	override long Write(ulong offset, byte[] data) {
+	override ulong Write(ulong offset, byte[] data) {
 		return data.length;
 	}
 }

@@ -28,8 +28,8 @@ public:
 	bool SetModifiedTime(FSNode node, DateTime time);
 	bool SetAccessedTime(FSNode node, DateTime time);
 
-	long Read(FileNode file, ulong offset, byte[] data);
-	long Write(FileNode file, ulong offset, byte[] data);
+	ulong Read(FileNode file, ulong offset, byte[] data);
+	ulong Write(FileNode file, ulong offset, byte[] data);
 
 	bool LoadContent(DirectoryNode dir);
 	FileNode CreateFile(DirectoryNode parent, string name);

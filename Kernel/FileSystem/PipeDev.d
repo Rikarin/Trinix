@@ -46,7 +46,7 @@ public:
 			refcount--;
 	}
 
-	override long Read(ulong offset, byte[] data) {
+	override ulong Read(ulong offset, byte[] data) {
 		ulong collected;
 
 		while (!collected) {
@@ -66,7 +66,7 @@ public:
 		return collected;
 	}
 
-	override long Write(ulong offset, byte[] data) {
+	override ulong Write(ulong offset, byte[] data) {
 		ulong written;
 
 		while (written < data.length) {
@@ -90,7 +90,7 @@ public:
 
 
 private:
-	long UnreadCount() {
+	ulong UnreadCount() {
 		if (writePtr == readPtr)
 			return 0;
 

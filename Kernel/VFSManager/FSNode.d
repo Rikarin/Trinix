@@ -34,8 +34,8 @@ public:
 	@property FSType Type();
 	bool Removable() { return true; } //if we can remove node from directory tree
 	
-	long Read(ulong offset, byte[] data);
-	long Write(ulong offset, byte[] data);
+	ulong Read(ulong offset, byte[] data);
+	ulong Write(ulong offset, byte[] data);
 
 	this() {
 		const CallTable[] callTable = [

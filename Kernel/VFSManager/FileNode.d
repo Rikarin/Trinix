@@ -26,14 +26,14 @@ class FileNode : FSNode {
 	//@property override bool Used() { return readers || writers; }
 	//bool IsWritableFS() { return fs.IsWritable(); }
 
-	override long Read(ulong offset, byte[] data) {
+	override ulong Read(ulong offset, byte[] data) {
 		if (fs is null)
 			return 0;
 
 		return fs.Read(this, offset, data);
 	}
 
-	override long Write(ulong offset, byte[] data) {
+	override ulong Write(ulong offset, byte[] data) {
 		if (fs is null)
 			return 0;
 		
