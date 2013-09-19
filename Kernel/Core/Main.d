@@ -103,13 +103,13 @@ extern(C) void StartSystem() {
 	Log.Result(false);
 
 
-	/*pajpa = new PipeDev(0x1000, "pajpa");
+	//pajpa = new PipeDev(0x1000, "pajpa");
 
 	import TaskManager.Thread;
 	auto t = new Thread(cast(void function())&test);
 	t.Start();
 
-	import VFSManager.PipeNode;
+	/*import VFSManager.PipeNode;
 	import System.Convert;
 
 	byte[] tmp = new byte[1];
@@ -120,25 +120,6 @@ extern(C) void StartSystem() {
 	}*/
 
 	//VFS.PrintTree(VFS.Root);
-
-	import System.Collections.Generic.List;
-	auto ll = new List!(testclass)();
-
-	ll.Add(new testclass(1));
-	ll.Add(new testclass(2));
-	ll.Add(new testclass(3));
-	ll.Add(new testclass(4));
-	ll.Add(new testclass(5));
-
-	foreach (x; ll) {
-		import System.Convert;
-		Log.Print(Convert.ToString(x.x));
-	}
-
-	foreach (x; ll) {
-		import System.Convert;
-		Log.Print(Convert.ToString(x.x));
-	}
 
 
 	while (true) {}

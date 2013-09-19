@@ -7,13 +7,13 @@ class List(T) {
 	private T[] array;
 	private long count;
 
-	//foreach
-	private ulong mback, mfront;
-	@property T front()    { return array[mfront]; }
-	@property T back()     { return array[count]; }
-	@property bool empty() { return count == mfront; }
-	void popFront()        { mfront++; }
-	void popBack()         { mback++; }
+	//FOREACH
+	private ulong _f, _b;
+	@property ref inout(T) front() inout { return array[_f]; }
+	//@property ref inout(T) back() inout  { return array[_b]; }
+	@property bool empty()               { if (count == _f) { _f = 0; return true; } return false; }
+	void popFront() { _f++; }
+	//void popBack()  { _b++; }
 	
 
 	@property long Capacity() { return array.length; }
@@ -28,7 +28,7 @@ class List(T) {
 	
 	private void Resize() {
 		T[] newArray = new T[Capacity * 2];
-		newArray[] = array[0 .. $];
+		newArray[0 .. array.length] = array[0 .. $];
 
 		//delete array;
 		array = newArray;

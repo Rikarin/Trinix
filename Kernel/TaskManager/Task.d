@@ -50,12 +50,12 @@ public:
 
 		long idx = Threads.IndexOf(currentThread) + 1;
 
-		foreach (x; Threads[idx .. $]) {
+		foreach (x; Threads) {
 			if (x.Valid(state) && x !is idleThread)
 				return x;
 		}
 
-		foreach (x; Threads[0 .. idx]) {
+		foreach (x; Threads) {
 			if (x.Valid(state) && x !is idleThread)
 				return x;
 		}
@@ -76,7 +76,7 @@ public:
 
 		rip = read_rip();
 		if (rip == 0xFEEDCAFEUL) {
-			foreach (x; Threads[0 .. $]) {
+			foreach (x; Threads) {
 				if (x !is null && x.Valid(Thread.State.Zombie))
 					Reap(x);
 			}
@@ -122,7 +122,7 @@ public:
 	}
 
 	void WakeupSleepers(DateTime time) {
-		foreach (x; Threads[0 .. $]) {
+		foreach (x; Threads) {
 			if (x !is null && x.Valid(Thread.State.Waiting) && x.waitFor.time >= time)
 				x.state = Thread.State.Running;
 		}

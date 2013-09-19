@@ -37,10 +37,10 @@ private:
 
 
 	ulong DoCall(ulong id, ulong[] params) {
-		foreach_reverse (x; callTables) {
-			if (x.id == id)
-				return x.CallBack(params);
-		}
+		//foreach_reverse (x; callTables) {
+		//	if (x.id == id)
+		//		return x.CallBack(params);
+		//}
 		
 		return ~0UL;
 	}
