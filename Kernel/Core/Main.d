@@ -96,7 +96,7 @@ extern(C) void StartSystem() {
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
-	//new PS2Keyboard();
+	new PS2Keyboard();
 	Log.Result(true);
 
 	Log.Print("Init complete, starting terminal");
@@ -130,11 +130,10 @@ extern(C) void apEntry() {
 }
 
 extern(C) void test() {
-//	while (true) pajpa.Write(0, ['x']);
-//	Log.PrintSP("a");
+	//while (true) Log.PrintSP("a");
 	//asm {naked; int 6;}
 	//asm {naked; push RAX;}
-	//asm { syscall; }
+	asm { syscall; }
 	while (true) { }
 }
 

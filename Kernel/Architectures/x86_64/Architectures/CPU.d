@@ -37,7 +37,7 @@ static:
 
 	
 	void Init() {
-		asm {naked;}
+		asm { naked; }
 		Log.Result(true);
 		
 		Log.Print(" - Enabling NX & SCE support");

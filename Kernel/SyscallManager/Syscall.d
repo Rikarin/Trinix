@@ -34,34 +34,39 @@ static:
 	void SyscallHandler() {
 		asm {
 			naked;
+
+			// Set data registers
+			mov AX, 0x10;
+			mov DS, AX;
+			mov ES, AX;
+			mov FS, AX;
+			mov GS, AX;
+			mov SS, AX;
+
 			call _CPU_swapgs;
+			
+		//	mov 16[GS], RSP;
+			mov RSP, RAX;
+
+			//push RAX;
+			//mov RSP, RAX;
 			//	mov [GS:16], RSP;
 			//mov RSP, [GS:0];
 
-			//GS.Kernel.Base: 0xD8B010
-
-			cli; hlt;
+			//GS.Kernel.Base: 0xCC56010
 
 		//	push RCX;
-			call SyscallDispatcher;
+		//cli; hlt;
+		//	call SyscallDispatcher;
+			cli; hlt;
 		//	pop RCX;
 
 			call _CPU_swapgs;
-		//	sysret;
+			sysret;
 		}
 	}
 
 	extern(C) void SyscallDispatcher(ulong* data) {
 		Log.Print("test");
-	// RCX holds the return address for the system call, which is useful
-	// for certain system calls (such as fork)
-
-	//void* stackPtr;
-	//asm {
-	// "movq %%rsp, %%rax" ::: "rax";
-	// "movq %%rax, %0" :: "o" stackPtr : "rax";
-	//}//
-	//kprintfln!("Syscall: ID = 0x{x}, ret = 0x{x}, params = 0x{x}")(ID, ret, params);
-	//mixin(MakeSyscallDispatchList!());
 	}
 }

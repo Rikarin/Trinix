@@ -15,6 +15,7 @@ private:
 	ubyte keyset;
 	PipeDev pipe;
 
+
 public:
 	this() {
 		Port.Cli();

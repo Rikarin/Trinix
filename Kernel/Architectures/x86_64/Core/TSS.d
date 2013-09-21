@@ -25,6 +25,7 @@ static:
 		asm {
 			ltr tssBase;
 		}
+
 		return true;
 	}
 	

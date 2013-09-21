@@ -87,8 +87,9 @@ public:
 		}
 
 		asm {
+			cli;
 			xor RAX, RAX;
-			mov AX, 0x10;//0x23; //testig
+			mov AX, 0x23;
 			mov DS, AX;
 			mov ES, AX;
 			mov FS, AX;
@@ -102,7 +103,7 @@ public:
 			or RAX, 0x200UL;
 			push RAX;
 
-			push 0x08UL; //0x1BUL; //testing
+			push 0x1BUL;
 			push enter;
 			jmp _CPU_iretq;
 		}
