@@ -5,6 +5,7 @@ import Architectures.CPU;
 import Architectures.Port;
 import MemoryManager.PageAllocator;
 import MemoryManager.Memory;
+import SyscallManager.Res;
 
 
 class Syscall {
@@ -25,8 +26,8 @@ static:
 		Port.WriteMSR(Registers.IA32_LSTAR, cast(ulong)&SyscallHandler);
 		Port.WriteMSR(Registers.IA32_STAR, Registers.STAR);
 		Port.WriteMSR(Registers.IA32_FMASK, 0);
-		Port.WriteMSR(Registers.IA32_KERNEL_GSBASE, cast(ulong)(new byte[0x1000]).ptr + 0x1000);
-		Port.WriteMSR(Registers.IA32_GS_BASE, cast(ulong)(new byte[0x1000]).ptr + 0x1000);
+		Port.WriteMSR(Registers.IA32_KERNEL_GSBASE, cast(ulong)0xC010000);//(new byte[0x1000]).ptr + 0x1000);
+		Port.WriteMSR(Registers.IA32_GS_BASE, cast(ulong)0xC020000);//(new byte[0x1000]).ptr + 0x1000);
 
 		return true;
 	}
@@ -35,38 +36,49 @@ static:
 		asm {
 			naked;
 
-			// Set data registers
-			mov AX, 0x10;
-			mov DS, AX;
-			mov ES, AX;
-			mov FS, AX;
-			mov GS, AX;
-			mov SS, AX;
+			mov R9, RSP;
 
 			call _CPU_swapgs;
+			swapgs;
+			mov R8, 0;
+			lea R8, GS:[R8];
+
+			cli;hlt;
+
+			push RDX;
+			push RCX;
+			push RBX;
+			push RAX;
 			
-		//	mov 16[GS], RSP;
-			mov RSP, RAX;
+			mov RDI, RSP;
+			call SyscallDispatcher;
 
-			//push RAX;
-			//mov RSP, RAX;
-			//	mov [GS:16], RSP;
-			//mov RSP, [GS:0];
+			pop RBX;
+			pop RBX;
+			pop RCX;
+			pop RDX;
 
-			//GS.Kernel.Base: 0xCC56010
+			//cli;hlt;
 
-		//	push RCX;
-		//cli; hlt;
-		//	call SyscallDispatcher;
-			cli; hlt;
-		//	pop RCX;
-
-			call _CPU_swapgs;
+			//call _CPU_swapgs;
 			sysret;
 		}
 	}
 
-	extern(C) void SyscallDispatcher(ulong* data) {
-		Log.Print("test");
+	extern(C) void SyscallDispatcher(ulong*rawData) {
+		ulong data[] = (cast(ulong *)rawData[5])[0 .. rawData[4]];
+
+		debug (only) {
+			import System.Convert;
+			Log.PrintSP("\n[Service RES: " ~ Convert.ToString(rawData[0], 16));
+			Log.PrintSP(", ID: " ~ Convert.ToString(rawData[1], 16));
+
+			foreach (x; data)
+				Log.PrintSP(", " ~ Convert.ToString(x, 16));
+
+			Log.PrintSP("]");
+		}
+
+		//return 0x123;//Res.Call(rawData[0], rawData[1], data);
 	}
 }

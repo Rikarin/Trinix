@@ -31,5 +31,4 @@ _CPU_iretq:
 
 _CPU_swapgs:
 	swapgs
-	mov RAX, [GS:0]
 	ret

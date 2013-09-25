@@ -42,10 +42,6 @@ System:
 	implementovat user permissions z VFSka
 ++/
 
-import FileSystem.PipeDev;
-__gshared PipeDev pajpa;
-
-
 extern(C) void StartSystem() {
 	Log.Init();
 
@@ -96,28 +92,16 @@ extern(C) void StartSystem() {
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
-	new PS2Keyboard();
+	//new PS2Keyboard();
 	Log.Result(true);
 
 	Log.Print("Init complete, starting terminal");
 	Log.Result(false);
 
 
-	//pajpa = new PipeDev(0x1000, "pajpa");
-
 	import TaskManager.Thread;
 	auto t = new Thread(cast(void function())&test);
 	t.Start();
-
-	/*import VFSManager.PipeNode;
-	import System.Convert;
-
-	byte[] tmp = new byte[1];
-	while (true) {
-		pajpa.Read(0, tmp);
-		Log.PrintSP("\ntest: " ~ Convert.ToString(tmp[0]));
-		tmp[0] = 0;
-	}*/
 
 	//VFS.PrintTree(VFS.Root);
 
@@ -130,10 +114,18 @@ extern(C) void apEntry() {
 }
 
 extern(C) void test() {
-	//while (true) Log.PrintSP("a");
-	//asm {naked; int 6;}
-	//asm {naked; push RAX;}
-	asm { syscall; }
+
+	ulong data[] = [0x1234, 0x456, 0xFFAACCBA];
+	ulong pointer = cast(ulong)data.ptr;
+
+	asm {
+		mov RAX, 0xACDC; //RES
+		mov RBX, 0xDEADBEEF; //ID
+
+		push pointer;
+		push 3;
+		syscall;
+	}
 	while (true) { }
 }
 
@@ -220,3 +212,21 @@ void PrintStruct(T)(ref T s, bool recursive = false, ulong indent = 0) {
 		}
 	}
 }*/
+
+
+/*
+import FileSystem.PipeDev;
+__gshared PipeDev pajpa;
+
+
+	//pajpa = new PipeDev(0x1000, "pajpa");
+
+	/*import VFSManager.PipeNode;
+	import System.Convert;
+
+	byte[] tmp = new byte[1];
+	while (true) {
+		pajpa.Read(0, tmp);
+		Log.PrintSP("\ntest: " ~ Convert.ToString(tmp[0]));
+		tmp[0] = 0;
+	}*/
