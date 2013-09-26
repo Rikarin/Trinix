@@ -115,7 +115,7 @@ extern(C) void apEntry() {
 
 extern(C) void test() {
 
-	ulong data[] = [0x1234, 0x456, 0xFFAACCBA];
+	/*ulong data[] = [0x1234, 0x456, 0xFFAACCBA];
 	ulong pointer = cast(ulong)data.ptr;
 
 	asm {
@@ -125,8 +125,18 @@ extern(C) void test() {
 		push pointer;
 		push 3;
 		syscall;
-	}
+	}*/
+
+	new nicetry();
 	while (true) { }
+}
+
+import System.ResourceCaller;
+
+class nicetry : ResourceCaller {
+	this() {
+		super(0, 1);
+	}
 }
 
 /*

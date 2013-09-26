@@ -34,8 +34,8 @@ static:
 		Port.WriteMSR(Registers.IA32_LSTAR, cast(ulong)&SyscallHandler);
 		Port.WriteMSR(Registers.IA32_STAR, Registers.STAR);
 		Port.WriteMSR(Registers.IA32_FMASK, 0);
-		Port.WriteMSR(Registers.IA32_KERNEL_GSBASE, cast(ulong)0xC010000);//(new byte[0x1000]).ptr + 0x1000);
-		Port.WriteMSR(Registers.IA32_GS_BASE, cast(ulong)0xC020000);//(new byte[0x1000]).ptr + 0x1000);
+		Port.WriteMSR(Registers.IA32_KERNEL_GSBASE, cast(ulong)(new byte[0x1000]).ptr + 0x1000);
+		Port.WriteMSR(Registers.IA32_GS_BASE, cast(ulong)(new byte[0x1000]).ptr + 0x1000);
 
 		return true;
 	}
@@ -50,7 +50,7 @@ static:
 			mov R8, 0;
 			lea R8, GS:[R8];*/
 
-			push RAX;
+	/*		push RAX;
 			push RBX;
 			push RCX;
 			push RDX;
@@ -66,8 +66,8 @@ static:
 			push R14;
 			push R15;
 			
-			mov RDI, RSP;
-			call SyscallDispatcher;
+			//mov RDI, RSP;
+		//	call SyscallDispatcher;
 
 			pop R15;
 			pop R14;
@@ -83,9 +83,10 @@ static:
 			pop RDX;
 			pop RCX;
 			pop RBX;
-			pop RAX;
+			pop RAX;*/
 
 			//call _CPU_swapgs;
+			cli;hlt;
 			sysret;
 		}
 	}
