@@ -129,6 +129,13 @@ extern(C) void test() {
 	while (true) { }
 }
 
+/*
+Resource - ak je ~1UL tak je to sstaticke volanie inak je to index v liste resource
+ID - pri statickom volani je to index v statickom poli inak sa parameter predava do triedy resource
+
+ak je v resource triede ID 0 tak sa vraty typ objektu inak sa podla toho vyhladava v poli calltables
+
+*/
 
 
 

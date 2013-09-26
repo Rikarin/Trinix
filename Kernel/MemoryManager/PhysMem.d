@@ -24,7 +24,7 @@ static:
 
 		Paging.KernelPaging.Install();
 
-		pointer = ~1UL;
+		pointer = ~0UL;
 		Log.Result(true);
 	}
 
@@ -32,7 +32,7 @@ static:
 		if (page.Present)
 			return;//throw new MemoryException();
 
-		long index = pointer != ~1UL ? pointer++ : frames.FirstFreeBit();
+		long index = pointer != ~0UL ? pointer++ : frames.FirstFreeBit();
 		frames[index] = true;
 
 		page.Present = true;

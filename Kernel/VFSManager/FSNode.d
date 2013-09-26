@@ -52,7 +52,7 @@ public:
 			{FNIF_REMOVE,    &RemovableSC}*/
 		];
 
-		super(FNIF_OBJTYPE, callTable);
+		super(IFace.FSNode.OBJECT, callTable);
 	}
 
 	@property string Name() { return name; }

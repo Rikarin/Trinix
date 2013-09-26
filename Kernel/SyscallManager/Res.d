@@ -16,7 +16,7 @@ private:
 	}
 
 	__gshared StaticCallTable[] staticCalls = [
-	//	{FNIF_OBJTYPE, &FSNode.SCall}
+		{IFace.FSNode.OBJECT, &FSNode.SCall}
 	];
 	
 	__gshared List!Resource resources;
