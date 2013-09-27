@@ -114,7 +114,8 @@ extern(C) void apEntry() {
 }
 
 extern(C) void test() {
-	new nicetry();
+	auto aa = new nicetry();
+	aa.test();
 	while (true) { }
 }
 
@@ -123,6 +124,10 @@ import System.ResourceCaller;
 class nicetry : ResourceCaller {
 	this() {
 		super(0, 1);
+	}
+
+	void test() {
+		Call(54);
 	}
 }
 

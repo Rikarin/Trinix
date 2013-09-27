@@ -13,11 +13,6 @@ class ResourceCaller {
 		ulong length = data.length;
 
 		asm {
-			push R10;
-			push R11;
-			push RAX;
-			push RBX;
-
 			mov RAX, res;
 			mov RBX, id;
 			mov R10, length;
@@ -25,13 +20,6 @@ class ResourceCaller {
 			
 			syscall;
 			mov res, RAX;
-
-			pop RBX;
-			pop RBX;
-			pop RBX;
-			pop RAX;
-			pop R11;
-			pop R10;
 		}
 
 		return res;
@@ -47,8 +35,8 @@ class ResourceCaller {
 	}
 
 	ulong Call(ulong call, ulong[] data = null) {
-		if (!type)
-			return ~0UL;
+		//if (!type)
+		//	return ~0UL;
 
 		return SysCall(id, call, data);
 	}

@@ -83,5 +83,6 @@ _CPU_syscall_handler:
 	swapgs;
 	mov RSP, [GS:0];
 	swapgs;
-
+	sti;
+	
 	o64 sysret
