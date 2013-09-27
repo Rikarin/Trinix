@@ -1,5 +1,8 @@
 module Architectures.Port;
 
+import Architectures.CPU;
+
+
 class Port {
 public:
 static:
@@ -80,6 +83,10 @@ static:
 		asm {
 			sti;
 		}
+	}
+
+	void SwapGS() {
+		_CPU_swapgs();
 	}
 	
 	void WriteMSR(ulong msr, ulong value) {

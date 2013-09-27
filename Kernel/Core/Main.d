@@ -114,19 +114,6 @@ extern(C) void apEntry() {
 }
 
 extern(C) void test() {
-
-	/*ulong data[] = [0x1234, 0x456, 0xFFAACCBA];
-	ulong pointer = cast(ulong)data.ptr;
-
-	asm {
-		mov RAX, 0xACDC; //RES
-		mov RBX, 0xDEADBEEF; //ID
-
-		push pointer;
-		push 3;
-		syscall;
-	}*/
-
 	new nicetry();
 	while (true) { }
 }

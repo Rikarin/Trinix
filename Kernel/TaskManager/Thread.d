@@ -1,6 +1,7 @@
 module TaskManager.Thread;
 
 import Architectures.Core;
+import Architectures.Port;
 import Architectures.CPU;
 import SyscallManager.Resource;
 import MemoryManager.Memory;
@@ -8,6 +9,7 @@ import TaskManager.Process;
 import TaskManager.Task;
 import System.Collections.Generic.All;
 import System.DateTime;
+import SyscallManager.Syscall;
 
 
 class Thread /*: Resource*/ {
@@ -21,7 +23,7 @@ package:
 	Process parent;
 
 	WaitUnion waitFor;
-	byte* userStack, kernelStack;
+	byte* userStack, kernelStack, syscallStack;
 
 	union WaitUnion {
 		DateTime time;
@@ -48,8 +50,9 @@ public:
 		parent = Task.CurrentProcess;
 		parent.threads.Add(this);
 
-		kernelStack = (new byte[STACK_SIZE]).ptr;
-		userStack   = (new byte[STACK_SIZE]).ptr; //process.heap.alloc..;
+		kernelStack  = (new byte[STACK_SIZE]).ptr;
+		syscallStack = (new byte[STACK_SIZE]).ptr;
+		userStack    = (new byte[STACK_SIZE]).ptr; //process.heap.alloc..;
 		state = State.Starting;
 
 		//Set user stack
@@ -67,6 +70,10 @@ public:
 		*stack = cast(ulong)ustack;
 		stack--;
 		*stack = 0;
+
+		//Set syscallStack
+		ulong* sstack = cast(ulong *)syscallStack;
+		sstack[1] = cast(ulong)kernelStack + STACK_SIZE;
 
 		rsp = cast(ulong)stack;
 		rip = cast(ulong)&run;
@@ -116,7 +123,11 @@ public:
 	}
 
 	void SetKernelStack() {
-		TSS.Table.RSP0 = kernelStack + STACK_SIZE;
+		TSS.Table.RSP0 = kernelStack + STACK_SIZE / 2;
+
+		Port.SwapGS();
+		Port.WriteMSR(Syscall.Registers.IA32_GS_BASE, cast(ulong)syscallStack + STACK_SIZE);
+		Port.SwapGS();
 	}
 
 	void Sleep(List!Thread queue) {

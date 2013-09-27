@@ -178,7 +178,7 @@ private:
 				Log.PrintSP(" @ss: " ~ Convert.ToString(stack.SS, 16));
 				
 				if (stack.IntNumber == 0xE || stack.IntNumber == 0xD)
-					Log.PrintSP(" @ERR: " ~ Convert.ToString(stack.ErrorCode, 16));
+					Log.PrintSP(" @ERR: " ~ Convert.ToString(stack.ErrorCode, 2));
 			}
 		}
 

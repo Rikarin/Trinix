@@ -13,6 +13,8 @@ extern(C) void _CPU_iretq();
 extern(C) void _CPU_refresh_iretq();
 extern(C) void _CPU_load_cr3();
 extern(C) void _CPU_swapgs();
+extern(C) void _CPU_sysretq();
+extern(C) void _CPU_syscall_handler();
 
 class CPU {
 public:

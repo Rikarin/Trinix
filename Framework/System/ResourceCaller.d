@@ -13,33 +13,24 @@ class ResourceCaller {
 		ulong length = data.length;
 
 		asm {
-		/*	push RAX;
+			push RAX;
 			push RBX;
 
 			mov RAX, res;
 			mov RBX, id;
 			push length;
 			push pointer;
-		*/
 			
 			syscall;
-
-			a:
-			nop;
-			jmp a;
-			
-			/*mov res, RAX;
-
-			ccbbf58
-			ccbbf18
+			mov res, RAX;
 
 			pop RBX;
 			pop RBX;
 			pop RBX;
-			pop RAX;*/
+			pop RAX;
 		}
 
-		return 0;
+		return res;
 	}
 
 	protected this(ulong id, ulong type) {
