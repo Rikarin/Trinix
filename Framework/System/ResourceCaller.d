@@ -13,13 +13,15 @@ class ResourceCaller {
 		ulong length = data.length;
 
 		asm {
+			push R10;
+			push R11;
 			push RAX;
 			push RBX;
 
 			mov RAX, res;
 			mov RBX, id;
-			push length;
-			push pointer;
+			mov R10, length;
+			mov R11, pointer;
 			
 			syscall;
 			mov res, RAX;
@@ -28,6 +30,8 @@ class ResourceCaller {
 			pop RBX;
 			pop RBX;
 			pop RAX;
+			pop R11;
+			pop R10;
 		}
 
 		return res;

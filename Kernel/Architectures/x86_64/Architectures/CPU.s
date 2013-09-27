@@ -40,7 +40,7 @@ extern SyscallDispatcher;
 _CPU_syscall_handler:
 	swapgs;
 	mov [GS:0], RSP;
-	mov RAX, [GS:8];
+	mov RSP, [GS:8];
 	swapgs;
 	sti;
 

@@ -1,5 +1,6 @@
 module SyscallManager.Res;
 
+import Core.Log;
 import System.Collections.Generic.All;
 import SyscallManager.Resource;
 
@@ -37,6 +38,18 @@ public:
 	}
 
 	ulong Call(ulong resource, ulong id, ulong[] params) {
+		debug (only) {
+			import System.Convert;
+			Log.PrintSP("\n[Service RES: " ~ Convert.ToString(resource, 16));
+			Log.PrintSP(", ID: " ~ Convert.ToString(id, 16));
+
+			foreach (x; params)
+				Log.PrintSP(", " ~ Convert.ToString(x, 16));
+
+			Log.PrintSP("]");
+		}
+
+
 		if (resource == ~1UL) {
 			foreach (x; staticCalls) {
 				if (x.id == id)

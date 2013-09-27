@@ -1,10 +1,7 @@
 module SyscallManager.Syscall;
 
-import Core.Log;
 import Architectures.CPU;
 import Architectures.Port;
-import MemoryManager.PageAllocator;
-import MemoryManager.Memory;
 import SyscallManager.Res;
 
 
@@ -12,10 +9,11 @@ class Syscall {
 static:
 	struct Stack {
 	align(1):
-		ulong R15, R14, R13, R12, R11, R10, R9, R8;
-		ulong RBP, RDI, RSI, RDX, RCX, RBX, RAX;
-		ulong Length;
+		ulong R15, R14, R13, R12;
 		ulong* Data;
+		ulong Length;
+		ulong R9, R8;
+		ulong RBP, RDI, RSI, RDX, RCX, RBX, RAX;
 	}
 
 	enum Registers : ulong {
@@ -35,25 +33,9 @@ static:
 		Port.WriteMSR(Registers.IA32_FMASK, 0x600);
 		return true;
 	}
-
-	extern(C) void SyscallDispatcher(Stack* stack) {
-		ulong data[] = stack.Data[0 .. stack.Length];
-
-		debug (only) {
-			import System.Convert;
-			Log.PrintSP("\n[Service RES: " ~ Convert.ToString(stack.RAX, 16));
-			Log.PrintSP(", ID: " ~ Convert.ToString(stack.RBX, 16));
-
-			foreach (x; data)
-				Log.PrintSP(", " ~ Convert.ToString(x, 16));
-
-			Log.PrintSP("]");
-		}
-
-		stack.RAX = Res.Call(stack.RAX, stack.RBX, data);
-	}
 }
 
 extern(C) void SyscallDispatcher(Syscall.Stack* stack) {
-	Syscall.SyscallDispatcher(stack);
+	ulong data[] = stack.Data[0 .. stack.Length];
+	stack.RAX = Res.Call(stack.RAX, stack.RBX, data);
 }

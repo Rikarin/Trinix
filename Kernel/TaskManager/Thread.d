@@ -126,7 +126,7 @@ public:
 		TSS.Table.RSP0 = kernelStack + STACK_SIZE / 2;
 
 		Port.SwapGS();
-		Port.WriteMSR(Syscall.Registers.IA32_GS_BASE, cast(ulong)syscallStack + STACK_SIZE);
+		Port.WriteMSR(Syscall.Registers.IA32_GS_BASE, cast(ulong)syscallStack);
 		Port.SwapGS();
 	}
 
