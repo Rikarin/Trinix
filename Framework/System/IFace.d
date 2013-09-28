@@ -6,6 +6,8 @@ class IFace {
 		OBJECT = 0x1,
 
 		TYPE = 0x1,
+		READ,
+		WRITE,
 		SFIND,
 		SMKDIR,
 		GETUID,

@@ -88,7 +88,7 @@ extern(C) void StartSystem() {
 
 //==================== DEVICES ====================
 	Log.Print("Initializing timer ticks = 100Hz");
-	new Timer(100);
+	//new Timer(100);
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
@@ -103,6 +103,24 @@ extern(C) void StartSystem() {
 	auto t = new Thread(cast(void function())&test);
 	t.Start();
 
+	
+	import FileSystem.PipeDev;
+	PipeDev pajpa = new PipeDev(0x1000, "pajpa");
+
+//	Task.Switch();
+
+/*	import VFSManager.PipeNode;
+	import System.Convert;
+
+	Log.PrintSP("\nid: " ~ Convert.ToString(pajpa.ResID()));
+
+	byte[] tmp = new byte[1];
+	while (true) {
+		pajpa.Read(0, tmp);
+		Log.PrintSP("\ntest: " ~ Convert.ToString(tmp[0]));
+		tmp[0] = 0;
+	}*/
+
 	//VFS.PrintTree(VFS.Root);
 
 	while (true) {}
@@ -114,7 +132,10 @@ extern(C) void apEntry() {
 
 extern(C) void test() {
 	auto aa = new nicetry();
-	aa.test();
+//	aa.test();
+
+//	byte[] d = new byte[5];
+//	aa.read(0, d);
 	while (true) { }
 }
 
@@ -122,11 +143,15 @@ import System.ResourceCaller;
 
 class nicetry : ResourceCaller {
 	this() {
-		super(0, 1);
+		super(80, 1);
 	}
 
 	void test() {
 		Call(54);
+	}
+
+	ulong read(ulong offset, byte[] data) {
+		return Call(1, [offset, cast(ulong)&data]);
 	}
 }
 

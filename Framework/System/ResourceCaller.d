@@ -9,14 +9,12 @@ class ResourceCaller {
 
 
 	private ulong SysCall(ulong res, ulong id, ulong[] data) {
-		ulong pointer = cast(ulong)data.ptr;
-		ulong length = data.length;
+		ulong pointer = cast(ulong)&data;
 
 		asm {
 			mov RAX, res;
 			mov RBX, id;
-			mov R10, length;
-			mov R11, pointer;
+			mov R10, pointer;
 			
 			syscall;
 			mov pointer, RAX;
@@ -27,7 +25,7 @@ class ResourceCaller {
 
 	protected this(ulong id, ulong type) {
 		this.id = id;
-		this.type = SysCall(id, 0, null);
+		//this.type = SysCall(id, 0, null);
 
 		if (this.type != type)
 			this.type = 0;

@@ -96,7 +96,7 @@ public:
 
 		Port.Cli();
 		CurrentThread.SetKernelStack();
-		CurrentProcess.paging.Install();
+//		CurrentProcess.paging.Install();
 
 		//dake picoviny zo signalmi
 
@@ -118,15 +118,15 @@ public:
 		w8 for any1 call write func who call wakeup func who wakes up all sleeping threads
 	*/
 	void Wakeup(List!Thread queue) {
-		foreach (x; queue)
-			x.state = Thread.State.Running;
+	//	foreach (x; queue)
+	//		x.state = Thread.State.Running;
 	}
 
 	void WakeupSleepers(DateTime time) {
-		foreach (x; Threads) {
-			if (x !is null && x.Valid(Thread.State.Waiting) && x.waitFor.time >= time)
-				x.state = Thread.State.Running;
-		}
+	//	foreach (x; Threads) {
+	//		if (x !is null && x.Valid(Thread.State.Waiting) && x.waitFor.time >= time)
+	//			x.state = Thread.State.Running;
+	//	}
 	}
 
 	void Exit(long retval) {

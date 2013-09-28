@@ -9,9 +9,8 @@ class Syscall {
 static:
 	struct Stack {
 	align(1):
-		ulong R15, R14, R13, R12;
-		ulong* Data;
-		ulong Length;
+		ulong R15, R14, R13, R12, R11;
+		ulong[]* Data;
 		ulong R9, R8;
 		ulong RBP, RDI, RSI, RDX, RCX, RBX, RAX;
 	}
@@ -36,6 +35,5 @@ static:
 }
 
 extern(C) void SyscallDispatcher(Syscall.Stack* stack) {
-	ulong data[] = stack.Data[0 .. stack.Length];
-	stack.RAX = Res.Call(stack.RAX, stack.RBX, data);
+	stack.RAX = Res.Call(stack.RAX, stack.RBX, *stack.Data);
 }
