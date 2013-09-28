@@ -18,25 +18,24 @@ class ResourceCaller {
 			mov R10, length;
 			mov R11, pointer;
 			
-			syscall;			
-			mov res, RAX;
+			syscall;
+			mov pointer, RAX;
 		}
-
-		return res;
+		
+		return pointer;
 	}
 
 	protected this(ulong id, ulong type) {
 		this.id = id;
-		this.type = 1;
-		this.type = Call(0);
+		this.type = SysCall(id, 0, null);
 
 		if (this.type != type)
 			this.type = 0;
 	}
 
 	ulong Call(ulong call, ulong[] data = null) {
-		//if (!type)
-		//	return ~0UL;
+		if (!type)
+			return ~0UL;
 
 		return SysCall(id, call, data);
 	}

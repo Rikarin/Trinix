@@ -5,7 +5,7 @@ class IFace {
 	enum FSNode : ulong {
 		OBJECT = 0x1,
 
-		TYPE,
+		TYPE = 0x1,
 		SFIND,
 		SMKDIR,
 		GETUID,

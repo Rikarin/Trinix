@@ -49,7 +49,6 @@ public:
 			Log.PrintSP("]");
 		}
 
-
 		if (resource == ~1UL) {
 			foreach (x; staticCalls) {
 				if (x.id == id)
