@@ -73,7 +73,7 @@ public:
 
 		//Set syscallStack
 		ulong* sstack = cast(ulong *)syscallStack;
-		sstack[1] = cast(ulong)kernelStack + STACK_SIZE;
+		sstack[1] = cast(ulong)kernelStack + STACK_SIZE / 2;
 
 		rsp = cast(ulong)stack;
 		rip = cast(ulong)&run;
@@ -96,7 +96,7 @@ public:
 		asm {
 			cli;
 			xor RAX, RAX;
-			mov AX, 0x23;
+			mov AX, 0x1B;
 			mov DS, AX;
 			mov ES, AX;
 			mov FS, AX;
@@ -110,7 +110,7 @@ public:
 			or RAX, 0x200UL;
 			push RAX;
 
-			push 0x1BUL;
+			push 0x23UL;
 			push enter;
 			jmp _CPU_iretq;
 		}
@@ -123,7 +123,7 @@ public:
 	}
 
 	void SetKernelStack() {
-		TSS.Table.RSP0 = kernelStack + STACK_SIZE / 2;
+		TSS.Table.RSP0 = kernelStack;
 
 		Port.SwapGS();
 		Port.WriteMSR(Syscall.Registers.IA32_GS_BASE, cast(ulong)syscallStack);

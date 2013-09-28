@@ -105,7 +105,6 @@ extern(C) void StartSystem() {
 
 	//VFS.PrintTree(VFS.Root);
 
-
 	while (true) {}
 }
 

@@ -94,6 +94,7 @@ public:
 		rbp = CurrentThread.rbp;
 		rip = CurrentThread.rip;
 
+		Port.Cli();
 		CurrentThread.SetKernelStack();
 		CurrentProcess.paging.Install();
 

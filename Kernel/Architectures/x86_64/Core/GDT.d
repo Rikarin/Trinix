@@ -42,9 +42,9 @@ package:
 		Tables[table].SetCodeSegment(1, false, 0, true);
 		Tables[table].SetDataSegment(2, true, 0);
 		
-		//User
-		Tables[table].SetCodeSegment(3, true, 3, true);
-		Tables[table].SetDataSegment(4, true, 3);
+		//User		
+		Tables[table].SetDataSegment(3, true, 3);
+		Tables[table].SetCodeSegment(4, true, 3, true);
 	}
 	
 	struct GDTBase {

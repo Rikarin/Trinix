@@ -18,7 +18,7 @@ class ResourceCaller {
 			mov R10, length;
 			mov R11, pointer;
 			
-			syscall;
+			syscall;			
 			mov res, RAX;
 		}
 
