@@ -96,7 +96,7 @@ public:
 
 		Port.Cli();
 		CurrentThread.SetKernelStack();
-//		CurrentProcess.paging.Install();
+		CurrentProcess.paging.Install();
 
 		//dake picoviny zo signalmi
 

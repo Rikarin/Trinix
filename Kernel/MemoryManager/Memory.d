@@ -8,20 +8,12 @@ import System.Convert;
 alias ubyte* PhysicalAddress;
 alias ubyte* VirtualAddress;
 
-extern(C) void* malloc(ulong size, uint ba) { 
-	if (Memory.test == 123456789) 
-		Log.PrintSP("$"); 
-
-	if (PageAllocator.IsInit)
-		return Memory.KernelHeap.Alloc(size);
-	else
-		return cast(void *)PageAllocator.AllocPage(cast(uint)size / 0x1000); 
+extern(C) void* malloc(ulong size, uint ba) {
+	Log.PrintSP("$");
+		return PageAllocator.IsInit ? Memory.KernelHeap.Alloc(size) : cast(void *)PageAllocator.AllocPage(cast(uint)size / 0x1000);
 }
 
 extern(C) void free(void* ptr) { return;
-	if (Memory.test == 123456789)
-		Log.PrintSP("#");
-
 	if (PageAllocator.IsInit)
 		Memory.KernelHeap.Free(ptr);
 }
@@ -58,8 +50,6 @@ static:
 	__gshared Region[16] RegionInfo;
 
 	__gshared Heap KernelHeap;
-
-	__gshared int test;
 
 
 	bool LoadMemoryRegions() {

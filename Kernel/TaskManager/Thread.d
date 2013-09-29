@@ -14,16 +14,18 @@ import SyscallManager.Syscall;
 
 class Thread /*: Resource*/ {
 package:
-	static const auto STACK_SIZE = 0x1000;
+	/** 0x1000 bytes to ulong */
+	enum STACK_SIZE = 0x1000 / 8;
 
-	ulong id; //unique ID for each thread
+	/** Unique ID for each thread */
+	ulong id;
 	ulong rsp, rbp, rip;
 	long retval;
 	State state;
 	Process parent;
 
 	WaitUnion waitFor;
-	byte* userStack, kernelStack, syscallStack;
+	ulong* userStack, kernelStack, syscallStack;
 
 	union WaitUnion {
 		DateTime time;
@@ -50,51 +52,41 @@ public:
 		parent = Task.CurrentProcess;
 		parent.threads.Add(this);
 
-		kernelStack  = (new byte[STACK_SIZE]).ptr;
-		syscallStack = (new byte[STACK_SIZE]).ptr;
-		userStack    = (new byte[STACK_SIZE]).ptr; //process.heap.alloc..;
+		kernelStack  = (new ulong[STACK_SIZE]).ptr;
+		syscallStack = (new ulong[STACK_SIZE]).ptr;
+		userStack    = (new ulong[STACK_SIZE]).ptr; //process.heap.alloc..;
 		state = State.Starting;
 
 		//Set user stack
-		ulong* ustack = cast(ulong *)userStack + STACK_SIZE;
+		ulong* ustack = userStack + STACK_SIZE;
 		ustack--;
 		*ustack = cast(ulong)data;
 		ustack--;
 
 		//Set kernel stack
-		ulong* stack = cast(ulong *)kernelStack + STACK_SIZE;
-		rbp = cast(ulong)stack;
-		stack--;
-		*stack = cast(ulong)ThreadEntry;
-		stack--;
-		*stack = cast(ulong)ustack;
-		stack--;
-		*stack = 0;
+		ulong* kstack = kernelStack + STACK_SIZE;
+		rbp = cast(ulong)kstack;
+		kstack--;
+		*kstack = cast(ulong)ThreadEntry;
+		kstack--;
+		*kstack = cast(ulong)ustack;
 
 		//Set syscallStack
-		ulong* sstack = cast(ulong *)syscallStack;
-		sstack[1] = cast(ulong)kernelStack + STACK_SIZE / 2;
+		syscallStack[1] = cast(ulong)kernelStack + STACK_SIZE / 2;
 
-		rsp = cast(ulong)stack;
+		rsp = cast(ulong)kstack;
 		rip = cast(ulong)&run;
 
 		Task.Threads.Add(this);
 	}
 
 	static void run() {
-		ulong stack;
-		ulong enter;
-
 		asm {
-			mov RAX, [RBP + 16];
-			mov stack, RAX;
-
-			mov RAX, [RBP + 24];
-			mov enter, RAX;
-		}
-
-		asm {
+			naked;
 			cli;
+			pop RBX; //User stack
+			pop RCX; //ThreadEntry
+
 			xor RAX, RAX;
 			mov AX, 0x1B;
 			mov DS, AX;
@@ -103,7 +95,7 @@ public:
 			mov GS, AX;
 
 			push RAX;
-			push stack;
+			push RBX;
 
 			pushfq;
 			pop RAX;
@@ -111,7 +103,7 @@ public:
 			push RAX;
 
 			push 0x23UL;
-			push enter;
+			push RCX;
 			jmp _CPU_iretq;
 		}
 	}

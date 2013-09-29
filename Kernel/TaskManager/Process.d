@@ -59,7 +59,7 @@ public:
 		Thread t = new Thread();
 		t.parent = ret;
 		t.state = Thread.State.Running;
-		t.kernelStack = (new byte[0x1000]).ptr;
+		t.kernelStack = (new ulong[Thread.STACK_SIZE]).ptr;
 		t.SetKernelStack();
 		ret.threads.Add(t);
 

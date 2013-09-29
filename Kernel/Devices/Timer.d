@@ -84,7 +84,7 @@ public:
 		PIC.EOI(0);
 		LocalAPIC.EOI();
 
-		Task.WakeupSleepers(DateTime.Now);
+	//	Task.WakeupSleepers(DateTime.Now);
 		Task.Switch();
 	}
 }

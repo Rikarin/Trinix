@@ -45,8 +45,6 @@ System:
 extern(C) void StartSystem() {
 	Log.Init();
 
-	//For debug print malloc and free
-	//Memory.test = 123456789;
 	Log.Print("Initializing Architecture: x86_64");
 	Architecture.Init();
 
@@ -88,7 +86,7 @@ extern(C) void StartSystem() {
 
 //==================== DEVICES ====================
 	Log.Print("Initializing timer ticks = 100Hz");
-	//new Timer(100);
+	new Timer(100);
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
@@ -100,12 +98,14 @@ extern(C) void StartSystem() {
 
 
 	import TaskManager.Thread;
-	auto t = new Thread(cast(void function())&test);
+	auto t = new Thread(cast(void function())&testthr);
 	t.Start();
 
 	
 	import FileSystem.PipeDev;
-	PipeDev pajpa = new PipeDev(0x1000, "pajpa");
+	//PipeDev pajpa = new PipeDev(0x1000, "pajpa");
+
+	new byte[0x5000];
 
 //	Task.Switch();
 
@@ -130,7 +130,12 @@ extern(C) void apEntry() {
 	while (true) { }
 }
 
-extern(C) void test() {
+extern(C) void testthr() {
+	asm {
+		a:
+		nop;
+		jmp a;
+	}
 	auto aa = new nicetry();
 //	aa.test();
 
