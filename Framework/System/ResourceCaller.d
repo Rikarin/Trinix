@@ -25,7 +25,7 @@ class ResourceCaller {
 
 	protected this(ulong id, ulong type) {
 		this.id = id;
-		//this.type = SysCall(id, 0, null);
+		this.type = SysCall(id, 0, null);
 
 		if (this.type != type)
 			this.type = 0;

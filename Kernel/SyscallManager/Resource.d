@@ -55,7 +55,7 @@ protected:
 
 		this.type = type;
 		AddCallTable(ct);
-		Res.Register(this);
+		id = Res.Register(this);
 	}
 
 	~this() {

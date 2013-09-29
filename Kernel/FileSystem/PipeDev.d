@@ -69,9 +69,10 @@ public:
 	override ulong Write(ulong offset, byte[] data) {
 		ulong written;
 
+		
 		while (written < data.length) {
 			mutex.WaitOne();
-
+			
 			while (FreeSpace() > 0 && written < data.length) {
 				buffer[writePtr] = data[written];
 				IncrementWrite();

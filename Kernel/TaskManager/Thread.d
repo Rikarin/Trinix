@@ -116,7 +116,7 @@ public:
 
 	void SetKernelStack() {
 		TSS.Table.RSP0 = kernelStack;
-return;
+
 		Port.SwapGS();
 		Port.WriteMSR(Syscall.Registers.IA32_GS_BASE, cast(ulong)syscallStack);
 		Port.SwapGS();

@@ -23,18 +23,21 @@ private:
 	__gshared List!Resource resources;
 
 
-public:
-	bool Init() {
-		resources = new List!Resource(0x200);
-		return true;
-	}
-
-	void Register(Resource res) {
+package:
+	ulong Register(Resource res) {
 		resources.Add(res);
+		return resources.IndexOf(res);
 	}
 
 	void Unregister(Resource res) {
 		resources.Remove(res);
+	}
+
+
+public:
+	bool Init() {
+		resources = new List!Resource(0x200);
+		return true;
 	}
 
 	ulong Call(ulong resource, ulong id, ulong[] params) {

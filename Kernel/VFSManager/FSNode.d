@@ -39,7 +39,8 @@ public:
 
 	this() {
 		const CallTable[] callTable = [
-			{IFace.FSNode.READ, &SC_Read}
+			{IFace.FSNode.READ, &SC_Read},
+			{IFace.FSNode.WRITE, &SC_Write}
 		/*	{FNIF_GETNAME,   &GetNameSC},
 			{FNIF_TYPE,      &TypeSC},
 			{FNIF_GETPARENT, &GetParentSC},
@@ -143,6 +144,10 @@ private:
 
 	ulong SC_Read(ulong[] params) {
 		return Read(params[0], *(cast(byte[] *)params[1]));
+	}
+
+	ulong SC_Write(ulong[] params) {
+		return Write(params[0], *(cast(byte[] *)params[1]));
 	}
 
 	/*ulong RemovableSC(ulong[]) { return Removable(); }

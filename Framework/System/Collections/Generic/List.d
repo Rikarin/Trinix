@@ -229,10 +229,9 @@ class List(T) {
 	}
 
 	long IndexOf(T item) {
-		for (long i = 0; i < count; i++) {
+		foreach (i; 0 .. count)
 			if (array[i] == item)
 				return i;
-		}
 
 		return -1;
 	}

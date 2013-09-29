@@ -2,14 +2,14 @@ module System.Threading.Mutex;
 
 
 class Mutex {
-	private __gshared ulong locked;
+	private long locked;
 
 
-	private ulong AtomicExchange() {
+	private long AtomicExchange(long* value) {
 		asm {
 			naked;
 			mov RAX, 1;
-			xchg RAX, locked;
+			xchg [RSI], RAX;
 			ret;
 		}
 	}
@@ -27,7 +27,7 @@ class Mutex {
 	}
 
 	bool WaitOne() {
-		while (AtomicExchange() == true) { }
+		while (AtomicExchange(&locked)) { }
 		return true;
 	}
 }

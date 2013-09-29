@@ -9,8 +9,8 @@ alias ubyte* PhysicalAddress;
 alias ubyte* VirtualAddress;
 
 extern(C) void* malloc(ulong size, uint ba) {
-	Log.PrintSP("$");
-		return PageAllocator.IsInit ? Memory.KernelHeap.Alloc(size) : cast(void *)PageAllocator.AllocPage(cast(uint)size / 0x1000);
+//	Log.PrintSP("$");
+	return PageAllocator.IsInit ? Memory.KernelHeap.Alloc(size) : cast(void *)PageAllocator.AllocPage(cast(uint)size / 0x1000);
 }
 
 extern(C) void free(void* ptr) { return;

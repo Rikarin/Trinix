@@ -103,13 +103,9 @@ extern(C) void StartSystem() {
 
 	
 	import FileSystem.PipeDev;
-	//PipeDev pajpa = new PipeDev(0x1000, "pajpa");
+	PipeDev pajpa = new PipeDev(0x1000, "pajpa");
 
-	new byte[0x5000];
-
-//	Task.Switch();
-
-/*	import VFSManager.PipeNode;
+	import VFSManager.PipeNode;
 	import System.Convert;
 
 	Log.PrintSP("\nid: " ~ Convert.ToString(pajpa.ResID()));
@@ -117,9 +113,9 @@ extern(C) void StartSystem() {
 	byte[] tmp = new byte[1];
 	while (true) {
 		pajpa.Read(0, tmp);
-		Log.PrintSP("\ntest: " ~ Convert.ToString(tmp[0]));
+		Log.PrintSP("\ntest: " ~ tmp[0]);
 		tmp[0] = 0;
-	}*/
+	}
 
 	//VFS.PrintTree(VFS.Root);
 
@@ -131,16 +127,10 @@ extern(C) void apEntry() {
 }
 
 extern(C) void testthr() {
-	asm {
-		a:
-		nop;
-		jmp a;
-	}
 	auto aa = new nicetry();
-//	aa.test();
+	aa.test();
 
-//	byte[] d = new byte[5];
-//	aa.read(0, d);
+	aa.write(0, cast(byte[])"cau amigo!");
 	while (true) { }
 }
 
@@ -148,7 +138,7 @@ import System.ResourceCaller;
 
 class nicetry : ResourceCaller {
 	this() {
-		super(80, 1);
+		super(10, 1);
 	}
 
 	void test() {
@@ -156,7 +146,11 @@ class nicetry : ResourceCaller {
 	}
 
 	ulong read(ulong offset, byte[] data) {
-		return Call(1, [offset, cast(ulong)&data]);
+		return Call(2, [offset, cast(ulong)&data]);
+	}
+
+	ulong write(ulong offset, byte[] data) {
+		return Call(3, [offset, cast(ulong)&data]);
 	}
 }
 
