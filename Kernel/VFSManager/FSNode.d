@@ -3,8 +3,10 @@ module VFSManager.FSNode;
 import SyscallManager.Resource;
 import VFSManager.FileSystemProto;
 import VFSManager.DirectoryNode;
+//import VFSManager.VFS;// WTF?
 import System.IFace;
 import System.DateTime;
+//import TaskManager.Task; //WTF?
 
 
 enum FSType : ubyte {
@@ -24,7 +26,8 @@ package:
 	DirectoryNode parent;
 
 	ulong length;
-	uint perms; //User/Group/Other -> RWX RWX RWX
+	/** User/Group/Other -> RWX RWX RWX */
+	uint perms;
 	ulong uid, gid;
 
 	DateTime atime, mtime, ctime;
@@ -32,26 +35,28 @@ package:
 
 public:
 	@property FSType Type();
-	bool Removable() { return true; } //if we can remove node from directory tree
+	/** if we can remove node from directory tree */
+	bool Removable() { return true; }
 	
 	ulong Read(ulong offset, byte[] data);
 	ulong Write(ulong offset, byte[] data);
 
 	this() {
 		const CallTable[] callTable = [
-			{IFace.FSNode.READ, &SC_Read},
-			{IFace.FSNode.WRITE, &SC_Write}
-		/*	{FNIF_GETNAME,   &GetNameSC},
-			{FNIF_TYPE,      &TypeSC},
-			{FNIF_GETPARENT, &GetParentSC},
-			{FNIF_GETLENGTH, &GetLengthSC},
-			{FNIF_GETUID,    &GetUidSC},
-			{FNIF_GETGID,    &GetGidSC},
-			{FNIF_GETPERM,   &GetParentSC},
-			{FNIF_GETPATH,   &GetPathSC},
-			{FNIF_SETCWD,    &SetCwdSC},
-			{FNIF_REMOVE,    &RemovableSC}*/
-		];
+			{IFace.FSNode.TYPE,      &SC_Type},
+			{IFace.FSNode.READ,      &SC_Read},
+			{IFace.FSNode.WRITE,     &SC_Write},
+			{IFace.FSNode.GETUID,    &SC_GetUID},
+			{IFace.FSNode.GETGID,    &SC_GetGID},
+			{IFace.FSNode.SETCWD,    &SC_SetCWD},
+			//{IFace.FSNode.REMOVE,    &SC_Remove}
+			//{IFace.FSNode.GETNAME,   &SC_GetName},
+			{IFace.FSNode.GETPERM,   &SC_GetPerm},
+			//{FNIF_GETPATH,           &GetPathSC},
+			{IFace.FSNode.REMOVABLE, &SC_Removable},
+			{IFace.FSNode.GETPARENT, &SC_GetParent},
+			{IFace.FSNode.GETLENGTH, &SC_GetLength},
+		]; //TODO: GETNCHILD, GETIDXCHILD
 
 		super(IFace.FSNode.OBJECT, callTable);
 	}
@@ -68,7 +73,7 @@ public:
 	@property DateTime AccessedTime() { return atime; }
 	@property DateTime ModifiedTime() { return mtime; }
 
-//	bool Readable() { return false; } //add User user = 0 TODO
+	//bool Readable() { return false; } //add User user = 0 TODO
 	//bool Writable() { return false; } //TODO
 	//bool Runnable() { return false; } //TODO
 
@@ -139,7 +144,24 @@ public:
 
 private:
 	public static ulong SCall(ulong[] params) {
-		return 0;
+		switch (params[0]) {
+			case IFace.FSNode.SFIND:
+				break;
+			case IFace.FSNode.SMKDIR:
+				break;
+			case IFace.FSNode.SGETRFN:
+				//return VFS.RootNode.ResID();
+			case IFace.FSNode.SGETCWD:
+				//return Task.CurrentProcess.GetCWD().ResID();
+			default:
+				return ~1UL;
+		}
+
+		return ~1UL;
+	}
+
+	ulong SC_Type(ulong[]) {
+		return Type;
 	}
 
 	ulong SC_Read(ulong[] params) {
@@ -150,40 +172,48 @@ private:
 		return Write(params[0], *(cast(byte[] *)params[1]));
 	}
 
-	/*ulong RemovableSC(ulong[]) { return Removable(); }
-	ulong TypeSC(ulong[]) { return Type(); }
-
-	ulong GetNameSC(ulong[]) {//TODO
-		return 5;//name;
+	ulong SC_GetUID(ulong[]) {
+		return uid;
 	}
 
-	ulong GetLengthSC(ulong[]) {//TODO
+	ulong SC_GetGID(ulong[]) {
+		return gid;
+	}
+
+	ulong SC_SetCWD(ulong[]) {
+		//if (Type == FSType.DIRECTORY)
+		//	Task.CurrentProcess.SetCWD(cast(DirectoryNode)this);
+
 		return 0;
 	}
 
-	ulong GetParentSC(ulong[]) {
+	/*ulong SC_Remove(ulong[]) {//TODO
+		return 0;
+	}*/
+
+	/*ulong SC_GetName(ulong[]) {//TODO
+		return 5;//name;
+	}*/
+
+	ulong SC_GetPerm(ulong[]) {
+			return perms;
+	}
+
+	/*ulong SC_GetPath(ulong[]) {//TODO
+		return 0;
+	}*/
+
+	ulong SC_Removable(ulong[]) {
+		return Removable();
+	}
+
+	ulong SC_GetParent(ulong[]) {
 		if (parent)
 			return parent.ResID();
 		return ~0UL;
 	}
 
-	ulong GetPathSC(ulong[]) {//TODO
-		return 0;
+	ulong SC_GetLength(ulong[]) {
+		return length;
 	}
-
-	ulong SetCwdSC(ulong[]) {//TODO
-		return 0;
-	}
-
-	ulong RemoveSC(ulong[]) {//TODO
-		return 0;
-	}
-
-	ulong GetUidSC(ulong[]) {//TODO
-		return UID;
-	}
-
-	ulong GetGidSC(ulong[]) {//TODO
-		return GID;
-	}*/
 }

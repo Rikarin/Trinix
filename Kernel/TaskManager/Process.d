@@ -39,6 +39,14 @@ public:
 		Stopped
 	}
 
+	
+	DirectoryNode GetCWD() { return cwd; }
+	void SetCWD(DirectoryNode value) { cwd = value; }
+
+	void RegisterFD(FSNode fd) { descriptors.Add(fd); }
+	void UnregisterFD(FSNode fd) { descriptors.Remove(fd); }
+
+
 	static Process Init() {
 		if (Task.Threads.Count)
 			return null;
@@ -49,7 +57,7 @@ public:
 		ret.description = "Shit happens...";
 		ret.mask        = 0x12; //022 in oct
 		ret.paging      = Paging.KernelPaging;
-		ret.cwd         = VFS.Root;
+		ret.cwd         = VFS.RootNode;
 
 		ret.descriptors = new List!FSNode();
 		ret.threads     = new List!Thread();
@@ -68,6 +76,8 @@ public:
 
 		return ret;
 	}
+
+
 
 
 

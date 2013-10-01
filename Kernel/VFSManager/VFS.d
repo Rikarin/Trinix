@@ -14,23 +14,25 @@ import Devices.Port.SerialPort;
 class VFS {
 public:
 static:
-	__gshared DirectoryNode Root;
+	private __gshared DirectoryNode root;
+
+	@property DirectoryNode RootNode() { return root; }
 
 
 	bool Init() {
-		Root = new DirectoryNode("/", null);
+		root = new DirectoryNode("/", null);
 		Log.Result(true);
 
 		Log.Print(" - Setting up DevFS");
-		VFS.Root.AddNode(DeviceManager.DevFS);
+		VFS.root.AddNode(DeviceManager.DevFS);
 		Log.Result(true);
 
 		Log.Print(" - Mounting TmpFS");
-		TmpFS.Mount(VFS.Root.CreateDirectory("tmp"));
+		TmpFS.Mount(VFS.root.CreateDirectory("tmp"));
 		Log.Result(true);
 
 		Log.Print(" - Mounting ProcFS");
-		ProcFS.Mount(VFS.Root.CreateDirectory("proc"));
+		ProcFS.Mount(VFS.root.CreateDirectory("proc"));
 		Log.Result(true);
 
 		Log.Print(" - Setting up serial devices ttyS0 - ttyS3");
