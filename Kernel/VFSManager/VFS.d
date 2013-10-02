@@ -84,4 +84,47 @@ static:
 				PrintTree(cast(DirectoryNode)x, p + 1);
 		}
 	}
+
+	FSNode Find(string path, DirectoryNode dir = null) {
+		FSNode node = dir is null ? root : dir;
+		auto p = String.Split(path, '/');
+
+		if (p[0] is null)
+			node = root;
+
+		foreach (x; p[1 .. $]) {
+			if (x == "..")
+				node = node.Parent;
+			else if (x !is null && x != ".") {
+				if (node.Type == FSType.DIRECTORY)
+					node = (cast(DirectoryNode)node).GetChild(x);
+				else
+					node = null;
+			}
+
+			if (node is null)
+				return null;
+		}
+
+		return node;
+	}
+
+	string Path(FSNode node) {
+		string path;
+
+		while (node !is null) {
+			string t = "/" ~ node.Name;
+
+			if (t != "//") {
+				t = t ~ path;
+				path = t;
+			}
+			node = node.Parent;
+		}
+
+		if (path is null)
+			return "/";
+
+		return path;
+	}
 }

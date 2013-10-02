@@ -108,6 +108,16 @@ extern(C) void StartSystem() {
 	import VFSManager.PipeNode;
 	import System.Convert;
 
+
+
+	DeviceManager.DevFS.AddNode(pajpa);
+	
+	Log.Print("\ntest: " ~ VFS.Path(pajpa));
+	Log.Print("\ntest: " ~ VFS.Path(VFS.Find("/dev/pajpa")));
+
+	
+
+
 	Log.PrintSP("\nid: " ~ Convert.ToString(pajpa.ResID()));
 
 	byte[] tmp = new byte[1];

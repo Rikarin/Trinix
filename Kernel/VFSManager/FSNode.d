@@ -56,7 +56,7 @@ public:
 			{IFace.FSNode.REMOVABLE, &SC_Removable},
 			{IFace.FSNode.GETPARENT, &SC_GetParent},
 			{IFace.FSNode.GETLENGTH, &SC_GetLength},
-		]; //TODO: GETNCHILD, GETIDXCHILD
+		];
 
 		super(IFace.FSNode.OBJECT, callTable);
 	}
