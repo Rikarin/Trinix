@@ -9,6 +9,7 @@ import FileSystem.TmpFS;
 import FileSystem.ProcFS;
 import FileSystem.SerialDev;
 import Devices.Port.SerialPort;
+import System.String;
 
 
 class VFS {
@@ -126,5 +127,55 @@ static:
 			return "/";
 
 		return path;
+	}
+
+	FSNode CreateFile(string path, DirectoryNode dir = null) {
+		if (dir is null)
+			dir = root;
+
+		if (Find(path, dir))
+			return null;
+
+		auto p = String.Split(path, '/');
+		string name = p[p.Count - 1];
+		p.RemoveAt(p.Count - 1);
+
+		string s = ".";
+		foreach (x; p)
+			s = s  ~ "/" ~ x;
+
+		FSNode node = Find(s, dir);
+		if (node is null)
+			return null;
+
+		if (node.Type & (FSType.DIRECTORY | FSType.MOUNTPOINT))
+			return cast(FSNode)(cast(DirectoryNode)node).CreateFile(name);
+
+		return null;
+	}
+
+	DirectoryNode CreateDirectory(string path, DirectoryNode dir = null) {
+		if (dir is null)
+			dir = root;
+
+		if (Find(path, dir))
+			return null;
+
+		auto p = String.Split(path, '/');
+		string name = p[p.Count - 1];
+		p.RemoveAt(p.Count - 1);
+
+		string s = ".";
+		foreach (x; p)
+			s = s  ~ "/" ~ x;
+
+		FSNode node = Find(s, dir);
+		if (node is null)
+			return null;
+
+		if (node.Type & (FSType.DIRECTORY | FSType.MOUNTPOINT))
+			return (cast(DirectoryNode)node).CreateDirectory(name);
+
+		return null;
 	}
 }

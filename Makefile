@@ -21,6 +21,7 @@ _SRC += $(wildcard Kernel/Core/*.[d|c|s])
 _SRC += $(wildcard Kernel/Resources/Keymaps/*.[d|c|s])
 
 _SRC += $(wildcard Framework/System/*.[d|c|s])
+_SRC += $(wildcard Framework/System/IO/*.[d|c|s])
 _SRC += $(wildcard Framework/System/Collections/*.[d|c|s])
 _SRC += $(wildcard Framework/System/Collections/Generic/*.[d|c|s])
 _SRC += $(wildcard Framework/System/Threading/*.[d|c|s])

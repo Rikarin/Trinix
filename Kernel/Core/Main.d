@@ -112,10 +112,10 @@ extern(C) void StartSystem() {
 
 	DeviceManager.DevFS.AddNode(pajpa);
 	
-	Log.Print("\ntest: " ~ VFS.Path(pajpa));
-	Log.Print("\ntest: " ~ VFS.Path(VFS.Find("/dev/pajpa")));
+	//Log.Print("\ntest: " ~ VFS.Path(pajpa));
+	//Log.Print("\ntest: " ~ VFS.Path(VFS.Find("/dev/pajpa")));
 
-	
+
 
 
 	Log.PrintSP("\nid: " ~ Convert.ToString(pajpa.ResID()));
@@ -141,6 +141,11 @@ extern(C) void testthr() {
 	aa.test();
 
 	aa.write(0, cast(byte[])"cau amigo!");
+
+
+	import System.ResourceCaller;
+	ResourceCaller.StaticCall(1);
+
 	while (true) { }
 }
 

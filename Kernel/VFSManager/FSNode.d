@@ -144,10 +144,15 @@ public:
 
 private:
 	public static ulong SCall(ulong[] params) {
+		if (params is null || params.length < 2)
+			return ~1UL;
+
 		switch (params[0]) {
 			case IFace.FSNode.SFIND:
+				//return VFS.Find(params[1], params.length >= 3 ? params[2] : null);
 				break;
 			case IFace.FSNode.SMKDIR:
+				//return VFS.CreatDirectory(params[1], params.length >= 3 ? params[2] : null);
 				break;
 			case IFace.FSNode.SGETRFN:
 				//return VFS.RootNode.ResID();

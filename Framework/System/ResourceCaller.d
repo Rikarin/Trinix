@@ -8,7 +8,7 @@ class ResourceCaller {
 	@property ulong ResType() { return type; }
 
 
-	private ulong SysCall(ulong res, ulong id, ulong[] data) {
+	private static ulong SysCall(ulong res, ulong id, ulong[] data) {
 		ulong pointer = cast(ulong)&data;
 
 		asm {
@@ -36,5 +36,9 @@ class ResourceCaller {
 			return ~0UL;
 
 		return SysCall(id, call, data);
+	}
+
+	static ulong StaticCall(ulong call, ulong[] data = null) {
+		return SysCall(~1UL, call, data);
 	}
 }
