@@ -29,7 +29,7 @@ class String {
 		str[] = value[0 .. $];
 	}
 
-	void opOpAssign(string op)(String value) {
+	String opOpAssign(string op)(String value) {
 		if (op == "~") {
 			char[] tmp = new char[Length + value.Length];
 			tmp[0 .. Length] = str[0 .. $];
@@ -37,6 +37,8 @@ class String {
 
 			delete str;
 			str = tmp;
+
+			return this;
 		}
 	}
 
@@ -124,8 +126,57 @@ class String {
 		return (this[0 .. startIndex] ~ value) ~ this[startIndex .. $];
 	}
 
+	long LastIndexOf(char value) {
+		foreach_reverse (i, x; str)
+			if (x == value)
+				return i;
+
+		return -1;
+	}
+
+	long LastIndexOf(String value) {
+		long pointer;
+
+		foreach_reverse (i, x; str) {
+			if (x == value[pointer]) {
+				pointer++;
+
+				if (pointer == value.Length)
+					return i - value.Length;
+			} else
+				pointer = 0;
+		}
+
+		return -1;
+	}
+
+	long LastIndexOfAny(char[] anyOf) {
+		foreach_reverse (i, x; str)
+			foreach (y; anyOf)
+				if (x == y)
+					return i;
+
+		return -1;
+	}
+
+	String PadLeft(long totalWidth) {
+		return PadLeft(totalWidth, ' ');
+	}
+
+	String PadLeft(long totalWidth, char paddingChar) {
+		return totalWidth > Length ? new String(paddingChar, totalWidth - Length) ~ this : this;
+	}
+
+	String PadRight(long totalWidth) {
+		return PadRight(totalWidth, ' ');
+	}
+
+	String PadRight(long totalWidth, char paddingChar) {
+		return totalWidth > Length ? this ~ new String(paddingChar, totalWidth - Length) : this;
+	}
 
 
+	//remove....
 
 
 	String ToLower() {
@@ -180,6 +231,15 @@ static:
 
 	bool IsNullOrEmpty(String value) {
 		return value is null || !value.Length;
+	}
+
+	String Join(String separatior, String[] value) {
+		String ret = value[0];
+
+		foreach (x; value[1 .. $])
+			ret ~= separatior ~ x;
+
+		return ret;
 	}
 
 

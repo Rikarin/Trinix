@@ -107,9 +107,11 @@ extern(C) void StartSystem() {
 	auto a = new String("test/parse/1233/nezer/chleba");
 	auto b = new String("niecoine");
 
-	long idx = a[a.IndexOf('/') + 1 .. $].IndexOf('/');
+	long idx = a[a.IndexOf('/') + 1 .. $].LastIndexOf('/');
+	//Log.Print("vypis: " ~ Convert.ToString(idx));
 
-	Log.Print("vypis: " ~ Convert.ToString(idx));
+
+	Log.Print("vypis2: " ~ cast(immutable(char)[])b.PadLeft(20, '.').str);
 
 
 
