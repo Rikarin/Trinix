@@ -97,6 +97,26 @@ extern(C) void StartSystem() {
 	Log.Result(false);
 
 
+	import System.Convert;
+
+
+	import System.String;
+
+
+
+	auto a = new String("test/parse/1233/nezer/chleba");
+	auto b = new String("niecoine");
+
+	long idx = a[a.IndexOf('/') + 1 .. $].IndexOf('/');
+
+	Log.Print("vypis: " ~ Convert.ToString(idx));
+
+
+
+
+	while (true) {}
+
+
 	import TaskManager.Thread;
 	auto t = new Thread(cast(void function())&testthr);
 	t.Start();
@@ -106,9 +126,6 @@ extern(C) void StartSystem() {
 	PipeDev pajpa = new PipeDev(0x1000, "pajpa");
 
 	import VFSManager.PipeNode;
-	import System.Convert;
-
-
 
 	DeviceManager.DevFS.AddNode(pajpa);
 	

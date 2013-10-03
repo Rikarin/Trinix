@@ -7,11 +7,20 @@ class String {
 	char[] str;
 
 	@property ulong Length() { return str.length; }
+	long opDollar() { return str.length; }
 
 	char opIndex(long index) {
 		if (index >= Length)
 			throw new IndexOutOfRangeException();
+
 		return str[index];
+	}
+
+	String opSlice(long i, long j) {
+		//if (i >= Length || j >= Length)
+		//	throw new IndexOutOfRangeException();
+
+		return new String(cast(immutable(char)[])str[i .. j]);
 	}
 
 	void opAssign(immutable(char)[] value) {
@@ -20,17 +29,28 @@ class String {
 		str[] = value[0 .. $];
 	}
 
+	void opOpAssign(string op)(String value) {
+		if (op == "~") {
+			char[] tmp = new char[Length + value.Length];
+			tmp[0 .. Length] = str[0 .. $];
+			tmp[Length .. $] = value.str[0 .. $];
 
-	void opOpAssign(string op)(string value) {
-		char[] tmp = new char[value.length];
-		tmp[0 .. str.length] = str[0 .. $];
-		tmp[str.length .. $] = value[0 .. $];
-
-		delete str;
-		str = tmp;
+			delete str;
+			str = tmp;
+		}
 	}
 
-	//this() {}
+	String opBinary(string op)(String value) {
+		if (op == "~") {
+			String ret = new String(' ', 0);
+
+			ret.str = new char[Length + value.Length];
+			ret.str[0 .. Length] = str[0 .. $];
+			ret.str[Length .. $] = value.str[0 .. $];
+
+			return ret;
+		}
+	}
 
 /*	this(const char* value) {
 		str = new char[StringLength(value)];
@@ -42,20 +62,136 @@ class String {
 		str[] = value[0 .. $];
 	}
 
-/*	this(char c, long count) {
+	this(char c, long count) {
 		str = new char[count];
 		str[] = c;
-	}*/
-	
-	//====================== STATIC ==========================
-static:
-	long Compare(String strA, String strB) {
-		return 0;
+	}
+
+	bool Contains(String value) {
+		return false;
+	}
+
+	long CompareTo(String value) {
+		return Compare(this, value);
+	}
+
+	bool EndsWith(String value) {
+		foreach_reverse (i, x; str)
+			if (x != value[$ - i - 1])
+				return false;
+
+		return true;
+	}
+
+	bool Equals(String value) {
+		return Equals(this, value);
+	}
+
+	long IndexOf(char value) {
+		foreach (i, x; str)
+			if (x == value)
+				return i;
+
+		return -1;
+	}
+
+	long IndexOf(String value) {
+		long pointer;
+
+		foreach (i, x; str) {
+			if (x == value[pointer]) {
+				pointer++;
+
+				if (pointer == value.Length)
+					return i - value.Length;
+			} else
+				pointer = 0;
+		}
+
+		return -1;
+	}
+
+	long IndexOfAny(char[] anyOf) {
+		foreach (i, x; str)
+			foreach (y; anyOf)
+				if (x == y)
+					return i;
+
+		return -1;
+	}
+
+	String Insert(long startIndex, String value) {
+		return (this[0 .. startIndex] ~ value) ~ this[startIndex .. $];
 	}
 
 
 
+
+
+	String ToLower() {
+		return this;
+	}
+	
+	//====================== STATIC ==========================
+static:
+	long Compare(String strA, String strB) {
+		if (strA.Length != strB.Length)
+			return strA.Length - strB.Length;
+
+		foreach (i; 0 .. strA.Length)
+			if (strA[i] != strB[i])
+				return -1;
+
+		return 0;
+	}
+
+	long Compare(String strA, String strB, bool ignoreCase) {
+		return ignoreCase ? Compare(strA.ToLower(), strB.ToLower()) : Compare(strA, strB);
+	}
+
+	String Concat(String[] values) {
+		String ret;
+
+		foreach (x; values)
+			ret ~= x;
+
+		return ret;
+	}
+
+	String Concat(String strA, String strB) {
+		return strA ~ strB;
+	}
+
+	String Concat(String strA, String strB, String strC) {
+		return strA ~ strB ~ strC;
+	}
+
+	String Concat(String strA, String strB, String strC, String strD) {
+		return strA ~ strB ~ strC ~ strD;
+	}
+
+	String Copy(String str) {
+		return new String(cast(immutable(char)[])str.str);
+	}
+
+	bool Equals(String strA, String strB) {
+		return !Compare(strA, strB);
+	}
+
+	bool IsNullOrEmpty(String value) {
+		return value is null || !value.Length;
+	}
+
+
+
+
+
+
+
 	import System.Collections.Generic.All;
+
+
+
 
 	List!string Split(string str, char delimiter) {
 		auto ret = new List!string();
