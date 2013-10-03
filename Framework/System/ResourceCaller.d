@@ -23,7 +23,7 @@ class ResourceCaller {
 		return pointer;
 	}
 
-	protected this(ulong id, ulong type) {
+	this(ulong id, ulong type) {
 		this.id = id;
 		this.type = SysCall(id, 0, null);
 
