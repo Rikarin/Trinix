@@ -37,9 +37,9 @@ class ProcFS : FileSystemProto {
 	override bool SetGID(FSNode node, ulong gid) { return false; }
 	override bool SetParent(FSNode node, DirectoryNode parent) { return false; }
 
-	override bool SetCreatedTime(FSNode node, DateTime time) { return false; }
-	override bool SetModifiedTime(FSNode node, DateTime time) { return false; }
-	override bool SetAccessedTime(FSNode node, DateTime time) { return false; }
+	override bool SetCreateTime(FSNode node, DateTime time) { return false; }
+	override bool SetModifyTime(FSNode node, DateTime time) { return false; }
+	override bool SetAccessTime(FSNode node, DateTime time) { return false; }
 
 	override FileNode CreateFile(DirectoryNode parent, string name) { return null; }
 	override DirectoryNode CreateDirectory(DirectoryNode parent, string name) { return null; }

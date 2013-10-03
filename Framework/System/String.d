@@ -72,6 +72,18 @@ static:
 		return ret;
 	}
 
+	long LastIndexOf(string str, char value) {
+		foreach_reverse (i, x; str)
+			if (x == value)
+				return i;
+			
+		return -1;
+	}
+
+	string Substring(string str, long startIndex) {
+		return str[startIndex .. $];
+	}
+
 
 
 	static long StringLength(const char* value) {

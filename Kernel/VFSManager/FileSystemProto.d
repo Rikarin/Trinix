@@ -24,9 +24,9 @@ public:
 	bool SetGID(FSNode node, ulong gid);
 	bool SetParent(FSNode node, DirectoryNode parent);
 
-	bool SetCreatedTime(FSNode node, DateTime time);
-	bool SetModifiedTime(FSNode node, DateTime time);
-	bool SetAccessedTime(FSNode node, DateTime time);
+	bool SetCreateTime(FSNode node, DateTime time);
+	bool SetModifyTime(FSNode node, DateTime time);
+	bool SetAccessTime(FSNode node, DateTime time);
 
 	ulong Read(FileNode file, ulong offset, byte[] data);
 	ulong Write(FileNode file, ulong offset, byte[] data);

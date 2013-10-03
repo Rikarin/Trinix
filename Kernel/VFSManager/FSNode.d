@@ -52,9 +52,15 @@ public:
 			//{IFace.FSNode.REMOVE,    &SC_Remove}
 			//{IFace.FSNode.GETNAME,   &SC_GetName},
 			{IFace.FSNode.GETPERM,   &SC_GetPerm},
+			{IFace.FSNode.SETPERM,   &SC_SetPerm},
 			//{FNIF_GETPATH,           &GetPathSC},
+			{IFace.FSNode.GETATIME,  &SC_GetAccessTime},
+			{IFace.FSNode.GETMTIME,  &SC_GetModifyTime},
+			{IFace.FSNode.GETCTIME,  &SC_GetCreateTime},
+			{IFace.FSNode.SETATIME,  &SC_SetAccessTime},
+			{IFace.FSNode.SETMTIME,  &SC_SetModifyTime},
+			{IFace.FSNode.SETCTIME,  &SC_SetCreateTime},
 			{IFace.FSNode.REMOVABLE, &SC_Removable},
-			{IFace.FSNode.GETPARENT, &SC_GetParent},
 			{IFace.FSNode.GETLENGTH, &SC_GetLength},
 		];
 
@@ -69,9 +75,9 @@ public:
 	@property FileSystemProto FileSystem() { return fs; }
 	@property DirectoryNode Parent() { return parent; }
 
-	@property DateTime CreatedTime() { return ctime; }
-	@property DateTime AccessedTime() { return atime; }
-	@property DateTime ModifiedTime() { return mtime; }
+	@property DateTime CreateTime() { return ctime; }
+	@property DateTime AccessTime() { return atime; }
+	@property DateTime ModifyTime() { return mtime; }
 
 	//bool Readable() { return false; } //add User user = 0 TODO
 	//bool Writable() { return false; } //TODO
@@ -117,24 +123,24 @@ public:
 		return ret;
 	}
 
-	bool SetCreatedTime(DateTime time) {
-		bool ret = fs is null ? true : fs.SetCreatedTime(this, time);
+	bool SetCreateTime(DateTime time) {
+		bool ret = fs is null ? true : fs.SetCreateTime(this, time);
 		if (ret)
 			ctime = time;
 
 		return ret;
 	}
 
-	bool SetModifiedTime(DateTime time) {
-		bool ret = fs is null ? true : fs.SetModifiedTime(this, time);
+	bool SetModifyTime(DateTime time) {
+		bool ret = fs is null ? true : fs.SetModifyTime(this, time);
 		if (ret)
 			mtime = time;
 
 		return ret;
 	}
 
-	bool setAccessedTime(DateTime time) {
-		bool ret = fs is null ? true : fs.SetAccessedTime(this, time);
+	bool SetAccessTime(DateTime time) {
+		bool ret = fs is null ? true : fs.SetAccessTime(this, time);
 		if (ret)
 			atime = time;
 
@@ -204,18 +210,52 @@ private:
 			return perms;
 	}
 
+	ulong SC_SetPerm(ulong[] params) {
+		if (!params.length)
+			return 0;
+
+		return SetPermissions(cast(uint)params[0]);
+	}
+
 	/*ulong SC_GetPath(ulong[]) {//TODO
 		return 0;
 	}*/
 
-	ulong SC_Removable(ulong[]) {
-		return Removable();
+	ulong SC_GetAccessTime(ulong[]) {
+		return atime.Ticks;
 	}
 
-	ulong SC_GetParent(ulong[]) {
-		if (parent)
-			return parent.ResID();
-		return ~0UL;
+	ulong SC_GetModifyTime(ulong[]) {
+		return mtime.Ticks;
+	}
+
+	ulong SC_GetCreateTime(ulong[]) {
+		return ctime.Ticks;
+	}
+
+	ulong SC_SetAccessTime(ulong[] params) {
+		if (!params.length)
+			return 0;
+
+		return SetAccessTime(new DateTime(params[0]));
+	}
+
+	ulong SC_SetModifyTime(ulong[] params) {
+		if (!params.length)
+			return 0;
+
+		return SetModifyTime(new DateTime(params[0]));
+	}
+
+	ulong SC_SetCreateTime(ulong[] params) {
+		if (!params.length)
+			return 0;
+
+		return SetCreateTime(new DateTime(params[0]));
+	}
+
+	ulong SC_Removable(ulong[]) {
+		return Removable();
 	}
 
 	ulong SC_GetLength(ulong[]) {

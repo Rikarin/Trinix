@@ -9,7 +9,7 @@ class DirectoryInfo : FileSystemInfo {
 
 
 	this() {
-		syscall = new ResourceCaller(null, IFace.FSNode.OBJECT);
+		//syscall = new ResourceCaller(null, IFace.FSNode.OBJECT);
 	}
 
 	~this() {
