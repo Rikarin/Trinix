@@ -78,8 +78,8 @@ class String {
 	}
 
 	bool EndsWith(String value) {
-		foreach_reverse (i, x; str)
-			if (x != value[$ - i - 1])
+		foreach_reverse (i, x; value.str)
+			if (x != str[$ - i - 1])
 				return false;
 
 		return true;
@@ -175,13 +175,101 @@ class String {
 		return totalWidth > Length ? this ~ new String(paddingChar, totalWidth - Length) : this;
 	}
 
+	String Replace(char oldChar, char newChar) {
+		String ret = new String(cast(immutable(char)[])str);
 
-	//remove....
+		foreach (i, x; ret.str)
+			if (x == oldChar)
+				ret.str[i] = newChar;
 
+		return ret;
+
+	}
+
+	String Replace(String oldValue, String newValue) {
+		String ret = new String(cast(immutable(char)[])str);
+		long idx = ret.IndexOf(oldValue);
+
+		while (idx != -1) {
+			ret.str[idx .. oldValue.Length] = newValue.str[0 .. $];
+			idx = ret.IndexOf(oldValue);			
+		}
+
+		return ret;
+	}
+	
+
+	String[] Split(char[] delimiter) { //TODO: FIX IT
+		long idx;
+
+		foreach (x; str) {
+			foreach (y; delimiter) {
+				if (x == y) {
+					idx++;
+					break;
+				}
+			}
+		}
+		
+		String[] ret = new String[idx];
+
+		long a, b;
+		foreach (i, x; str) {
+			foreach (y; delimiter) {
+				if (x == y) {
+					import Core.Log;
+					Log.Print(" XXXX: " ~ cast(immutable(char)[])str[a .. i]);
+					ret[b++] = new String("abc");//cast(immutable(char)[])str[a .. i]);
+					a = i + 1;
+					break;
+				}
+			}
+		}
+
+		ret[b] = new String(cast(immutable(char)[])str[a .. $]);
+		return ret;
+	}
+
+	bool StartWith(String value) {
+		foreach (i, x; value.str)
+			if (x != str[i])
+				return false;
+
+		return true;
+	}
+
+	bool StartWith(String value, bool ignoreCase) {
+		return ignoreCase ? ToLower().StartWith(value.ToLower()) : StartWith(value);
+	}
+
+	char[] ToCharArray() {
+		return str[0 .. $];
+	}
 
 	String ToLower() {
 		return this;
 	}
+
+	String ToUpper() {
+		return this;
+	}
+
+	String Trim() {
+		return this;
+	}
+
+	String Trim(char[] trimChars) {
+		return this;
+	}
+
+	String TrimStart(char[] trimChars) {
+		return this;
+	}
+
+	String TrimEnd(char[] trimChars) {
+		return this;
+	}
+
 	
 	//====================== STATIC ==========================
 static:
@@ -246,12 +334,7 @@ static:
 
 
 
-
-
 	import System.Collections.Generic.All;
-
-
-
 
 	List!string Split(string str, char delimiter) {
 		auto ret = new List!string();
@@ -278,15 +361,5 @@ static:
 
 	string Substring(string str, long startIndex) {
 		return str[startIndex .. $];
-	}
-
-
-
-	static long StringLength(const char* value) {
-		long i = 0;
-		while (value[i] != '\0')
-			i++;
-
-		return i;
 	}
 }

@@ -107,11 +107,23 @@ extern(C) void StartSystem() {
 	auto a = new String("test/parse/1233/nezer/chleba");
 	auto b = new String("niecoine");
 
-	long idx = a[a.IndexOf('/') + 1 .. $].LastIndexOf('/');
+//	long idx = a[a.IndexOf('/') + 1 .. $].LastIndexOf('/');
 	//Log.Print("vypis: " ~ Convert.ToString(idx));
 
+//	String[] aaa = a.Split(['/']);
 
-	Log.Print("vypis2: " ~ cast(immutable(char)[])b.PadLeft(20, '.').str);
+	//foreach (x; aaa) {
+	//	//Log.Print(" | " ~ cast(immutable(char)[])x.str);
+	//}
+
+	if (a.StartWith(new String("test"))) {
+		Log.Print("yop");
+	} else {
+		Log.Print("nein");
+	}
+
+
+//	Log.Print("vypis2: " ~ cast(immutable(char)[])b.PadLeft(20, '.').str);
 
 
 
