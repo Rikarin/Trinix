@@ -34,11 +34,8 @@ Framework:
 System:
 	MP
 	Dorobit heap & delete!!
-	Az potom VFS a syscall mgr
-	dorobit string
+	Az potom VFS
 	Panic - vypis Rx registrov, inak vsetko O.K.
-	Res - resources list...
-	syscall handler
 	implementovat user permissions z VFSka
 ++/
 
@@ -154,20 +151,40 @@ extern(C) void apEntry() {
 	while (true) { }
 }
 
+
+
+
+
+
+
+
+
+import System.ResourceCaller;
+import System.IFace;
+
+
+
 extern(C) void testthr() {
-	auto aa = new nicetry();
-	aa.test();
-
-	aa.write(0, cast(byte[])"cau amigo!");
 
 
-	import System.ResourceCaller;
-	ResourceCaller.StaticCall(1);
+
+	//auto aa = new nicetry();
+	//aa.write(0, cast(byte[])"cau amigo!");
+
+	string test = "dev";
+	ulong ret = ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [IFace.FSNode.SFIND, cast(ulong)&test]);
+
+	asm {
+		mov R11, ret;
+	}
+
 
 	while (true) { }
 }
 
-import System.ResourceCaller;
+
+
+
 
 class nicetry : ResourceCaller {
 	this() {

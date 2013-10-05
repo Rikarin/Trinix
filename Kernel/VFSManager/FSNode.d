@@ -152,8 +152,8 @@ private:
 		import VFSManager.VFS; //TODO: FIXME
 		import TaskManager.Task; //TODO: METOO
 
-		if (params is null || params.length < 2)
-			return ~1UL;
+		if (params is null || !params.length)
+			return ~0UL;
 
 		switch (params[0]) {
 			case IFace.FSNode.SFIND:
@@ -167,10 +167,10 @@ private:
 			case IFace.FSNode.SGETCWD:
 				return Task.CurrentProcess.GetCWD().ResID();
 			default:
-				return ~1UL;
+				return ~0UL;
 		}
 
-		return ~1UL;
+		return ~0UL;
 	}
 
 	ulong SC_Type(ulong[]) {

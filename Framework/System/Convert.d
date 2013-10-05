@@ -277,4 +277,58 @@ static:
 
 		return ret;
 	}
+
+
+
+	/+
+	private string ConvertToString(T)(T value, int toBase) {
+		char[256] num;
+		short p = 235;
+		string digits = "0123456789ABCDEF";
+
+		do
+			num[p--] = 'z';//digits[value % toBase];
+		while (value /= toBase);
+
+	/*	switch (toBase) {
+			case 2:
+				num[p--] = 'b';
+				num[p--] = '0';
+				break;
+
+			case 8:
+				num[p--] = '0';
+				break;
+
+			case 16:
+				num[p--] = 'x';
+				num[p--] = '0';
+				break;
+
+			default:
+		}
+
+		static if (!is(T == ubyte) && !is(T == ushort) && !is(T == uint) && !is(T == ulong)) {
+			if (value < 0) {
+				num[p--] = '-';
+		  	}
+		}
+
+		*/
+
+		/*static if (is(T == float) || is(T == double)) {
+			ret = ret ~ ".";
+
+
+			do
+				tmp = digits[value % toBase] ~ tmp;
+			while (value /= toBase);
+
+			ret = ret ~ '0f';
+		}*/
+
+		return num[p .. $];
+	}
+
+	+/
 }
