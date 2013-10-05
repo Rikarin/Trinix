@@ -16,8 +16,8 @@ public:
 static:
 	void Init() {
 		Memory.Start = null;
-		Memory.Length = 0xF0_0000;//cast(ulong)LinkerScript.ekernel() - cast(ulong)0xC00_0000;//LinkerScript.kernelVMA();
-		Memory.VirtualStart = cast(ubyte *)0xC00_0000;//LinkerScript.kernelVMA();
+		Memory.Length = cast(ulong)LinkerScript.EndKernel() - cast(ulong)LinkerScript.KernelVMA() + 0x1000;
+		Memory.VirtualStart = cast(ubyte *)LinkerScript.KernelVMA();
 
 		Info.NumIOAPICs = 0;
 		Info.NumLAPICs = 0;

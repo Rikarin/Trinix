@@ -102,7 +102,7 @@ extern(C) void StartSystem() {
 
 	import System.String;
 
-
+/*
 
 	auto a = new String("test/parse/1233/nezer/chleba");
 	auto b = new String("niecoine");
@@ -121,7 +121,7 @@ extern(C) void StartSystem() {
 	} else {
 		Log.Print("nein");
 	}
-
+*/
 
 //	Log.Print("vypis2: " ~ cast(immutable(char)[])b.PadLeft(20, '.').str);
 
