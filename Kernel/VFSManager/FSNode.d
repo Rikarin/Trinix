@@ -1,12 +1,11 @@
 module VFSManager.FSNode;
 
+import SyscallManager.Res;
 import SyscallManager.Resource;
 import VFSManager.FileSystemProto;
 import VFSManager.DirectoryNode;
-//import VFSManager.VFS;// WTF?
 import System.IFace;
 import System.DateTime;
-//import TaskManager.Task; //WTF?
 
 
 enum FSType : ubyte {
@@ -150,20 +149,23 @@ public:
 
 private:
 	public static ulong SCall(ulong[] params) {
+		import VFSManager.VFS; //TODO: FIXME
+		import TaskManager.Task; //TODO: METOO
+
 		if (params is null || params.length < 2)
 			return ~1UL;
 
 		switch (params[0]) {
 			case IFace.FSNode.SFIND:
-				//return VFS.Find(params[1], params.length >= 3 ? params[2] : null);
+				return VFS.Find(*cast(string *)params[1], params.length >= 3 ? cast(DirectoryNode)Res.GetByID(params[2], IFace.FSNode.OBJECT) : null).ResID();
 				break;
 			case IFace.FSNode.SMKDIR:
-				//return VFS.CreatDirectory(params[1], params.length >= 3 ? params[2] : null);
+				return VFS.CreateDirectory(*cast(string *)params[1], params.length >= 3 ? cast(DirectoryNode)Res.GetByID(params[2], IFace.FSNode.OBJECT) : null).ResID();
 				break;
 			case IFace.FSNode.SGETRFN:
-				//return VFS.RootNode.ResID();
+				return VFS.RootNode.ResID();
 			case IFace.FSNode.SGETCWD:
-				//return Task.CurrentProcess.GetCWD().ResID();
+				return Task.CurrentProcess.GetCWD().ResID();
 			default:
 				return ~1UL;
 		}
@@ -192,8 +194,10 @@ private:
 	}
 
 	ulong SC_SetCWD(ulong[]) {
-		//if (Type == FSType.DIRECTORY)
-		//	Task.CurrentProcess.SetCWD(cast(DirectoryNode)this);
+		import TaskManager.Task; //TODO: FIXME
+		
+		if (Type == FSType.DIRECTORY)
+			Task.CurrentProcess.SetCWD(cast(DirectoryNode)this);
 
 		return 0;
 	}

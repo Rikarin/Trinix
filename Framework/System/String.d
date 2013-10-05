@@ -79,7 +79,7 @@ class String {
 
 	bool EndsWith(String value) {
 		foreach_reverse (i, x; value.str)
-			if (x != str[$ - i - 1])
+			if (x != str[$ - value.Length + i])
 				return false;
 
 		return true;

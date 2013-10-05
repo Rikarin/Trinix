@@ -40,6 +40,16 @@ public:
 		return true;
 	}
 
+	Resource GetByID(ulong id, ulong type) {
+		if (id >= resources.Count)
+			return null;
+
+		if (resources[id].ResType != type)
+			return null;
+
+		return resources[id];
+	}
+
 	ulong Call(ulong resource, ulong id, ulong[] params) {
 		debug (only) {
 			import System.Convert;

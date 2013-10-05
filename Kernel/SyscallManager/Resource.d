@@ -3,9 +3,26 @@ module SyscallManager.Resource;
 import System.Threading.All;
 import System.Collections.Generic.All;
 import SyscallManager.Res;
+import System.IFace;
 
 
 class Resource {
+private:
+	Mutex lock;
+	ulong id, type;
+	List!(CallTable) callTables;
+
+
+	ulong DoCall(ulong id, ulong[] params) {
+		foreach (x; callTables) { //TODO: reverse foreach
+			if (x.id == id)
+				return x.CallBack(params);
+		}
+		
+		return ~0UL;
+	}
+
+
 public:
 	struct CallTable {
 		ulong id;
@@ -30,20 +47,6 @@ public:
 	}
 
 
-private:
-	Mutex lock;
-	ulong id, type;
-	List!(CallTable) callTables;
-
-
-	ulong DoCall(ulong id, ulong[] params) {
-		foreach (x; callTables) { //TODO: reverse foreach
-			if (x.id == id)
-				return x.CallBack(params);
-		}
-		
-		return ~0UL;
-	}
 
 
 protected:

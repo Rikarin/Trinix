@@ -100,10 +100,7 @@ extern(C) void StartSystem() {
 	import System.Convert;
 
 
-	import System.String;
-
-/*
-
+	/*import System.String;
 	auto a = new String("test/parse/1233/nezer/chleba");
 	auto b = new String("niecoine");
 
@@ -116,19 +113,9 @@ extern(C) void StartSystem() {
 	//	//Log.Print(" | " ~ cast(immutable(char)[])x.str);
 	//}
 
-	if (a.StartWith(new String("test"))) {
-		Log.Print("yop");
-	} else {
-		Log.Print("nein");
-	}
-*/
-
 //	Log.Print("vypis2: " ~ cast(immutable(char)[])b.PadLeft(20, '.').str);
 
-
-
-
-	while (true) {}
+*/
 
 
 	import TaskManager.Thread;
