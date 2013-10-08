@@ -16,10 +16,9 @@ class IFace {
 		REMOVE,
 		SGETRFN,
 		SGETCWD,
-		GETNAME,
 		GETPERM, //ok FSI
 		SETPERM, //ok FSI
-		GETPATH,
+		GETPATH, //OK FSI
 		GETATIME, //ok FSI
 		GETMTIME, //ok FSI
 		GETCTIME, //ok FSI

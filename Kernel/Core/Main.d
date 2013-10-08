@@ -90,7 +90,7 @@ extern(C) void StartSystem() {
 	//new PS2Keyboard();
 	Log.Result(true);
 
-	Log.Print("Init complete, starting terminal");
+	Log.Print("Booting complete, starting init process");
 	Log.Result(false);
 
 
@@ -159,11 +159,17 @@ extern(C) void testthr() {
 	//string ret = ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [IFace.FSNode.SFIND, cast(ulong)&test]);
 
 	auto di = new DirectoryInfo(10);
-
 	auto aa = new nicetry();
 
 	aa.write(0, cast(byte[])"Adresa pajpy je: ");
 	aa.write(0, cast(byte[])di.FullName);
+
+	di.Delete();
+
+	if (di.Exists)
+		aa.write(0, cast(byte[])" Existuje");
+	else
+		aa.write(0, cast(byte[])" Neexistuje");
 
 	while (true) { }
 }

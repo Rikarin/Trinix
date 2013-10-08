@@ -62,6 +62,7 @@ protected:
 
 	~this() {
 		delete lock;
+		delete callTables;
 		Res.Unregister(this);
 	}
 

@@ -334,6 +334,7 @@ static:
 
 
 
+//====================================== OLD ==========================================================
 	import System.Collections.Generic.All;
 
 	List!string Split(string str, char delimiter) {
@@ -357,9 +358,5 @@ static:
 				return i;
 			
 		return -1;
-	}
-
-	string Substring(string str, long startIndex) {
-		return str[startIndex .. $];
 	}
 }

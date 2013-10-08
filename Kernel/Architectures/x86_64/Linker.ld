@@ -26,8 +26,6 @@ SECTIONS {
         . = ALIGN(4096);
     }
 
-    _etext = .; PROVIDE(etext = .);
-
 
     .data : AT(ADDR(.data) - kernel_VMA) {
         _data = .;
@@ -44,15 +42,12 @@ SECTIONS {
 
         . = ALIGN(4096);
     }
-
-    _edata = .; PROVIDE (edata = .);
+    _edata = .;
 
 
     .bss : AT(ADDR(.bss) - kernel_VMA) {
         _bss = .;
-
         *(.bss)
-
         . = ALIGN(4096);
     }
 
@@ -67,6 +62,6 @@ SECTIONS {
         . = ALIGN(4096);
 	}
 
-    _end = .; PROVIDE (end = .);
+    _end = .;
 	_ekernel = .;
 }

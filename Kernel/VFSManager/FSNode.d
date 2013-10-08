@@ -48,8 +48,7 @@ public:
 			{IFace.FSNode.GETUID,    &SC_GetUID},
 			{IFace.FSNode.GETGID,    &SC_GetGID},
 			{IFace.FSNode.SETCWD,    &SC_SetCWD},
-			//{IFace.FSNode.REMOVE,    &SC_Remove}
-			//{IFace.FSNode.GETNAME,   &SC_GetName},
+			{IFace.FSNode.REMOVE,    &SC_Remove},
 			{IFace.FSNode.GETPERM,   &SC_GetPerm},
 			{IFace.FSNode.SETPERM,   &SC_SetPerm},
 			{IFace.FSNode.GETPATH,   &SC_GetPath},
@@ -202,13 +201,10 @@ private:
 		return 0;
 	}
 
-	/*ulong SC_Remove(ulong[]) {//TODO
-		return 0;
-	}*/
-
-	/*ulong SC_GetName(ulong[]) {//TODO
-		return 5;//name;
-	}*/
+	ulong SC_Remove(ulong[]) {
+		import VFSManager.VFS; //TODO: FIXME
+		return VFS.Remove(this) ? 1 : 0;
+	}
 
 	ulong SC_GetPerm(ulong[]) {
 			return perms;

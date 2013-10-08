@@ -188,7 +188,7 @@ public:
 				if (fs != x.FileSystem)
 					return false;
 
-				if (!fs.Remove(this, child))
+				if (fs !is null && !fs.Remove(this, child))
 					return false;
 
 				childrens.Remove(x);

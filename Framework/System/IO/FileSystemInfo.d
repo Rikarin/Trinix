@@ -83,7 +83,7 @@ public:
 
 	@property string Name() {
 		if (name is null)
-			name = FullName[String.LastIndexOf(FullName, '/') .. $];
+			name = FullName[String.LastIndexOf(FullName, '/') + 1 .. $];
 
 		return name;
 	}
@@ -95,6 +95,13 @@ public:
 		return extension;
 	}
 
+	@property bool Exists() {
+		if (syscall.Call(0) == syscall.ResType)
+			return true;
+
+		return false;
+	}
+
 
 	void Refresh() {
 		atribs    = cast(FileAttributes)~0UL;
@@ -104,5 +111,9 @@ public:
 		fullName  = null;
 		name      = null;
 		extension = null;
+	}
+
+	void Delete() {
+		syscall.Call(IFace.FSNode.REMOVE);
 	}
 }

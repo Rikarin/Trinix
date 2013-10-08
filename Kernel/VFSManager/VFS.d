@@ -173,9 +173,20 @@ static:
 		if (node is null)
 			return null;
 
-		if (node.Type & (FSType.DIRECTORY | FSType.MOUNTPOINT))
+		if (node.Type == FSType.DIRECTORY)
 			return (cast(DirectoryNode)node).CreateDirectory(name);
 
 		return null;
+	}
+
+	bool Remove(FSNode node) {
+		FSNode parent = node.Parent;
+		if (parent is null)
+			return false;
+
+		if (parent.Type == FSType.DIRECTORY)
+			return (cast(DirectoryNode)parent).Remove(node);
+
+		return false;
 	}
 }
