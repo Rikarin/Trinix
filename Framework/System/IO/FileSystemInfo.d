@@ -10,15 +10,10 @@ import System.ResourceCaller;
 
 abstract class FileSystemInfo {
 private:
+	protected ResourceCaller syscall;
 	FileAttributes atribs = cast(FileAttributes)~0UL;
 	DateTime atime, mtime, ctime;
 	string fullName, name, extension;
-
-
-protected:
-	ResourceCaller syscall;
-
-	this() { }
 
 
 public:

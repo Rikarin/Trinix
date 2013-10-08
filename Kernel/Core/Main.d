@@ -156,9 +156,7 @@ import System.IFace;
 import System.IO.DirectoryInfo;
 
 extern(C) void testthr() {
-	//string ret = ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [IFace.FSNode.SFIND, cast(ulong)&test]);
-
-	auto di = new DirectoryInfo(10);
+	auto di = new DirectoryInfo("/dev/testik");
 	auto aa = new nicetry();
 
 	aa.write(0, cast(byte[])"Adresa pajpy je: ");
