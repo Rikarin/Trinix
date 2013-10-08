@@ -52,7 +52,7 @@ public:
 			//{IFace.FSNode.GETNAME,   &SC_GetName},
 			{IFace.FSNode.GETPERM,   &SC_GetPerm},
 			{IFace.FSNode.SETPERM,   &SC_SetPerm},
-			//{FNIF_GETPATH,           &GetPathSC},
+			{IFace.FSNode.GETPATH,   &SC_GetPath},
 			{IFace.FSNode.GETATIME,  &SC_GetAccessTime},
 			{IFace.FSNode.GETMTIME,  &SC_GetModifyTime},
 			{IFace.FSNode.GETCTIME,  &SC_GetCreateTime},
@@ -221,9 +221,16 @@ private:
 		return SetPermissions(cast(uint)params[0]);
 	}
 
-	/*ulong SC_GetPath(ulong[]) {//TODO
-		return 0;
-	}*/
+	ulong SC_GetPath(ulong[] params) {
+		import VFSManager.VFS; //TODO: FIXME
+
+		string ret = VFS.Path(this);
+		if (ret.length > params[1])
+			return ~0UL;
+
+		(cast(char *)params[0])[0 .. ret.length] = ret[0 .. $];
+		return ret.length;
+	}
 
 	ulong SC_GetAccessTime(ulong[]) {
 		return atime.Ticks;

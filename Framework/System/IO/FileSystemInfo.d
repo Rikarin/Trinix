@@ -72,14 +72,37 @@ public:
 	}
 
 	@property string FullName() {
-		return *cast(string *)syscall.Call(IFace.FSNode.GETPATH);
+		if (fullName is null) {
+			char[] tmp = new char[256];
+			ulong length = cast(ulong *)syscall.Call(IFace.FSNode.GETPATH, [cast(ulong)tmp.ptr, tmp.length]);
+			fullName = cast(string)([] ~ tmp[0 .. length]);
+		}
+
+		return fullName;
 	}
 
 	@property string Name() {
-		return String.Substring(FullName, String.LastIndexOf(FullName, '/'));
+		if (name is null)
+			name = FullName[String.LastIndexOf(FullName, '/') .. $];
+
+		return name;
 	}
 
 	@property string Extension() {
-		return String.Substring(Name, String.LastIndexOf(Name, '.'));
+		if (extension is null)
+			extension = Name[String.LastIndexOf(Name, '.') .. $];
+
+		return extension;
+	}
+
+
+	void Refresh() {
+		atribs    = cast(FileAttributes)~0UL;
+		atime     = null;
+		mtime     = null;
+		ctime     = null;
+		fullName  = null;
+		name      = null;
+		extension = null;
 	}
 }

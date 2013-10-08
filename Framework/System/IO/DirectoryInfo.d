@@ -8,8 +8,8 @@ import System.IO.FileSystemInfo;
 class DirectoryInfo : FileSystemInfo {
 
 
-	this() {
-		//syscall = new ResourceCaller(null, IFace.FSNode.OBJECT);
+	this(ulong test) {
+		syscall = new ResourceCaller(test, IFace.FSNode.OBJECT);
 	}
 
 	~this() {

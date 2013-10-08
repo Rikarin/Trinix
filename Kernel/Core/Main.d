@@ -115,22 +115,21 @@ extern(C) void StartSystem() {
 */
 
 
+	import FileSystem.PipeDev;
+	import VFSManager.PipeNode;
+	PipeDev pajpa = new PipeDev(0x1000, "pajpa");
+	DeviceManager.DevFS.AddNode(pajpa);
+
+
 	import TaskManager.Thread;
 	auto t = new Thread(cast(void function())&testthr);
 	t.Start();
 
 	
-	import FileSystem.PipeDev;
-	PipeDev pajpa = new PipeDev(0x1000, "pajpa");
 
-	import VFSManager.PipeNode;
-
-	DeviceManager.DevFS.AddNode(pajpa);
-	
 	//Log.Print("\ntest: " ~ VFS.Path(pajpa));
 	//Log.Print("\ntest: " ~ VFS.Path(VFS.Find("/dev/pajpa")));
-
-
+	//VFS.PrintTree(VFS.Root);
 
 
 	Log.PrintSP("\nid: " ~ Convert.ToString(pajpa.ResID()));
@@ -138,11 +137,9 @@ extern(C) void StartSystem() {
 	byte[] tmp = new byte[1];
 	while (true) {
 		pajpa.Read(0, tmp);
-		Log.PrintSP("\ntest: " ~ tmp[0]);
+		Log.Print("" ~ tmp[0]);
 		tmp[0] = 0;
 	}
-
-	//VFS.PrintTree(VFS.Root);
 
 	while (true) {}
 }
@@ -154,30 +151,19 @@ extern(C) void apEntry() {
 
 
 
-
-
-
-
-
 import System.ResourceCaller;
 import System.IFace;
-
-
+import System.IO.DirectoryInfo;
 
 extern(C) void testthr() {
+	//string ret = ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [IFace.FSNode.SFIND, cast(ulong)&test]);
 
+	auto di = new DirectoryInfo(10);
 
+	auto aa = new nicetry();
 
-	//auto aa = new nicetry();
-	//aa.write(0, cast(byte[])"cau amigo!");
-
-	string test = "dev";
-	ulong ret = ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [IFace.FSNode.SFIND, cast(ulong)&test]);
-
-	asm {
-		mov R11, ret;
-	}
-
+	aa.write(0, cast(byte[])"Adresa pajpy je: ");
+	aa.write(0, cast(byte[])di.FullName);
 
 	while (true) { }
 }
