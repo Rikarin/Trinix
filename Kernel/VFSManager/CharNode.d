@@ -13,5 +13,5 @@ abstract class CharNode : FSNode {
 	}
 
 	//Syscalls
-	override bool Accesible() { return true; }
+	override bool Accessible() { return true; }
 }

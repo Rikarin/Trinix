@@ -26,7 +26,6 @@ import Devices.Display.VGATextOutput;
 Framework:
 	BitArray
 	Mutex
-	-Wchar atd.
 	Color - FromKnownColor name, ToUpper...
 	convert - prerobit na vlastny string bez alloc
 	list - search
@@ -95,44 +94,15 @@ extern(C) void StartSystem() {
 
 
 	import System.Convert;
-
-
-	/*import System.String;
-	auto a = new String("test/parse/1233/nezer/chleba");
-	auto b = new String("niecoine");
-
-//	long idx = a[a.IndexOf('/') + 1 .. $].LastIndexOf('/');
-	//Log.Print("vypis: " ~ Convert.ToString(idx));
-
-//	String[] aaa = a.Split(['/']);
-
-	//foreach (x; aaa) {
-	//	//Log.Print(" | " ~ cast(immutable(char)[])x.str);
-	//}
-
-//	Log.Print("vypis2: " ~ cast(immutable(char)[])b.PadLeft(20, '.').str);
-
-*/
-
-
 	import FileSystem.PipeDev;
 	import VFSManager.PipeNode;
+	import TaskManager.Thread;
+
 	PipeDev pajpa = new PipeDev(0x1000, "pajpa");
 	DeviceManager.DevFS.AddNode(pajpa);
-
-
-	import TaskManager.Thread;
-	auto t = new Thread(cast(void function())&testthr);
-	t.Start();
-
 	
+	(new Thread(cast(void function())&testthr)).Start();
 
-	//Log.Print("\ntest: " ~ VFS.Path(pajpa));
-	//Log.Print("\ntest: " ~ VFS.Path(VFS.Find("/dev/pajpa")));
-	//VFS.PrintTree(VFS.Root);
-
-
-	Log.PrintSP("\nid: " ~ Convert.ToString(pajpa.ResID()));
 
 	byte[] tmp = new byte[1];
 	while (true) {
@@ -159,15 +129,11 @@ extern(C) void testthr() {
 	auto di = new DirectoryInfo("/dev/testik");
 	auto aa = new nicetry();
 
+	//if (!di.Exists)
+		di.Create();
+
 	aa.write(0, cast(byte[])"Adresa pajpy je: ");
 	aa.write(0, cast(byte[])di.FullName);
-
-	di.Delete();
-
-	if (di.Exists)
-		aa.write(0, cast(byte[])" Existuje");
-	else
-		aa.write(0, cast(byte[])" Neexistuje");
 
 	while (true) { }
 }
@@ -178,7 +144,7 @@ extern(C) void testthr() {
 
 class nicetry : ResourceCaller {
 	this() {
-		super(10, 1);
+		super(12, 1);
 	}
 
 	void test() {
@@ -193,14 +159,6 @@ class nicetry : ResourceCaller {
 		return Call(3, [offset, cast(ulong)&data]);
 	}
 }
-
-/*
-Resource - ak je ~1UL tak je to sstaticke volanie inak je to index v liste resource
-ID - pri statickom volani je to index v statickom poli inak sa parameter predava do triedy resource
-
-ak je v resource triede ID 0 tak sa vraty typ objektu inak sa podla toho vyhladava v poli calltables
-
-*/
 
 
 
@@ -284,21 +242,3 @@ void PrintStruct(T)(ref T s, bool recursive = false, ulong indent = 0) {
 		}
 	}
 }*/
-
-
-/*
-import FileSystem.PipeDev;
-__gshared PipeDev pajpa;
-
-
-	//pajpa = new PipeDev(0x1000, "pajpa");
-
-	/*import VFSManager.PipeNode;
-	import System.Convert;
-
-	byte[] tmp = new byte[1];
-	while (true) {
-		pajpa.Read(0, tmp);
-		Log.PrintSP("\ntest: " ~ Convert.ToString(tmp[0]));
-		tmp[0] = 0;
-	}*/

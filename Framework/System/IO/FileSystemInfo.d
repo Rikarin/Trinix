@@ -67,6 +67,8 @@ public:
 	}
 
 	@property string FullName() {
+		if (syscall is null)
+			return "fix me";
 		if (fullName is null) {
 			char[] tmp = new char[256];
 			ulong length = cast(ulong *)syscall.Call(IFace.FSNode.GETPATH, [cast(ulong)tmp.ptr, tmp.length]);
@@ -91,7 +93,7 @@ public:
 	}
 
 	@property bool Exists() {
-		if (syscall.Call(0) == syscall.ResType)
+		if (syscall !is null && syscall.Call(0) == syscall.ResType)
 			return true;
 
 		return false;

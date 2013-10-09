@@ -16,5 +16,5 @@ abstract class PipeNode : FSNode {
 	void Close();
 
 	//Syscalls
-	override bool Accesible() { return true; }
+	override bool Accessible() { return true; }
 }

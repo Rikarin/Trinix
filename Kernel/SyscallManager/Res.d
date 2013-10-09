@@ -37,6 +37,8 @@ package:
 public:
 	bool Init() {
 		resources = new List!Resource(0x200);
+		resources.Add(new NullRes()); //mask index 0
+		
 		return true;
 	}
 
@@ -75,4 +77,10 @@ public:
 				return resources[resource].Call(id, params);
 		}
 	}
+}
+
+
+package class NullRes : Resource {
+	this() { super(0, null); }
+	override bool Accessible() { return false; }
 }

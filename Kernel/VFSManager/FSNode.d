@@ -156,10 +156,12 @@ private:
 
 		switch (params[0]) {
 			case IFace.FSNode.SFIND:
-				return VFS.Find(*cast(string *)params[1], params.length >= 3 ? cast(DirectoryNode)Res.GetByID(params[2], IFace.FSNode.OBJECT) : null).ResID();
+				FSNode ret = VFS.Find(*cast(string *)params[1], params.length >= 3 ? cast(DirectoryNode)Res.GetByID(params[2], IFace.FSNode.OBJECT) : null);
+				return ret is null ? 0 : ret.ResID();
 				break;
 			case IFace.FSNode.SMKDIR:
-				return VFS.CreateDirectory(*cast(string *)params[1], params.length >= 3 ? cast(DirectoryNode)Res.GetByID(params[2], IFace.FSNode.OBJECT) : null).ResID();
+				DirectoryNode ret = VFS.CreateDirectory(*cast(string *)params[1], params.length >= 3 ? cast(DirectoryNode)Res.GetByID(params[2], IFace.FSNode.OBJECT) : null);
+				return ret is null ? 0 : ret.ResID();
 				break;
 			case IFace.FSNode.SGETRFN:
 				return VFS.RootNode.ResID();

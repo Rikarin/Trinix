@@ -35,7 +35,7 @@ public:
 
 
 	ulong Call(ulong id, ulong[] params) {
-		if (!Accesible())
+		if (!Accessible())
 			return ~0UL;
 
 		if (!id)
@@ -49,7 +49,7 @@ public:
 
 
 protected:
-	abstract bool Accesible();
+	abstract bool Accessible();
 
 	this(ulong type, const CallTable[] ct) {
 		callTables = new List!(CallTable)();
