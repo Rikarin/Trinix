@@ -1,6 +1,16 @@
 module TaskManager.Signal;
 
 import TaskManager.Task;
+import TaskManager.Process;
+import Architectures.CPU;
+import Architectures.Core;
+
+
+struct SignalTable {
+	uint Signum;
+	void function() CallBack;
+	InterruptStack RegistersBefore;
+}
 
 
 class Signal {
@@ -51,16 +61,49 @@ private:
 		asm {
 			naked;
 			cli;
+
+		/*	pop RBX; //User stack
+			pop RCX; //ThreadEntry
+
+			xor RAX, RAX;
+			mov AX, 0x1B;
+			mov DS, AX;
+			mov ES, AX;
+			mov FS, AX;
+			mov GS, AX;
+
+			push RAX;
+			push RBX;
+
+			pushfq;
+			pop RAX;
+			or RAX, 0x200UL;
+			push RAX;
+
+			push 0x23UL;
+			push RCX;
+			jmp _CPU_iretq;*/
 			
 		}
 	}
 
 public:
+	enum Count = 20;
+
+
 	void ReturnFromSignalHandler() {
 		debug(only) {
 			import Core.Log;
 			import System.Convert;
 			Log.Debug("Return from signal process=" ~ Convert.ToString(Task.CurrentProcess.id));
 		}
+	}
+
+	void FixStacks() {
+
+	}
+
+	void Handle(Process process, SignalTable signal) {
+
 	}
 }

@@ -6,6 +6,7 @@ import VFSManager.DirectoryNode;
 import SyscallManager.Resource;
 import TaskManager.Task;
 import TaskManager.Thread;
+import TaskManager.Signal;
 import Architectures.Paging;
 import Core.DeviceManager;
 
@@ -31,6 +32,11 @@ package:
 	Paging paging;
 	List!Thread threads;
 	List!FSNode descriptors;
+
+	void function() signals[Signal.Count];
+	public List!SignalTable signalQueue;
+	ulong* signalStack;
+
 
 public:
 	enum State : ubyte {
@@ -61,6 +67,8 @@ public:
 
 		ret.descriptors = new List!FSNode();
 		ret.threads     = new List!Thread();
+		ret.signalQueue = new List!SignalTable();
+
 
 		ret.descriptors.Add(DeviceManager.DevFS.Childrens[0]); //keyboard stdin
 

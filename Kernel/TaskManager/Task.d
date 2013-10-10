@@ -2,9 +2,11 @@ module TaskManager.Task;
 
 import TaskManager.Process;
 import TaskManager.Thread;
+import TaskManager.Signal;
 import Architectures.Port;
 import System.DateTime;
 import System.Collections.Generic.All;
+
 
 extern(C) ulong read_rip();
 extern(C) void idle_task();
@@ -80,7 +82,16 @@ public:
 				if (x !is null && x.Valid(Thread.State.Zombie))
 					Reap(x);
 			}
-			//signals etc...
+
+			Signal.FixStacks();
+			if (CurrentProcess.signalQueue.Count) {
+				SignalTable signal = CurrentProcess.signalQueue[0];
+				CurrentProcess.signalQueue.RemoveAt(0);
+				Signal.Handle(CurrentProcess, signal);
+				import Core.Log;
+				Log.Print("XXXXXXXXXXXXX");
+			}
+
 			return;
 		}
 

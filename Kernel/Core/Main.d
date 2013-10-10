@@ -22,21 +22,10 @@ import Devices.Timer;
 import Devices.Keyboard.PS2Keyboard;
 import Devices.Display.VGATextOutput;
 
-/++
-Framework:
-	BitArray
-	Mutex
-	Color - FromKnownColor name, ToUpper...
-	convert - prerobit na vlastny string bez alloc
-	list - search
+/+
+Pipe dead
++/
 
-System:
-	MP
-	Dorobit heap & delete!!
-	Az potom VFS
-	Panic - vypis Rx registrov, inak vsetko O.K.
-	implementovat user permissions z VFSka
-++/
 
 extern(C) void StartSystem() {
 	Log.Init();
@@ -103,6 +92,11 @@ extern(C) void StartSystem() {
 	
 	(new Thread(cast(void function())&testthr)).Start();
 
+	import TaskManager.Signal;
+	SignalTable signal;
+	signal.CallBack = cast(void function())&signalCallBack;
+	Task.CurrentProcess.signalQueue.Add(signal);
+
 
 	byte[] tmp = new byte[1];
 	while (true) {
@@ -126,11 +120,11 @@ import System.IFace;
 import System.IO.DirectoryInfo;
 
 extern(C) void testthr() {
-	auto di = new DirectoryInfo("/dev/testik");
+	auto di = new DirectoryInfo("/dev/pajpa");
 	auto aa = new nicetry();
 
 	//if (!di.Exists)
-		di.Create();
+	//	di.Create();
 
 	aa.write(0, cast(byte[])"Adresa pajpy je: ");
 	aa.write(0, cast(byte[])di.FullName);
@@ -138,6 +132,10 @@ extern(C) void testthr() {
 	while (true) { }
 }
 
+extern(C) void signalCallBack() {
+	ResourceCaller.StaticCall(0xABCD);
+	while (true) {}
+}
 
 
 
