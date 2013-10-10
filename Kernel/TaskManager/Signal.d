@@ -68,18 +68,22 @@ private:
 			naked;
 			cli;
 
-		/*	pop RBX; //User stack
-			pop RCX; //ThreadEntry
+			mov RSP, stack;
 
 			xor RAX, RAX;
+			mov EAX, signum;
+			push RAX;
+			//push return
+
 			mov AX, 0x1B;
 			mov DS, AX;
 			mov ES, AX;
 			mov FS, AX;
 			mov GS, AX;
+			mov RAX, RSP;
 
+			push 0x1B;
 			push RAX;
-			push RBX;
 
 			pushfq;
 			pop RAX;
@@ -87,9 +91,8 @@ private:
 			push RAX;
 
 			push 0x23UL;
-			push RCX;
-			jmp _CPU_iretq;*/
-			
+			push location;
+			jmp _CPU_iretq;
 		}
 	}
 
@@ -110,6 +113,6 @@ public:
 	}
 
 	void Handle(Process process, SignalTable signal) {
-
+		Enter(0x123, 0x456, 0x789);
 	}
 }
