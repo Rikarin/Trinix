@@ -12,6 +12,12 @@ struct SignalTable {
 	InterruptStack RegistersBefore;
 }
 
+struct SignalState {
+	ulong rsp;
+	ulong rbp;
+	ulong rip;
+}
+
 
 class Signal {
 static:

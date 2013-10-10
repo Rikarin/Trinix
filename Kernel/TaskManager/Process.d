@@ -35,6 +35,7 @@ package:
 
 	void function() signals[Signal.Count];
 	public List!SignalTable signalQueue;
+	SignalState signalState;
 	ulong* signalStack;
 
 

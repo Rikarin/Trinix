@@ -83,13 +83,16 @@ public:
 					Reap(x);
 			}
 
-			Signal.FixStacks();
-			if (CurrentProcess.signalQueue.Count) {
-				SignalTable signal = CurrentProcess.signalQueue[0];
-				CurrentProcess.signalQueue.RemoveAt(0);
-				Signal.Handle(CurrentProcess, signal);
-				import Core.Log;
-				Log.Print("XXXXXXXXXXXXX");
+			if (CurrentThread == CurrentProcess.threads[0]) {
+				Signal.FixStacks();
+				
+				if (CurrentProcess.signalQueue.Count) {
+					SignalTable signal = CurrentProcess.signalQueue[0];
+					CurrentProcess.signalQueue.RemoveAt(0);
+					Signal.Handle(CurrentProcess, signal);
+					import Core.Log;
+					Log.Print("XXXXXXXXXXXXX");
+				}
 			}
 
 			return;
@@ -109,7 +112,14 @@ public:
 		CurrentThread.SetKernelStack();
 		CurrentProcess.paging.Install();
 
-		//dake picoviny zo signalmi
+		if (CurrentThread == CurrentProcess.threads[0] && CurrentProcess.signalStack is null) {
+			if (CurrentProcess.signalQueue.Count) {
+				CurrentProcess.signalStack = (new ulong[Thread.STACK_SIZE]).ptr;
+				CurrentProcess.signalState.rip = CurrentThread.rip;
+				CurrentProcess.signalState.rsp = CurrentThread.rsp;
+				CurrentProcess.signalState.rbp = CurrentThread.rbp;
+			}
+		}
 
 		asm {
 			mov RAX, rbp;
