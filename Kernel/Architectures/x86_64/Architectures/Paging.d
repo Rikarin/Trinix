@@ -313,18 +313,30 @@ class Paging {
 	}
 
 
-private:
-	void PageFaultHandler(InterruptStack *stack) {
-		import Core.Log;
-		Log.Print(" ==== Page Fault ====", 0x200);
+	static void PageFaultHandler(InterruptStack* stack) {
+		import TaskManager.Signal; //TODO: FIXME
+		import TaskManager.Thread; //METOO
+		import TaskManager.Task; //METOO
 
-		asm {
-			cli;
-			hlt;
+		if (stack.RIP == Signal.SignalReturn)
+			Signal.ReturnFromSignalHandler();
+		else if (stack.RIP == Thread.ThreadReturn) {
+			debug (only) {
+				import Core.Log;
+				Log.PrintSP("Returned from thread.");
+			}
+
+			Task.Exit(0);
+			asm { cli; hlt; }
 		}
+
+		SignalTable sig;
+		sig.CallBack = Task.CurrentProcess.Signals[SigNum.SIGSEGV];
+		sig.Signum = SigNum.SIGSEGV;
+		Signal.Handle(Task.CurrentProcess, sig);
 	}
 
-	void GeneralProtectionFaultHandler(InterruptStack *stack) {
+	/*void GeneralProtectionFaultHandler(InterruptStack *stack) {
 		import Core.Log;
 		Log.Print(" ==== General Protection Fault ====", 0x200);
 
@@ -332,5 +344,5 @@ private:
 			cli;
 			hlt;
 		}
-	}
+	}*/
 }

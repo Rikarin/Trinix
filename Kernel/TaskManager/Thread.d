@@ -36,6 +36,7 @@ package:
 
 
 public:
+	enum ThreadReturn = 0xFFFFFFFF_FFFFB00F;
 	enum State : ubyte {
 		Zombie,
 		Starting,

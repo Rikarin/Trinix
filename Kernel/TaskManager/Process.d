@@ -33,13 +33,14 @@ package:
 	List!Thread threads;
 	List!FSNode descriptors;
 
-	void function() signals[Signal.Count];
 	public List!SignalTable signalQueue;
 	SignalState signalState;
 	ulong* signalStack;
 
 
 public:
+	void function() Signals[Signal.Count];
+	
 	enum State : ubyte {
 		Zombie,
 		Running,

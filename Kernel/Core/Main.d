@@ -133,8 +133,8 @@ extern(C) void testthr() {
 }
 
 extern(C) void signalCallBack() {
-	ResourceCaller.StaticCall(0xABCD);
-	while (true) {}
+	//ResourceCaller.StaticCall(0xABCD);
+	return;
 }
 
 

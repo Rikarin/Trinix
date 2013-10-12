@@ -6,6 +6,7 @@ import Architectures.CPU;
 import Architectures.Core;
 import Architectures.Port;
 import Architectures.x86_64.Core.Descriptor;
+import Architectures.Paging;
 
 
 struct InterruptStack {
@@ -182,7 +183,9 @@ private:
 			}
 		}
 
-		if (stack.IntNumber < 32) {
+		if (stack.IntNumber == 0x0E)
+			Paging.PageFaultHandler(stack);
+		else if (stack.IntNumber < 32) {
 			asm { cli; hlt; }
 		} else if (stack.IntNumber < 48)
 			DeviceManager.Handler(*stack);
