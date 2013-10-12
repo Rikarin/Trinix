@@ -5,12 +5,9 @@ import TaskManager.Process;
 import Architectures.CPU;
 import Architectures.Core;
 
+import System.Collections.Generic.All;
+import System.Threading.All;
 
-struct SignalTable {
-	SigNum Signum;
-	void function() CallBack;
-	InterruptStack RegistersBefore;
-}
 
 struct SignalState {
 	ulong rsp;
@@ -63,7 +60,10 @@ enum SigNum {
 class Signal {
 static:
 private:
-	const byte isdeadly[] = [
+	__gshared List!Process retsFromSignal;
+	__gshared Mutex lock;
+
+	const byte isDeadly[] = [
 		0, /* 0? */
 		1, /* SIGHUP     */
 		1, /* SIGINT     */
@@ -140,12 +140,24 @@ public:
 	enum SignalReturn = 0xFFFFFFFF_FFFFDEAD;
 
 
+	bool Init() {
+		lock = new Mutex();
+		retsFromSignal = new List!Process();
+
+		return true;
+	}
+
 	void ReturnFromSignalHandler() {
 		debug(only) {
 			import Core.Log;
 			import System.Convert;
-			Log.Debug("Return from signal process=" ~ Convert.ToString(Task.CurrentProcess.id));
+			Log.Debug("\nReturn from signal process: " ~ Convert.ToString(Task.CurrentProcess.id));
 		}
+
+		lock.WaitOne();
+		retsFromSignal.Add(Task.CurrentProcess);
+		lock.Release();
+
 		Task.Switch();
 	}
 
@@ -153,11 +165,46 @@ public:
 
 	}
 
-	void Handle(Process process, SignalTable signal) {
-		if (signal.Signum == SigNum.SIGSEGV) {
+	void Handler(Process process, SigNum signal) {
+		//if (Task.CurrentProcess.state != Process.State.Running)
+		//	return;
+
+		if (!signal || signal > Count)
+			return;
+
+		auto handler = Task.CurrentProcess.Signals[signal];
+		if (!handler) {
+			byte wat = isDeadly[signal];
+			if (wat == 1 || wat == 2) {
+				debug (only) {
+					import Core.Log;
+					import System.Convert;
+					Log.PrintSP("\nProcess was killed by unhandled signal: ");
+					Log.PrintSP(Convert.ToString(cast(ulong)signal));
+				}
+				Task.Exit(128 + signal);
+			} else {
+				debug (only) {
+					import Core.Log;
+					Log.PrintSP("\nIgnoring signal by default");
+				}
+			}
+		}
+
+		debug (only) {
 			import Core.Log;
-			Log.Print(" ==== Page Fault ====", 0x200);
+			import System.Convert;
+			Log.PrintSP("\nHandling signal: ");
+			Log.PrintSP(Convert.ToString(cast(ulong)signal));
+			Log.PrintSP(" by process: ");
+			Log.PrintSP(Convert.ToString(Task.CurrentProcess.id));
+		}
+
+
+		if (signal == SigNum.SIGSEGV) {
+			import Core.Log;
+			Log.Print("\n==== Page Fault ====", 0x200);
 		} else
-			Enter(cast(ulong)signal.CallBack, 0x456, cast(ulong)(new byte[0x1000]).ptr);
+			Enter(cast(ulong)handler, signal, cast(ulong)(new byte[0x1000]).ptr);
 	}
 }

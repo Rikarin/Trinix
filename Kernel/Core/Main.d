@@ -89,13 +89,14 @@ extern(C) void StartSystem() {
 
 	PipeDev pajpa = new PipeDev(0x1000, "pajpa");
 	DeviceManager.DevFS.AddNode(pajpa);
-	
-	(new Thread(cast(void function())&testthr)).Start();
+
 
 	import TaskManager.Signal;
-	SignalTable signal;
-	signal.CallBack = cast(void function())&signalCallBack;
-	Task.CurrentProcess.signalQueue.Add(signal);
+	Task.CurrentProcess.Signals[SigNum.SIGINT] = cast(void function())&signalCallBack;
+	Task.CurrentProcess.signalQueue.Add(SigNum.SIGINT);
+
+	(new Thread(cast(void function())&testthr)).Start();
+
 
 
 	byte[] tmp = new byte[1];

@@ -330,10 +330,7 @@ class Paging {
 			asm { cli; hlt; }
 		}
 
-		SignalTable sig;
-		sig.CallBack = Task.CurrentProcess.Signals[SigNum.SIGSEGV];
-		sig.Signum = SigNum.SIGSEGV;
-		Signal.Handle(Task.CurrentProcess, sig);
+		Signal.Handler(Task.CurrentProcess, SigNum.SIGSEGV);
 	}
 
 	/*void GeneralProtectionFaultHandler(InterruptStack *stack) {

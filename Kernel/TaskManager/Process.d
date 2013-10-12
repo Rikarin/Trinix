@@ -33,14 +33,14 @@ package:
 	List!Thread threads;
 	List!FSNode descriptors;
 
-	public List!SignalTable signalQueue;
+	public List!SigNum signalQueue;
 	SignalState signalState;
 	ulong* signalStack;
 
 
 public:
 	void function() Signals[Signal.Count];
-	
+
 	enum State : ubyte {
 		Zombie,
 		Running,
@@ -69,7 +69,7 @@ public:
 
 		ret.descriptors = new List!FSNode();
 		ret.threads     = new List!Thread();
-		ret.signalQueue = new List!SignalTable();
+		ret.signalQueue = new List!SigNum();
 
 
 		ret.descriptors.Add(DeviceManager.DevFS.Childrens[0]); //keyboard stdin

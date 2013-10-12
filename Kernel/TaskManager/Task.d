@@ -6,6 +6,7 @@ import TaskManager.Signal;
 import Architectures.Port;
 import System.DateTime;
 import System.Collections.Generic.All;
+import Core.Log;
 
 
 extern(C) ulong read_rip();
@@ -39,10 +40,15 @@ public:
 
 		Process.Init();
 		currentThread = Threads[0];
+		Log.Result(true);
 
+		Log.Print(" - Initializing idle task");
 		idleThread = new Thread(cast(void function())&idle_task);
 		idleThread.rip = cast(ulong)&idle_task;
+		Log.Result(true);
 
+		Log.Print(" - Initializing signal handler");
+		Signal.Init();
 		return true;
 	}
 
@@ -87,9 +93,9 @@ public:
 				Signal.FixStacks();
 				
 				if (CurrentProcess.signalQueue.Count) {
-					SignalTable signal = CurrentProcess.signalQueue[0];
+					SigNum signal = CurrentProcess.signalQueue[0];
 					CurrentProcess.signalQueue.RemoveAt(0);
-					Signal.Handle(CurrentProcess, signal);
+					Signal.Handler(CurrentProcess, signal);
 					import Core.Log;
 					Log.Print("XXXXXXXXXXXXX");
 				}

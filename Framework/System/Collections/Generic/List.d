@@ -43,7 +43,7 @@ class List(T) {
 	}
 	
 	~this() {
-		static if (!is (T == struct))
+		static if (!is (T == struct) && !is (T == enum))
 			foreach (x; array)
 				delete x;
 
@@ -74,7 +74,7 @@ class List(T) {
 	}
 	
 	void Clear() {
-		static if (!is (T == struct))
+		static if (!is (T == struct) && !is (T == enum))
 			foreach (x; array)
 				delete x;
 
@@ -142,7 +142,7 @@ class List(T) {
 		if (index < 0 || index > count)
 			throw new ArgumentOutOfRangeException();
 		
-		static if (!is (T == struct))	
+		static if (!is (T == struct) && !is (T == enum))	
 			delete array[index];
 
 		array[index .. $] = array[index + 1 .. $];
@@ -156,7 +156,7 @@ class List(T) {
 		if (this.count < count - index || this.count < index)
 			throw new ArgumentException();
 		
-		static if (!is (T == struct))
+		static if (!is (T == struct) && !is (T == enum))
 			foreach (i; index .. (index + count))
 				delete array[i];
 
