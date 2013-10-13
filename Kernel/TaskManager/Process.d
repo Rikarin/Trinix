@@ -66,6 +66,7 @@ public:
 		ret.mask        = 0x12; //022 in oct
 		ret.paging      = Paging.KernelPaging;
 		ret.cwd         = VFS.RootNode;
+		ret.state       = State.Running;
 
 		ret.descriptors = new List!FSNode();
 		ret.threads     = new List!Thread();

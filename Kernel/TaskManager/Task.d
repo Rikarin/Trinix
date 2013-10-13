@@ -90,14 +90,10 @@ public:
 			}
 
 			if (CurrentThread == CurrentProcess.threads[0]) {
-				Signal.FixStacks();
-				
 				if (CurrentProcess.signalQueue.Count) {
 					SigNum signal = CurrentProcess.signalQueue[0];
 					CurrentProcess.signalQueue.RemoveAt(0);
 					Signal.Handler(CurrentProcess, signal);
-					import Core.Log;
-					Log.Print("XXXXXXXXXXXXX");
 				}
 			}
 
@@ -108,11 +104,17 @@ public:
 		CurrentThread.rbp = rbp;
 		CurrentThread.rip = rip;
 
+
 		//Run new thread
 		currentThread = NextThread(Thread.State.Running);
+
+		if (CurrentThread == CurrentProcess.threads[0])
+			Signal.FixStack();
+
 		rsp = CurrentThread.rsp;
 		rbp = CurrentThread.rbp;
 		rip = CurrentThread.rip;
+
 
 		Port.Cli();
 		CurrentThread.SetKernelStack();

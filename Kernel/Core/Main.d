@@ -92,8 +92,8 @@ extern(C) void StartSystem() {
 
 
 	import TaskManager.Signal;
-	Task.CurrentProcess.Signals[SigNum.SIGINT] = cast(void function())&signalCallBack;
-	Task.CurrentProcess.signalQueue.Add(SigNum.SIGINT);
+	//Task.CurrentProcess.Signals[SigNum.SIGINT] = cast(void function())&signalCallBack;
+	//Task.CurrentProcess.signalQueue.Add(SigNum.SIGINT);
 
 	(new Thread(cast(void function())&testthr)).Start();
 
@@ -129,8 +129,6 @@ extern(C) void testthr() {
 
 	aa.write(0, cast(byte[])"Adresa pajpy je: ");
 	aa.write(0, cast(byte[])di.FullName);
-
-	while (true) { }
 }
 
 extern(C) void signalCallBack() {

@@ -61,8 +61,7 @@ public:
 		//Set user stack
 		ulong* ustack = userStack + STACK_SIZE;
 		ustack--;
-		*ustack = cast(ulong)data;
-		ustack--;
+		*ustack = ThreadReturn;
 
 		//Set kernel stack
 		ulong* kstack = kernelStack + STACK_SIZE;
