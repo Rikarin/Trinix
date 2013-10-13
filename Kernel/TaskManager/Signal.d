@@ -209,10 +209,6 @@ public:
 			Log.PrintSP(Convert.ToString(Task.CurrentProcess.id));
 		}
 
-
-		if (signal == SigNum.SIGSEGV)
-			Log.Print("\n==== Page Fault ====", 0x200);
-		else
-			Enter(cast(ulong)handler, signal, cast(ulong)(new byte[0x1000]).ptr);
+		Enter(cast(ulong)handler, signal, cast(ulong)(new byte[0x1000]).ptr);
 	}
 }

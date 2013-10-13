@@ -92,11 +92,13 @@ extern(C) void StartSystem() {
 
 
 	import TaskManager.Signal;
-	//Task.CurrentProcess.Signals[SigNum.SIGINT] = cast(void function())&signalCallBack;
-	//Task.CurrentProcess.signalQueue.Add(SigNum.SIGINT);
+	Task.CurrentProcess.Signals[SigNum.SIGSEGV] = cast(void function())&pagefaultCallBack;
+	//Task.CurrentProcess.signalQueue.Add(SigNum.SIGSEGV);
 
-	(new Thread(cast(void function())&testthr)).Start();
+	auto thr = new Thread(cast(void function())&testthr);
+	thr.Start();
 
+	//while (thr.ReturnValue != 0x456) {}
 
 
 	byte[] tmp = new byte[1];
@@ -129,10 +131,14 @@ extern(C) void testthr() {
 
 	aa.write(0, cast(byte[])"Adresa pajpy je: ");
 	aa.write(0, cast(byte[])di.FullName);
+
+	//return 0x456;
 }
 
-extern(C) void signalCallBack() {
+extern(C) void pagefaultCallBack() {
 	//ResourceCaller.StaticCall(0xABCD);
+	Log.Print("page fault");
+	while (true) {}
 	return;
 }
 
