@@ -177,6 +177,7 @@ public:
 		proc.threads[0].rip = proc.signalState.rip;
 		proc.threads[0].rsp = proc.signalState.rsp;
 		proc.threads[0].rbp = proc.signalState.rbp;
+		delete proc.signalStack;
 	}
 
 	void Handler(Process process, SigNum signal) {
@@ -209,6 +210,6 @@ public:
 			Log.PrintSP(Convert.ToString(Task.CurrentProcess.id));
 		}
 
-		Enter(cast(ulong)handler, signal, cast(ulong)(new byte[0x1000]).ptr);
+		Enter(cast(ulong)handler, signal, cast(ulong)process.signalStack);
 	}
 }
