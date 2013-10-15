@@ -24,6 +24,8 @@ class Queue(T) {
 	}
 
 	T Dequeue() {
+		while (!Count) { }
+			
 		T ret = array[0];
 		array[0 .. $ - 1] = array[1 .. $];
 		count--;

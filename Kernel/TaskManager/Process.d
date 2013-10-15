@@ -89,6 +89,36 @@ public:
 	}
 
 
+	//for testing only
+	static Process CreateProcess(void function() ThreadEntry) {
+		Process ret     = new Process();
+		ret.parent      = Task.CurrentProcess;
+		ret.id          = Task.NewPID();
+		ret.name        = "testing process";
+		ret.description = "Shit happens...";
+		ret.mask        = 0x12; //022 in oct
+		ret.paging      = Paging.KernelPaging;
+		ret.cwd         = VFS.RootNode;
+		ret.state       = State.Running;
+
+		ret.descriptors = new List!FSNode();
+		ret.threads     = new List!Thread();
+		ret.signalQueue = new List!SigNum();
+
+
+		//ret.descriptors.Add(DeviceManager.DevFS.Childrens[0]); //keyboard stdin
+
+		Thread t = new Thread(ThreadEntry);
+		t.parent = ret;
+		t.state = Thread.State.Running;
+		t.kernelStack = (new ulong[Thread.STACK_SIZE]).ptr;
+		ret.threads.Add(t);
+
+		Task.Procs.Add(ret);
+		Task.Threads.Add(t);
+
+		return ret;
+	}
 
 
 

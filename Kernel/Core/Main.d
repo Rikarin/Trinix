@@ -24,6 +24,7 @@ import Devices.Display.VGATextOutput;
 
 /+
 Pipe dead
+paging - kopirovanie stranok pri vytvoreni noveho procesu
 +/
 
 
@@ -86,6 +87,7 @@ extern(C) void StartSystem() {
 	import FileSystem.PipeDev;
 	import VFSManager.PipeNode;
 	import TaskManager.Thread;
+	import TaskManager.Process;
 
 	PipeDev pajpa = new PipeDev(0x1000, "pajpa");
 	DeviceManager.DevFS.AddNode(pajpa);
@@ -95,18 +97,20 @@ extern(C) void StartSystem() {
 	Task.CurrentProcess.Signals[SigNum.SIGSEGV] = cast(void function())&pagefaultCallBack;
 	//Task.CurrentProcess.signalQueue.Add(SigNum.SIGSEGV);
 
-	auto thr = new Thread(cast(void function())&testthr);
-	thr.Start();
+	//auto thr = new Thread(cast(void function())&testthr);
+	//thr.Start();
+
+	auto process = Process.CreateProcess(cast(void function())&testthr);
 
 	//while (thr.ReturnValue != 0x456) {}
 
-
+/*
 	byte[] tmp = new byte[1];
 	while (true) {
 		pajpa.Read(0, tmp);
 		Log.Print("" ~ tmp[0]);
 		tmp[0] = 0;
-	}
+	}*/
 
 	while (true) {}
 }
@@ -115,7 +119,17 @@ extern(C) void apEntry() {
 	while (true) { }
 }
 
+extern(C) void pagefaultCallBack() {
+	//ResourceCaller.StaticCall(0xABCD);
+	Log.Print("page fault");
+	while (true) {}
+	return;
+}
 
+
+
+
+/*
 
 
 import System.ResourceCaller;
@@ -135,12 +149,6 @@ extern(C) void testthr() {
 	//return 0x456;
 }
 
-extern(C) void pagefaultCallBack() {
-	//ResourceCaller.StaticCall(0xABCD);
-	Log.Print("page fault");
-	while (true) {}
-	return;
-}
 
 
 
@@ -161,4 +169,4 @@ class nicetry : ResourceCaller {
 	ulong write(ulong offset, byte[] data) {
 		return Call(3, [offset, cast(ulong)&data]);
 	}
-}
+}*/
