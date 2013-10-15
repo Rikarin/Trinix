@@ -3,7 +3,7 @@ module System.IO.DirectoryInfo;
 import System.ResourceCaller;
 import System.IFace;
 import System.IO.FileSystemInfo;
-import System.Collections.Generic.All;
+import System.Collections.Generic.List;
 import System.String;
 
 

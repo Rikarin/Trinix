@@ -1,7 +1,7 @@
 module VFSManager.Part;
 
 import System.Collections.All;
-import System.Collections.Generic.All;
+import System.Collections.Generic.List;
 import Devices.BlockDeviceProto;
 import VFSManager.Partition;
 import Architectures.Port;

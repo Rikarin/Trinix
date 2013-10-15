@@ -7,7 +7,7 @@ import SyscallManager.Resource;
 import MemoryManager.Memory;
 import TaskManager.Process;
 import TaskManager.Task;
-import System.Collections.Generic.All;
+import System.Collections.Generic.List;
 import System.DateTime;
 import SyscallManager.Syscall;
 
@@ -68,6 +68,8 @@ public:
 		ulong* kstack = kernelStack + STACK_SIZE;
 		rbp = cast(ulong)kstack;
 		kstack--;
+		*kstack = cast(ulong)data;
+		kstack--;
 		*kstack = cast(ulong)ThreadEntry;
 		kstack--;
 		*kstack = cast(ulong)ustack;
@@ -87,6 +89,7 @@ public:
 			cli;
 			pop RBX; //User stack
 			pop RCX; //ThreadEntry
+			pop RDI; //data
 
 			xor RAX, RAX;
 			mov AX, 0x1B;

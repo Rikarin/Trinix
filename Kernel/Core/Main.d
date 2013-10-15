@@ -100,7 +100,9 @@ extern(C) void StartSystem() {
 	//auto thr = new Thread(cast(void function())&testthr);
 	//thr.Start();
 
-	auto process = Process.CreateProcess(cast(void function())&testthr);
+	import Userspace.Init;
+
+	auto init = Process.CreateProcess(cast(void function())&Init.Main, ["testik"]);
 
 	//while (thr.ReturnValue != 0x456) {}
 

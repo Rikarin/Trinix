@@ -1,6 +1,6 @@
 module FileSystem.TTY;
 
-import System.Collections.Generic.All;
+import System.Collections.Generic.Queue;
 import VFSManager.CharNode;
 import TaskManager.Process;
 import System.Termios;

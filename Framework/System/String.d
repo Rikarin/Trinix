@@ -335,7 +335,7 @@ static:
 
 
 //====================================== OLD ==========================================================
-	import System.Collections.Generic.All;
+	import System.Collections.Generic.List;
 
 	List!string Split(string str, char delimiter) {
 		auto ret = new List!string();

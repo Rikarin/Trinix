@@ -28,18 +28,25 @@ _SRC += $(wildcard Framework/System/Threading/*.[d|c|s])
 _SRC += $(wildcard Framework/System/Drawing/*.[d|c|s])
 
 
-_SRC += $(wildcard Framework/Beta/System/Collections/*.[d|c|s])
-_SRC += $(wildcard Framework/Beta/System/Collections/Generic/*.[d|c|s])
-_SRC += $(wildcard Framework/Beta/System/*.[d|c|s])
+######################
+#   Userspace apps   #
+######################
+_SRC += $(wildcard Userspace/*.[d|c|s])
+
+
+
+#_SRC += $(wildcard Framework/Beta/System/Collections/*.[d|c|s])
+#_SRC += $(wildcard Framework/Beta/System/Collections/Generic/*.[d|c|s])
+#_SRC += $(wildcard Framework/Beta/System/*.[d|c|s])
 
 OBJS = $(patsubst %,$(OBJ_DIR)/%,$(_SRC:=.o))
 
 
 
 #############
-#   Flags   # 
+#   Flags   #
 #############
-DFLAGS = -c -O -m64 -release -property -Idruntime/import -IKernel -IFramework -IFramework/Beta -IKernel/Architectures/x86_64 -debug=only
+DFLAGS = -c -O -m64 -release -property -Idruntime/import -IKernel -IFramework -IKernel/Architectures/x86_64 -debug=only
 CFLAGS = -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -c -g
 LDFLAGS = -T Kernel/Architectures/x86_64/Linker.ld -Map Linker.map
 ASFLAGS = -f elf64

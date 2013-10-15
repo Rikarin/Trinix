@@ -1,12 +1,12 @@
 module SyscallManager.Res;
 
 import Core.Log;
-import System.Collections.Generic.All;
 import SyscallManager.Resource;
 
 import System.IFace;
 import VFSManager.FSNode;
 
+import System.Collections.Generic.List;
 
 class Res {
 static:
@@ -16,10 +16,7 @@ private:
 		ulong function(ulong[] params) CallBack;
 	}
 
-	__gshared StaticCallTable[] staticCalls = [
-		{IFace.FSNode.OBJECT, &FSNode.SCall}
-	];
-	
+	__gshared StaticCallTable[2] staticCalls;
 	__gshared List!Resource resources;
 
 
@@ -39,6 +36,12 @@ public:
 		resources = new List!Resource(0x200);
 		resources.Add(new NullRes()); //mask index 0
 		
+		import TaskManager.Signal; //TODO FIX THIS FUCKIN HACK
+		StaticCallTable aa = {IFace.FSNode.OBJECT, &FSNode.SCall};
+		staticCalls[0] = aa;
+		StaticCallTable ab = {IFace.Signal.OBJECT, &Signal.SCall};
+		staticCalls[1] = ab;
+
 		return true;
 	}
 

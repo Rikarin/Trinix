@@ -1,6 +1,6 @@
 module Core.DeviceManager;
 
-import System.Collections.Generic.All;
+import System.Collections.Generic.List;
 import Architectures.Core;
 import Devices.DeviceProto;
 import VFSManager.DirectoryNode;

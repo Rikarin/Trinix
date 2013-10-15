@@ -10,7 +10,7 @@ import TaskManager.Signal;
 import Architectures.Paging;
 import Core.DeviceManager;
 
-import System.Collections.Generic.All;
+import System.Collections.Generic.List;
 
 
 class Process /*: Resource */{
@@ -90,7 +90,7 @@ public:
 
 
 	//for testing only
-	static Process CreateProcess(void function() ThreadEntry) {
+	static Process CreateProcess(void function() ThreadEntry, string[] args = null) {
 		Process ret     = new Process();
 		ret.parent      = Task.CurrentProcess;
 		ret.id          = Task.NewPID();
@@ -100,6 +100,7 @@ public:
 		ret.paging      = Paging.KernelPaging;
 		ret.cwd         = VFS.RootNode;
 		ret.state       = State.Running;
+		ret.cmdline     = args;
 
 		ret.descriptors = new List!FSNode();
 		ret.threads     = new List!Thread();
@@ -108,7 +109,7 @@ public:
 
 		//ret.descriptors.Add(DeviceManager.DevFS.Childrens[0]); //keyboard stdin
 
-		Thread t = new Thread(ThreadEntry);
+		Thread t = new Thread(ThreadEntry, cast(void *)&args);
 		t.parent = ret;
 		t.state = Thread.State.Running;
 		t.kernelStack = (new ulong[Thread.STACK_SIZE]).ptr;

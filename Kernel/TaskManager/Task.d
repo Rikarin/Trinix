@@ -5,7 +5,7 @@ import TaskManager.Thread;
 import TaskManager.Signal;
 import Architectures.Port;
 import System.DateTime;
-import System.Collections.Generic.All;
+import System.Collections.Generic.List;
 import Core.Log;
 
 

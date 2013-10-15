@@ -5,11 +5,12 @@ import TaskManager.Process;
 import Architectures.CPU;
 import Architectures.Core;
 
-import System.Collections.Generic.All;
-import System.Threading.All;
-
 import Core.Log;
 import System.Convert;
+import System.IFace;
+
+import System.Collections.Generic.List;
+import System.Threading.All;
 
 
 struct SignalState {
@@ -138,6 +139,7 @@ private:
 		}
 	}
 
+
 public:
 	enum Count = 37;
 	enum SignalReturn = 0xFFFFFFFF_FFFFDEAD;
@@ -211,5 +213,23 @@ public:
 		}
 
 		Enter(cast(ulong)handler, signal, cast(ulong)process.signalStack);
+	}
+	
+	static ulong SCall(ulong[] params) {
+		if (params is null || !params.length)
+			return ~0UL;
+
+		switch (params[0]) {
+			case IFace.Signal.S_SEND_SIGNAL:
+				break;
+
+			case IFace.Signal.S_SET_HANDLER:
+				break;
+
+			default:
+				return ~0UL;
+		}
+
+		return ~0UL;
 	}
 }

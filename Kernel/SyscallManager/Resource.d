@@ -1,7 +1,7 @@
 module SyscallManager.Resource;
 
 import System.Threading.All;
-import System.Collections.Generic.All;
+import System.Collections.Generic.List;
 import SyscallManager.Res;
 import System.IFace;
 

@@ -1,6 +1,6 @@
 module VFSManager.DirectoryNode;
 
-import System.Collections.Generic.All;
+import System.Collections.Generic.List;
 import VFSManager.FileSystemProto;
 import VFSManager.FSNode;
 import VFSManager.FileNode;
