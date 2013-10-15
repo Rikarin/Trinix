@@ -7,7 +7,6 @@ import Architectures.Core;
 
 import Core.Log;
 import System.Convert;
-import System.IFace;
 
 import System.Collections.Generic.List;
 import System.Threading.All;
@@ -141,7 +140,7 @@ private:
 
 
 public:
-	enum Count = 37;
+	enum Count = 38; //37 + 0.
 	enum SignalReturn = 0xFFFFFFFF_FFFFDEAD;
 
 
@@ -213,23 +212,5 @@ public:
 		}
 
 		Enter(cast(ulong)handler, signal, cast(ulong)process.signalStack);
-	}
-	
-	static ulong SCall(ulong[] params) {
-		if (params is null || !params.length)
-			return ~0UL;
-
-		switch (params[0]) {
-			case IFace.Signal.S_SEND_SIGNAL:
-				break;
-
-			case IFace.Signal.S_SET_HANDLER:
-				break;
-
-			default:
-				return ~0UL;
-		}
-
-		return ~0UL;
 	}
 }

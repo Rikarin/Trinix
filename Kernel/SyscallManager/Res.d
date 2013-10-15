@@ -36,10 +36,10 @@ public:
 		resources = new List!Resource(0x200);
 		resources.Add(new NullRes()); //mask index 0
 		
-		import TaskManager.Signal; //TODO FIX THIS FUCKIN HACK
+		import TaskManager.Process; //TODO FIX THIS FUCKIN HACK
 		StaticCallTable aa = {IFace.FSNode.OBJECT, &FSNode.SCall};
 		staticCalls[0] = aa;
-		StaticCallTable ab = {IFace.Signal.OBJECT, &Signal.SCall};
+		StaticCallTable ab = {IFace.Process.OBJECT, &Process.SCall};
 		staticCalls[1] = ab;
 
 		return true;

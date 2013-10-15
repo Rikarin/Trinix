@@ -95,13 +95,11 @@ extern(C) void StartSystem() {
 
 	import TaskManager.Signal;
 	Task.CurrentProcess.Signals[SigNum.SIGSEGV] = cast(void function())&pagefaultCallBack;
-	//Task.CurrentProcess.signalQueue.Add(SigNum.SIGSEGV);
 
 	//auto thr = new Thread(cast(void function())&testthr);
 	//thr.Start();
 
 	import Userspace.Init;
-
 	auto init = Process.CreateProcess(cast(void function())&Init.Main, ["testik"]);
 
 	//while (thr.ReturnValue != 0x456) {}

@@ -9,13 +9,15 @@ import TaskManager.Thread;
 import TaskManager.Signal;
 import Architectures.Paging;
 import Core.DeviceManager;
+import SyscallManager.Res;
+import System.IFace;
 
 import System.Collections.Generic.List;
 
 
-class Process /*: Resource */{
+class Process : Resource {
 private:
-	this() {/*super(0, null);*/ }
+	this() { super(0, null); }
 
 package:
 	ulong id; //unique ID for each process
@@ -122,8 +124,46 @@ public:
 	}
 
 
-
 //Syscalls
-//	override bool Accesible() { return true; }
-//send signal
+	override bool Accessible() { return true; }
+
+	static ulong SCall(ulong[] params) {
+		if (params is null || !params.length)
+			return ~0UL;
+
+		switch (params[0]) {
+			case IFace.Process.S_SEND_SIGNAL:
+				if (params.length < 3)
+					return ~0UL;
+
+				Process proc = cast(Process)Res.GetByID(params[1], IFace.Process.OBJECT);
+				if (proc is null)
+					return ~0UL;
+
+				if (params[2] > Signal.Count)
+					return ~0UL;
+
+				proc.signalQueue.Add(cast(SigNum)params[2]);
+				break;
+
+			case IFace.Process.S_SET_HANDLER:
+				if (params.length < 4)
+					return ~0UL;
+
+				Process proc = cast(Process)Res.GetByID(params[1], IFace.Process.OBJECT);
+				if (proc is null)
+					return ~0UL;
+
+				if (params[2] > Signal.Count)
+					return ~0UL;
+
+				proc.Signals[params[2]] = cast(void function())params[3];
+				break;
+
+			default:
+				return ~0UL;
+		}
+
+		return ~0UL;
+	}
 }

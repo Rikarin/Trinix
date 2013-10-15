@@ -31,7 +31,7 @@ class IFace {
 		GETIDXCHILD,
 	}
 
-	enum Signal : ulong {
+	enum Process : ulong {
 		OBJECT = 0x2,
 
 		S_SEND_SIGNAL = 0x1,
