@@ -193,7 +193,9 @@ public:
 			byte wat = isDeadly[signal];
 			if (wat == 1 || wat == 2) {
 				debug (only) {
-					Log.PrintSP("\nProcess was killed by unhandled signal: ");
+					Log.PrintSP("\nProcess ");
+					Log.PrintSP(Convert.ToString(cast(ulong)process.id));
+					Log.PrintSP(" was killed by unhandled signal: ");
 					Log.PrintSP(Convert.ToString(cast(ulong)signal));
 				}
 

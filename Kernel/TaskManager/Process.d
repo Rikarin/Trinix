@@ -17,7 +17,15 @@ import System.Collections.Generic.List;
 
 class Process : Resource {
 private:
-	this() { super(0, null); }
+	this() {
+		const CallTable[] callTable = [
+			{IFace.Process.SEND_SIGNAL, &SC_SendSignal},
+			{IFace.Process.SET_HANDLER, &SC_SetHandler}
+		];
+
+		super(IFace.Process.OBJECT, callTable);
+	}
+
 
 package:
 	ulong id; //unique ID for each process
@@ -127,43 +135,43 @@ public:
 //Syscalls
 	override bool Accessible() { return true; }
 
-	static ulong SCall(ulong[] params) {
+	ulong SCall(ulong[] params) {
 		if (params is null || !params.length)
 			return ~0UL;
 
 		switch (params[0]) {
-			case IFace.Process.S_SEND_SIGNAL:
-				if (params.length < 3)
-					return ~0UL;
+			//case IFace.Process.GET_PID:
+			//	return Task.CurrentProcess.id;
 
-				Process proc = cast(Process)Res.GetByID(params[1], IFace.Process.OBJECT);
-				if (proc is null)
-					return ~0UL;
-
-				if (params[2] > Signal.Count)
-					return ~0UL;
-
-				proc.signalQueue.Add(cast(SigNum)params[2]);
-				break;
-
-			case IFace.Process.S_SET_HANDLER:
-				if (params.length < 4)
-					return ~0UL;
-
-				Process proc = cast(Process)Res.GetByID(params[1], IFace.Process.OBJECT);
-				if (proc is null)
-					return ~0UL;
-
-				if (params[2] > Signal.Count)
-					return ~0UL;
-
-				proc.Signals[params[2]] = cast(void function())params[3];
-				break;
+			case IFace.Process.CURRENT:
+				return Task.CurrentProcess.ResID();
 
 			default:
-				return ~0UL;
 		}
 
 		return ~0UL;
+	}
+
+private:
+	ulong SC_SendSignal(ulong[] params) {
+		if (params is null || !params.length)
+			return ~0UL;
+
+		if (params[0] > Signal.Count)
+			return ~0UL;
+
+		signalQueue.Add(cast(SigNum)params[0]);
+		return 0;
+	}
+
+	ulong SC_SetHandler(ulong[] params) {
+		if (params is null || params.length < 2)
+			return ~0UL;
+
+		if (params[0] > Signal.Count)
+			return ~0UL;
+
+		Signals[params[0]] = cast(void function())params[1];
+		return 0;
 	}
 }

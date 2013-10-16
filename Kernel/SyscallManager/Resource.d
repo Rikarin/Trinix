@@ -37,7 +37,7 @@ public:
 	ulong Call(ulong id, ulong[] params) {
 		if (!Accessible())
 			return ~0UL;
-
+		
 		if (!id)
 			return type;
 

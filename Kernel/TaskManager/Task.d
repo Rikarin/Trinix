@@ -16,7 +16,7 @@ extern(C) void idle_task();
 class Task {
 static:
 private:
-	__gshared ulong pid, tid;
+	__gshared ulong pid = 1, tid = 1;
 
 
 package:
