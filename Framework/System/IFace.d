@@ -29,6 +29,8 @@ class IFace {
 		GETLENGTH,
 		GETNCHILD,
 		GETIDXCHILD,
+
+		SMKFILE,
 	}
 
 	enum Process : ulong {

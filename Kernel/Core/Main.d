@@ -104,13 +104,14 @@ extern(C) void StartSystem() {
 
 	//while (thr.ReturnValue != 0x456) {}
 
-/*
+	//while (true) Log.Print("x");
+
 	byte[] tmp = new byte[1];
 	while (true) {
 		pajpa.Read(0, tmp);
 		Log.Print("" ~ tmp[0]);
 		tmp[0] = 0;
-	}*/
+	}
 
 	while (true) {}
 }

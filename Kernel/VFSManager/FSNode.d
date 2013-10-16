@@ -163,6 +163,10 @@ private:
 				DirectoryNode ret = VFS.CreateDirectory(*cast(string *)params[1], params.length >= 3 ? cast(DirectoryNode)Res.GetByID(params[2], IFace.FSNode.OBJECT) : null);
 				return ret is null ? 0 : ret.ResID();
 				break;
+			case IFace.FSNode.SMKFILE:
+				FSNode ret = VFS.CreateFile(*cast(string *)params[1], params.length >= 3 ? cast(DirectoryNode)Res.GetByID(params[2], IFace.FSNode.OBJECT) : null);
+				return ret is null ? 0 : ret.ResID();
+				break;
 			case IFace.FSNode.SGETRFN:
 				return VFS.RootNode.ResID();
 			case IFace.FSNode.SGETCWD:

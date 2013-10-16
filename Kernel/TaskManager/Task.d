@@ -57,10 +57,18 @@ public:
 			currentThread = Threads[0];
 
 		long idx = Threads.IndexOf(currentThread) + 1;
+		
+		//import Core.Log;
+		//import System.Convert;
+		//Log.Print("aaa: " ~ Convert.ToString(idx));
+		//Log.Print("bbb: " ~ Convert.ToString(Threads.Count));
 
-		foreach (x; Threads[idx .. $]) {
-			if (x.Valid(state) && x !is idleThread)
-				return x;
+
+		if (idx + 1 < Threads.Count) {
+			foreach (x; Threads[idx .. $]) {
+				if (x.Valid(state) && x !is idleThread)
+					return x;
+			}
 		}
 
 		foreach (x; Threads[0 .. idx]) {
