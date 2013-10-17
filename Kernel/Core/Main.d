@@ -105,6 +105,7 @@ extern(C) void StartSystem() {
 	//Process.CreateProcess(cast(void function())&Terminal.Main, ["test"]);
 
 	VFS.PrintTree(VFS.RootNode);
+	VFS.PrintTree(VFS.RootNode);
 
 	//while (thr.ReturnValue != 0x456) {}
 	//while (true) Log.Print("x");

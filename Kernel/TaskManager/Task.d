@@ -32,6 +32,7 @@ public:
 	@property Thread CurrentThread() { return currentThread; }
 	@property Process CurrentProcess() { return currentThread.parent; }
 	@property List!Thread GetAllThreads() { return Threads; }
+	@property List!Process GetAllProcesses() { return Procs; }
 
 
 	bool Init() {

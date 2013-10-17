@@ -38,7 +38,7 @@ public:
 		if (!LoadContent())
 			return 0;
 
-		return length;
+		return childrens.Count;
 	}
 
 	@property override DirectoryNode Parent() {
@@ -99,8 +99,7 @@ public:
 		if(isLoaded || fs is null)
 			return true;
 
-		bool ret = fs.LoadContent(this);		
-		length = childrens.Count;
+		bool ret = fs.LoadContent(this);
 		isLoaded = ret;
 		return ret;
 	}
@@ -192,7 +191,6 @@ public:
 					return false;
 
 				childrens.Remove(x);
-				length--;
 				return true;
 			}
 		}
@@ -203,7 +201,6 @@ public:
 	void AddNode(FSNode node) {
 		childrens.Add(node);
 		node.parent = this;
-		length++;
 	}
 
 
