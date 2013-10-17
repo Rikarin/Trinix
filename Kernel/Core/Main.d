@@ -99,10 +99,12 @@ extern(C) void StartSystem() {
 	//auto thr = new Thread(cast(void function())&testthr);
 	//thr.Start();
 
-	static import Userspace.Init;
-	import Userspace.GUI.Terminal;
-	Process.CreateProcess(cast(void function())&Userspace.Init.construct, ["/System/Bin/Init", "--single", "--nothing"]);
+	//static import Userspace.Init;
+	static import Userspace.GUI.Terminal;
+	Process.CreateProcess(cast(void function())&Userspace.GUI.Terminal.construct, ["/System/Bin/Init", "--single", "--nothing"]);
 	//Process.CreateProcess(cast(void function())&Terminal.Main, ["test"]);
+
+	VFS.PrintTree(VFS.RootNode);
 
 	//while (thr.ReturnValue != 0x456) {}
 	//while (true) Log.Print("x");

@@ -32,6 +32,7 @@ _SRC += $(wildcard Framework/System/Drawing/*.[d|c|s])
 #   Userspace apps   #
 ######################
 _SRC += $(wildcard Userspace/*.[d|c|s])
+_SRC += $(wildcard Userspace/GUI/*.[d|c|s])
 
 
 

@@ -48,13 +48,14 @@ class ProcFS : FileSystemProto {
 
 	override bool LoadContent(DirectoryNode dir) {
 		if (dir is rootNode) {
-			//foreach (x; Task.GetAllThreads) {
-				//foreach (y; dir.Childrens) {
-					//string name = Convert.ToString(x.ID);
-					//if (y.Name != name)
-					//	{}//dir.AddNode(new DirectoryNode(name, this));
-				//}
-			//}
+			dir.IsLoaded = true;
+			foreach (x; Task.GetAllThreads) {
+				foreach (y; dir.Childrens) {
+					string name = Convert.ToString(x.ID);
+					if (y.Name != name)
+						dir.AddNode(new DirectoryNode(name, this));
+				}
+			}
 		}
 
 		return true;

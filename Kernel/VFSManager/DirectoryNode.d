@@ -10,13 +10,16 @@ import System.DateTime;
 
 class DirectoryNode : FSNode {
 package:
-	public List!FSNode childrens;
-	bool isLoaded = false;
-	DirectoryNode mounts = null;
+	List!FSNode childrens;
+	bool isLoaded;
+	DirectoryNode mounts;
 
 
 public:
+	@property bool IsLoaded() { return isLoaded; }
+	@property void IsLoaded(bool value) { isLoaded = value; }
 	@property override FSType Type() { return mounts ? FSType.MOUNTPOINT : FSType.DIRECTORY; }
+	
 	void Unmount() { mounts = null; }
 	override ulong Read(ulong offset, byte[] data) { return 0; }
 	override ulong Write(ulong offset, byte[] data) { return 0; }
@@ -96,12 +99,9 @@ public:
 		if(isLoaded || fs is null)
 			return true;
 
-		bool ret = fs.LoadContent(this);
-		if (!ret)
-			return false;
-		
+		bool ret = fs.LoadContent(this);		
 		length = childrens.Count;
-		isLoaded = true;
+		isLoaded = ret;
 		return ret;
 	}
 

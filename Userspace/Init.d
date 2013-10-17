@@ -8,10 +8,11 @@ import System.ResourceCaller;
 
 class Init {
 	public static long Main(string[] args) {
+		auto fs = new FileStream("/dev/pajpa");
+		
 		foreach (x; args)
 			fs.Write(cast(byte[])("\n args: " ~ x), 0);
 
-		auto fs = new FileStream("/dev/pajpa");
 
 //		ulong master, slave;
 //		ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [IFace.FSNode.CREATETTY, cast(ulong)&master, cast(ulong)&slave]);
