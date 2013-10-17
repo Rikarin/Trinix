@@ -1,4 +1,4 @@
-module FileSystem.TTY;
+module Devices.TTY;
 
 import System.Collections.Generic.Queue;
 import VFSManager.CharNode;
@@ -26,7 +26,8 @@ package:
 	ulong cannonPointer;
 
 
-	this() {
+public:
+	this(out PTYDev master, out TTYDev slave) {
 		inQueue  = new Queue!char();
 		outQueue = new Queue!char();
 
@@ -208,7 +209,7 @@ class TTYDev : CharNode {
 			ulong len;
 
 			if (!tty.termios.c_cc[Commands.VMIN])
-				len = tty.outQueue.Count > data.length ? data.length : tty.outQueue.Count;
+				len = tty.inQueue.Count > data.length ? data.length : tty.inQueue.Count;
 			else
 				len = tty.termios.c_cc[Commands.VMIN] > data.length ? data.length : tty.termios.c_cc[Commands.VMIN];
 

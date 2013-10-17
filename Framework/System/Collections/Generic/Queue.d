@@ -15,6 +15,11 @@ class Queue(T) {
 		//delete array;
 		array = newArray;
 	}
+
+
+	this() {
+		array = new T[4];
+	}	
 	
 	void Enqueue(T item) {
 		if (Count == array.length)

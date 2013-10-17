@@ -150,6 +150,7 @@ private:
 	public static ulong SCall(ulong[] params) {
 		import VFSManager.VFS; //TODO: FIXME
 		import TaskManager.Task; //TODO: METOO
+		import Devices.TTY; //TODO FIX ME PLZ
 
 		if (params is null || !params.length)
 			return ~0UL;
@@ -166,6 +167,17 @@ private:
 			case IFace.FSNode.SMKFILE:
 				FSNode ret = VFS.CreateFile(*cast(string *)params[1], params.length >= 3 ? cast(DirectoryNode)Res.GetByID(params[2], IFace.FSNode.OBJECT) : null);
 				return ret is null ? 0 : ret.ResID();
+				break;
+			case IFace.FSNode.CREATETTY:
+				if (params.length < 3)
+					return ~0UL;
+
+				PTYDev master;
+				TTYDev slave;
+				new TTY(master, slave);
+				*cast(ulong *)params[1] = master.ResID();
+				*cast(ulong *)params[2] = slave.ResID();
+				return 0;
 				break;
 			case IFace.FSNode.SGETRFN:
 				return VFS.RootNode.ResID();

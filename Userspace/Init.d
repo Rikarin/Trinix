@@ -2,16 +2,38 @@ module Userspace.Init;
 
 import System.IO.FileStream;
 
+import System.IFace;
+import System.ResourceCaller;
+
+
 class Init {
 	public static long Main(string[] args) {
-		auto fs = new FileStream("/dev/pajpa");
-		fs.Write(cast(byte[])"Test from Init lol!", 0);
+		foreach (x; args)
+			fs.Write(cast(byte[])("\n args: " ~ x), 0);
 
-	//	while (true) { }
+		auto fs = new FileStream("/dev/pajpa");
+
+//		ulong master, slave;
+//		ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [IFace.FSNode.CREATETTY, cast(ulong)&master, cast(ulong)&slave]);
+
+//		auto m = new FileStream(master);
+//		auto s = new FileStream(slave);
+
+//		m.Write(cast(byte[])"Test from Init!", 0);
+
+		//byte[10] bb;
+		//m.Read(bb, 0);
+
+		while (true) { }
 		return 0;
 	}
 }
 
+
+long construct(ulong* pointer) {
+	string[] args = (cast(string *)pointer[0])[0 .. pointer[1]];
+	return Init.Main(args);
+}
 
 
 /*

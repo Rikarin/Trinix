@@ -31,6 +31,7 @@ class IFace {
 		GETIDXCHILD,
 
 		SMKFILE,
+		CREATETTY,
 	}
 
 	enum Process : ulong {

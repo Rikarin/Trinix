@@ -82,9 +82,6 @@ public:
 		ret.threads     = new List!Thread();
 		ret.signalQueue = new List!SigNum();
 
-
-		ret.descriptors.Add(DeviceManager.DevFS.Childrens[0]); //keyboard stdin
-
 		Thread t = new Thread();
 		t.parent = ret;
 		t.state = Thread.State.Running;
@@ -117,9 +114,16 @@ public:
 		ret.signalQueue = new List!SigNum();
 
 
-		//ret.descriptors.Add(DeviceManager.DevFS.Childrens[0]); //keyboard stdin
+		/** Send arguments to main thread */
+		string[] a = new string[args.length];
+		if (args !is null)
+			a[] = args[0 .. $];
 
-		Thread t = new Thread(ThreadEntry, cast(void *)&args);
+		ulong* x = (new ulong[2]).ptr;
+		x[0] = cast(ulong)a.ptr;
+		x[1] = a.length;
+
+		Thread t = new Thread(ThreadEntry, cast(void *)x);
 		t.parent = ret;
 		t.state = Thread.State.Running;
 		t.kernelStack = (new ulong[Thread.STACK_SIZE]).ptr;

@@ -99,11 +99,12 @@ extern(C) void StartSystem() {
 	//auto thr = new Thread(cast(void function())&testthr);
 	//thr.Start();
 
-	import Userspace.Init;
-	auto init = Process.CreateProcess(cast(void function())&Init.Main, ["testik"]);
+	static import Userspace.Init;
+	import Userspace.GUI.Terminal;
+	Process.CreateProcess(cast(void function())&Userspace.Init.construct, ["/System/Bin/Init", "--single", "--nothing"]);
+	//Process.CreateProcess(cast(void function())&Terminal.Main, ["test"]);
 
 	//while (thr.ReturnValue != 0x456) {}
-
 	//while (true) Log.Print("x");
 
 	byte[] tmp = new byte[1];
@@ -121,7 +122,6 @@ extern(C) void apEntry() {
 }
 
 extern(C) void pagefaultCallBack() {
-	//ResourceCaller.StaticCall(0xABCD);
 	Log.Print("page fault");
 	while (true) {}
 	return;
@@ -131,10 +131,6 @@ extern(C) void pagefaultCallBack() {
 
 
 /*
-
-
-import System.ResourceCaller;
-import System.IFace;
 import System.IO.DirectoryInfo;
 
 extern(C) void testthr() {
@@ -148,26 +144,4 @@ extern(C) void testthr() {
 	aa.write(0, cast(byte[])di.FullName);
 
 	//return 0x456;
-}
-
-
-
-
-
-class nicetry : ResourceCaller {
-	this() {
-		super(12, 1);
-	}
-
-	void test() {
-		Call(54);
-	}
-
-	ulong read(ulong offset, byte[] data) {
-		return Call(2, [offset, cast(ulong)&data]);
-	}
-
-	ulong write(ulong offset, byte[] data) {
-		return Call(3, [offset, cast(ulong)&data]);
-	}
 }*/

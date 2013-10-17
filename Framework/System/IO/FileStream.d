@@ -23,12 +23,18 @@ public:
 	@property override long WriteTimeout() { return 0; }
 	@property override void WriteTimeout(long value) {}
 
+
 	this(string path) {
 		ulong id = ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [IFace.FSNode.SFIND, cast(ulong)&path]);
 	
 		if (!id)
 			id = ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [IFace.FSNode.SMKFILE, cast(ulong)&path]);	
 		
+		syscall = new ResourceCaller(id, IFace.FSNode.OBJECT);
+	}
+
+	//todo fix
+	this(ulong id) {
 		syscall = new ResourceCaller(id, IFace.FSNode.OBJECT);
 	}
 
