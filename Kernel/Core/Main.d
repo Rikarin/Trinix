@@ -101,11 +101,11 @@ extern(C) void StartSystem() {
 
 	//static import Userspace.Init;
 	static import Userspace.GUI.Terminal;
-	Process.CreateProcess(cast(void function())&Userspace.GUI.Terminal.construct, ["/System/Bin/Init", "--single", "--nothing"]);
+	//Process.CreateProcess(cast(void function())&Userspace.GUI.Terminal.construct, ["/System/Bin/Init", "--single", "--nothing"]);
 	//Process.CreateProcess(cast(void function())&Terminal.Main, ["test"]);
 
 	VFS.PrintTree(VFS.RootNode);
-	VFS.PrintTree(VFS.RootNode);
+//	VFS.PrintTree(VFS.RootNode);
 
 	//while (thr.ReturnValue != 0x456) {}
 	//while (true) Log.Print("x");

@@ -28,6 +28,7 @@ public:
 	@property override string Name() {
 		if (name == "/" && parent)
 			return parent.Name;
+
 		return name;
 	}
 
@@ -50,7 +51,7 @@ public:
 
 	@property List!(FSNode) Childrens() {
 		if (mounts)
-			mounts.Childrens;
+			return mounts.Childrens;
 
 		if (!isLoaded)
 			LoadContent();
@@ -116,19 +117,6 @@ public:
 			return false;
 
 		return !childrens.Count;
-	}
-
-	FSNode GetChild(ulong index) {
-		if (mounts)
-			return mounts.GetChild(index);
-
-		if (!LoadContent())
-			return null;
-
-		if (index >= childrens.Count)
-			return null;
-
-		return childrens[index];
 	}
 
 	FSNode GetChild(string name) {

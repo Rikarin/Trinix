@@ -101,7 +101,7 @@ static:
 	long ToInt64(short value)  { return cast(long)value; }
 	long ToInt64(int value)    { return cast(long)value; }
 	long ToInt64(long value)   { return cast(long)value; }
-	long ToInt64(string value, int fromBase) { return ConvertFromString!long(value, fromBase); }
+	long ToInt64(string value, int fromBase = 10) { return ConvertFromString!long(value, fromBase); }
 
 	ubyte ToUByte(bool value)   { return value ? 1 : 0; }
 	ubyte ToUByte(char value)   { return cast(ubyte)value; }
@@ -157,7 +157,7 @@ static:
 	ulong ToUInt64(short value)  { return cast(ulong)value; }
 	ulong ToUInt64(int value)    { return cast(ulong)value; }
 	ulong ToUInt64(long value)   { return cast(ulong)value; }
-	ulong ToUInt64(string value, int fromBase) { return ConvertFromString!ulong(value, fromBase); }
+	ulong ToUInt64(string value, int fromBase = 10) { return ConvertFromString!ulong(value, fromBase); }
 
 
 	string ToString(bool value)   { return value ? "True" : "False"; }

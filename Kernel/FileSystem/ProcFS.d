@@ -15,14 +15,15 @@ class ProcFS : FileSystemProto {
 	this() { }
 
 	static ProcFS Mount(DirectoryNode mountPoint) {
-		if (mountPoint && !mountPoint.Mountpointable())
+		if (mountPoint is null || !mountPoint.Mountpointable())
 			return null;
 
 		ProcFS ret = new ProcFS();
-		ret.isWritable = true;
 		ret.rootNode = new DirectoryNode("/", ret);
 		ret.Identifier = "ProcFS";
 		ret.rootNode.SetParent(mountPoint);
+		
+		//ret.rootNode.AddNode(new DirectoryNode("current", ret));
 
 		mountPoint.Mount(ret.rootNode);
 		return ret;
@@ -47,17 +48,12 @@ class ProcFS : FileSystemProto {
 
 
 	override bool LoadContent(DirectoryNode dir) {
-		if (dir is rootNode) {
-			dir.IsLoaded = true;
-		//	foreach (x; Task.GetAllProcesses) {
-				string name = "test";//Convert.ToString(x.ID);
+		dir.IsLoaded = true;
 
-				//foreach (y; dir.Childrens) {
-					//if (y.Name != name)
-						dir.AddNode(new DirectoryNode(name, this));
-				//}
-			//}
-		}
+		if (dir is rootNode)			
+			LoadProcesses();
+		else if (dir.Parent == rootNode) //&& is number
+			LoadFileDesciptors(dir);
 
 		return true;
 	}
@@ -68,5 +64,35 @@ class ProcFS : FileSystemProto {
 
 	override ulong Write(FileNode file, ulong offset, byte[] data) {
 		return 0;
+	}
+
+
+private:
+	void LoadFileDesciptors(DirectoryNode processDir) {
+		auto fd = processDir.GetChild("fd");
+
+		if (fd is null) {
+			fd = new DirectoryNode("fd", this);
+			processDir.AddNode(fd);
+		}
+
+		/*auto pfd = Task.GetAllProcesses[Convert.ToInt64(processDir.Name)].FileDescriptors;
+		for (long i; i < pfd.Count; i++) {
+			string name = Convert.ToString(i);
+			auto child = rootNode.GetChild(name);
+
+			if (child is null)
+				rootNode.AddNode(new DirectoryNode(name, this));
+		}*/
+	}
+
+	void LoadProcesses() {
+		foreach (x; Task.GetAllProcesses) {
+			string name = Convert.ToString(x.ID);
+			auto child = rootNode.GetChild(name);
+
+			if (child is null)
+				rootNode.AddNode(new DirectoryNode(name, this));
+		}
 	}
 }
