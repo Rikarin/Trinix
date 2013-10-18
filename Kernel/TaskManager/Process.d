@@ -13,14 +13,16 @@ import SyscallManager.Res;
 import System.IFace;
 
 import System.Collections.Generic.List;
+import System.Diagnostics.ProcessStartInfo;
 
 
 class Process : Resource {
 private:
 	this() {
 		const CallTable[] callTable = [
+			{IFace.Process.SET_FD,      &SC_SetFD},
 			{IFace.Process.SEND_SIGNAL, &SC_SendSignal},
-			{IFace.Process.SET_HANDLER, &SC_SetHandler}
+			{IFace.Process.SET_HANDLER, &SC_SetHandler},
 		];
 
 		super(IFace.Process.OBJECT, callTable);
@@ -60,11 +62,15 @@ public:
 	
 	@property ulong ID() { return id; }
 	@property List!(FSNode) FileDescriptors() { return descriptors; }
-	
+
 	DirectoryNode GetCWD() { return cwd; }
 	void SetCWD(DirectoryNode value) { cwd = value; }
 
-	void RegisterFD(FSNode fd) { descriptors.Add(fd); }
+	ulong RegisterFD(FSNode fd) {
+		descriptors.Add(fd);
+		return descriptors.IndexOf(fd);
+	}
+
 	void UnregisterFD(FSNode fd) { descriptors.Remove(fd); }
 
 
@@ -100,7 +106,7 @@ public:
 
 
 	//for testing only
-	static Process CreateProcess(void function() ThreadEntry, string[] args = null) {
+	static Process CreateProcess(long function(ulong*) ThreadEntry, string[] args = null) {
 		Process ret     = new Process();
 		ret.parent      = Task.CurrentProcess;
 		ret.id          = Task.NewPID();
@@ -153,6 +159,55 @@ public:
 			case IFace.Process.CURRENT:
 				return Task.CurrentProcess.ResID();
 
+			case IFace.Process.S_CREATE:
+				if (params is null || params.length < 2)
+					return ~0UL;
+
+
+				ProcessStartInfo start = *cast(ProcessStartInfo *)params[1];
+
+				Process ret     = new Process();
+				ret.parent      = Task.CurrentProcess;
+				ret.id          = Task.NewPID();
+				ret.name        = start.FileName;
+				ret.description = start.Description;
+
+				ret.mask        = 0x12; //022 in oct
+				ret.paging      = Paging.KernelPaging;
+				ret.cwd         = VFS.RootNode;
+				ret.state       = State.Running;
+				ret.cmdline     = start.Arguments;
+
+				ret.descriptors = new List!FSNode();
+				ret.threads     = new List!Thread();
+				ret.signalQueue = new List!SigNum();
+
+				/** Add descriptors */
+				foreach (x; start.FileDescriptors)
+					ret.descriptors.Add(cast(FSNode)Res.GetByID(x.id, IFace.FSNode.OBJECT));
+
+
+				/** Send arguments to main thread */
+				string[] a = new string[start.Arguments.length];
+				if (start.Arguments !is null)
+					a[] = start.Arguments[0 .. $];
+
+				ulong* x = (new ulong[2]).ptr;
+				x[0] = cast(ulong)a.ptr;
+				x[1] = a.length;
+
+				Thread t = new Thread(start.ThreadEntry, cast(void *)x);
+				t.parent = ret;
+				t.state = Thread.State.Running;
+				t.kernelStack = (new ulong[Thread.STACK_SIZE]).ptr;
+				ret.threads.Add(t);
+
+				Task.Procs.Add(ret);
+				Task.Threads.Add(t);
+
+				return ret.ResID();
+				break;
+
 			default:
 		}
 
@@ -180,5 +235,13 @@ private:
 
 		Signals[params[0]] = cast(void function())params[1];
 		return 0;
+	}
+
+	ulong SC_SetFD(ulong[] params) {
+		if (params is null || params.length < 1)
+			return ~0UL;
+
+		FSNode fd = cast(FSNode)Res.GetByID(params[0], IFace.FSNode.OBJECT);
+		return RegisterFD(fd);
 	}
 }

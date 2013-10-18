@@ -48,7 +48,7 @@ public:
 	@property ulong ID() { return id; }
 	@property long ReturnValue() { return retval; }
 
-	this(void function() ThreadEntry, void* data = null) {
+	this(long function(ulong*) ThreadEntry, void* data = null) {
 		//super(0, null);
 		
 		parent = Task.CurrentProcess;

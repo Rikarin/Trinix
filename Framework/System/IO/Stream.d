@@ -2,6 +2,8 @@ module System.IO.Stream;
 
 
 abstract class Stream {
+	public ulong id;
+	
 	@property bool CanRead();
 	@property bool CanSeek();
 	@property bool CanTimeout();

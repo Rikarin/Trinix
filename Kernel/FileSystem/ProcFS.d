@@ -52,8 +52,8 @@ class ProcFS : FileSystemProto {
 
 		if (dir is rootNode)			
 			LoadProcesses();
-		else if (dir.Parent == rootNode) //&& is number
-			LoadFileDesciptors(dir);
+		//else if (dir.Parent == rootNode) //&& is number
+		//	LoadFileDesciptors(dir);
 
 		return true;
 	}
@@ -76,14 +76,14 @@ private:
 			processDir.AddNode(fd);
 		}
 
-		/*auto pfd = Task.GetAllProcesses[Convert.ToInt64(processDir.Name)].FileDescriptors;
-		for (long i; i < pfd.Count; i++) {
-			string name = Convert.ToString(i);
-			auto child = rootNode.GetChild(name);
+		//auto pfd = Task.GetAllProcesses[Convert.ToInt64(processDir.Name)].FileDescriptors;
+		//for (long i; i < pfd.Count; i++) {
+		//	string name = Convert.ToString(i);
+		//	auto child = fd.GetChild(name);
 
-			if (child is null)
-				rootNode.AddNode(new DirectoryNode(name, this));
-		}*/
+		//	if (child is null)
+		//		fd.AddNode(new DirectoryNode(name, this));
+		//}
 	}
 
 	void LoadProcesses() {

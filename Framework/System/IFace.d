@@ -37,8 +37,10 @@ class IFace {
 	enum Process : ulong {
 		OBJECT = 0x2,
 
-		GET_PID = 0x1, //todo
+		SET_FD = 0x1,
+		GET_PID, //todo
 		CURRENT,
+		S_CREATE,
 		SEND_SIGNAL,
 		SET_HANDLER
 	}

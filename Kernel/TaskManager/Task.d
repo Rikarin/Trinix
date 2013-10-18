@@ -44,7 +44,7 @@ public:
 		Log.Result(true);
 
 		Log.Print(" - Initializing idle task");
-		idleThread = new Thread(cast(void function())&idle_task);
+		idleThread = new Thread(cast(long function(ulong*))&idle_task);
 		idleThread.rip = cast(ulong)&idle_task;
 		Log.Result(true);
 
@@ -53,7 +53,7 @@ public:
 		return true;
 	}
 
-	private Thread NextThread(Thread.State state) {
+	private Thread NextThread() {
 		if (currentThread is null)
 			currentThread = Threads[0];
 
@@ -67,13 +67,13 @@ public:
 
 		if (idx + 1 < Threads.Count) {
 			foreach (x; Threads[idx .. $]) {
-				if (x.Valid(state) && x !is idleThread)
+				if (x.Valid(Thread.State.Running) && x !is idleThread)
 					return x;
 			}
 		}
 
 		foreach (x; Threads[0 .. idx]) {
-			if (x.Valid(state) && x !is idleThread)
+			if (x.Valid(Thread.State.Running) && x !is idleThread)
 				return x;
 		}
 
@@ -115,7 +115,7 @@ public:
 
 
 		//Run new thread
-		currentThread = NextThread(Thread.State.Running);
+		currentThread = NextThread();
 
 		if (CurrentThread == CurrentProcess.threads[0])
 			Signal.FixStack();

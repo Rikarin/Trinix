@@ -25,7 +25,7 @@ public:
 
 
 	this(string path) {
-		ulong id = ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [IFace.FSNode.SFIND, cast(ulong)&path]);
+		id = ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [IFace.FSNode.SFIND, cast(ulong)&path]);
 	
 		if (!id)
 			id = ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [IFace.FSNode.SMKFILE, cast(ulong)&path]);	
@@ -35,6 +35,7 @@ public:
 
 	//todo fix
 	this(ulong id) {
+		this.id = id;
 		syscall = new ResourceCaller(id, IFace.FSNode.OBJECT);
 	}
 
