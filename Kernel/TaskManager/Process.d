@@ -100,7 +100,6 @@ public:
 
 		Task.Procs.Add(ret);
 		Task.Threads.Add(t);
-
 		return ret;
 	}
 
@@ -139,8 +138,6 @@ public:
 		ret.threads.Add(t);
 
 		Task.Procs.Add(ret);
-		Task.Threads.Add(t);
-
 		return ret;
 	}
 
@@ -203,8 +200,6 @@ public:
 				ret.threads.Add(t);
 
 				Task.Procs.Add(ret);
-				Task.Threads.Add(t);
-
 				return ret.ResID();
 				break;
 

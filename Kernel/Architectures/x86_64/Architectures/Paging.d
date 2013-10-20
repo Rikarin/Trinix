@@ -327,13 +327,8 @@ class Paging {
 			}
 
 			Task.Exit(stack.RAX);
-			asm {
-				a:
-					hlt;
-					jmp a;
-			}
 		}
-
+		
 		Signal.Handler(Task.CurrentProcess, SigNum.SIGSEGV);
 	}
 

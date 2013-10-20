@@ -115,6 +115,7 @@ public:
 	bool Valid(State state) {
 		if (state == this.state && parent.state != Process.State.Stopped)
 			return true;
+		
 		return false;
 	}
 

@@ -17,8 +17,7 @@ class Terminal {
 
 		auto startInfo = new ProcessStartInfo();
 		startInfo.ThreadEntry = &test;
-		Process.Start(startInfo);
-
+	//	Process.Start(startInfo);
 		return 0;
 	}
 }
@@ -32,8 +31,6 @@ long construct(ulong* pointer) {
 
 //new process
 long test(ulong* pnt) {
-	//ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [54]);
-
-	//while (true) {}
+	ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [0x456]);
 	return 0;
 }

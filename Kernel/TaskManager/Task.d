@@ -17,13 +17,13 @@ class Task {
 static:
 private:
 	__gshared ulong pid = 1, tid = 1;
-
+	__gshared Thread currentThread;
+	__gshared Thread idleThread;
+	__gshared long scheldule = 1;
 
 package:
 	__gshared List!Process Procs;
 	__gshared List!Thread Threads;
-	__gshared Thread currentThread;
-	__gshared Thread idleThread;
 
 
 public:
@@ -54,30 +54,23 @@ public:
 	}
 
 	private Thread NextThread() {
-		if (currentThread is null)
-			currentThread = Threads[0];
+		import Core.Log;
+		import System.Convert;
+		Log.Print(" " ~ Convert.ToString(scheldule));
+		Log.Print(" <=> " ~ Convert.ToString(Threads.Count));
 
-		long idx = Threads.IndexOf(currentThread) + 1;
-		
-		//import Core.Log;
-		//import System.Convert;
-		//Log.Print("aaa: " ~ Convert.ToString(idx));
-		//Log.Print("bbb: " ~ Convert.ToString(Threads.Count));
-
-
-		if (idx + 1 < Threads.Count) {
-			foreach (x; Threads[idx .. $]) {
+		long lst = scheldule++;
+		if (scheldule < Threads.Count) {
+			foreach (x; Threads[scheldule .. $])
 				if (x.Valid(Thread.State.Running) && x !is idleThread)
 					return x;
-			}
 		}
 
-		foreach (x; Threads[0 .. idx]) {
-			if (x.Valid(Thread.State.Running) && x !is idleThread)
-				return x;
-		}
+		for (scheldule = 0; scheldule < lst; scheldule++)
+			if (Threads[scheldule].Valid(Thread.State.Running) && Threads[scheldule] !is idleThread)
+				return Threads[scheldule];
 
-		return idleThread;
+		return Threads[0];
 	}
 
 	void Reap(Thread thread) {
