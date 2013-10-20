@@ -33,7 +33,7 @@ package:
 
 public:
 	bool Init() {
-		resources = new List!Resource(0x200);
+		resources = new List!Resource(0x200); //TODO: FIXME PLZ
 		resources.Add(new NullRes()); //mask index 0
 		
 		import TaskManager.Process; //TODO FIX THIS FUCKIN HACK

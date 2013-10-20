@@ -168,7 +168,7 @@ private:
 	
 	void Dispatch(InterruptStack* stack) {
 		debug (only) {
-			if (stack.IntNumber != 32 && stack.IntNumber != 0x0FE) {
+			if (stack.IntNumber != 32 && stack.IntNumber != 0x0E) {
 				import Core.Log;
 				import System.Convert;
 				

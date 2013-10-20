@@ -323,7 +323,7 @@ class Paging {
 		else if (stack.RIP == Thread.ThreadReturn) {
 			debug (only) {
 				import Core.Log;
-				Log.PrintSP("Returned from thread");
+				Log.PrintSP("\nReturned from thread");
 			}
 
 			Task.Exit(stack.RAX);

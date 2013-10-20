@@ -36,8 +36,8 @@ public:
 
 
 	bool Init() {
-		Procs = new List!Process();
-		Threads = new List!Thread();
+		Procs = new List!Process(0x200); //FIX ME ;((((
+		Threads = new List!Thread(0x200); //ME TOO PLZZZZ
 
 		Process.Init();
 		currentThread = Threads[0];
@@ -46,6 +46,7 @@ public:
 		Log.Print(" - Initializing idle task");
 		idleThread = new Thread(cast(long function(ulong*))&idle_task);
 		idleThread.rip = cast(ulong)&idle_task;
+		idleThread.state = Thread.State.Running;
 		Log.Result(true);
 
 		Log.Print(" - Initializing signal handler");
@@ -54,11 +55,6 @@ public:
 	}
 
 	private Thread NextThread() {
-		import Core.Log;
-		import System.Convert;
-		Log.Print(" " ~ Convert.ToString(scheldule));
-		Log.Print(" <=> " ~ Convert.ToString(Threads.Count));
-
 		long lst = scheldule++;
 		if (scheldule < Threads.Count) {
 			foreach (x; Threads[scheldule .. $])
@@ -70,7 +66,7 @@ public:
 			if (Threads[scheldule].Valid(Thread.State.Running) && Threads[scheldule] !is idleThread)
 				return Threads[scheldule];
 
-		return Threads[0];
+		return idleThread;
 	}
 
 	void Reap(Thread thread) {
