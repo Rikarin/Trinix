@@ -6,7 +6,7 @@ import System.IO.Stream;
 class ProcessStartInfo {
 private:
 	string[] args;
-	Stream[] fd;
+	public Stream[] fd;
 	string name;
 	string desc;
 
@@ -21,7 +21,7 @@ public:
 	@property string[] Arguments() { return args; }
 
 	@property void FileDescriptors(Stream value) { fd = [value]; }
-	@property void FileDescriptors(Stream[] value) { fd[] = value; }
+	@property void FileDescriptors(Stream[] value) { fd = value; }
 	@property Stream[] FileDescriptors() { return fd; }
 
 	@property void FileName(string value) { name = value; }

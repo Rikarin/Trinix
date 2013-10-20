@@ -62,7 +62,7 @@ public:
 					return x;
 		}
 
-		for (scheldule = 0; scheldule < lst; scheldule++)
+		for (scheldule = 0; scheldule <= lst; scheldule++)
 			if (Threads[scheldule].Valid(Thread.State.Running) && Threads[scheldule] !is idleThread)
 				return Threads[scheldule];
 

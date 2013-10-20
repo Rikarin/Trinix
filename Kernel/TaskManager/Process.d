@@ -21,6 +21,7 @@ private:
 	this() {
 		const CallTable[] callTable = [
 			{IFace.Process.SET_FD,      &SC_SetFD},
+			{IFace.Process.GET_FD,      &SC_GetFD},
 			{IFace.Process.SEND_SIGNAL, &SC_SendSignal},
 			{IFace.Process.SET_HANDLER, &SC_SetHandler},
 		];
@@ -238,5 +239,12 @@ private:
 
 		FSNode fd = cast(FSNode)Res.GetByID(params[0], IFace.FSNode.OBJECT);
 		return RegisterFD(fd);
+	}
+
+	ulong SC_GetFD(ulong[] params) {
+		if (params is null || params.length < 1 || params[0] >= FileDescriptors.Count)
+			return ~0UL;
+
+		return FileDescriptors[params[0]].ResID();
 	}
 }

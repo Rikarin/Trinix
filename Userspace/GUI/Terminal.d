@@ -17,7 +17,20 @@ class Terminal {
 
 		auto startInfo = new ProcessStartInfo();
 		startInfo.ThreadEntry = &test;
+		startInfo.FileDescriptors = [master, slave, slave];
 		Process.Start(startInfo);
+
+
+		auto o = new FileStream("/dev/pajpa");
+		o.Write(cast(byte[])"Test from Terminal!    ", 0);
+
+		byte[1] bb;
+		while (true) {
+			master.Read(bb, 0);
+			o.Write(bb, 0);
+		}
+
+
 		return 0;
 	}
 }
@@ -31,16 +44,13 @@ long construct(ulong* pointer) {
 
 //new process
 long test(ulong* pnt) {
-	ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [0x123]);
-	return 0;
-}
+	ulong curproc = ResourceCaller.StaticCall(IFace.Process.OBJECT, [IFace.Process.CURRENT]);
+	auto res = new ResourceCaller(curproc, IFace.Process.OBJECT);
 
-long test2(ulong* pnt) {
-	ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [0x456]);
-	return 0;
-}
+	auto stdin = new FileStream(res.Call(IFace.Process.GET_FD, [0]));
+	auto stdout = new FileStream(res.Call(IFace.Process.GET_FD, [1]));
+	auto stderr = new FileStream(res.Call(IFace.Process.GET_FD, [2]));
 
-long test3(ulong* pnt) {
-	ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [0x789]);
+	stdout.Write(cast(byte[])"Any text from process to stdout", 0);
 	return 0;
 }

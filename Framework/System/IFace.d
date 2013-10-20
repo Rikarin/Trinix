@@ -38,6 +38,7 @@ class IFace {
 		OBJECT = 0x2,
 
 		SET_FD = 0x1,
+		GET_FD,
 		GET_PID, //todo
 		CURRENT,
 		S_CREATE,
