@@ -48,13 +48,12 @@ public:
 
 	override ulong Read(ulong offset, byte[] data) {
 		ulong collected;
-
+		
 		while (!collected) {
 			mutex.WaitOne();
 			while (UnreadCount() > 0 && collected < data.length) {
 				data[collected++] = buffer[readPtr];
 				IncrementRead();
-				break;
 			}
 
 			mutex.Release();
@@ -68,7 +67,6 @@ public:
 
 	override ulong Write(ulong offset, byte[] data) {
 		ulong written;
-
 		
 		while (written < data.length) {
 			mutex.WaitOne();
@@ -83,7 +81,6 @@ public:
 			Task.Wakeup(waitingQueue);
 			if (written < data.length)
 				Task.CurrentThread.Sleep(waitingQueue);
-
 		}
 
 		return written;

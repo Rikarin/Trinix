@@ -35,6 +35,7 @@ package:
 	Process parent;
 	State state;
 	uint mask;
+	ulong retval;
 
 	string name;
 	string description;
@@ -67,12 +68,11 @@ public:
 	DirectoryNode GetCWD() { return cwd; }
 	void SetCWD(DirectoryNode value) { cwd = value; }
 
+	void UnregisterFD(FSNode fd) { descriptors.Remove(fd); }
 	ulong RegisterFD(FSNode fd) {
 		descriptors.Add(fd);
 		return descriptors.IndexOf(fd);
 	}
-
-	void UnregisterFD(FSNode fd) { descriptors.Remove(fd); }
 
 
 	static Process Init() {
@@ -132,10 +132,8 @@ public:
 		x[0] = cast(ulong)a.ptr;
 		x[1] = a.length;
 
-		Thread t = new Thread(ThreadEntry, cast(void *)x);
+		Thread t = new Thread(cast(void function(ulong*))ThreadEntry, cast(void *)x);
 		t.parent = ret;
-		t.state = Thread.State.Running;
-		t.kernelStack = (new ulong[Thread.STACK_SIZE]).ptr;
 		ret.threads.Add(t);
 
 		Task.Procs.Add(ret);
@@ -158,9 +156,8 @@ public:
 				return Task.CurrentProcess.ResID();
 
 			case IFace.Process.S_CREATE:
-				if (params is null || params.length < 2)
+				if (params.length < 2)
 					return ~0UL;
-
 
 				ProcessStartInfo start = *cast(ProcessStartInfo *)params[1];
 
@@ -194,10 +191,8 @@ public:
 				x[0] = cast(ulong)a.ptr;
 				x[1] = a.length;
 
-				Thread t = new Thread(start.ThreadEntry, cast(void *)x);
+				Thread t = new Thread(cast(void function(ulong*))start.ThreadEntry, cast(void *)x);
 				t.parent = ret;
-				t.state = Thread.State.Running;
-				t.kernelStack = (new ulong[Thread.STACK_SIZE]).ptr;
 				ret.threads.Add(t);
 
 				Task.Procs.Add(ret);

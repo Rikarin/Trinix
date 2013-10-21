@@ -4,8 +4,9 @@ import System.IFace;
 import System.ResourceCaller;
 
 import System.IO.FileStream;
-import System.Diagnostics.ProcessStartInfo;
+import System.Threading.Thread;
 import System.Diagnostics.Process;
+import System.Diagnostics.ProcessStartInfo;
 
 
 class Terminal {
@@ -15,23 +16,30 @@ class Terminal {
 		auto master = new FileStream(m);
 		auto slave = new FileStream(s);
 
+
 		auto startInfo = new ProcessStartInfo();
 		startInfo.ThreadEntry = &test;
 		startInfo.FileDescriptors = [master, slave, slave];
 		Process.Start(startInfo);
 
+		auto thr = new Thread(&HandleKeyboard);
+		thr.Start();
+
 
 		auto o = new FileStream("/dev/pajpa");
 		o.Write(cast(byte[])"Test from Terminal!    ", 0);
 
-		byte[1] bb;
+		byte bb[256];
 		while (true) {
-			master.Read(bb, 0);
-			o.Write(bb, 0);
+			long i = master.Read(bb, 0);
+			o.Write(bb[0 .. i], 0);
 		}
 
-
 		return 0;
+	}
+
+	static void HandleKeyboard() {
+
 	}
 }
 

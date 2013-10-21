@@ -1,18 +1,22 @@
 module TaskManager.Thread;
 
+import Architectures.CPU;
 import Architectures.Core;
 import Architectures.Port;
-import Architectures.CPU;
-import SyscallManager.Resource;
-import MemoryManager.Memory;
-import TaskManager.Process;
+
 import TaskManager.Task;
-import System.Collections.Generic.List;
+import TaskManager.Process;
+
+import MemoryManager.Memory;
+import SyscallManager.Resource;
+
+import System.IFace;
 import System.DateTime;
 import SyscallManager.Syscall;
+import System.Collections.Generic.List;
 
 
-class Thread /*: Resource*/ {
+class Thread : Resource {
 package:
 	/** 0x1000 bytes to ulong */
 	enum STACK_SIZE = 0x1000 / 8;
@@ -20,7 +24,6 @@ package:
 	/** Unique ID for each thread */
 	ulong id;
 	ulong rsp, rbp, rip;
-	long retval;
 	State state;
 	Process parent;
 
@@ -32,7 +35,7 @@ package:
 		ubyte irq;
 	}
 
-	this() { /*super(0, null);*/ }
+	this() { super(0, null); }
 
 
 public:
@@ -46,22 +49,18 @@ public:
 	}
 
 	@property ulong ID() { return id; }
-	@property long ReturnValue() { return retval; }
 
-	this(long function(ulong*) ThreadEntry, void* data = null) {
-		//super(0, null);
-		
-		parent = Task.CurrentProcess;
-		parent.threads.Add(this);
+	this(void function(ulong*) ThreadEntry, void* data = null) {
+		super(0, null);
 
+		Task.CurrentProcess.threads.Add(this);
 		kernelStack  = (new ulong[STACK_SIZE]).ptr;
 		syscallStack = (new ulong[STACK_SIZE]).ptr;
 		userStack    = (new ulong[STACK_SIZE]).ptr; //process.heap.alloc..;
-		state = State.Starting;
+		state        = State.Running;
 
 		//Set user stack
 		ulong* ustack = userStack + STACK_SIZE;
-		ustack--;
 		*ustack = ThreadReturn;
 
 		//Set kernel stack
@@ -113,14 +112,14 @@ public:
 	}
 
 	bool Valid(State value) {
-		if (state == value && parent.state != Process.State.Stopped)
+		if (state == value)// && parent.state != Process.State.Stopped
 			return true;
 		
 		return false;
 	}
 
 	void SetKernelStack() {
-		TSS.Table.RSP0 = kernelStack;
+		TSS.Table.RSP0 = kernelStack + STACK_SIZE - 0x100;
 
 		Port.SwapGS();
 		Port.WriteMSR(Syscall.Registers.IA32_GS_BASE, cast(ulong)syscallStack);
@@ -143,5 +142,26 @@ public:
 
 
 //Syscalls
-	//override bool Accesible() { return true; }
+	override bool Accessible() { return true; }
+
+	ulong SCall(ulong[] params) {
+		if (params is null || !params.length)
+			return ~0UL;
+
+		switch (params[0]) {
+			case IFace.Thread.S_CREATE:
+				if (params.length < 2)
+					return ~0UL;
+				import Core.Log;
+				Log.Print("ttttt");
+				new Thread(cast(void function(ulong *))params[1]);
+
+				//return (new Thread(cast(void function(ulong *))params[1])).ResID();
+				break;
+
+			default:
+		}
+
+		return ~0UL;
+	}
 }

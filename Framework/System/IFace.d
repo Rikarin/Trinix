@@ -45,6 +45,12 @@ class IFace {
 		SEND_SIGNAL,
 		SET_HANDLER
 	}
+
+	enum Thread : ulong {
+		OBJECT = 0x3,
+
+		S_CREATE = 0x1
+	}
 }
 
 /*

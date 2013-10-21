@@ -16,7 +16,7 @@ private:
 		ulong function(ulong[] params) CallBack;
 	}
 
-	__gshared StaticCallTable[2] staticCalls;
+	__gshared StaticCallTable[3] staticCalls;
 	__gshared List!Resource resources;
 
 
@@ -37,10 +37,13 @@ public:
 		resources.Add(new NullRes()); //mask index 0
 		
 		import TaskManager.Process; //TODO FIX THIS FUCKIN HACK
+		import TaskManager.Thread; //THIS TOO
 		StaticCallTable aa = {IFace.FSNode.OBJECT, &FSNode.SCall};
 		staticCalls[0] = aa;
 		StaticCallTable ab = {IFace.Process.OBJECT, &Process.SCall};
 		staticCalls[1] = ab;
+		StaticCallTable ac = {IFace.Thread.OBJECT, &Thread.SCall};
+		staticCalls[2] = ac;
 
 		return true;
 	}

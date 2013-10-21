@@ -76,7 +76,7 @@ extern(C) void StartSystem() {
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
-	//new PS2Keyboard();
+	new PS2Keyboard();
 	Log.Result(true);
 
 	Log.Print("Booting complete, starting init process");
@@ -92,12 +92,8 @@ extern(C) void StartSystem() {
 	PipeDev pajpa = new PipeDev(0x1000, "pajpa");
 	DeviceManager.DevFS.AddNode(pajpa);
 
-
 	import TaskManager.Signal;
 	Task.CurrentProcess.Signals[SigNum.SIGSEGV] = cast(void function())&pagefaultCallBack;
-
-	//auto thr = new Thread(cast(void function())&testthr);
-	//thr.Start();
 
 	//static import Userspace.Init;
 	static import Userspace.GUI.Terminal;
@@ -106,11 +102,10 @@ extern(C) void StartSystem() {
 	//while (thr.ReturnValue != 0x456) {}
 	//while (true) Log.Print("x");
 
-	byte[] tmp = new byte[1];
+	byte tmp[256];
 	while (true) {
-		pajpa.Read(0, tmp);
-		Log.Print("" ~ tmp[0]);
-		tmp[0] = 0;
+		long i = pajpa.Read(0, tmp);
+		Log.Print(cast(string)tmp[0 .. i]);
 	}
 
 	while (true) {}
@@ -125,22 +120,3 @@ extern(C) void pagefaultCallBack() {
 	while (true) {}
 	return;
 }
-
-
-
-
-/*
-import System.IO.DirectoryInfo;
-
-extern(C) void testthr() {
-	auto di = new DirectoryInfo("/dev/pajpa");
-	auto aa = new nicetry();
-
-	//if (!di.Exists)
-	//	di.Create();
-
-	aa.write(0, cast(byte[])"Adresa pajpy je: ");
-	aa.write(0, cast(byte[])di.FullName);
-
-	//return 0x456;
-}*/

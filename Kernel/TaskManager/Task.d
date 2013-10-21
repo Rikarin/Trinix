@@ -44,7 +44,7 @@ public:
 		Log.Result(true);
 
 		Log.Print(" - Initializing idle task");
-		idleThread = new Thread(cast(long function(ulong*))&idle_task);
+		idleThread = new Thread(cast(void function(ulong*))&idle_task);
 		idleThread.rip = cast(ulong)&idle_task;
 		idleThread.state = Thread.State.Running;
 		Log.Result(true);
@@ -157,7 +157,8 @@ public:
 	}
 
 	void Exit(long retval) {
-		CurrentThread.retval = retval;
+		if (CurrentThread == CurrentProcess.threads[0])
+			CurrentProcess.retval = retval;
 		CurrentThread.state = Thread.State.Zombie;
 		Switch();
 	}

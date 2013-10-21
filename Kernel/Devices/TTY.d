@@ -4,6 +4,7 @@ import System.Collections.Generic.Queue;
 import VFSManager.CharNode;
 import TaskManager.Process;
 import System.Termios;
+import System.Threading.Mutex;
 
 
 class TTY {
@@ -157,6 +158,8 @@ public:
 
 class PTYDev : CharNode {
 	TTY tty;
+	Mutex mutex;
+
 
 	@property override ulong Length() {
 		return tty.outQueue.Count;
@@ -166,14 +169,22 @@ class PTYDev : CharNode {
 	this(TTY tty, string name = "pty") {
 		super(name);
 		this.tty = tty;
+
+		mutex = new Mutex();
 	}
 
 
 	override ulong Read(ulong offset, byte[] data) {
-		foreach (ref x; data)
-			x = tty.outQueue.Dequeue();
+		ulong collected;
 
-		return data.length;
+		while (!collected) {
+			mutex.WaitOne();
+			while (tty.outQueue.Count > 0 && collected < data.length)
+				data[collected++] = tty.outQueue.Dequeue();
+			mutex.Release();
+		}
+
+		return collected;
 	}
 
 	override ulong Write(ulong offset, byte[] data) {
