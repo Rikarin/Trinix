@@ -23,7 +23,7 @@ class Terminal {
 		Process.Start(startInfo);
 
 		auto thr = new Thread(&HandleKeyboard);
-		thr.Start();
+		//thr.Start(); todo
 
 
 		auto o = new FileStream("/dev/pajpa");

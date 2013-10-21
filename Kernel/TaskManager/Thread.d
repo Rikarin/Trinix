@@ -154,7 +154,7 @@ public:
 					return ~0UL;
 				import Core.Log;
 				Log.Print("ttttt");
-				new Thread(cast(void function(ulong *))params[1]);
+				new Thread(cast(void function(ulong *))0);
 
 				//return (new Thread(cast(void function(ulong *))params[1])).ResID();
 				break;

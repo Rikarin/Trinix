@@ -1,17 +1,20 @@
 module TaskManager.Process;
 
+import Core.DeviceManager;
+import Architectures.Paging;
+
 import VFSManager.VFS;
 import VFSManager.FSNode;
 import VFSManager.DirectoryNode;
-import SyscallManager.Resource;
+
 import TaskManager.Task;
 import TaskManager.Thread;
 import TaskManager.Signal;
-import Architectures.Paging;
-import Core.DeviceManager;
-import SyscallManager.Res;
-import System.IFace;
 
+import SyscallManager.Res;
+import SyscallManager.Resource;
+
+import System.IFace;
 import System.Collections.Generic.List;
 import System.Diagnostics.ProcessStartInfo;
 

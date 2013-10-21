@@ -15,6 +15,6 @@ public:
 	}
 
 	void Start() {
-		ResourceCaller.StaticCall(IFace.Thread.OBJECT, [IFace.Thread.S_CREATE, cast(ulong)&entry]);
+		ResourceCaller.StaticCall(IFace.Thread.OBJECT, [IFace.Thread.S_CREATE, cast(ulong)entry]);
 	}
 }
