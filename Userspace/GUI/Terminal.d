@@ -39,7 +39,9 @@ class Terminal {
 	}
 
 	static void HandleKeyboard() {
-		//while (true) { }
+		while (true) {
+			
+		}
 	}
 }
 

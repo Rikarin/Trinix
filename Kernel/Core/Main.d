@@ -96,11 +96,9 @@ extern(C) void StartSystem() {
 	Task.CurrentProcess.Signals[SigNum.SIGSEGV] = cast(void function())&pagefaultCallBack;
 
 	//static import Userspace.Init;
-	static import Userspace.GUI.Terminal;
-	Process.CreateProcess(cast(void function())&Userspace.GUI.Terminal.construct, ["/System/Bin/Terminal", "--single", "--nothing"]);
+	//static import Userspace.GUI.Terminal;
+	//Process.CreateProcess(cast(void function())&Userspace.GUI.Terminal.construct, ["/System/Bin/Terminal", "--single", "--nothing"]);
 
-	//while (thr.ReturnValue != 0x456) {}
-	//while (true) Log.Print("x");
 
 	byte tmp[256];
 	while (true) {
