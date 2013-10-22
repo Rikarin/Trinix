@@ -50,10 +50,11 @@ public:
 
 	@property ulong ID() { return id; }
 
-	this(void function(ulong*) ThreadEntry, void* data = null) {
+	this(void function(ulong*) ThreadEntry, void* data = null, Process parent = Task.CurrentProcess) {
 		super(0, null);
 
-		Task.CurrentProcess.threads.Add(this);
+		parent.threads.Add(this);
+		this.parent  = parent;
 		kernelStack  = (new ulong[STACK_SIZE]).ptr;
 		syscallStack = (new ulong[STACK_SIZE]).ptr;
 		userStack    = (new ulong[STACK_SIZE]).ptr; //process.heap.alloc..;
@@ -119,7 +120,7 @@ public:
 	}
 
 	void SetKernelStack() {
-		TSS.Table.RSP0 = kernelStack + STACK_SIZE - 0x100;
+		TSS.Table.RSP0 = kernelStack + STACK_SIZE;
 
 		Port.SwapGS();
 		Port.WriteMSR(Syscall.Registers.IA32_GS_BASE, cast(ulong)syscallStack);
@@ -152,11 +153,8 @@ public:
 			case IFace.Thread.S_CREATE:
 				if (params.length < 2)
 					return ~0UL;
-				import Core.Log;
-				Log.Print("ttttt");
-				new Thread(cast(void function(ulong *))0);
-
-				//return (new Thread(cast(void function(ulong *))params[1])).ResID();
+				
+				return (new Thread(cast(void function(ulong *))params[1])).ResID();
 				break;
 
 			default:

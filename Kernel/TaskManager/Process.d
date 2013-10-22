@@ -135,10 +135,7 @@ public:
 		x[0] = cast(ulong)a.ptr;
 		x[1] = a.length;
 
-		Thread t = new Thread(cast(void function(ulong*))ThreadEntry, cast(void *)x);
-		t.parent = ret;
-		ret.threads.Add(t);
-
+		Thread t = new Thread(cast(void function(ulong*))ThreadEntry, cast(void *)x, ret);
 		Task.Procs.Add(ret);
 		return ret;
 	}
@@ -194,10 +191,7 @@ public:
 				x[0] = cast(ulong)a.ptr;
 				x[1] = a.length;
 
-				Thread t = new Thread(cast(void function(ulong*))start.ThreadEntry, cast(void *)x);
-				t.parent = ret;
-				ret.threads.Add(t);
-
+				Thread t = new Thread(cast(void function(ulong*))start.ThreadEntry, cast(void *)x, ret);
 				Task.Procs.Add(ret);
 				return ret.ResID();
 				break;

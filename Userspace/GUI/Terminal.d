@@ -23,7 +23,7 @@ class Terminal {
 		Process.Start(startInfo);
 
 		auto thr = new Thread(&HandleKeyboard);
-		//thr.Start(); todo
+		thr.Start();
 
 
 		auto o = new FileStream("/dev/pajpa");
@@ -39,7 +39,7 @@ class Terminal {
 	}
 
 	static void HandleKeyboard() {
-
+		//while (true) { }
 	}
 }
 
