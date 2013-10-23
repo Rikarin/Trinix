@@ -46,10 +46,18 @@ class Terminal {
 }
 
 
+//      /\_/\
+//     >(^.^)<
+//     (")(")
+//      |  |
+//      |  |
+//      |  |
 long construct(ulong* pointer) {
 	string[] args = (cast(string *)pointer[0])[0 .. pointer[1]];
 	return Terminal.Main(args);
-}
+}//     |  |
+//     (")(")
+//        $
 
 
 //new process

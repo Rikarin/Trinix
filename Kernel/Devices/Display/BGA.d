@@ -4,7 +4,8 @@ import Architectures.Port;
 
 
 class BGA {
-	static void Setup(short resX, short resY) {
+	static void Init(short resX, short resY) {
+		Port.Cli();
 		Port.Write!short(0x1CE, 0x00);
 		
 		short prt = Port.Read!short(0x1CF);
@@ -36,5 +37,7 @@ class BGA {
 
 		Port.Write!short(0x1CE, 0x04);
 		Port.Write!short(0x1CF, 0x41);
+
+		Port.Sti();
 	}
 }

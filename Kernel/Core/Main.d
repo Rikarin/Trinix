@@ -19,9 +19,9 @@ import SyscallManager.Res;
 import SyscallManager.Syscall;
 
 import Devices.Timer;
+import Devices.Display.BGA;
 import Devices.Mouse.PS2Mouse;
 import Devices.Keyboard.PS2Keyboard;
-import Devices.Display.VGATextOutput;
 
 /+
 Pipe dead
@@ -81,11 +81,22 @@ extern(C) void StartSystem() {
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 mouse driver");
-	new PS2Mouse();
+	//new PS2Mouse();
+	Log.Result(true);
+
+	Log.Print("Setup BGA driver 800x600");
+	BGA.Init(800, 600);
 	Log.Result(true);
 
 	Log.Print("Booting complete, starting init process");
 	Log.Result(false);
+
+
+	Paging.KernelPaging.MapRegion(cast(PhysicalAddress)0xE0000000, cast(VirtualAddress)0xE0000000, 0xFFFFFFFF);
+	uint* xx = cast(uint *)0xE0000000;
+
+	for (int i = 0; i < 0xFFFFF; i++)
+		xx[i] = 0xFFFF00;
 
 
 	import FileSystem.PipeDev;
@@ -95,7 +106,7 @@ extern(C) void StartSystem() {
 	DeviceManager.DevFS.AddNode(pajpa);
 
 	import TaskManager.Signal;
-	Task.CurrentProcess.Signals[SigNum.SIGSEGV] = cast(void function())&pagefaultCallBack;
+	//Task.CurrentProcess.Signals[SigNum.SIGSEGV] = cast(void function())&pagefaultCallBack;
 
 	//static import Userspace.Init;
 	//static import Userspace.GUI.Terminal;
