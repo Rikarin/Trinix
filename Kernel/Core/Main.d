@@ -19,6 +19,7 @@ import SyscallManager.Res;
 import SyscallManager.Syscall;
 
 import Devices.Timer;
+import Devices.Mouse.PS2Mouse;
 import Devices.Keyboard.PS2Keyboard;
 import Devices.Display.VGATextOutput;
 
@@ -79,14 +80,15 @@ extern(C) void StartSystem() {
 	new PS2Keyboard();
 	Log.Result(true);
 
+	Log.Print("Initializing PS/2 mouse driver");
+	new PS2Mouse();
+	Log.Result(true);
+
 	Log.Print("Booting complete, starting init process");
 	Log.Result(false);
 
 
-	import System.Convert;
 	import FileSystem.PipeDev;
-	import VFSManager.PipeNode;
-	import TaskManager.Thread;
 	import TaskManager.Process;
 
 	PipeDev pajpa = new PipeDev(0x1000, "pajpa");

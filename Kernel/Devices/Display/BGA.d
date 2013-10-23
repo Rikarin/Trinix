@@ -8,8 +8,8 @@ class BGA {
 		Port.Write!short(0x1CE, 0x00);
 		
 		short prt = Port.Read!short(0x1CF);
-		if (prt < 0xB0C0 || i > 0xB0C6)
-			return;
+		///if (prt < 0xB0C0 || prt > 0xB0C6)
+//			return;
 
 		Port.Write!short(0x1CF, 0xB0C4);
 		prt = Port.Read!short(0x1CF);

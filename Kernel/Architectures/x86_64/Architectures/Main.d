@@ -19,9 +19,6 @@ static:
 		Memory.Length = cast(ulong)LinkerScript.EndKernel() - cast(ulong)LinkerScript.KernelVMA() + 0x1000;
 		Memory.VirtualStart = cast(ubyte *)LinkerScript.KernelVMA();
 
-		Info.NumIOAPICs = 0;
-		Info.NumLAPICs = 0;
-		
 		PageAllocator.Init();
 		Log.Result(true);
 

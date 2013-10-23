@@ -59,7 +59,7 @@ static:
 		idtBase.Limit = (InterruptGateDescriptor.sizeof * entries.length) - 1;
 		idtBase.Base = cast(ulong)entries.ptr;
 		
-		mixin(GenerateIDT!40);
+		mixin(GenerateIDT!50);
 		
 		SetSystemGate(3, &isr3, StackType.Debug);
 		//SetInterruptGate(8, &isrIgnore);
@@ -164,7 +164,7 @@ private:
 	mixin(GenerateISR!(12, false));
 	mixin(GenerateISR!(13, false));
 	mixin(GenerateISR!(14, false));
-	mixin(GenerateISRs!(15, 39));
+	mixin(GenerateISRs!(15, 49));
 	
 	void Dispatch(InterruptStack* stack) {
 		debug (only) {

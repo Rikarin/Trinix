@@ -34,7 +34,7 @@ private:
 
 	void Wait(byte type) {
 	    foreach (i; 0 .. 100000) {
-	        if ((Port.Read!byte(Bits.STATUS) & (type ? Bits.BBIT : Bits.ABIT)) == (type ? 1 : 0))
+	        if ((Port.Read!byte(Bits.STATUS) & (type ? Bits.ABIT : Bits.BBIT)) == (type ? 0 : 1))
 	            return;
 	    }
 	}
@@ -70,8 +70,10 @@ public:
 		Read();
 		Port.Sti();
 
+		PIC.EOI(12);
 		LocalAPIC.EOI();
 		IOAPIC.UnmaskIRQ(12, 0);
+		PIC.EOI(12);
 		LocalAPIC.EOI();
 
 		pipe = new PipeDev(0x1C00, "mouse");
@@ -118,11 +120,7 @@ public:
 			}
 		} while (status & Bits.BBIT);
 
-
-		import Core.Log;
-		Log.PrintSP("mouse");
-
-		//PIC.EOI(12);
-		//LocalAPIC.EOI();
+		PIC.EOI(12);
+		LocalAPIC.EOI();
 	}
 }
