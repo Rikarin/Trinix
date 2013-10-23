@@ -51,7 +51,7 @@ OBJS = $(patsubst %,$(OBJ_DIR)/%,$(_SRC:=.o))
 #############
 DFLAGS = -c -O -m64 -release -property -Idruntime/import -IKernel -IFramework -IKernel/Architectures/x86_64 -debug=only
 CFLAGS = -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -c -g
-LDFLAGS = -T Kernel/Architectures/x86_64/Linker.ld -Map Linker.map
+LDFLAGS = -o Disk/TrinityOS-Kernel -T Kernel/Architectures/x86_64/Linker.ld -Map Linker.map
 ASFLAGS = -f elf64
 
 
@@ -85,7 +85,7 @@ iso: TrinityOS.iso
 Disk/TrinityOS-Kernel: $(OBJS)
 	@echo $$(($$(cat buildnum) + 1)) > buildnum
 	@echo "Build number:" $$(cat buildnum)
-	@ld $(LDFLAGS) -o Disk/TrinityOS-Kernel $(OBJS) druntime/lib/libdruntime-linux64.a
+	@ld $(LDFLAGS) $(OBJS) druntime/lib/libdruntime-linux64.a
 
 
 
