@@ -73,25 +73,25 @@ public:
 		}
 	}
 
-	bool Read(ulong offset, byte[] data) {
+	ulong Read(ulong offset, byte[] data) {
 		if (data.length <= dev.BlockSize()) {
 			if (GetCache(offset, data))
-				return true;
+				return 0;
 
 			if (!dev.Read(offset, data))
-				return false;
+				return 0;
 
 			SetCache(offset, data);
-			return true;
+			return data.length;
 		} else
 			return dev.Read(offset, data);
 	}
 
-	bool Write(ulong offset, byte[] data) {
+	ulong Write(ulong offset, byte[] data) {
 		if (data.length <= dev.BlockSize()) {
 			if (!SetCache(offset, data, true))
 				return dev.Write(offset, data);
-			return true;
+			return data.length;
 		} else
 			return dev.Write(offset, data);
 	}

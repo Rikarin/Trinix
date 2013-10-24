@@ -19,7 +19,7 @@ class Terminal {
 
 		auto startInfo = new ProcessStartInfo();
 		startInfo.ThreadEntry = &test;
-		startInfo.FileDescriptors = [master, slave, slave];
+		startInfo.FileDescriptors = [slave, slave, slave];
 		Process.Start(startInfo);
 
 		auto thr = new Thread(&HandleKeyboard);
@@ -61,11 +61,11 @@ long construct(ulong* pointer) {
 
 
 //new process
-long test(ulong* pnt) {
+long test(ulong*) {
 	ulong curproc = ResourceCaller.StaticCall(IFace.Process.OBJECT, [IFace.Process.CURRENT]);
 	auto res = new ResourceCaller(curproc, IFace.Process.OBJECT);
 
-	auto stdin = new FileStream(res.Call(IFace.Process.GET_FD, [0]));
+	auto stdin  = new FileStream(res.Call(IFace.Process.GET_FD, [0]));
 	auto stdout = new FileStream(res.Call(IFace.Process.GET_FD, [1]));
 	auto stderr = new FileStream(res.Call(IFace.Process.GET_FD, [2]));
 

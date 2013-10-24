@@ -28,11 +28,11 @@ public:
 		this.count = count;
 	}
 
-	bool Read(ulong offset, byte[] data) {
+	ulong Read(ulong offset, byte[] data) {
 		return cache.Read(offset + this.start, data);
 	}
 
-	bool Write(ulong offset, byte[] data) {
+	ulong Write(ulong offset, byte[] data) {
 		return cache.Write(offset + this.start, data);
 	}
 }
