@@ -92,6 +92,9 @@ extern(C) void StartSystem() {
 	Log.Result(false);
 
 
+	import Devices.PCI.PCIDev;
+	PCIDev.ScanDevices();
+
 /*	Paging.KernelPaging.MapRegion(cast(PhysicalAddress)0xE0000000, cast(VirtualAddress)0xE0000000, 0xFFFFFFFF);
 	uint* xx = cast(uint *)0xE0000000;
 

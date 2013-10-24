@@ -11,7 +11,8 @@ enum DeviceType {
 	System,
 	Keyboard,
 	Mouse,
-	Display
+	Display,
+	PCI
 }
 
 struct DeviceInfo {

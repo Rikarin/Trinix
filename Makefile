@@ -16,6 +16,7 @@ _SRC += $(wildcard Kernel/Devices/Keyboard/*.[d|c|s])
 _SRC += $(wildcard Kernel/Devices/Mouse/*.[d|c|s])
 _SRC += $(wildcard Kernel/Devices/Display/*.[d|c|s])
 _SRC += $(wildcard Kernel/Devices/Port/*.[d|c|s])
+_SRC += $(wildcard Kernel/Devices/PCI/*.[d|c|s])
 
 _SRC += $(wildcard Kernel/Core/*.[d|c|s])
 _SRC += $(wildcard Kernel/Resources/Keymaps/*.[d|c|s])

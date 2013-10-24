@@ -97,10 +97,10 @@ private:
 	align(1):
 		ushort TargetLo;
 		ushort Segment;
-		ushort Flags;
+		private ushort Flags;
 		ushort TargetMid;
 		uint   TargetHi;
-		uint   Reserved;
+		private uint   reserved;
 
 		mixin(Bitfield!(Flags, "ist", 3, "Zero0", 5, "Type", 4, "Zero1", 1, "dpl", 2, "p", 1));
 	}
