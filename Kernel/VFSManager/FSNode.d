@@ -6,6 +6,7 @@ import VFSManager.FileSystemProto;
 import VFSManager.DirectoryNode;
 import System.IFace;
 import System.DateTime;
+import System.String;
 
 
 enum FSType : ubyte {
@@ -170,6 +171,20 @@ private:
 				return ret is null ? 0 : ret.ResID();
 				break;
 			case IFace.FSNode.SMKPIPE:
+				if (params.length > 1) {
+					string s = (*cast(string *)params[1]);
+					string name = s[String.LastIndexOf(s, '/') + 1 .. $];
+					string path = s[0 .. String.LastIndexOf(s, '/')];
+
+					auto dir = VFS.Find(path);
+					if (dir is null)
+						return 0;
+
+					auto ret = new PipeDev(0x2000, name);
+					(cast(DirectoryNode)dir).AddNode(ret);
+					return ret.ResID();
+				}
+
 				return (new PipeDev(0x2000)).ResID();
 				break;
 			case IFace.FSNode.CREATETTY:

@@ -2,7 +2,7 @@ module Userspace.Libs.Graphics;
 
 
 class Graphics {
-private:
+public:
 	ushort width;
 	ushort height;
 	ushort depth;
@@ -16,13 +16,17 @@ public:
 		height     = 600;
 		depth      = 4; //32 / 8
 
-		ulong size = width * height;
-		if (ownBuffer) {
-			buffer     = (cast(byte *)0xFE000000)[0 .. size];
+		ulong size = width * height * depth;
+		if (ownBuffer) { //prerobit. Toto sa pouziva iba v kompozitore
+			buffer     = (cast(byte *)0xE0000000)[0 .. size];
 			backBuffer = buffer;
 		} else {
-			buffer     = new byte[size * int.sizeof];
-			backBuffer = new byte[size * int.sizeof];
+			buffer     = new byte[size];
+			backBuffer = new byte[size];
 		}
+	}
+
+	ref uint Pixel(uint x, uint y) {
+		return (cast(uint *)buffer)[width * y + x];
 	}
 }

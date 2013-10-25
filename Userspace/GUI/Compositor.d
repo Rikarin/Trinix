@@ -2,23 +2,44 @@ module Userspace.GUI.Compositor;
 
 import Userspace.Libs.Graphics;
 import System.IO.Directory;
+import System.IO.FileStream;
 
+import System.Diagnostics.Process;
+import System.Diagnostics.ProcessStartInfo;
+
+static import Userspace.GUI.GraphicsTest;
 
 class Compositor {
 private:
 	Graphics ctx;
 	Graphics selectCtx;
-
+	FileStream requestPipe;
 
 public:
 	this() {
 		ctx = new Graphics();
 		selectCtx = new Graphics(true);
 
-		auto pipe = Directory.CreatePipe();
-		//init request system
+		requestPipe = Directory.CreatePipe("/dev/compositor");
 
-		while (true) { }
+
+
+		auto startInfo = new ProcessStartInfo();
+		startInfo.ThreadEntry = &Userspace.GUI.GraphicsTest.construct;
+		Process.Start(startInfo);
+
+		while (true) {
+			ProcessRequest();
+		}
+	}
+
+
+
+	private void ProcessRequest() {
+		byte data[5];
+		long i;
+		while (i != data.length)
+			i += requestPipe.Read(data[i .. $], 0);
 	}
 }
 

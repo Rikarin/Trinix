@@ -29,6 +29,7 @@ _SRC += $(wildcard Framework/System/Diagnostics/*.[d|c|s])
 _SRC += $(wildcard Framework/System/Drawing/*.[d|c|s])
 _SRC += $(wildcard Framework/System/IO/*.[d|c|s])
 _SRC += $(wildcard Framework/System/Threading/*.[d|c|s])
+_SRC += $(wildcard Framework/System/Windows/*.[d|c|s])
 
 
 
@@ -97,7 +98,7 @@ Disk/TrinityOS-Kernel: $(OBJS)
 #############
 debug: all TrinityOS.iso
 	@${EMU} -hda TrinityOS.iso -boot c -m 512 -serial /dev/ttyS0 \
-	-vga std -monitor stdio #-smp 8 #-s -S
+	-vga vmware -monitor stdio #-smp 8 #-s -S
 	
 
 

@@ -100,7 +100,6 @@ extern(C) void StartSystem() {
 	//import Devices.ATA.ATAController;
 	//ATAController.Detect();
 
-	
 	//static import Userspace.Init;
 	//static import Userspace.GUI.Terminal;
 	static import Userspace.GUI.Compositor;

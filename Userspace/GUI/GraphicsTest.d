@@ -1,9 +1,12 @@
 module Userspace.GUI.GraphicsTest;
 
+import System.Windows.Window;
 
-class GraphicsTest { //dedit z window triedy
+
+class GraphicsTest : Window {
 	this() {
 
+		while (true) { }
 	}
 }
 
@@ -11,7 +14,7 @@ class GraphicsTest { //dedit z window triedy
 /* Main class for every program */
 class Application {
 	public static long Main(string[] args) {
-	//	new GraphicsTest();
+		new GraphicsTest();
 		return 0;
 	}
 }
