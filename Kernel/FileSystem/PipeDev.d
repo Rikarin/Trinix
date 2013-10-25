@@ -1,4 +1,4 @@
-module Filesystem.PipeDev;
+module FileSystem.PipeDev;
 
 import VFSManager.PipeNode;
 import VFSManager.DirectoryNode;

@@ -23,6 +23,9 @@ import Devices.Display.BGA;
 import Devices.Mouse.PS2Mouse;
 import Devices.Keyboard.PS2Keyboard;
 
+import TaskManager.Process;
+
+
 /+
 Pipe dead
 paging - kopirovanie stranok pri vytvoreni noveho procesu
@@ -91,50 +94,21 @@ extern(C) void StartSystem() {
 	Log.Print("Booting complete, starting init process");
 	Log.Result(false);
 
-
 	//import Devices.PCI.PCIDev;
 	//PCIDev.ScanDevices();
 
 	//import Devices.ATA.ATAController;
 	//ATAController.Detect();
 
-	Paging.KernelPaging.MapRegion(cast(PhysicalAddress)0xFE000000, cast(VirtualAddress)0xFE000000, 0xFF000000);
 	
-	uint* xx = cast(uint *)0xFE000000;
-	for (int i = 0; i < 800 * 600; i++)
-		xx[i] = i;
-
-
-
-	import FileSystem.PipeDev;
-	import TaskManager.Process;
-
-	PipeDev pajpa = new PipeDev(0x1000, "pajpa");
-	DeviceManager.DevFS.AddNode(pajpa);
-
-	import TaskManager.Signal;
-	//Task.CurrentProcess.Signals[SigNum.SIGSEGV] = cast(void function())&pagefaultCallBack;
-
 	//static import Userspace.Init;
 	//static import Userspace.GUI.Terminal;
-	//Process.CreateProcess(cast(void function())&Userspace.GUI.Terminal.construct, ["/System/Bin/Terminal", "--single", "--nothing"]);
-
-
-	byte tmp[256];
-	while (true) {
-		long i = pajpa.Read(0, tmp);
-		Log.Print(cast(string)tmp[0 .. i]);
-	}
+	static import Userspace.GUI.Compositor;
+	Process.CreateProcess(cast(void function())&Userspace.GUI.Compositor.construct, ["/System/Bin/Compositor", "--single", "--nothing"]);
 
 	while (true) {}
 }
 
 extern(C) void apEntry() {
 	while (true) { }
-}
-
-extern(C) void pagefaultCallBack() {
-	Log.Print("page fault");
-	while (true) {}
-	return;
 }

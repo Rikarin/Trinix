@@ -37,6 +37,7 @@ _SRC += $(wildcard Framework/System/Threading/*.[d|c|s])
 ######################
 _SRC += $(wildcard Userspace/*.[d|c|s])
 _SRC += $(wildcard Userspace/GUI/*.[d|c|s])
+_SRC += $(wildcard Userspace/Libs/*.[d|c|s])
 
 
 

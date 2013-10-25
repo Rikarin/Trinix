@@ -1,6 +1,8 @@
 module Devices.Display.BGA;
 
 import Architectures.Port;
+import Architectures.Paging;
+import MemoryManager.Memory;
 
 
 class BGA {
@@ -13,10 +15,11 @@ static:
 		Port.Write!short(0x1CE, 0x00);
 		ushort prt = Port.Read!short(0x1CF);
 
-		///if (prt < 0xB0C0 || prt > 0xB0C6)
-//			return;
+		if (prt < 0xB0C0 || prt > 0xB0C6)
+			return;
 
 		SetVideoMode(width, height, 32, true, true);
+		Paging.KernelPaging.MapRegion(cast(PhysicalAddress)0xFE000000, cast(VirtualAddress)0xFE000000, 0xFF000000);
 	}
 
 	void SetVideoMode(short width, short height, short depth, bool frameBuffer, bool clear) {

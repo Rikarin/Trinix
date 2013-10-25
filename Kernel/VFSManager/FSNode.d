@@ -151,6 +151,7 @@ private:
 		import VFSManager.VFS; //TODO: FIXME
 		import TaskManager.Task; //TODO: METOO
 		import Devices.TTY; //TODO FIX ME PLZ
+		import FileSystem.PipeDev; //SHIT HAPPENS
 
 		if (params is null || !params.length)
 			return ~0UL;
@@ -167,6 +168,9 @@ private:
 			case IFace.FSNode.SMKFILE:
 				FSNode ret = VFS.CreateFile(*cast(string *)params[1], params.length >= 3 ? cast(DirectoryNode)Res.GetByID(params[2], IFace.FSNode.OBJECT) : null);
 				return ret is null ? 0 : ret.ResID();
+				break;
+			case IFace.FSNode.SMKPIPE:
+				return (new PipeDev(0x2000)).ResID();
 				break;
 			case IFace.FSNode.CREATETTY:
 				if (params.length < 3)

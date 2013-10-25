@@ -32,6 +32,7 @@ class IFace {
 
 		SMKFILE,
 		CREATETTY,
+		SMKPIPE,
 	}
 
 	enum Process : ulong {
