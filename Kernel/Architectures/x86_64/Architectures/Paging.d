@@ -257,9 +257,10 @@ class Paging {
 		for (ulong i = 0; i < length; i += 0x1000) {
 			auto pt = &GetPage(vAdd + i);
 
-			pt.Present = true;
+			pt.Present   = true;
 			pt.ReadWrite = true;
-			pt.Address = (cast(ulong)pAdd >> 12) + i;
+			pt.User      = true;
+			pt.Address   = ((cast(ulong)pAdd + i) >> 12);
 		}
 		
 		int diff = cast(int)pAdd & 0xFFF;

@@ -4,40 +4,36 @@ import Architectures.Port;
 
 
 class BGA {
-	static void Init(short resX, short resY) {
-		Port.Cli();
+static:
+	enum IOPORT_INDEX = 0x1CE;
+	enum IOPORT_DATA  = 0x1CF;
+
+
+	void Init(short width, short height) {
 		Port.Write!short(0x1CE, 0x00);
-		
-		short prt = Port.Read!short(0x1CF);
+		ushort prt = Port.Read!short(0x1CF);
+
 		///if (prt < 0xB0C0 || prt > 0xB0C6)
 //			return;
 
-		Port.Write!short(0x1CF, 0xB0C4);
-		prt = Port.Read!short(0x1CF);
+		SetVideoMode(width, height, 32, true, true);
+	}
 
-		/** Disable VBE */
-		Port.Write!short(0x1CE, 0x04);
-		Port.Write!short(0x1CF, 0x00);
+	void SetVideoMode(short width, short height, short depth, bool frameBuffer, bool clear) {
+		Write(4, 0);
+		Write(1, width);
+		Write(2, height);
+		Write(3, depth);
+		Write(4, 1 | (frameBuffer ? 0x40 : 0) | (clear ? 0 : 0x80));
+	}
 
-		/** Set X resolution */
-		Port.Write!short(0x1CE, 0x01);
-		Port.Write!short(0x1CF, resX);
+	short Read(short index) {
+		Port.Write!short(IOPORT_INDEX, index);
+		return Port.Read!short(0x1CF);
+	}
 
-		/** Set Y resolution */
-		Port.Write!short(0x1CE, 0x02);
-		Port.Write!short(0x1CF, resY);
-
-		/** Set BPP */
-		Port.Write!short(0x1CE, 0x03);
-		Port.Write!short(0x1CF, 32);
-
-		/** Set Virtual Height */
-		Port.Write!short(0x1CE, 0x07);
-		Port.Write!short(0x1CF, 0x1000);
-
-		Port.Write!short(0x1CE, 0x04);
-		Port.Write!short(0x1CF, 0x41);
-
-		Port.Sti();
+	void Write(short index, short value) {
+		Port.Write!short(IOPORT_INDEX, index);
+		Port.Write!short(IOPORT_DATA, value);
 	}
 }

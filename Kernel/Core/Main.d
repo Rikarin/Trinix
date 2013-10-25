@@ -98,12 +98,13 @@ extern(C) void StartSystem() {
 	//import Devices.ATA.ATAController;
 	//ATAController.Detect();
 
-/*	Paging.KernelPaging.MapRegion(cast(PhysicalAddress)0xE0000000, cast(VirtualAddress)0xE0000000, 0xFFFFFFFF);
-	uint* xx = cast(uint *)0xE0000000;
+	Paging.KernelPaging.MapRegion(cast(PhysicalAddress)0xFE000000, cast(VirtualAddress)0xFE000000, 0xFF000000);
+	
+	uint* xx = cast(uint *)0xFE000000;
+	for (int i = 0; i < 800 * 600; i++)
+		xx[i] = i;
 
-	for (int i = 0; i < 0xFFFFF; i++)
-		xx[i] = 0xFFFF00;
-*/
+
 
 	import FileSystem.PipeDev;
 	import TaskManager.Process;
