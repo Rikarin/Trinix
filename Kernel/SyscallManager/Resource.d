@@ -41,9 +41,9 @@ public:
 		if (!id)
 			return type;
 
-		lock.WaitOne();
+		//lock.WaitOne();
 		ulong ret = DoCall(id, params);
-		lock.Release();
+		//lock.Release();
 		return ret;
 	}
 

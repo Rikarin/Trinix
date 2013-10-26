@@ -19,15 +19,15 @@ protected:
 	ushort Height;
 
 
+public:
 	struct ProcessWindows {
-		Process compositor;
+		Process id;
 		FileStream eventPipe;
 		FileStream commandPipe;
 		List!byte windows;
 	}
 
 
-public:
 	this() {
 		//connect root process
 		if (pwins.windows is null) {
@@ -37,12 +37,11 @@ public:
 			
 			auto curProc      = Process.Current;
 			auto compositor   = new FileStream("/dev/compositor");
-			//compositor.Write(cast(byte[])[curProc.ResID(), pwins.eventPipe.ResID(), pwins.eventPipe.ResID()], 0);
-			compositor.Write(cast(byte[])"hovno vole", 0);
+			compositor.Write(cast(byte[])[curProc.ResID(), pwins.eventPipe.ResID(), pwins.commandPipe.ResID()], 0);
 
-			byte[4] pid;
-		//	pwins.commandPipe.Read(pid, 0);
-		//	pwins.compositor  = new Process(cast(ulong)*pid.ptr);
+			byte[4] id;
+			pwins.commandPipe.Read(id, 0);
+			pwins.id = new Process(cast(ulong)*id.ptr);
 
 			curProc.SetSingalHanlder(SigNum.SIGWINEVENT, &SignalEvent);
 		}

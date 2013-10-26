@@ -7,6 +7,7 @@ import System.IO.FileStream;
 import System.Threading.Thread;
 import System.Diagnostics.Process;
 import System.Diagnostics.ProcessStartInfo;
+import System.Windows.Window;
 
 static import Userspace.GUI.GraphicsTest;
 
@@ -39,13 +40,20 @@ public:
 
 
 	private void ProcessRequest() {
-		byte data[1];
+		byte data[24];
 		long i;
 
-		//while (i != data.length)
+		while (i != data.length)
 			i += requestPipe.Read(data, 0);
 
-		//requestPipe.Write(cast(byte[])[0x132456], 0);
+		Window.ProcessWindows pwin;
+		ulong[3] d       = cast(ulong[])data[0 .. $];
+		pwin.id          = new Process(d[0]);
+		pwin.eventPipe   = new FileStream(d[1]);
+		pwin.commandPipe = new FileStream(d[2]);
+		//pwin.windows   = new List!bte;
+
+		pwin.commandPipe.Write(cast(byte[])[0x132456], 0);
 	}
 
 	private void MouseHandler() {

@@ -50,13 +50,13 @@ public:
 		ulong collected;
 
 		while (!collected) {
-			//mutex.WaitOne();
+			mutex.WaitOne();
 			while (UnreadCount() > 0 && collected < data.length) {
 				data[collected++] = buffer[readPtr];
 				IncrementRead();
 			}
 
-		//	mutex.Release();
+			mutex.Release();
 			Task.Wakeup(waitingQueue);
 			if (!collected)
 				Task.CurrentThread.Sleep(waitingQueue);
@@ -67,10 +67,9 @@ public:
 
 	override ulong Write(ulong offset, byte[] data) {
 		ulong written;
-		return 0;
 		
 		while (written < data.length) {
-			//mutex.WaitOne();
+			mutex.WaitOne();
 			
 			while (FreeSpace() > 0 && written < data.length) {
 				buffer[writePtr] = data[written];
@@ -78,10 +77,10 @@ public:
 				written++;
 			}
 
-		//	mutex.Release();
-		//	Task.Wakeup(waitingQueue);
-		//	if (written < data.length)
-		//		Task.CurrentThread.Sleep(waitingQueue);
+			mutex.Release();
+			Task.Wakeup(waitingQueue);
+			if (written < data.length)
+				Task.CurrentThread.Sleep(waitingQueue);
 		}
 
 		return written;

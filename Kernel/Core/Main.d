@@ -80,7 +80,7 @@ extern(C) void StartSystem() {
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
-	new PS2Keyboard();
+	//new PS2Keyboard();
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 mouse driver");
