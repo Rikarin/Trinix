@@ -8,6 +8,7 @@ import System.Threading.Thread;
 import System.Diagnostics.Process;
 import System.Diagnostics.ProcessStartInfo;
 import System.Windows.Window;
+import System.Collections.Generic.List;
 
 static import Userspace.GUI.GraphicsTest;
 
@@ -16,12 +17,14 @@ private:
 	Graphics ctx;
 	Graphics selectCtx;
 	FileStream requestPipe;
+	List!(Window.ProcessWindows) procWins;
 
 
 public:
 	this() {
 		ctx         = new Graphics();
 		selectCtx   = new Graphics(true);
+		procWins    = new List!(Window.ProcessWindows)();
 		requestPipe = Directory.CreatePipe("/dev/compositor");
 
 		/** Mouse hanlder */
@@ -34,12 +37,13 @@ public:
 
 		while (true) {
 			ProcessRequest();
+			ProcessCommands();
 		}
 	}
 
 
-
-	private void ProcessRequest() {
+private:
+	void ProcessRequest() {
 		byte data[24];
 		long i;
 
@@ -53,10 +57,16 @@ public:
 		pwin.commandPipe = new FileStream(d[2]);
 		//pwin.windows   = new List!bte;
 
-		pwin.commandPipe.Write(cast(byte[])[0x132456], 0);
+		pwin.commandPipe.Write(cast(byte[])[0x132456, 789, 456, 258], 0);
+		procWins.Add(pwin);
 	}
 
-	private void MouseHandler() {
+	void ProcessCommands() {
+
+	}
+
+
+	void MouseHandler() {
 		auto mousePipe = new FileStream("/dev/mouse");
 
 		while (true) {

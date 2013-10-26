@@ -29,6 +29,7 @@ import TaskManager.Process;
 /+
 Pipe dead
 paging - kopirovanie stranok pri vytvoreni noveho procesu
+prerobit fsnode syscall aby miesto jednotlivych volani na konkretne atributy posielalo komplet celu strukturu
 +/
 
 

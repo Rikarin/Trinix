@@ -20,6 +20,38 @@ protected:
 
 
 public:
+	enum Commands {
+		NewWindow,
+		Resize,
+		Destroy,
+		Damage,
+		Redraw,
+		Reorder,
+		SetAlpha
+	}
+
+	enum Events {
+		KeyDown       = 0x10,
+		KeyUp         = 0x11,
+		MouseMove     = 0x20,
+		MouseEnter    = 0x21,
+		MouseLeave    = 0x22,
+		MouseClick    = 0x23,
+		MouseUp       = 0x24,
+		WindowNew     = 0x30,
+		WindowResized = 0x31,
+		WindowsClosed = 0x32,
+		WindowRedrawn = 0x33,
+		WindowsFocus  = 0x34,
+
+		/** Groups */
+		GroupMask     = 0xF0,
+		KeyEvent      = 0x10,
+		MouseEvent    = 0x20,
+		WindowEvent   = 0x30
+	}
+
+
 	struct ProcessWindows {
 		Process id;
 		FileStream eventPipe;
@@ -40,7 +72,7 @@ public:
 			compositor.Write(cast(byte[])[curProc.ResID(), pwins.eventPipe.ResID(), pwins.commandPipe.ResID()], 0);
 
 			byte[4] id;
-			pwins.commandPipe.Read(id, 0);
+			//pwins.commandPipe.Read(id, 0);
 			pwins.id = new Process(cast(ulong)*id.ptr);
 
 			curProc.SetSingalHanlder(SigNum.SIGWINEVENT, &SignalEvent);
