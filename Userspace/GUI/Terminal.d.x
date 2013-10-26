@@ -22,8 +22,8 @@ class Terminal {
 		startInfo.FileDescriptors = [slave, slave, slave];
 		Process.Start(startInfo);
 
-		auto thr = new Thread(&HandleKeyboard);
-		thr.Start();
+		//auto thr = new Thread(&HandleKeyboard);
+		//thr.Start();
 
 
 		auto o = new FileStream("/dev/pajpa");

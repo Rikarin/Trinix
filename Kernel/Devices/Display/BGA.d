@@ -19,7 +19,7 @@ static:
 	//		return;
 
 		SetVideoMode(width, height, 32, true, true);
-		Paging.KernelPaging.MapRegion(cast(PhysicalAddress)0xFD000000, cast(VirtualAddress)0xE0000000, width * height * 4);
+		Paging.KernelPaging.MapRegion(cast(PhysicalAddress)0xFE000000, cast(VirtualAddress)0xE0000000, width * height * 4);
 	}
 
 	void SetVideoMode(short width, short height, short depth, bool frameBuffer, bool clear) {

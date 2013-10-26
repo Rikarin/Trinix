@@ -55,6 +55,11 @@ public:
 	}
 
 	private Thread NextThread() {
+		/*import Core.Log;
+		import System.Convert;
+		Log.PrintSP(" " ~ Convert.ToString(scheldule));
+		Log.PrintSP(" <=> " ~ Convert.ToString(Threads.Count)); */
+
 		long lst = scheldule++;
 		if (scheldule < Threads.Count) {
 			foreach (x; Threads[scheldule .. $])
@@ -145,8 +150,10 @@ public:
 		w8 for any1 call write func who call wakeup func who wakes up all sleeping threads
 	*/
 	void Wakeup(List!Thread queue) {
-	//	foreach (x; queue)
-	//		x.state = Thread.State.Running;
+		foreach (x; queue)
+			x.state = Thread.State.Running;
+
+		queue.Clear();
 	}
 
 	void WakeupSleepers(DateTime time) {

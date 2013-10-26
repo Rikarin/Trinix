@@ -5,6 +5,9 @@ import System.Windows.Window;
 
 class GraphicsTest : Window {
 	this() {
+		Width = 500;
+		Height = 300;
+		FormStyle.RenderDecorationSimple(this);
 
 		while (true) { }
 	}

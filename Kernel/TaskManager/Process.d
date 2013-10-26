@@ -17,6 +17,7 @@ import SyscallManager.Resource;
 import System.IFace;
 import System.Collections.Generic.List;
 import System.Diagnostics.ProcessStartInfo;
+import System.Diagnostics.Process : SigNum;
 
 
 class Process : Resource {

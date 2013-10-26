@@ -18,7 +18,6 @@ private:
 
 public:
 	this() {
-		Port.Cli();
 		ubyte code, status = Port.Read!ubyte(0x64);
 		while ((status & 1) == 1) {
 			Port.Read!ubyte(0x60);
@@ -74,7 +73,6 @@ public:
 			status = Port.Read!ubyte(0x64);
 		}
 		Port.Write!ubyte(0x60, 0xF4);
-		Port.Sti();
 
 		
 		pipe = new PipeDev(128, "keyboard");

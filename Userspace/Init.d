@@ -35,19 +35,3 @@ long construct(ulong* pointer) {
 	string[] args = (cast(string *)pointer[0])[0 .. pointer[1]];
 	return Init.Main(args);
 }
-
-
-/*
-
-ulong curproc = ResourceCaller.StaticCall(IFace.Process.OBJECT, [IFace.Process.CURRENT]);
-auto res = new ResourceCaller(curproc, IFace.Process.OBJECT);
-
-res.Call(IFace.Process.SET_HANDLER, [8, cast(ulong)&signalHandler]);
-res.Call(IFace.Process.SEND_SIGNAL, [8]);
-
-
-void signalHandler() {
-
-}
-
-*/

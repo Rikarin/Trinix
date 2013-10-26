@@ -39,6 +39,8 @@ public:
 		syscall = new ResourceCaller(id, IFace.FSNode.OBJECT);
 	}
 
+	ulong ResID() { return syscall.ResID(); }
+
 	override void Close() {}
 	override void CopyTo(Stream destination) {}
 	override void CopyTo(Stream destination, long bufferSize) {}

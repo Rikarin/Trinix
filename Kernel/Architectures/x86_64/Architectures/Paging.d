@@ -9,6 +9,7 @@ import System.SystemException;
 
 import Architectures.CPU;
 import Architectures.x86_64.Core.IDT;
+import System.Diagnostics.Process : SigNum;
 
 
 alias PageTableEntry!"primary" PTE;

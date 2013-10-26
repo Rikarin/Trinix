@@ -128,8 +128,9 @@ public:
 	}
 
 	void Sleep(List!Thread queue) {
-		//state = State.Sleeping;
-		//queue.Add(this);
+		state = State.Sleeping;
+		queue.Add(this);
+		Task.Switch();
 	}
 
 	void WaitTime(DateTime time) {
