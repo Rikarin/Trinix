@@ -5,6 +5,7 @@ import System.IO.Directory;
 import Userspace.Libs.Graphics;
 import System.Collections.Generic.List;
 import System.Diagnostics.Process;
+import System.Convert;
 
 
 class Window {
@@ -69,11 +70,11 @@ public:
 			
 			auto curProc      = Process.Current;
 			auto compositor   = new FileStream("/dev/compositor");
-			compositor.Write(cast(byte[])[curProc.ResID(), pwins.eventPipe.ResID(), pwins.commandPipe.ResID()], 0);
+			compositor.Write(Convert.ToByteArray([curProc.ResID(), pwins.eventPipe.ResID(), pwins.commandPipe.ResID()]), 0);
 
-			byte[4] id;
-			//pwins.commandPipe.Read(id, 0);
-			pwins.id = new Process(cast(ulong)*id.ptr);
+			byte[8] id;
+			pwins.commandPipe.Read(id, 0);
+			pwins.id = new Process(Convert.ToInt64Array(id)[0]);
 
 			curProc.SetSingalHanlder(SigNum.SIGWINEVENT, &SignalEvent);
 		}

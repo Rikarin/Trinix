@@ -9,6 +9,7 @@ import System.Diagnostics.Process;
 import System.Diagnostics.ProcessStartInfo;
 import System.Windows.Window;
 import System.Collections.Generic.List;
+import System.Convert;
 
 static import Userspace.GUI.GraphicsTest;
 
@@ -51,13 +52,13 @@ private:
 			i += requestPipe.Read(data, 0);
 
 		Window.ProcessWindows pwin;
-		ulong[3] d       = cast(ulong[])data[0 .. $];
+		long[] d         = Convert.ToInt64Array(data);
 		pwin.id          = new Process(d[0]);
 		pwin.eventPipe   = new FileStream(d[1]);
 		pwin.commandPipe = new FileStream(d[2]);
 		//pwin.windows   = new List!bte;
 
-		pwin.commandPipe.Write(cast(byte[])[0x132456, 789, 456, 258], 0);
+		pwin.commandPipe.Write(Convert.ToByteArray([Process.Current.ResID()]), 0);
 		procWins.Add(pwin);
 	}
 
