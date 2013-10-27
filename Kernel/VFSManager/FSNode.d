@@ -7,6 +7,7 @@ import VFSManager.DirectoryNode;
 import System.IFace;
 import System.DateTime;
 import System.String;
+import System.IO.FileStream;
 
 
 enum FSType : ubyte {
@@ -43,24 +44,14 @@ public:
 
 	this() {
 		const CallTable[] callTable = [
-			{IFace.FSNode.TYPE,      &SC_Type},
 			{IFace.FSNode.READ,      &SC_Read},
 			{IFace.FSNode.WRITE,     &SC_Write},
-			{IFace.FSNode.GETUID,    &SC_GetUID},
-			{IFace.FSNode.GETGID,    &SC_GetGID},
 			{IFace.FSNode.SETCWD,    &SC_SetCWD},
 			{IFace.FSNode.REMOVE,    &SC_Remove},
-			{IFace.FSNode.GETPERM,   &SC_GetPerm},
-			{IFace.FSNode.SETPERM,   &SC_SetPerm},
 			{IFace.FSNode.GETPATH,   &SC_GetPath},
-			{IFace.FSNode.GETATIME,  &SC_GetAccessTime},
-			{IFace.FSNode.GETMTIME,  &SC_GetModifyTime},
-			{IFace.FSNode.GETCTIME,  &SC_GetCreateTime},
-			{IFace.FSNode.SETATIME,  &SC_SetAccessTime},
-			{IFace.FSNode.SETMTIME,  &SC_SetModifyTime},
-			{IFace.FSNode.SETCTIME,  &SC_SetCreateTime},
 			{IFace.FSNode.REMOVABLE, &SC_Removable},
-			{IFace.FSNode.GETLENGTH, &SC_GetLength},
+
+			{IFace.FSNode.RSTATS,    &SC_ReadStats},
 		];
 
 		super(IFace.FSNode.OBJECT, callTable);
@@ -209,24 +200,12 @@ private:
 		return ~0UL;
 	}
 
-	ulong SC_Type(ulong[]) {
-		return Type;
-	}
-
 	ulong SC_Read(ulong[] params) {
 		return Read(params[0], *(cast(byte[] *)params[1]));
 	}
 
 	ulong SC_Write(ulong[] params) {
 		return Write(params[0], *(cast(byte[] *)params[1]));
-	}
-
-	ulong SC_GetUID(ulong[]) {
-		return uid;
-	}
-
-	ulong SC_GetGID(ulong[]) {
-		return gid;
 	}
 
 	ulong SC_SetCWD(ulong[]) {
@@ -243,17 +222,6 @@ private:
 		return VFS.Remove(this) ? 1 : 0;
 	}
 
-	ulong SC_GetPerm(ulong[]) {
-			return perms;
-	}
-
-	ulong SC_SetPerm(ulong[] params) {
-		if (!params.length)
-			return 0;
-
-		return SetPermissions(cast(uint)params[0]);
-	}
-
 	ulong SC_GetPath(ulong[] params) {
 		import VFSManager.VFS; //TODO: FIXME
 
@@ -265,44 +233,27 @@ private:
 		return ret.length;
 	}
 
-	ulong SC_GetAccessTime(ulong[]) {
-		return atime.Ticks;
-	}
-
-	ulong SC_GetModifyTime(ulong[]) {
-		return mtime.Ticks;
-	}
-
-	ulong SC_GetCreateTime(ulong[]) {
-		return ctime.Ticks;
-	}
-
-	ulong SC_SetAccessTime(ulong[] params) {
-		if (!params.length)
-			return 0;
-
-		return SetAccessTime(new DateTime(params[0]));
-	}
-
-	ulong SC_SetModifyTime(ulong[] params) {
-		if (!params.length)
-			return 0;
-
-		return SetModifyTime(new DateTime(params[0]));
-	}
-
-	ulong SC_SetCreateTime(ulong[] params) {
-		if (!params.length)
-			return 0;
-
-		return SetCreateTime(new DateTime(params[0]));
-	}
-
 	ulong SC_Removable(ulong[]) {
 		return Removable();
 	}
 
-	ulong SC_GetLength(ulong[]) {
-		return length;
+	ulong SC_WriteStats(ulong[] params) {
+		return 0;
+	}
+
+	ulong SC_ReadStats(ulong[] params) {
+		if (params is null || params.length < 1)
+			return 0;
+
+		auto stats   = cast(FileStream.Stat *)params[0];
+		stats.type   = Type;
+		stats.length = Length;
+		stats.uid    = UID;
+		stats.gid    = GID;
+		stats.ctime  = CreateTime.Ticks;
+		stats.mtime  = ModifyTime.Ticks;
+		stats.atime  = AccessTime.Ticks;
+
+		return 1;
 	}
 }

@@ -113,7 +113,6 @@ public:
 
 
 
-
 private:
 	void SignalEvent() {
 
@@ -131,8 +130,10 @@ private:
 		packet.Top    = top;
 		packet.Width  = width;
 		packet.Height = height;
-	}
 
+		pwins.CommandPipe.Write(cast(byte[])(cast(byte *)&header)[0 .. PacketHeader.sizeof], 0);
+		pwins.CommandPipe.Write(cast(byte[])(cast(byte *)&packet)[0 .. WWindow.sizeof], 0);
+	}
 
 
 

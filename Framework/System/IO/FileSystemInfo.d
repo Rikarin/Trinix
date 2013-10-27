@@ -17,7 +17,7 @@ private:
 
 
 public:
-	@property FileAttributes Attributes() {
+/*	@property FileAttributes Attributes() {
 		if (atribs == cast(FileAttributes)~0UL)
 			atribs = cast(FileAttributes)syscall.Call(IFace.FSNode.GETPERM);
 
@@ -112,5 +112,5 @@ public:
 
 	void Delete() {
 		syscall.Call(IFace.FSNode.REMOVE);
-	}
+	}*/
 }

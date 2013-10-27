@@ -51,6 +51,9 @@ public:
 
 private:
 	void ProcessRequest() {
+		if (!requestPipe.Length)
+			return;
+
 		byte data[24];
 		long i;
 
@@ -69,7 +72,29 @@ private:
 	}
 
 	void ProcessCommands() {
+		foreach (x; procWins) {
+			if (!x.CommandPipe.Length)
+				continue;
 
+			Window.PacketHeader header;
+			Window.WWindow packet;
+
+			x.CommandPipe.Read(cast(byte[])(cast(byte *)&header)[0 .. Window.PacketHeader.sizeof], 0);
+			if (header.Magic != Window.PACKET_MAGIC) {
+				byte[0x256] tresh;
+				x.CommandPipe.Read(tresh, 0);
+				continue;
+			}
+
+			x.CommandPipe.Read(cast(byte[])(cast(byte *)&packet)[0 .. Window.WWindow.sizeof], 0);
+			switch (header.CommandType) {
+				case Window.Commands.NewWindow:
+				
+					break;
+				default:
+					break;
+			}
+		}
 	}
 
 
@@ -77,7 +102,6 @@ private:
 		auto mousePipe = new FileStream("/dev/mouse");
 
 		while (true) {
-
 		}
 	}
 }

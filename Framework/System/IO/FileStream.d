@@ -8,14 +8,36 @@ import System.IFace;
 class FileStream : Stream {
 private:
 	ResourceCaller syscall;
+	Stat stats;
+
+
+	ref Stat ReloadStats() {
+		syscall.Call(IFace.FSNode.RSTATS, [cast(ulong)&stats]);
+		return stats;
+	}
 
 
 public:
+	struct Stat {
+		ulong type;
+		ulong length;
+		ulong uid;
+		ulong gid;
+		ulong atime;
+		ulong ctime;
+		ulong mtime;
+	}
+
+
 	@property override bool CanRead() { return false; }
 	@property override bool CanSeek() { return false; }
 	@property override bool CanTimeout() { return false; }
 	@property override bool CanWrite() { return false; }
-	@property override long Length() { return 0; }
+
+	@property override long Length() {
+		return ReloadStats().length;
+	}
+
 	@property override void Length(long value) {}
 	@property override long Position() { return 0; }
 	@property override long ReadTimeout() { return 0; }

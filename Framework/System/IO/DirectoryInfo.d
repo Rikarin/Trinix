@@ -12,7 +12,7 @@ private:
 	string tmpLink;
 
 public:
-	@property DirectoryInfo Parent() {
+	/*@property DirectoryInfo Parent() {
 		return null;
 	}
 
@@ -70,7 +70,7 @@ public:
 		return null;
 	}*/
 
-	List!FileSystemInfo EnumerateFileSystemInfos() {
+/*	List!FileSystemInfo EnumerateFileSystemInfos() {
 		return null;
-	}
+	}*/
 }
