@@ -23,8 +23,14 @@ private:
 
 public:
 	this() {
-		ctx         = new Graphics();
-		selectCtx   = new Graphics(true);
+		ctx            = new Graphics();
+		ctx.Width      = 800;
+		ctx.Height     = 600;
+		ulong size     = ctx.Width * ctx.Height * ctx.Depth;
+		ctx.Buffer     = (cast(byte *)0xE0000000)[0 .. size];
+		ctx.BackBuffer = new byte[size];
+
+		//selectCtx   = new Graphics(true); todo
 		procWins    = new List!(Window.ProcessWindows)();
 		requestPipe = Directory.CreatePipe("/dev/compositor");
 
@@ -53,12 +59,12 @@ private:
 
 		Window.ProcessWindows pwin;
 		long[] d         = Convert.ToInt64Array(data);
-		pwin.id          = new Process(d[0]);
-		pwin.eventPipe   = new FileStream(d[1]);
-		pwin.commandPipe = new FileStream(d[2]);
+		pwin.ID          = new Process(d[0]);
+		pwin.EventPipe   = new FileStream(d[1]);
+		pwin.CommandPipe = new FileStream(d[2]);
 		//pwin.windows   = new List!bte;
 
-		pwin.commandPipe.Write(Convert.ToByteArray([Process.Current.ResID()]), 0);
+		pwin.CommandPipe.Write(Convert.ToByteArray([Process.Current.ResID()]), 0);
 		procWins.Add(pwin);
 	}
 

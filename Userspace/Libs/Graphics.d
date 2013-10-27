@@ -1,32 +1,44 @@
 module Userspace.Libs.Graphics;
 
+import System.Windows.Window;
+
 
 class Graphics {
 public:
-	ushort width;
-	ushort height;
-	ushort depth;
-	byte[] buffer;
-	byte[] backBuffer;
+	ushort Width;
+	ushort Height;
+	ushort Depth = 4;
+	byte[] Buffer;
+	byte[] BackBuffer;
 
 
 public:
-	this(bool ownBuffer = false) {
-		width      = 800;
-		height     = 600;
-		depth      = 4; //32 / 8
+	this() { }
 
-		ulong size = width * height * depth;
-		if (ownBuffer) { //prerobit. Toto sa pouziva iba v kompozitore
-			buffer     = (cast(byte *)0xE0000000)[0 .. size];
-			backBuffer = buffer;
-		} else {
-			buffer     = new byte[size];
-			backBuffer = new byte[size];
-		}
+	this(Window win) {
+		Width      = win.Width; //add decoration width
+		Height     = win.Height;
+		ulong size = Width * Height * Depth;
+		Buffer     = (cast(byte *)0xE0000000)[0 .. size];//win.Buffer
+		BackBuffer = new byte[size];
+	}
+
+	void Flip() {
+		Buffer[] = BackBuffer[0 .. $];
 	}
 
 	ref uint Pixel(uint x, uint y) {
-		return (cast(uint *)buffer)[width * y + x];
+		return (cast(uint *)BackBuffer)[Width * y + x];
+	}
+
+	void Fill(uint color) {
+		foreach (x; 0 .. Width)
+			foreach (y; 0 .. Height)
+				Pixel(x, y) = color;
 	}
 }
+
+/*
+Buffer     = (cast(byte *)0xE0000000)[0 .. size];
+BackBuffer = buffer;
+*/

@@ -5,11 +5,8 @@ import System.Windows.Window;
 
 class GraphicsTest : Window {
 	this() {
-		Width = 500;
-		Height = 300;
-		FormStyle.RenderDecorationSimple(this);
-
-		while (true) { }
+		Width = 800;
+		Height = 600;
 	}
 }
 
@@ -17,7 +14,10 @@ class GraphicsTest : Window {
 /* Main class for every program */
 class Application {
 	public static long Main(string[] args) {
-		new GraphicsTest();
+		auto window = new GraphicsTest();
+		window.Show();
+
+		while (true) {}
 		return 0;
 	}
 }

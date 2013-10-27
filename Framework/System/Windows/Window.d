@@ -8,7 +8,7 @@ import System.Diagnostics.Process;
 import System.Convert;
 
 
-class Window {
+abstract class Window {
 protected:
 	Graphics ctx;
 	ProcessWindows pwins; //static...
@@ -16,12 +16,16 @@ protected:
 	FileStream eventPipe;
 	FileStream mouseEventPipe;
 
-	ushort Width;
-	ushort Height;
+	public ushort Width, Height;
+	public byte[] Buffer; //shared buffer with compositor
+
+	ulong id; //id of this instance in compositor
 
 
 public:
-	enum Commands {
+	static const PACKET_MAGIC = 0x12345689;
+
+	enum Commands : ubyte {
 		NewWindow,
 		Resize,
 		Destroy,
@@ -31,7 +35,7 @@ public:
 		SetAlpha
 	}
 
-	enum Events {
+	enum Events : ubyte {
 		KeyDown       = 0x10,
 		KeyUp         = 0x11,
 		MouseMove     = 0x20,
@@ -53,36 +57,61 @@ public:
 	}
 
 
+	/** Struktura okien kazdeho procesu jak na strane klienta tak na strane kompozitoru */
 	struct ProcessWindows {
-		Process id;
-		FileStream eventPipe;
-		FileStream commandPipe;
-		List!byte windows;
+		Process ID;
+		FileStream EventPipe;
+		FileStream CommandPipe;
+		List!byte Windows;
+	}
+
+	/** Hlavicka kazdeho packetu pre command alebo enevt */
+	struct PacketHeader {
+		uint Magic;
+		ubyte CommandType;	/* Command or event specifier */
+		ulong PacketSize;	/* Size of the *remaining* packet data */
+	}
+
+	struct WWindow {
+		ulong ID;      /* or none for new window */
+		short Left;    /* X coordinate */
+		short Top;     /* Y coordinate */
+		ushort Width;  /* Width of window or region */
+		ushort Height; /* Height of window or region */
+	//	ubyte Command; /* The command (duplicated) */
 	}
 
 
 	this() {
 		//connect root process
-		if (pwins.windows is null) {
-			pwins.windows     = new List!byte();
-			pwins.eventPipe   = Directory.CreatePipe();
-			pwins.commandPipe = Directory.CreatePipe();
+		if (pwins.Windows is null) {
+			pwins.Windows     = new List!byte();
+			pwins.EventPipe   = Directory.CreatePipe();
+			pwins.CommandPipe = Directory.CreatePipe();
 			
 			auto curProc      = Process.Current;
 			auto compositor   = new FileStream("/dev/compositor");
-			compositor.Write(Convert.ToByteArray([curProc.ResID(), pwins.eventPipe.ResID(), pwins.commandPipe.ResID()]), 0);
+			compositor.Write(Convert.ToByteArray([curProc.ResID(), pwins.EventPipe.ResID(), pwins.CommandPipe.ResID()]), 0);
 
 			byte[8] id;
-			pwins.commandPipe.Read(id, 0);
-			pwins.id = new Process(Convert.ToInt64Array(id)[0]);
+			pwins.CommandPipe.Read(id, 0);
+			pwins.ID = new Process(Convert.ToInt64Array(id)[0]);
 
 			curProc.SetSingalHanlder(SigNum.SIGWINEVENT, &SignalEvent);
 		}
 
-		ctx            = new Graphics(true);
 		eventPipe      = Directory.CreatePipe();
 		mouseEventPipe = Directory.CreatePipe();
 	}
+
+	void Show() {
+		ctx = new Graphics(this);
+		ctx.Fill(0xFFFFFF);
+		FormStyle.RenderDecorationSimple(this, true);
+		ctx.Flip();
+	}
+
+
 
 
 private:
@@ -90,10 +119,26 @@ private:
 
 	}
 
+	void SendCommand(short left, short top, ushort width, ushort height, Commands command) {
+		PacketHeader header;
+		header.Magic = PACKET_MAGIC;
+		header.CommandType = command;
+		header.PacketSize = WWindow.sizeof;
+
+		WWindow packet;
+		packet.ID     = id;
+		packet.Left   = left;
+		packet.Top    = top;
+		packet.Width  = width;
+		packet.Height = height;
+	}
+
+
+
 
 	class FormStyle {
 	static:
-		void RenderDecorationSimple(Window win) {
+		void RenderDecorationSimple(Window win, bool focused = false) {
 			foreach (i; 0 .. win.Height) {
 				win.ctx.Pixel(0, i) = 0x3E3E3E;
 				win.ctx.Pixel(win.Width - 1, i) = 0x3E3E3E;
@@ -101,7 +146,7 @@ private:
 
 			foreach (i; 1 .. 24) {
 				foreach (j; 1 .. win.Width - 1) {
-					win.ctx.Pixel(j, i) = 0xB4B4B4;
+					win.ctx.Pixel(j, i) = focused ? 0x00A2E8 : 0xB4B4B4;
 				}
 			}
 

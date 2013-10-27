@@ -176,25 +176,11 @@ static:
 
 
 	byte[] ToByteArray(long[] array) {
-		auto ret = new byte[array.length * 8];
-
-		foreach (i, x; array) {
-			foreach (j; 0 .. 8) {
-				ret[i * 8 + j] = (x >> (j * 8)) & 0xFF;
-			}
-		}
-
-		return ret;
+		return (cast(byte *)array.ptr)[0 .. array.length * 8];
 	}
 
 	long[] ToInt64Array(byte[] array)  {
-		auto ret = new long[array.length / 8];
-
-		foreach (i, x; array) {
-			ret[i / 8] |= x << i * 8;
-		}
-
-		return ret;
+		return (cast(long *)array.ptr)[0 .. array.length / 8];
 	}
 
 
