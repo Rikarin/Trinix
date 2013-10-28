@@ -94,7 +94,7 @@ public:
 			compositor.Write(Convert.ToByteArray([curProc.ResID(), pwins.EventPipe.ResID(), pwins.CommandPipe.ResID()]), 0);
 
 			byte[8] id;
-			pwins.CommandPipe.Read(id, 0);
+			pwins.EventPipe.Read(id, 0);
 			pwins.ID = new Process(Convert.ToInt64Array(id)[0]);
 
 			curProc.SetSingalHanlder(SigNum.SIGWINEVENT, &SignalEvent);

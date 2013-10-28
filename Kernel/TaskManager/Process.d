@@ -156,6 +156,9 @@ public:
 			case IFace.Process.CURRENT:
 				return Task.CurrentProcess.ResID();
 
+			case IFace.Process.SWITCH:
+				Task.Switch();
+				break;
 			case IFace.Process.S_CREATE:
 				if (params.length < 2)
 					return ~0UL;

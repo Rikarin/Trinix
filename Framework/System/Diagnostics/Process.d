@@ -62,6 +62,10 @@ public:
 		return new Process(ResourceCaller.StaticCall(IFace.Process.OBJECT, [IFace.Process.CURRENT]));
 	}
 
+	static void Switch() {
+		ResourceCaller.StaticCall(IFace.Process.OBJECT, [IFace.Process.SWITCH]);
+	}
+
 	ulong ResID() { return syscall.ResID(); }
 
 	this(ulong id) {

@@ -45,6 +45,7 @@ public:
 		while (true) {
 			ProcessRequest();
 			ProcessCommands();
+			Process.Switch();
 		}
 	}
 
@@ -67,7 +68,7 @@ private:
 		pwin.CommandPipe = new FileStream(d[2]);
 		//pwin.windows   = new List!bte;
 
-		pwin.CommandPipe.Write(Convert.ToByteArray([Process.Current.ResID()]), 0);
+		pwin.EventPipe.Write(Convert.ToByteArray([Process.Current.ResID()]), 0);
 		procWins.Add(pwin);
 	}
 

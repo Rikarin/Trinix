@@ -21,6 +21,8 @@ private:
 
 
 public:
+	@property override ulong Length() { return UnreadCount(); }
+
 	this(ulong length, string name = "pipe") { 
 		super(name);
 		this.length = length;

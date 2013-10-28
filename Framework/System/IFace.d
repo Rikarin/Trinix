@@ -36,7 +36,8 @@ class IFace {
 		CURRENT,
 		S_CREATE,
 		SEND_SIGNAL,
-		SET_HANDLER
+		SET_HANDLER,
+		SWITCH
 	}
 
 	enum Thread : ulong {
