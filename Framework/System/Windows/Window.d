@@ -20,6 +20,7 @@ protected:
 	public byte[] Buffer; //shared buffer with compositor
 
 	ulong id; //id of this instance in compositor
+	ubyte crcvd; //TODO: updatovat...
 
 
 public:
@@ -105,6 +106,7 @@ public:
 	}
 
 	void Show() {
+		SendCommand(100, 100, Width, Height, Commands.NewWindow, true);
 		ctx = new Graphics(this);
 		ctx.Fill(0xFFFFFF);
 		FormStyle.RenderDecorationSimple(this, true);
@@ -112,13 +114,12 @@ public:
 	}
 
 
-
 private:
 	void SignalEvent() {
 
 	}
 
-	void SendCommand(short left, short top, ushort width, ushort height, Commands command) {
+	void SendCommand(short left, short top, ushort width, ushort height, Commands command, bool waitForReply = false) {
 		PacketHeader header;
 		header.Magic = PACKET_MAGIC;
 		header.CommandType = command;
@@ -131,10 +132,18 @@ private:
 		packet.Width  = width;
 		packet.Height = height;
 
-		pwins.CommandPipe.Write(cast(byte[])(cast(byte *)&header)[0 .. PacketHeader.sizeof], 0);
-		pwins.CommandPipe.Write(cast(byte[])(cast(byte *)&packet)[0 .. WWindow.sizeof], 0);
-	}
+		pwins.CommandPipe.Write(Convert.ObjectToByteArray(header), 0);
+		pwins.CommandPipe.Write(Convert.ObjectToByteArray(packet), 0);
 
+		if (waitForReply) {
+			Process cur = Process.Current;
+			crcvd = cast(byte)(command + 1);
+			pwins.ID.SendSignal(SigNum.SIGWINEVENT);
+
+			while ((crcvd & 0x0F) != (command & 0x0F))
+				cur.Switch();
+		}
+	}
 
 
 	class FormStyle {

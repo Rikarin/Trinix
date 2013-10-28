@@ -160,9 +160,14 @@ public:
 
 				Task.Exit(128 + signal);
 			} else {
-				debug (only)
-					Log.PrintSP("\nIgnoring signal by default");
+				debug (only) {
+					Log.PrintSP("\nIgnoring signal: ");
+					Log.PrintSP(Convert.ToString(cast(ulong)signal));
+					Log.PrintSP(" by default");
+				}
 			}
+			
+			return;
 		}
 
 		debug (only) {

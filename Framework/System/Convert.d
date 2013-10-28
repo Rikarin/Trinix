@@ -179,6 +179,10 @@ static:
 		return (cast(byte *)array.ptr)[0 .. array.length * 8];
 	}
 
+	byte[] ObjectToByteArray(T)(ref T object) {
+		return cast(byte[])(cast(byte *)&object)[0 .. T.sizeof];
+	}
+
 	long[] ToInt64Array(byte[] array)  {
 		return (cast(long *)array.ptr)[0 .. array.length / 8];
 	}

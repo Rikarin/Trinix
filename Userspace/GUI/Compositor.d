@@ -15,6 +15,8 @@ static import Userspace.GUI.GraphicsTest;
 
 class Compositor {
 private:
+	ulong wid = 1;
+
 	Graphics ctx;
 	Graphics selectCtx;
 	FileStream requestPipe;
@@ -22,6 +24,8 @@ private:
 
 
 public:
+	@property ulong NewWID() { return wid++; }
+
 	this() {
 		ctx            = new Graphics();
 		ctx.Width      = 800;
@@ -80,21 +84,38 @@ private:
 			Window.PacketHeader header;
 			Window.WWindow packet;
 
-			x.CommandPipe.Read(cast(byte[])(cast(byte *)&header)[0 .. Window.PacketHeader.sizeof], 0);
+			x.CommandPipe.Read(Convert.ObjectToByteArray(header), 0);
 			if (header.Magic != Window.PACKET_MAGIC) {
 				byte[0x256] tresh;
 				x.CommandPipe.Read(tresh, 0);
 				continue;
 			}
 
-			x.CommandPipe.Read(cast(byte[])(cast(byte *)&packet)[0 .. Window.WWindow.sizeof], 0);
+			x.CommandPipe.Read(Convert.ObjectToByteArray(packet), 0);
 			switch (header.CommandType) {
 				case Window.Commands.NewWindow:
-				
+					packet.ID = NewWID;
+					SendEvent(x, Window.Events.WindowNew, packet);
 					break;
 				default:
 					break;
 			}
+		}
+	}
+
+	void SendEvent(Window.ProcessWindows pw, Window.Events event, Window.WWindow packet) {
+		Window.PacketHeader header;
+		header.Magic = Window.PACKET_MAGIC;
+		header.CommandType = event;
+		header.PacketSize = Window.WWindow.sizeof;
+
+		if (pw.EventPipe.Length + Window.WWindow.sizeof + Window.PacketHeader.sizeof <= 0x2000) {
+			pw.EventPipe.Write(Convert.ObjectToByteArray(header), 0);
+			pw.EventPipe.Write(Convert.ObjectToByteArray(packet), 0);
+			pw.ID.SendSignal(SigNum.SIGWINEVENT);
+		} else {
+			//kill process...
+			pw.ID.SendSignal(SigNum.SIGWINEVENT);
 		}
 	}
 
