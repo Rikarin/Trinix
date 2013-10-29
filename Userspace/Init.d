@@ -4,16 +4,18 @@ import System.IO.FileStream;
 
 import System.IFace;
 import System.ResourceCaller;
+import System.Threading.Thread;
+import System.Diagnostics.Process;
 
 
 class Init {
 	public static long Main(string[] args) {
-		auto fs = new FileStream("/dev/pajpa");
+		/*auto fs = new FileStream("/dev/pajpa");
 		
 		foreach (x; args)
 			fs.Write(cast(byte[])("\n args: " ~ x), 0);
 
-
+*/
 //		ulong master, slave;
 //		ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [IFace.FSNode.CREATETTY, cast(ulong)&master, cast(ulong)&slave]);
 
@@ -25,7 +27,7 @@ class Init {
 		//byte[10] bb;
 		//m.Read(bb, 0);
 
-		while (true) { }
+		//while (true) { }
 		return 0;
 	}
 }

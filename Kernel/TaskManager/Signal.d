@@ -66,14 +66,16 @@ private:
 	];
 
 
-	void Enter(ulong location, int signum, ulong stack) {
+	void Enter(void delegate() location, int signum, ulong stack) {
+		location();
+		
 		asm {
 			naked;
 			cli;
+			hlt;
 
 			mov RSP, RDI; //stack
-
-			push RSI; //signum
+			//			push RSI; //signum
 			push SignalReturn;
 
 			mov AX, 0x1B;
@@ -93,6 +95,9 @@ private:
 
 			push 0x23UL;
 			push RDX; //location
+			hlt;
+			//mov RDI, RSI;
+			//mov RSI, RDX;
 			jmp _CPU_iretq;
 		}
 	}
@@ -148,7 +153,7 @@ public:
 			return;
 
 		auto handler = Task.CurrentProcess.Signals[signal];
-		if (!handler) {
+		if (handler is null) {
 			byte wat = isDeadly[signal];
 			if (wat == 1 || wat == 2) {
 				debug (only) {
@@ -177,6 +182,6 @@ public:
 			Log.PrintSP(Convert.ToString(Task.CurrentProcess.id));
 		}
 
-		Enter(cast(ulong)handler, signal, cast(ulong)process.signalStack);
+		Enter(handler, signal, cast(ulong)process.signalStack);
 	}
 }

@@ -18,6 +18,7 @@ import System.IFace;
 import System.Collections.Generic.List;
 import System.Diagnostics.ProcessStartInfo;
 import System.Diagnostics.Process : SigNum;
+import System.Convert;
 
 
 class Process : Resource {
@@ -57,7 +58,7 @@ package:
 
 
 public:
-	void function() Signals[Signal.Count];
+	void delegate() Signals[Signal.Count];
 
 	enum State : ubyte {
 		Zombie,
@@ -219,13 +220,17 @@ private:
 	}
 
 	ulong SC_SetHandler(ulong[] params) {
-		if (params is null || params.length < 2)
+		if (params is null || params.length < 3)
 			return ~0UL;
 
 		if (params[0] > Signal.Count)
 			return ~0UL;
 
-		Signals[params[0]] = cast(void function())params[1];
+		Convert.DelegateToLong dtl;
+		dtl.Value1 = params[1];
+		dtl.Value2 = params[2];
+
+		Signals[params[0]] = dtl.Delegate;
 		return 0;
 	}
 

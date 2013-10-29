@@ -11,7 +11,6 @@ private:
 	static __gshared Thread val;
 	static void run() {
 		val.entry();
-		while (true) { }// todo
 	}
 
 public:

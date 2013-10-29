@@ -290,6 +290,15 @@ static:
 	}
 
 
+	union DelegateToLong {
+		struct {
+			long Value1;
+			long Value2;
+		}
+
+		void delegate() Delegate;
+	}
+
 
 	/+
 	private string ConvertToString(T)(T value, int toBase) {

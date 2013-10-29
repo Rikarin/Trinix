@@ -2,6 +2,7 @@ module System.Diagnostics.Process;
 
 import System.IFace;
 import System.ResourceCaller;
+import System.Convert;
 
 import System.Diagnostics.ProcessStartInfo;
 
@@ -66,6 +67,7 @@ public:
 		ResourceCaller.StaticCall(IFace.Process.OBJECT, [IFace.Process.SWITCH]);
 	}
 
+
 	ulong ResID() { return syscall.ResID(); }
 
 	this(ulong id) {
@@ -73,7 +75,10 @@ public:
 	}
 
 	void SetSingalHanlder(SigNum signal, void delegate() hanlder) {
-		syscall.Call(IFace.Process.SET_HANDLER, [signal, cast(ulong)&hanlder]);
+		Convert.DelegateToLong dtl;
+		dtl.Delegate = hanlder;
+
+		syscall.Call(IFace.Process.SET_HANDLER, [signal, dtl.Value1, dtl.Value2]);
 	}
 
 	void SendSignal(SigNum signal) {

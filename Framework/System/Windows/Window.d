@@ -116,7 +116,8 @@ public:
 
 private:
 	void SignalEvent() {
-
+		//Process.Current;
+		//while (true) {}
 	}
 
 	void SendCommand(short left, short top, ushort width, ushort height, Commands command, bool waitForReply = false) {
