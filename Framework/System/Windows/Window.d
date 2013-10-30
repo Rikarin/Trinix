@@ -98,7 +98,7 @@ public:
 			pwins.EventPipe.Read(id, 0);
 			pwins.ID = new Process(Convert.ToInt64Array(id)[0]);
 
-			curProc.SetSingalHanlder(SigNum.SIGWINEVENT, &SignalEvent);
+			curProc.SetSignalHanlder(SigNum.SIGWINEVENT, &SignalEvent);
 		}
 
 		eventPipe      = Directory.CreatePipe();
@@ -117,6 +117,7 @@ public:
 private:
 	void SignalEvent() {
 		//Process.Current;
+		pwins.CommandPipe.Write([1,2,3,4,55,6,7,5], 0);
 		//while (true) {}
 	}
 

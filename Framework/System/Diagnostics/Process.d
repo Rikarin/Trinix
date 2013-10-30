@@ -74,7 +74,7 @@ public:
 		syscall = new ResourceCaller(id, IFace.Process.OBJECT);
 	}
 
-	void SetSingalHanlder(SigNum signal, void delegate() hanlder) {
+	void SetSignalHanlder(SigNum signal, void delegate() hanlder) {
 		Convert.DelegateToLong dtl;
 		dtl.Delegate = hanlder;
 

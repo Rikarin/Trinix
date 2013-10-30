@@ -66,16 +66,16 @@ private:
 	];
 
 
-	void Enter(void delegate() location, int signum, ulong stack) {
-		location();
+	void Enter(void delegate() location, ulong stack) {
+		Convert.DelegateToLong dtl;
+		dtl.Delegate = location;
+
+		ulong ofs = dtl.Value1;
+		ulong loc = dtl.Value2;
 		
 		asm {
-			naked;
 			cli;
-			hlt;
-
-			mov RSP, RDI; //stack
-			//			push RSI; //signum
+			mov RSP, stack;
 			push SignalReturn;
 
 			mov AX, 0x1B;
@@ -94,10 +94,8 @@ private:
 			push RAX;
 
 			push 0x23UL;
-			push RDX; //location
-			hlt;
-			//mov RDI, RSI;
-			//mov RSI, RDX;
+			push loc;
+			mov RDI, ofs;
 			jmp _CPU_iretq;
 		}
 	}
@@ -182,6 +180,6 @@ public:
 			Log.PrintSP(Convert.ToString(Task.CurrentProcess.id));
 		}
 
-		Enter(handler, signal, cast(ulong)process.signalStack);
+		Enter(handler, cast(ulong)process.signalStack);
 	}
 }
