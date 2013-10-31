@@ -15,6 +15,7 @@ class GraphicsTest : Window {
 class Application {
 	public static long Main(string[] args) {
 		auto window = new GraphicsTest();
+		//window.ths = window;
 		window.Show();
 
 		while (true) {}

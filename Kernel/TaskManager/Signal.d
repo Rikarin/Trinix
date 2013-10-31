@@ -66,27 +66,20 @@ private:
 	];
 
 
-	void Enter(void delegate() location, ulong stack) {
-		Convert.DelegateToLong dtl;
-		dtl.Delegate = location;
-
-		ulong ofs = dtl.Value1;
-		ulong loc = dtl.Value2;
-		
+	void Enter(ulong location, ulong stack) {
 		asm {
+			naked;
 			cli;
-			mov RSP, stack;
-			push SignalReturn;
+			mov [RDI], SignalReturn;
 
 			mov AX, 0x1B;
 			mov DS, AX;
 			mov ES, AX;
 			mov FS, AX;
 			mov GS, AX;
-			mov RAX, RSP;
 
 			push 0x1B;
-			push RAX;
+			push RDI;
 
 			pushfq;
 			pop RAX;
@@ -94,8 +87,8 @@ private:
 			push RAX;
 
 			push 0x23UL;
-			push loc;
-			mov RDI, ofs;
+			push RSI;
+		//	mov RDI, ofs;
 			jmp _CPU_iretq;
 		}
 	}
@@ -140,7 +133,7 @@ public:
 		proc.threads[0].rip = proc.signalState.rip;
 		proc.threads[0].rsp = proc.signalState.rsp;
 		proc.threads[0].rbp = proc.signalState.rbp;
-		delete proc.signalStack;
+		//delete proc.signalStack;
 	}
 
 	void Handler(Process process, SigNum signal) {
@@ -151,7 +144,7 @@ public:
 			return;
 
 		auto handler = Task.CurrentProcess.Signals[signal];
-		if (handler is null) {
+		if (!handler.Value2) {
 			byte wat = isDeadly[signal];
 			if (wat == 1 || wat == 2) {
 				debug (only) {
@@ -180,6 +173,6 @@ public:
 			Log.PrintSP(Convert.ToString(Task.CurrentProcess.id));
 		}
 
-		Enter(handler, cast(ulong)process.signalStack);
+		Enter(handler.Value2, cast(ulong)process.signalStack);
 	}
 }

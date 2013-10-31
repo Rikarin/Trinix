@@ -81,6 +81,10 @@ public:
 		syscall.Call(IFace.Process.SET_HANDLER, [signal, dtl.Value1, dtl.Value2]);
 	}
 
+	void SetSignalHanlder(SigNum signal, void function() hanlder) {
+		syscall.Call(IFace.Process.SET_HANDLER, [signal, 0, cast(ulong)&hanlder]);
+	}
+
 	void SendSignal(SigNum signal) {
 		syscall.Call(IFace.Process.SEND_SIGNAL, [signal]);
 	}

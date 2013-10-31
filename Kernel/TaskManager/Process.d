@@ -58,7 +58,7 @@ package:
 
 
 public:
-	void delegate() Signals[Signal.Count];
+	Convert.DelegateToLong Signals[Signal.Count];
 
 	enum State : ubyte {
 		Zombie,
@@ -226,11 +226,8 @@ private:
 		if (params[0] > Signal.Count)
 			return ~0UL;
 
-		Convert.DelegateToLong dtl;
-		dtl.Value1 = params[1];
-		dtl.Value2 = params[2];
-
-		Signals[params[0]] = dtl.Delegate;
+		Signals[params[0]].Value1 = params[1];
+		Signals[params[0]].Value2 = params[2];
 		return 0;
 	}
 

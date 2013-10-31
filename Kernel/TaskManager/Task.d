@@ -55,11 +55,6 @@ public:
 	}
 
 	private Thread NextThread() {
-		/*import Core.Log;
-		import System.Convert;
-		Log.PrintSP(" " ~ Convert.ToString(scheldule));
-		Log.PrintSP(" <=> " ~ Convert.ToString(Threads.Count)); */
-
 		long lst = scheldule++;
 		if (scheldule < Threads.Count) {
 			foreach (x; Threads[scheldule .. $])
@@ -87,10 +82,10 @@ public:
 
 		rip = read_rip();
 		if (rip == 0xFEEDCAFEUL) {
-			foreach (x; Threads) {
+			/*foreach (x; Threads) {
 				if (x !is null && x.Valid(Thread.State.Zombie))
 					Reap(x);
-			}
+			}*/
 
 			if (CurrentThread == CurrentProcess.threads[0]) {
 				if (CurrentProcess.signalQueue.Count) {

@@ -131,7 +131,7 @@ private:
 		const char[] GenerateISR = `
 			void isr` ~ num.stringof[0 .. $ - 2] ~ `() {
 				asm {
-					naked; ` ~
+					naked;` ~
 					(needDummyError ? `push 0UL;` : ``) ~
 					`push ` ~ num.stringof ~ `;` ~
 					`jmp isr_common;` ~
