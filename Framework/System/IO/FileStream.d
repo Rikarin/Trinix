@@ -12,7 +12,8 @@ private:
 
 
 	ref Stat ReloadStats() {
-		syscall.Call(IFace.FSNode.RSTATS, [cast(ulong)&stats]);
+		ulong[1] tmp = [cast(ulong)&stats];
+		syscall.Call(IFace.FSNode.RSTATS, tmp);
 		return stats;
 	}
 
@@ -47,10 +48,13 @@ public:
 
 
 	this(string path) {
-		id = ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [IFace.FSNode.SFIND, cast(ulong)&path]);
+		ulong[2] tmp = [IFace.FSNode.SFIND, cast(ulong)&path];
+		id = ResourceCaller.StaticCall(IFace.FSNode.OBJECT, tmp);
 	
-		if (!id)
-			id = ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [IFace.FSNode.SMKFILE, cast(ulong)&path]);	
+		if (!id) {
+			tmp = [IFace.FSNode.SMKFILE, cast(ulong)&path];
+			id = ResourceCaller.StaticCall(IFace.FSNode.OBJECT, tmp);
+		}
 		
 		syscall = new ResourceCaller(id, IFace.FSNode.OBJECT);
 	}
@@ -69,12 +73,15 @@ public:
 	override void Flush() {}
 
 	override long Read(byte[] buffer, long offset) {
-		return syscall.Call(IFace.FSNode.READ, [offset, cast(ulong)&buffer]);
+		ulong[2] tmp = [offset, cast(ulong)&buffer];
+		return syscall.Call(IFace.FSNode.READ, tmp);
 	}
 
 	override byte ReadByte() {
 		byte[1] b;
-		if (syscall.Call(IFace.FSNode.READ, [0, cast(ulong)&b]))
+		ulong[2] tmp = [0, cast(ulong)&b];		
+
+		if (syscall.Call(IFace.FSNode.READ, tmp))
 			return b[0];
 		else
 			return 0;
@@ -84,11 +91,13 @@ public:
 	override long SetLength(long value) { return 0; }
 
 	override void Write(byte[] buffer, long offset) {
-		syscall.Call(IFace.FSNode.WRITE, [offset, cast(ulong)&buffer]);
+		ulong[2] tmp = [offset, cast(ulong)&buffer];
+		syscall.Call(IFace.FSNode.WRITE, tmp);
 	}
 
 	override void WriteByte(byte value) {
 		byte[1] b = [value];
-		syscall.Call(IFace.FSNode.READ, [0, cast(ulong)&b]);
+		ulong[2] tmp = [0, cast(ulong)&b];
+		syscall.Call(IFace.FSNode.READ, tmp);
 	}
 }

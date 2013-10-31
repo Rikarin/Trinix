@@ -93,7 +93,9 @@ public:
 			
 			auto curProc      = Process.Current;
 			auto compositor   = new FileStream("/dev/compositor");
-			compositor.Write(Convert.ToByteArray([curProc.ResID(), pwins.EventPipe.ResID(), pwins.CommandPipe.ResID()]), 0);
+
+			long[3] tmp = [curProc.ResID(), pwins.EventPipe.ResID(), pwins.CommandPipe.ResID()];
+			compositor.Write(Convert.ToByteArray(tmp), 0);
 
 			byte[8] id;
 			pwins.EventPipe.Read(id, 0);

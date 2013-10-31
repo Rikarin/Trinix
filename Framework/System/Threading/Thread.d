@@ -20,7 +20,8 @@ public:
 
 	void Start() {
 		//todo mutex
+		ulong[2] tmp = [IFace.Thread.S_CREATE, cast(ulong)&run];
 		val = this;
-		ResourceCaller.StaticCall(IFace.Thread.OBJECT, [IFace.Thread.S_CREATE, cast(ulong)&run]);
+		ResourceCaller.StaticCall(IFace.Thread.OBJECT, tmp);
 	}
 }

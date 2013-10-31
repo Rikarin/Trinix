@@ -56,15 +56,18 @@ private:
 
 public:
 	static Process Start(ProcessStartInfo startInfo) {
-		return new Process(ResourceCaller.StaticCall(IFace.Process.OBJECT, [IFace.Process.S_CREATE, cast(ulong)&startInfo]));
+		ulong[2] tmp = [IFace.Process.S_CREATE, cast(ulong)&startInfo];
+		return new Process(ResourceCaller.StaticCall(IFace.Process.OBJECT, tmp));
 	}
 
 	static @property Process Current() {
-		return new Process(ResourceCaller.StaticCall(IFace.Process.OBJECT, [IFace.Process.CURRENT]));
+		ulong[1] tmp = [IFace.Process.CURRENT];
+		return new Process(ResourceCaller.StaticCall(IFace.Process.OBJECT, tmp));
 	}
 
 	static void Switch() {
-		ResourceCaller.StaticCall(IFace.Process.OBJECT, [IFace.Process.SWITCH]);
+		ulong[1] tmp = [IFace.Process.SWITCH];
+		ResourceCaller.StaticCall(IFace.Process.OBJECT, tmp);
 	}
 
 
@@ -77,15 +80,18 @@ public:
 	void SetSignalHanlder(SigNum signal, void delegate() hanlder) {
 		Convert.DelegateToLong dtl;
 		dtl.Delegate = hanlder;
+		ulong[3] tmp = [signal, dtl.Value1, dtl.Value2];
 
-		syscall.Call(IFace.Process.SET_HANDLER, [signal, dtl.Value1, dtl.Value2]);
+		syscall.Call(IFace.Process.SET_HANDLER, tmp);
 	}
 
 	void SetSignalHanlder(SigNum signal, void function() hanlder) {
-		syscall.Call(IFace.Process.SET_HANDLER, [signal, 0, cast(ulong)&hanlder]);
+		ulong[3] tmp = [signal, 0, cast(ulong)&hanlder];
+		syscall.Call(IFace.Process.SET_HANDLER, tmp);
 	}
 
 	void SendSignal(SigNum signal) {
-		syscall.Call(IFace.Process.SEND_SIGNAL, [signal]);
+		ulong[1] tmp = [signal];
+		syscall.Call(IFace.Process.SEND_SIGNAL, tmp);
 	}
 }

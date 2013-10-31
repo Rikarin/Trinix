@@ -95,7 +95,7 @@ private:
 			switch (header.CommandType) {
 				case Window.Commands.NewWindow:
 					packet.ID = NewWID;
-					SendEvent(x, Window.Events.WindowNew, packet);
+					//SendEvent(x, Window.Events.WindowNew, packet);
 					break;
 				default:
 					break;

@@ -17,6 +17,7 @@ static:
 	}
 
 	FileStream CreatePipe(string path) {
-		return new FileStream(ResourceCaller.StaticCall(IFace.FSNode.OBJECT, [IFace.FSNode.SMKPIPE, cast(ulong)&path]));
+		ulong[2] tmp = [IFace.FSNode.SMKPIPE, cast(ulong)&path];
+		return new FileStream(ResourceCaller.StaticCall(IFace.FSNode.OBJECT, tmp));
 	}
 }
