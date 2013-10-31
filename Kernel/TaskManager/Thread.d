@@ -54,6 +54,7 @@ public:
 		super(0, null);
 
 		parent.threads.Add(this);
+		id = Task.NewTID();
 		this.parent  = parent;
 		kernelStack  = (new ulong[STACK_SIZE]).ptr;
 		syscallStack = (new ulong[STACK_SIZE]).ptr;

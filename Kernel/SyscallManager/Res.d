@@ -60,9 +60,12 @@ public:
 
 	ulong Call(ulong resource, ulong id, ulong[] params) {
 		debug (only) {
+			import TaskManager.Task;
+
 			if (id != 5 && !(id == 2 && resource == ~1UL)) { //compositor spamming this shit
 				import System.Convert;
-				Log.PrintSP("\n[Service RES: " ~ Convert.ToString(resource, 16));
+				Log.PrintSP("\n[Service Thread: " ~ Convert.ToString(Task.CurrentThread.ID, 16));
+				Log.PrintSP(", RES: " ~ Convert.ToString(resource, 16));
 				Log.PrintSP(", ID: " ~ Convert.ToString(id, 16));
 
 				foreach (x; params)

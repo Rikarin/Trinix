@@ -109,20 +109,20 @@ public:
 	}
 
 	void Show() {
+		SendCommand(100, 100, Width, Height, Commands.NewWindow, true);
+
 		ctx = new Graphics(this);
 		ctx.Fill(0xFFFFFF);
 		FormStyle.RenderDecorationSimple(this, true);
 		ctx.Flip();
-
-		SendCommand(100, 100, Width, Height, Commands.NewWindow, true);
 	}
 
 
 private:
 	static void SignalEvent() { //todo: no static
-		//Process.Current;
+		Process.Current;
 		//pwins.CommandPipe.Write([1,2,3,4,55,6,7,5], 0);
-		while (true) {}
+		//while (true) {}
 	}
 
 	void SendCommand(short left, short top, ushort width, ushort height, Commands command, bool waitForReply = false) {

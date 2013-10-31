@@ -86,7 +86,7 @@ public:
 	}
 
 	void SetSignalHanlder(SigNum signal, void function() hanlder) {
-		ulong[3] tmp = [signal, 0, cast(ulong)&hanlder];
+		ulong[3] tmp = [signal, 0, cast(ulong)hanlder];
 		syscall.Call(IFace.Process.SET_HANDLER, tmp);
 	}
 

@@ -1,6 +1,7 @@
 module TaskManager.Signal;
 
 import TaskManager.Task;
+import TaskManager.Thread;
 import TaskManager.Process;
 import Architectures.CPU;
 import Architectures.Core;
@@ -66,11 +67,10 @@ private:
 	];
 
 
-	void Enter(ulong location, ulong stack) {
+	void Enter(ulong location, ulong stack, ulong offset) {
 		asm {
 			naked;
 			cli;
-			mov [RDI], SignalReturn;
 
 			mov AX, 0x1B;
 			mov DS, AX;
@@ -79,7 +79,7 @@ private:
 			mov GS, AX;
 
 			push 0x1B;
-			push RDI;
+			push RSI; //stack
 
 			pushfq;
 			pop RAX;
@@ -87,8 +87,7 @@ private:
 			push RAX;
 
 			push 0x23UL;
-			push RSI;
-		//	mov RDI, ofs;
+			push RDX; //location
 			jmp _CPU_iretq;
 		}
 	}
@@ -171,8 +170,10 @@ public:
 			Log.PrintSP(Convert.ToString(cast(ulong)signal));
 			Log.PrintSP(" by process: ");
 			Log.PrintSP(Convert.ToString(Task.CurrentProcess.id));
+			Log.PrintSP(" address: ");
+			Log.PrintSP(Convert.ToString(cast(ulong)handler.Value2, 16));
 		}
 
-		Enter(handler.Value2, cast(ulong)process.signalStack);
+		Enter(handler.Value2, cast(ulong)process.signalStack, handler.Value1);
 	}
 }

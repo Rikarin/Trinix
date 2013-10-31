@@ -98,6 +98,7 @@ public:
 		ret.signalQueue = new List!SigNum();
 
 		Thread t = new Thread();
+		t.id = Task.NewTID();
 		t.parent = ret;
 		t.state = Thread.State.Running;
 		t.kernelStack = (new ulong[Thread.STACK_SIZE]).ptr;
