@@ -55,6 +55,12 @@ public:
 	}
 
 	private Thread NextThread() {
+   		/*import Core.Log;
+        import System.Convert;
+        Log.PrintSP(" " ~ Convert.ToString(scheldule));
+        Log.PrintSP(" <=> " ~ Convert.ToString(Threads.Count));
+*/
+
 		long lst = scheldule++;
 		if (scheldule < Threads.Count) {
 			foreach (x; Threads[scheldule .. $])
@@ -122,7 +128,7 @@ public:
 			if (CurrentProcess.signalQueue.Count) {
 				CurrentProcess.signalStack = (new ulong[Thread.STACK_SIZE]).ptr + Thread.STACK_SIZE;
 				*CurrentProcess.signalStack = Signal.SignalReturn;
-				
+
 				CurrentProcess.signalState.rip = CurrentThread.rip;
 				CurrentProcess.signalState.rsp = CurrentThread.rsp;
 				CurrentProcess.signalState.rbp = CurrentThread.rbp;

@@ -35,22 +35,22 @@ public:
 		ctx.BackBuffer = new byte[size];
 
 		//selectCtx   = new Graphics(true); todo
-		procWins    = new List!(Window.ProcessWindows)();
-		requestPipe = Directory.CreatePipe("/dev/compositor");
+		//procWins    = new List!(Window.ProcessWindows)();
+		//requestPipe = Directory.CreatePipe("/dev/compositor");
 
 		/** Mouse hanlder */
 		//(new Thread(&MouseHandler)).Start();
 
 
-		auto startInfo = new ProcessStartInfo();
-		startInfo.ThreadEntry = &Userspace.GUI.GraphicsTest.construct;
-		Process.Start(startInfo);
+		//auto startInfo = new ProcessStartInfo();
+		//startInfo.ThreadEntry = &Userspace.GUI.GraphicsTest.construct;
+		//Process.Start(startInfo);
 
-		while (true) {
+		/*while (true) {
 			ProcessRequest();
 			ProcessCommands();
 			Process.Switch();
-		}
+		}*/
 	}
 
 
@@ -114,7 +114,7 @@ private:
 			pw.EventPipe.Write(Convert.ObjectToByteArray(packet), 0);
 			pw.ID.SendSignal(SigNum.SIGWINEVENT);
 		} else {
-			//kill process...
+			//kill process... not responding
 			pw.ID.SendSignal(SigNum.SIGWINEVENT);
 		}
 	}

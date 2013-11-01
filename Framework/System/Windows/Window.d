@@ -119,10 +119,30 @@ public:
 
 
 private:
-	static void SignalEvent() { //todo: no static
-		Process.Current;
-		//pwins.CommandPipe.Write([1,2,3,4,55,6,7,5], 0);
-		//while (true) {}
+	void SignalEvent() {
+		ulong len = pwins.EventPipe.Length;
+		do {
+			ProcessEvent();
+			len = pwins.EventPipe.Length;
+		} while (len);
+	}
+
+	void ProcessEvent() {
+		PacketHeader header;
+		pwins.EventPipe.Read(Convert.ObjectToByteArray(header), 0);
+
+		if (header.Magic != PACKET_MAGIC && pwins.EventPipe.Length) {
+			byte[0x256] tresh;
+			pwins.EventPipe.Read(tresh, 0);
+		}
+
+		switch (header.CommandType & Events.GroupMask) {
+			case Events.MouseEvent:
+			case Events.KeyEvent:
+			case Events.WindowEvent:
+			default:
+				break;
+		}
 	}
 
 	void SendCommand(short left, short top, ushort width, ushort height, Commands command, bool waitForReply = false) {
