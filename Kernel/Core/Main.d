@@ -14,22 +14,25 @@ import Architectures.Paging;
 import Architectures.Multiprocessor;
 
 import VFSManager.VFS;
+import VFSManager.Part;
+
 import TaskManager.Task;
+import TaskManager.Process;
+
 import SyscallManager.Res;
 import SyscallManager.Syscall;
 
 import Devices.Timer;
 import Devices.Display.BGA;
 import Devices.Mouse.PS2Mouse;
+import Devices.ATA.ATAController;
 import Devices.Keyboard.PS2Keyboard;
-
-import TaskManager.Process;
 
 
 /+
 Pipe dead
 paging - kopirovanie stranok pri vytvoreni noveho procesu
-prerobit fsnode syscall aby miesto jednotlivych volani na konkretne atributy posielalo komplet celu strukturu
+opravit read v ata drivru
 +/
 
 
@@ -69,6 +72,9 @@ extern(C) void StartSystem() {
 	Log.Print("Initializing device manger");
 	Log.Result(DeviceManager.Init());
 
+	Log.Print("Initializing partition manager");
+	Log.Result(Part.Init());
+
 	Log.Print("Initializing VFS manger");
 	Log.Result(VFS.Init());
 
@@ -80,6 +86,10 @@ extern(C) void StartSystem() {
 	new Timer(100);
 	Log.Result(true);
 
+	Log.Print("Detecting hard drives");
+	ATAController.Detect();
+	Log.Result(true);
+
 	Log.Print("Initializing PS/2 keyboard driver");
 	//new PS2Keyboard();
 	Log.Result(true);
@@ -89,7 +99,7 @@ extern(C) void StartSystem() {
 	Log.Result(true);
 
 	Log.Print("Setup BGA driver 800x600");
-	BGA.Init(800, 600);
+	//BGA.Init(800, 600);
 	Log.Result(true);
 
 	Log.Print("Booting complete, starting init process");
@@ -98,13 +108,8 @@ extern(C) void StartSystem() {
 	//import Devices.PCI.PCIDev;
 	//PCIDev.ScanDevices();
 
-	//import Devices.ATA.ATAController;
-	//ATAController.Detect();
-
-	//static import Userspace.Init;
-	//static import Userspace.GUI.Terminal;
-	static import Userspace.GUI.Compositor;
-	Process.CreateProcess(cast(void function())&Userspace.GUI.Compositor.construct, ["/System/Bin/Compositor", "--single", "--nothing"]);
+	//static import Userspace.GUI.Compositor;
+	//Process.CreateProcess(cast(void function())&Userspace.GUI.Compositor.construct, ["/System/Bin/Compositor", "--single", "--nothing"]);
 
 	while (true) {}
 }

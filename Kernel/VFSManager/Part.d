@@ -14,10 +14,10 @@ private:
 	align(1):
         ubyte Bootable;
         ubyte StartHead;
-        ushort _startSC;
+        private ushort _startSC;
         ubyte ID;
         ubyte EndHead;
-        ushort _endSC;
+        private ushort _endSC;
         uint StartLBA;
         uint Size;
 
@@ -33,8 +33,14 @@ private:
     	partitions.Add(new Partition(dev, 0, 0, dev.Blocks));
 
     	byte[] mbr = new byte[512];
-    	if (!dev.Read(0UL, mbr))
+    	if (!dev.Read(0, mbr))
     		return;
+
+        import Core.Log;
+        import System.Convert;
+        foreach (x; mbr) {
+            Log.PrintSP(Convert.ToString(x));
+        }
 
     	MBREntryT* entry = cast(MBREntryT *)(cast(ulong)mbr.ptr + 0x1BE);
 
@@ -45,30 +51,29 @@ private:
     			partitions.Add(new Partition(dev, cast(ubyte)(i + 1), entry[i].StartLBA, entry[i].Size));
     	}
 
-        delete mbr;
+       // delete mbr; TODO: fixme
     }
 
 
 public:
+    bool Init() {
+        devices = new List!BlockDeviceProto();
+        partitions = new List!Partition();
+
+        return true;
+    }
+
 	void Register(BlockDeviceProto dev) {
 		Unregister(dev);
-		Port.Cli();
-
-		ReadPartTable(dev);
+        ReadPartTable(dev);
 		devices.Add(dev);
-
-		Port.Sti();
 	}
 
 	void Unregister(BlockDeviceProto dev) {
-		Port.Cli();
-
-		foreach (x; partitions) {
+		foreach (x; partitions)
 			if (x.GetDevice() == dev)
 				partitions.Remove(x);
-		}
 
 		devices.Remove(dev);
-		Port.Sti();
 	}
 }

@@ -10,6 +10,7 @@ private:
 	BlockCache cache;
 	ulong start, count;
 	ubyte number;
+	
 
 public:
 	BlockDeviceProto GetDevice() { return dev; }
