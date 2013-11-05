@@ -6,12 +6,15 @@ import Devices.ATA.ATADrive;
 import Devices.DeviceProto;
 import VFSManager.Part;
 
+import System.Threading.Mutex;
+
 
 class ATAController : DeviceProto {
 private:
 	uint base;
 	ubyte number;
 	ATADrive drives[2];
+	Mutex mutex;
 
 
 public:
@@ -38,6 +41,9 @@ public:
 	}
 
 
+	void Lock() { mutex.WaitOne(); }
+	void Unlock() { mutex.Release(); }
+
 	T Read(T)(short port) {
 		return cast(T)Architectures.Port.Port.Read!T(cast(short)(base + port));
 	}
@@ -48,6 +54,7 @@ public:
 
 
 	this(uint base, ubyte number) {
+		mutex = new Mutex();
 		this.base = base;
 		this.number = number;
 
@@ -84,7 +91,7 @@ public:
 	static void Detect() {
 		ATAController c[2];
 		c[0] = new ATAController(Base.Bus1, 0);
-		c[1] = new ATAController(Base.Bus1, 1);
+		c[1] = new ATAController(Base.Bus2, 1);
 
 		DeviceManager.RegisterDevice(c[0], DeviceInfo("ATA Controller #1", DeviceType.BlockDevice));
 		DeviceManager.RegisterDevice(c[1], DeviceInfo("ATA Controller #2", DeviceType.BlockDevice));
