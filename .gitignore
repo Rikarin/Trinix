@@ -2,6 +2,8 @@
 *.o
 *.bin
 /Build/Linker.map
-/Disk/TrinityOS-Kernel
-/TrinityOS.iso
 /Linker.map
+
+/Disk/Trinix-Kernel
+
+/Trinix.img

@@ -1,11 +1,11 @@
-# TrinityOS #
-TrinityOS is a hobby operating system written from scratch. OS is written in D (http://www.dlang.org/) and asm (NASM). It means OS is fully OOP. For now only 64-bit is supported. Development began one beautiful day in January and continues to this day. We have a framework based on .NET-like classes, interfaces and other .NET things.
+# Trinix #
+Trinix is a hobby operating system written from scratch. OS is written in D (http://www.dlang.org/) and asm (NASM). It means OS is fully OOP. For now only 64-bit is supported. Development began one beautiful day in January and continues to this day. We have a framework based on .NET-like classes, interfaces and other .NET things.
 
 (Sorry for bad english, if you have a better translation contact me by mail or irc)
 
 
 # Community #
-If you have any questions or feedback, you can contact me by E-Mail: `Bloodman@gshost.eu` or on IRC: `#TrinityOS` on `Freenode`.
+If you have any questions or feedback, you can contact me by E-Mail: `Bloodman@gshost.eu` or on IRC: `#Trinix` on `Freenode`.
 (We are looking for developers and testers)
 
 

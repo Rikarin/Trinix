@@ -55,7 +55,7 @@ OBJS = $(patsubst %,$(OBJ_DIR)/%,$(_SRC:=.o))
 #############
 DFLAGS = -c -O -m64 -release -property -Idruntime/import -IKernel -IFramework -IKernel/Architectures/x86_64 -debug=only -vtls
 CFLAGS = -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -c -g
-LDFLAGS = -o Disk/TrinityOS-Kernel -T Kernel/Architectures/x86_64/Linker.ld -Map Linker.map
+LDFLAGS = -o Disk/Trinix-Kernel -T Kernel/Architectures/x86_64/Linker.ld -Map Linker.map
 ASFLAGS = -f elf64
 
 
@@ -73,20 +73,19 @@ OUT_DIR = Build
 #   Variables   #
 #################
 EMU = qemu-system-x86_64
-GENEXT = genext2fs
-DISK_SIZE = 12207 #524288
+DISK = Trinix.img
 
 
 
-all: Disk/TrinityOS-Kernel
-iso: TrinityOS.iso
+all: Disk/Trinix-Kernel
+img: Trinix.img
 
 
 
 ##############
 #   Linker   #
 ##############
-Disk/TrinityOS-Kernel: $(OBJS)
+Disk/Trinix-Kernel: $(OBJS)
 	@echo $$(($$(cat buildnum) + 1)) > buildnum
 	@echo "Build number:" $$(cat buildnum)
 	@ld $(LDFLAGS) $(OBJS) druntime/lib/libdruntime-linux64.a
@@ -96,9 +95,9 @@ Disk/TrinityOS-Kernel: $(OBJS)
 #############
 #   Debug   #
 #############
-debug: all TrinityOS.iso
-	@${EMU} -hda TrinityOS.iso -boot c -m 512 -serial /dev/ttyS0 \
-	-vga vmware -monitor stdio #-smp 8 #-s -S
+debug: all Trinix.img
+	@${EMU} -hda Trinix.img -boot c -m 512 -serial /dev/ttyS0 \
+	-vga vmware -monitor stdio
 	
 
 
@@ -111,12 +110,31 @@ runtime:
 
 
 ##################
-#   Disk image   # #@${GENEXT} -B 4096 -d Disk -q -b ${DISK_SIZE} -N 4096 TrinityOS.img
+#   Disk image   #
 ##################
-TrinityOS.iso: Disk/TrinityOS-Kernel
+Trinix.img: Disk/Trinix-Kernel
 	@echo "Generating a Hard Disk image..."
-	@rm -f TrinityOS.iso
-	@grub-mkrescue -o TrinityOS.iso Disk
+	@rm -f Trinix.img
+
+	@dd if=/dev/zero of=$(DISK) bs=4096 count=5000 > /dev/null 2>&1
+	@cat fdisk.conf | fdisk $(DISK) > /dev/null 2>&1
+
+	@losetup /dev/loop0 Trinix.img
+	@kpartx -v -a /dev/loop0  > /dev/null 2>&1
+	@losetup /dev/loop1 /dev/mapper/loop0p1
+
+	@mkdir -p tmp
+	@mkfs.ext2 /dev/loop1 > /dev/null 2>&1
+	@mount /dev/loop1 tmp
+	@cp -rf Disk/* tmp/
+	
+	@grub-install --boot-directory=tmp/boot /dev/loop0
+	@umount tmp
+	@losetup -d /dev/loop1
+	@kpartx -v -d /dev/loop0 > /dev/null 2>&1
+	@losetup -d /dev/loop0
+	@rm -rf tmp
+
 	@echo "Hard disk image is ready!"
 
 
@@ -126,8 +144,8 @@ TrinityOS.iso: Disk/TrinityOS-Kernel
 #############
 clean:
 	@rm -rf $(OBJ_DIR)
-	@rm -rf TrinityOS.iso
-	@rm -rf Disk/TrinityOS-Kernel
+	@rm -rf Trinix.img
+	@rm -rf Disk/Trinix-Kernel
 
 
 
