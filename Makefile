@@ -112,26 +112,25 @@ runtime:
 ##################
 #   Disk image   #
 ##################
-Trinix.img: Disk/Trinix-Kernel
+$(DISK): Disk/Trinix-Kernel
 	@echo "Generating a Hard Disk image..."
-	@rm -f Trinix.img
+	@rm -f $(DISK)
+	
+	@-dito-generate $(DISK) 100M 50M
+	@dito-format $(DISK):1 ext2
+	@dito-format $(DISK):2 ext2
 
-	@dd if=/dev/zero of=$(DISK) bs=4096 count=5000 > /dev/null 2>&1
-	@cat fdisk.conf | fdisk $(DISK) > /dev/null 2>&1
-
-	@losetup /dev/loop0 Trinix.img
-	@kpartx -v -a /dev/loop0  > /dev/null 2>&1
-	@losetup /dev/loop1 /dev/mapper/loop0p1
+	@losetup /dev/loop0 $(DISK)
+	@losetup -o 32256 /dev/loop1 $(DISK)
 
 	@mkdir -p tmp
-	@mkfs.ext2 /dev/loop1 > /dev/null 2>&1
 	@mount /dev/loop1 tmp
 	@cp -rf Disk/* tmp/
 	
-	@grub-install --boot-directory=tmp/boot /dev/loop0
+	@-grub-install --recheck /dev/loop0
+
 	@umount tmp
 	@losetup -d /dev/loop1
-	@kpartx -v -d /dev/loop0 > /dev/null 2>&1
 	@losetup -d /dev/loop0
 	@rm -rf tmp
 
