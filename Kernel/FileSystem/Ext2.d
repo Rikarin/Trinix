@@ -200,7 +200,7 @@ private:
 	}
 
 	ulong AllocBlock(ulong group) {
-		if (gorup > NumGroups)
+		if (group > NumGroups)
 			return 0;
 
 		if (!groups[group].UnallocatedBlocks)
@@ -208,14 +208,14 @@ private:
 				if (groups[group].UnallocatedBlocks)
 					break;
 
-		if (group == NumBlocks)
+		if (group == NumGroups)
 			return 0;
 
 		//Load block bitmap
 		byte[] blockBitmap = new byte[BlockSize];
 		if (!ReadBlocks(groups[group].BlockBitmap, blockBitmap)) {
 			delete blockBitmap;
-			return;
+			return 0;
 		}
 
 		//Allocate a block
@@ -224,7 +224,7 @@ private:
 			i++;
 
 		if (i == sb.BlocksPerGroup) {
-			delete bitmap;
+			delete blockBitmap;
 			return 0;
 		}
 
@@ -239,7 +239,7 @@ private:
 		//write block bitmap
 		if (!WriteBlocks(groups[group].BlockBitmap, blockBitmap)) {
 			delete blockBitmap;
-			return;
+			return 0;
 		}
 
 		return i;

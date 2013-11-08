@@ -34,10 +34,7 @@ public:
 	@property ulong ResType() { return type; }
 
 
-	ulong Call(ulong id, ulong[] params) {
-		if (!Accessible())
-			return ~0UL;
-		
+	ulong Call(ulong id, ulong[] params) {		
 		if (!id)
 			return type;
 
@@ -49,8 +46,6 @@ public:
 
 
 protected:
-	abstract bool Accessible();
-
 	this(ulong type, const CallTable[] ct) {
 		callTables = new List!(CallTable)();
 		lock = new Mutex();

@@ -2,11 +2,12 @@ module FileSystem.ZeroDev;
 
 import VFSManager.CharNode;
 import VFSManager.DirectoryNode;
+import System.IO.FileAttributes;
 
 
 class ZeroDev : CharNode {
-	this(string name = "zero") { 
-		super(name);
+	this(string name) {
+		super(NewAttributes(name));
 	}
 
 	override ulong Read(ulong offset, byte[] data) {

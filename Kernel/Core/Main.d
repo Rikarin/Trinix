@@ -117,3 +117,14 @@ extern(C) void StartSystem() {
 extern(C) void apEntry() {
 	while (true) { }
 }
+
+/*
+FileAttributes fa;
+			
+			fa.Name        = name;
+			fa.AccessTime  = fa.CreateTime = fa.ModifyTime = DateTime.now;
+			fa.Permissions = 644;
+			fa.Type        = type;
+			fa.UID         = 123;
+			fa.GID         = 456;
+*/

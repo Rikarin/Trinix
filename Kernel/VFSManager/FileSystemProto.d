@@ -4,39 +4,34 @@ import VFSManager.FSNode;
 import VFSManager.DirectoryNode;
 import VFSManager.FileNode;
 import VFSManager.Partition;
+
 import System.DateTime;
+import System.IO.FileAttributes;
 
 
 abstract class FileSystemProto {
-	private string identifier;
-
-public:
+protected:
+	string identifier;
 	bool isWritable;
 	DirectoryNode rootNode;
+	Partition part;
+
+
+public:
+	@property string Identifier() { return identifier; }
+	@property void Identifier(string value) { identifier = value; }
+	@property Partition GetPartition() { return part; }
+	@property bool IsWritable() { return isWritable; }
+	@property DirectoryNode RootNode() { return rootNode; }
+
 	bool Unmount();
-
-	bool IsWritable() { return isWritable; }
-	DirectoryNode RootNode() { return rootNode; }
-
-	bool SetName(FSNode node, string name);
-	bool SetPermissions(FSNode node, uint perms);
-	bool SetUID(FSNode node, ulong uid);
-	bool SetGID(FSNode node, ulong gid);
-	bool SetParent(FSNode node, DirectoryNode parent);
-
-	bool SetCreateTime(FSNode node, DateTime time);
-	bool SetModifyTime(FSNode node, DateTime time);
-	bool SetAccessTime(FSNode node, DateTime time);
+	FileAttributes GetAttributes(FSNode node);
+	void SetAttributes(FSNode node, FileAttributes fileAttributes);
 
 	ulong Read(FileNode file, ulong offset, byte[] data);
 	ulong Write(FileNode file, ulong offset, byte[] data);
 
 	bool LoadContent(DirectoryNode dir);
-	FileNode CreateFile(DirectoryNode parent, string name);
-	DirectoryNode CreateDirectory(DirectoryNode parent, string name);
+	FSNode Create(DirectoryNode parent, FileType type, FileAttributes fileAttributes);
 	bool Remove(DirectoryNode parent, FSNode node);
-
-	Partition GetPartition();
-	@property string Identifier() { return identifier; }
-	@property void Identifier(string value) { identifier = value; }
 }

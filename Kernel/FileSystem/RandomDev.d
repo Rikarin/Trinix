@@ -3,12 +3,13 @@ module FileSystem.RandomDev;
 import VFSManager.CharNode;
 import VFSManager.DirectoryNode;
 import Devices.Random;
+import System.IO.FileAttributes;
 
 
 class RandomDev : CharNode {
-	this(string name = "random") { 
-		super(name);
-		length = 1024;
+	this(string name) {
+		super(NewAttributes(name));
+		attribs.Length = 1024;
 	}
 
 	override ulong Read(ulong offset, byte[] data) {
@@ -19,6 +20,6 @@ class RandomDev : CharNode {
 	}
 
 	override ulong Write(ulong offset, byte[] data) {
-		return data.length;
+		return 0;
 	}
 }

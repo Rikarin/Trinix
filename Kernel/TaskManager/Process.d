@@ -145,8 +145,6 @@ public:
 
 
 //Syscalls
-	override bool Accessible() { return true; }
-
 	ulong SCall(ulong[] params) {
 		if (params is null || !params.length)
 			return ~0UL;

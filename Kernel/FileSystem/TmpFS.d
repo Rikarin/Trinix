@@ -6,15 +6,22 @@ import VFSManager.FileNode;
 import VFSManager.Partition;
 import VFSManager.DirectoryNode;
 import VFSManager.FileSystemProto;
+import System.IO.FileAttributes;
 
 
 class TmpFileNode : FileNode {
 	private byte[] data;
-	package void SetLength(ulong length) { this.length = length; }
 
-	this(string name, FileSystemProto fs, ulong length = 0, uint perms = 0b110100100, ulong uid = 0, ulong gid = 0) {
-		DateTime now = DateTime.Now;
-		super(name, fs, length, perms, uid, gid, now, now, now);
+
+	override FileAttributes GetAttributes() {
+		attribs.Length = data.length;
+		return attribs;
+	}
+
+	this(FileSystemProto fileSystem, FileAttributes fileAttributes) {
+		attribs = fileAttributes;
+		fs      = filesystem;
+		super();
 	}
 
 	~this() { delete data; }
@@ -22,7 +29,11 @@ class TmpFileNode : FileNode {
 
 
 class TmpFS : FileSystemProto {
-	this() { }
+	private this() { }
+	override bool Unmount() { return true; }
+	override bool LoadContent(DirectoryNode dir) { return true; }
+	override Partition GetPartition() { return null; }
+
 
 	static TmpFS Mount(DirectoryNode mountPoint) {
 		if (mountPoint && !mountPoint.Mountpointable())
@@ -30,29 +41,13 @@ class TmpFS : FileSystemProto {
 
 		TmpFS ret = new TmpFS();
 		ret.isWritable = true;
-		ret.rootNode = new DirectoryNode("/", ret);
+		ret.rootNode = new DirectoryNode(ret, FSNode.NewAttributes("/", FileType.Directory));
 		ret.Identifier = "TmpFS";
 		ret.rootNode.SetParent(mountPoint);
 
 		mountPoint.Mount(ret.rootNode);
 		return ret;
 	}
-
-
-	override bool Unmount() { return true; }
-
-	override bool SetName(FSNode node, string name) { return true; }
-	override bool SetPermissions(FSNode node, uint perms) { return true; }
-	override bool SetUID(FSNode node, ulong uid) { return true; }
-	override bool SetGID(FSNode node, ulong gid) { return true; }
-	override bool SetParent(FSNode node, DirectoryNode parent) { return true; }
-
-	override bool SetCreateTime(FSNode node, DateTime time) { return true; }
-	override bool SetModifyTime(FSNode node, DateTime time) { return true; }
-	override bool SetAccessTime(FSNode node, DateTime time) { return true; }
-	
-	override bool LoadContent(DirectoryNode dir) { return true; }
-	override Partition GetPartition() { return null; }
 
 	override ulong Read(FileNode file, ulong offset, byte[] data) {
 		if (file.Length <= offset)
@@ -79,23 +74,27 @@ class TmpFS : FileSystemProto {
 			}
 
 			node.data = tmp;
-			node.SetLength(node.data.length);
 		}
 
 		node.data[offset .. end] = data[0 .. $];
 		return data.length;
 	}
 
-	override FileNode CreateFile(DirectoryNode parent, string name) {
-		TmpFileNode ret = new TmpFileNode(name, this);
-		parent.AddNode(ret);
-		return ret;
-	}
+	override FSNode Create(DirectoryNode parent, FileType type, FileAttributes fileAttributes) {
+		switch (type) {
+			case FileType.Directory:
+				auto ret = DirectoryNode(this, fileAttributes);
+				parent.AddNode(ret);
+				return ret;
+			
+			case FileType.File:
+				auto ret = new TmpFileNode(this, fileAttributes);
+				parent.AddNode(ret);
+				return ret;
 
-	override DirectoryNode CreateDirectory(DirectoryNode parent, string name) {
-		DirectoryNode ret = new DirectoryNode(name, this);
-		parent.AddNode(ret);
-		return ret;
+			default:
+				return null;
+		}
 	}
 
 	override bool Remove(DirectoryNode parent, FSNode node) {

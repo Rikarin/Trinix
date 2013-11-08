@@ -9,7 +9,9 @@ import FileSystem.TmpFS;
 import FileSystem.ProcFS;
 import FileSystem.SerialDev;
 import Devices.Port.SerialPort;
+
 import System.String;
+import System.IO.FileAttributes;
 
 
 class VFS {
@@ -21,7 +23,7 @@ static:
 
 
 	bool Init() {
-		root = new DirectoryNode("/", null);
+		root = new DirectoryNode(null, FSNode.NewAttributes("/"));
 		Log.Result(true);
 
 		Log.Print(" - Setting up DevFS");
@@ -29,11 +31,11 @@ static:
 		Log.Result(true);
 
 		Log.Print(" - Mounting TmpFS");
-		TmpFS.Mount(VFS.root.CreateDirectory("tmp"));
+		TmpFS.Mount(CreateDirectory("tmp"));
 		Log.Result(true);
 
 		Log.Print(" - Mounting ProcFS");
-		ProcFS.Mount(VFS.root.CreateDirectory("proc"));
+		ProcFS.Mount(CreateDirectory("proc"));
 		Log.Result(true);
 
 		Log.Print(" - Setting up serial devices ttyS0 - ttyS3");
@@ -51,28 +53,28 @@ static:
 				Log.Print(" ");
 				
 			Log.Print("- ");
-			Log.Print(x.Name);
+			Log.Print(x.GetAttributes().Name);
 
-			switch (x.Type) {
-				case FSType.DIRECTORY:
+			switch (x.GetAttributes().Type) {
+				case FileType.Directory:
 					Log.Print("(D)");
 					break;
-				case FSType.MOUNTPOINT:
+				case FileType.Mountpoint:
 					Log.Print("(M)");
 					break;
-				case FSType.PIPE:
+				case FileType.Pipe:
 					Log.Print("(P)");
 					break;
-				case FSType.CHARDEVICE:
+				case FileType.CharDevice:
 					Log.Print("(C)");
 					break;
-				case FSType.BLOCKDEVICE:
+				case FileType.BlockDevice:
 					Log.Print("(B)");
 					break;
-				case FSType.FILE:
+				case FileType.File:
 					Log.Print("(F)");
 					break;
-				case FSType.SYMLINK:
+				case FileType.Symlink:
 					Log.Print("(S)");
 					break;
 				default:
@@ -81,7 +83,7 @@ static:
 
 			Log.Print("\n");
 
-			if (x.Type & (FSType.DIRECTORY | FSType.MOUNTPOINT))
+			if (x.GetAttributes().Type & (FileType.Directory | FileType.Mountpoint))
 				PrintTree(cast(DirectoryNode)x, p + 1);
 		}
 	}
@@ -97,7 +99,7 @@ static:
 			if (x == "..")
 				node = node.Parent;
 			else if (x !is null && x != ".") {
-				if (node.Type == FSType.DIRECTORY)
+				if (node.GetAttributes().Type & (FileType.Directory | FileType.Mountpoint))
 					node = (cast(DirectoryNode)node).GetChild(x);
 				else
 					node = null;
@@ -114,7 +116,7 @@ static:
 		string path;
 
 		while (node !is null) {
-			string t = "/" ~ node.Name;
+			string t = "/" ~ node.GetAttributes().Name;
 
 			if (t != "//") {
 				t = t ~ path;
@@ -148,8 +150,8 @@ static:
 		if (node is null)
 			return null;
 
-		if (node.Type & (FSType.DIRECTORY | FSType.MOUNTPOINT))
-			return cast(FSNode)(cast(DirectoryNode)node).CreateFile(name);
+		if (node.GetAttributes().Type & (FileType.Directory | FileType.Mountpoint))
+			return cast(FSNode)(cast(DirectoryNode)node).Create(FileType.File, FSNode.NewAttributes(name));
 
 		return null;
 	}
@@ -173,8 +175,8 @@ static:
 		if (node is null)
 			return null;
 
-		if (node.Type == FSType.DIRECTORY)
-			return (cast(DirectoryNode)node).CreateDirectory(name);
+		if (node.GetAttributes().Type & (FileType.Directory | FileType.Mountpoint))
+			return cast(DirectoryNode)(cast(DirectoryNode)node).Create(FileType.Directory, FSNode.NewAttributes(name));
 
 		return null;
 	}
@@ -184,7 +186,7 @@ static:
 		if (parent is null)
 			return false;
 
-		if (parent.Type == FSType.DIRECTORY)
+		if (parent.Type & (FileType.Directory | FileType.Mountpoint))
 			return (cast(DirectoryNode)parent).Remove(node);
 
 		return false;

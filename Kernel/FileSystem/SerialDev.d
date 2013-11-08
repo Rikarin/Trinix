@@ -4,17 +4,18 @@ import VFSManager.CharNode;
 import VFSManager.DirectoryNode;
 import Devices.Port.SerialPort;
 import TaskManager.Task;
+
 import System.DateTime;
+import System.IO.FileAttributes;
 
 
 class SerialDev : CharNode {
 	private SerialPort dev;
 
 
-	this(string name, SerialPort device) { 
-		super(name);
+	this(string name, SerialPort device) {
+		super(NewAttributes(name));
 		dev = device;
-		atime = ctime = mtime = DateTime.Now;
 	}
 
 	override ulong Read(ulong offset, byte[] data) {

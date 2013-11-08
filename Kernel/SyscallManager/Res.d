@@ -93,5 +93,4 @@ public:
 
 package class NullRes : Resource {
 	this() { super(0, null); }
-	override bool Accessible() { return false; }
 }

@@ -1,51 +1,39 @@
 module FileSystem.ProcFS;
 
-import System.Convert;
-import System.DateTime;
+import TaskManager.Task;
 import VFSManager.FSNode;
 import VFSManager.FileNode;
 import VFSManager.Partition;
 import VFSManager.DirectoryNode;
 import VFSManager.FileSystemProto;
 
-import TaskManager.Task;
+import System.Convert;
+import System.DateTime;
+import System.IO.FileAttributes;
 
 
 class ProcFS : FileSystemProto {
-	this() { }
+	private this() { }
+	override bool Unmount() { return true; }
+	override Partition GetPartition() { return null; }
 
 	static ProcFS Mount(DirectoryNode mountPoint) {
 		if (mountPoint is null || !mountPoint.Mountpointable())
 			return null;
 
 		ProcFS ret = new ProcFS();
-		ret.rootNode = new DirectoryNode("/", ret);
+		ret.rootNode = new DirectoryNode(ret, FSNode.NewAttributes("/"));
 		ret.Identifier = "ProcFS";
 		ret.rootNode.SetParent(mountPoint);
-		
-		//ret.rootNode.AddNode(new DirectoryNode("current", ret));
-
 		mountPoint.Mount(ret.rootNode);
+
 		return ret;
 	}
 
-	override bool Unmount() { return true; }
-	override Partition GetPartition() { return null; }
-
-	override bool SetName(FSNode node, string name) { return false; }
-	override bool SetPermissions(FSNode node, uint perms) { return false; }
-	override bool SetUID(FSNode node, ulong uid) { return false; }
-	override bool SetGID(FSNode node, ulong gid) { return false; }
-	override bool SetParent(FSNode node, DirectoryNode parent) { return false; }
-
-	override bool SetCreateTime(FSNode node, DateTime time) { return false; }
-	override bool SetModifyTime(FSNode node, DateTime time) { return false; }
-	override bool SetAccessTime(FSNode node, DateTime time) { return false; }
-
-	override FileNode CreateFile(DirectoryNode parent, string name) { return null; }
-	override DirectoryNode CreateDirectory(DirectoryNode parent, string name) { return null; }
+	override ulong Read(FileNode file, ulong offset, byte[] data) { return 0; }
+	override ulong Write(FileNode file, ulong offset, byte[] data) { return 0; }
+	override FSNode Create(DirectoryNode parent, FileType type, FileAttributes fileAttributes) { return null; }
 	override bool Remove(DirectoryNode parent, FSNode node) { return false; }
-
 
 	override bool LoadContent(DirectoryNode dir) {
 		dir.IsLoaded = true;
@@ -56,14 +44,6 @@ class ProcFS : FileSystemProto {
 		//	LoadFileDesciptors(dir);
 
 		return true;
-	}
-
-	override ulong Read(FileNode file, ulong offset, byte[] data) {
-		return 0;
-	}
-
-	override ulong Write(FileNode file, ulong offset, byte[] data) {
-		return 0;
 	}
 
 

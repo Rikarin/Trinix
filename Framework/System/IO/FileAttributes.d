@@ -1,20 +1,27 @@
 module System.IO.FileAttributes;
 
-
-enum FileAttributes : short {
-	OExecute = 1,
-	OWrite   = 2,
-	ORead    = 4,
-
-	GExecute = 8,
-	GWrite   = 16,
-	GRead    = 32,
-
-	UExecute = 64,
-	UWrite   = 128,
-	URead    = 256,
+import System.DateTime;
 
 
-	Hidden    = 512,
-	Temporary = 1024,
+enum FileType : ubyte {
+	File        = 0x01,
+	Directory   = 0x02,
+	CharDevice  = 0x04,
+	BlockDevice = 0x08,
+	Pipe        = 0x10,
+	Symlink     = 0x20,
+	Mountpoint  = 0x40
+}
+
+
+struct FileAttributes {
+	string Name;
+	FileType Type;
+	ulong Length;
+	ulong UID;
+	ulong GID;
+	ushort Permissions;
+	DateTime AccessTime;
+	DateTime CreateTime;
+	DateTime ModifyTime;
 }

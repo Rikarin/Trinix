@@ -2,18 +2,19 @@ module FileSystem.HelloDev;
 
 import VFSManager.CharNode;
 import VFSManager.DirectoryNode;
+import System.IO.FileAttributes;
 
 
 class HelloDev : CharNode {
 	const string hello = "hello world";
 
-	this(string name = "hello") { 
-		super(name);
-		length = 12;
+	this(string name) {
+		super(NewAttributes(name));
+		attribs.Length = 12;
 	}
 
 	override ulong Read(ulong offset, byte[] data) {
-		foreach (long i, ref x; data)
+		foreach (ref x; data)
 			x = hello[offset++ % 12];
 			
 		return data.length;

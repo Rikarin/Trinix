@@ -1,11 +1,13 @@
 module VFSManager.DirectoryNode;
 
-import System.Collections.Generic.List;
 import VFSManager.FileSystemProto;
 import VFSManager.FSNode;
 import VFSManager.FileNode;
+
 import System.IFace;
 import System.DateTime;
+import System.Collections.Generic.List;
+import System.IO.FileAttributes;
 
 
 class DirectoryNode : FSNode {
@@ -18,32 +20,21 @@ package:
 public:
 	@property bool IsLoaded() { return isLoaded; }
 	@property void IsLoaded(bool value) { isLoaded = value; }
-	@property override FSType Type() { return mounts ? FSType.MOUNTPOINT : FSType.DIRECTORY; }
-	
-	void Unmount() { mounts = null; }
+	@property override FileType Type() { return mounts ? FileType.Mountpoint : FileType.Directory; }
+		
 	override ulong Read(ulong offset, byte[] data) { return 0; }
 	override ulong Write(ulong offset, byte[] data) { return 0; }
 
+	
+	override FileAttributes GetAttributes() {
+		if (attribs.Name == "/" && parent)
+			return parent.attribs;
 
-	@property override string Name() {
-		if (name == "/" && parent)
-			return parent.Name;
-
-		return name;
-	}
-
-	@property override ulong Length() {
-		if (mounts)
-			return mounts.Length;
-
-		if (!LoadContent())
-			return 0;
-
-		return childrens.Count;
+		return attribs;
 	}
 
 	@property override DirectoryNode Parent() {
-		if (name == "/" && parent)
+		if (attribs.Name == "/" && parent)
 			return parent.Parent;
 
 		return parent;
@@ -52,44 +43,44 @@ public:
 	@property List!(FSNode) Childrens() {
 		if (mounts)
 			return mounts.Childrens;
-
-		if (!isLoaded)
-			LoadContent();
-
+		
+		LoadContent();
 		return childrens;
 	}
 
-	this(string name, FileSystemProto fs, uint perms = 0b110100100, ulong uid = 0, ulong gid = 0, DateTime atime = null, DateTime mtime = null, DateTime ctime = null) {
+	this(FileSystemProto fileSystem, FileAttributes fileAttributes) {
 		/*const CallTable[] callTable = [
 			{FNIF_GETIDXCHILD, &GetIdxChildSC},
 			{FNIF_GETNAME, &GetNameChildSC}
 		];*/
 		//AddCallTable(callTable);
 
-		childrens   = new List!FSNode();
-		this.name   = name;
-		this.fs     = fs;
-		this.perms  = perms;
-		this.uid    = uid;
-		this.gid    = gid;
-		this.atime  = atime;
-		this.ctime  = ctime;
-		this.mtime  = mtime;
+		childrens    = new List!FSNode();
+		attribs      = fileAttributes;
+		fs           = fileSystem;
+		attribs.Type = FileType.Directory;
 		super();
 	}
 
 	~this() {
-		if (name == "/" && parent)
+		if (attribs.Name == "/" && parent)
 			(cast(DirectoryNode)parent).Unmount();
 
 		delete childrens;
 	}
 
+	void Unmount() {
+		mounts = null;
+		attribs.Type = FileType.Directory;
+	}
+
 	bool Mount(DirectoryNode childRoot) {
 		if (Mountpointable()) {
 			mounts = childRoot;
+			attribs.Type = FileType.Mountpoint;
 			return true;
 		}
+
 		return false;
 	}
 
@@ -103,13 +94,6 @@ public:
 		bool ret = fs.LoadContent(this);
 		isLoaded = ret;
 		return ret;
-	}
-
-	override bool Removable() {
-		if (!LoadContent())
-			return false;
-
-		return !childrens.Count && mounts is null;
 	}
 
 	bool Mountpointable() {
@@ -126,38 +110,30 @@ public:
 		if (!LoadContent())
 			return null;
 
-		foreach (x; childrens) {
-			if (x.Name == name)
+		foreach (x; childrens)
+			if (x.GetAttributes().Name == name)
 				return x;
-		}
 
 		return null;
 	}
 
-	DirectoryNode CreateDirectory(string name) {
+	FSNode Create(FileType type, FileAttributes fileAttributes) {
 		if (mounts)
-			return mounts.CreateDirectory(name);
+			return mounts.Create(type, fileAttributes);
 
-		DirectoryNode ret;
-		if (fs !is null)
-			ret = fs.CreateDirectory(this, name);
-		else {
-			ret = new DirectoryNode(name, null);
-			ret.ctime = ret.mtime = ret.atime = DateTime.Now;
-			AddNode(ret);
+		if (fs is null) {
+			switch (type) {
+				case FileType.Directory:
+					FSNode ret = new DirectoryNode(null, fileAttributes);
+					AddNode(ret);
+					return ret;
+
+				default:
+					return null;
+			}
 		}
-		
-		return ret;
-	}
 
-	FileNode CreateFile(string name) {
-		if (mounts)
-			return mounts.CreateFile(name);
-
-		if (fs is null)
-			return null;
-
-		return fs.CreateFile(this, name);
+		return fs.Create(this, FileType.Directory, fileAttributes);
 	}
 
 	bool Remove(FSNode child) {
@@ -167,23 +143,18 @@ public:
 		if (!LoadContent())
 			return false;
 
-		foreach (x; childrens) {
-			if (x == child) {
-				if (!x.Removable())
-					return false;
+		ulong id = childrens.IndexOf(child);
+		if (id == -1)
+			return false;
 
-				if (fs != x.FileSystem)
-					return false;
+		if (fs != childrens[id].FileSystem)
+			return false;
 
-				if (fs !is null && !fs.Remove(this, child))
-					return false;
+		if (fs !is null && fs.Remove(this, child))
+			return false;
 
-				childrens.Remove(x);
-				return true;
-			}
-		}
-
-		return false;
+		childrens.RemoveAt(id);
+		return true;
 	}
 
 	void AddNode(FSNode node) {
@@ -193,7 +164,6 @@ public:
 
 
 	//Syscalls
-	override bool Accessible() { return true; }
 /*private:
 	ulong GetIdxChildSC(ulong[] params) {
 		if (!Runnable())

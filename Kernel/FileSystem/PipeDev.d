@@ -3,30 +3,32 @@ module FileSystem.PipeDev;
 import VFSManager.PipeNode;
 import VFSManager.DirectoryNode;
 import Devices.Random;
-import System.Threading.All;
-import System.Collections.Generic.List;
 import TaskManager.Thread;
 import TaskManager.Task;
+
 import System.DateTime;
+import System.Threading.All;
+import System.IO.FileAttributes;
+import System.Collections.Generic.List;
 
 
 class PipeDev : PipeNode {
 private:
 	List!Thread waitingQueue;
-	long refcount;
 	Mutex mutex;
-
 	byte[] buffer;
+
 	long writePtr, readPtr;
 
 
 public:
-	@property override ulong Length() { return UnreadCount(); }
+	override FileAttributes GetAttributes() {
+		attribs.Length = UnreadCount();
+		return attribs;
+	}
 
-	this(ulong length, string name = "pipe") { 
-		super(name);
-		this.length = length;
-		atime = ctime = mtime = DateTime.Now;
+	this(string name, ulong length) { 
+		super(NewAttributes(name));
 
 		waitingQueue = new List!Thread();
 		buffer = new byte[length];
@@ -37,15 +39,6 @@ public:
 		delete waitingQueue;
 		delete buffer;
 		delete mutex;
-	}
-
-	override void Open() {
-		refcount++;
-	}
-
-	override void Close() {
-		if (refcount > 0)
-			refcount--;
 	}
 
 	override ulong Read(ulong offset, byte[] data) {
@@ -95,30 +88,30 @@ private:
 			return 0;
 
 		if (readPtr > writePtr)
-			return (length - readPtr) + writePtr;
+			return (buffer.length - readPtr) + writePtr;
 		else
 			return writePtr - readPtr;
 	}
 
 	void IncrementRead() {
 		readPtr++;
-		if (readPtr == length)
+		if (readPtr == buffer.length)
 			readPtr = 0;
 	}
 
 	void IncrementWrite() {
 		writePtr++;
-		if (writePtr == length)
+		if (writePtr == buffer.length)
 			writePtr = 0;
 	}
 
 	long FreeSpace() {
 		if (readPtr == writePtr)
-			return length - 1;
+			return buffer.length - 1;
 
 		if (readPtr > writePtr)
 			return readPtr  - writePtr - 1;
 		else
-			return (length - writePtr) + readPtr - 1;
+			return (buffer.length - writePtr) + readPtr - 1;
 	}
 }

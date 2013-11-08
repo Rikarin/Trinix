@@ -1,10 +1,12 @@
 module Devices.TTY;
 
-import System.Collections.Generic.Queue;
 import VFSManager.CharNode;
 import TaskManager.Process;
+
 import System.Termios;
 import System.Threading.Mutex;
+import System.IO.FileAttributes;
+import System.Collections.Generic.Queue;
 
 
 class TTY {
@@ -160,19 +162,18 @@ class PTYDev : CharNode {
 	TTY tty;
 	Mutex mutex;
 
-
-	@property override ulong Length() {
-		return tty.outQueue.Count;
+	
+	override FileAttributes GetAttributes() {
+		attribs.Length = tty.outQueue.Count;
+		return attribs;
 	}
 
-
-	this(TTY tty, string name = "pty") {
-		super(name);
+	this(TTY tty, string name) {
 		this.tty = tty;
-
 		mutex = new Mutex();
-	}
 
+		super(NewAttributes(name));
+	}
 
 	override ulong Read(ulong offset, byte[] data) {
 		ulong collected;
@@ -199,16 +200,17 @@ class PTYDev : CharNode {
 class TTYDev : CharNode {
 	TTY tty;
 
-	@property override ulong Length() {
-		return tty.inQueue.Count;
-	}
 
+	override FileAttributes GetAttributes() {
+		attribs.Length = tty.inQueue.Count;
+		return attribs;
+	}
 
 	this(TTY tty, string name = "tty") {
-		super(name);
 		this.tty = tty;
+		
+		super(NewAttributes(name));
 	}
-
 
 	override ulong Read(ulong offset, byte[] data) {
 		if (tty.termios.LFlag & LocalModes.ICANON) {
