@@ -24,7 +24,7 @@ class ProcFS : FileSystemProto {
 		ProcFS ret = new ProcFS();
 		ret.rootNode = new DirectoryNode(ret, FSNode.NewAttributes("/"));
 		ret.Identifier = "ProcFS";
-		ret.rootNode.SetParent(mountPoint);
+		//ret.rootNode.SetParent(mountPoint); TODO
 		mountPoint.Mount(ret.rootNode);
 
 		return ret;
@@ -52,7 +52,7 @@ private:
 		auto fd = processDir.GetChild("fd");
 
 		if (fd is null) {
-			fd = new DirectoryNode("fd", this);
+			fd = new DirectoryNode(this, FSNode.NewAttributes("fd"));
 			processDir.AddNode(fd);
 		}
 
@@ -72,7 +72,7 @@ private:
 			auto child = rootNode.GetChild(name);
 
 			if (child is null)
-				rootNode.AddNode(new DirectoryNode(name, this));
+				rootNode.AddNode(new DirectoryNode(this, FSNode.NewAttributes(name)));
 		}
 	}
 }

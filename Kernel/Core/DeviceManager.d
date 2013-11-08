@@ -2,6 +2,7 @@ module Core.DeviceManager;
 
 import Architectures.Core;
 import Devices.DeviceProto;
+import VFSManager.FSNode;
 import VFSManager.DirectoryNode;
 
 import System.IO.FileAttributes;
@@ -26,6 +27,7 @@ struct DeviceInfo {
 
 
 class DeviceManager {
+static:
 private:
 	struct Data {
 		DeviceProto dev;
@@ -37,7 +39,6 @@ private:
 	
 	
 public:
-static:
 	__gshared DirectoryNode DevFS;
 
 

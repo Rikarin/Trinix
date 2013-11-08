@@ -19,9 +19,7 @@ class TmpFileNode : FileNode {
 	}
 
 	this(FileSystemProto fileSystem, FileAttributes fileAttributes) {
-		attribs = fileAttributes;
-		fs      = filesystem;
-		super();
+		super(fileSystem, fileAttributes);
 	}
 
 	~this() { delete data; }
@@ -41,19 +39,19 @@ class TmpFS : FileSystemProto {
 
 		TmpFS ret = new TmpFS();
 		ret.isWritable = true;
-		ret.rootNode = new DirectoryNode(ret, FSNode.NewAttributes("/", FileType.Directory));
+		ret.rootNode = new DirectoryNode(ret, FSNode.NewAttributes("/"));
 		ret.Identifier = "TmpFS";
-		ret.rootNode.SetParent(mountPoint);
+		//ret.rootNode.SetParent(mountPoint); TODO
 
 		mountPoint.Mount(ret.rootNode);
 		return ret;
 	}
 
 	override ulong Read(FileNode file, ulong offset, byte[] data) {
-		if (file.Length <= offset)
+		if (file.GetAttributes().Length <= offset)
 			return 0;
 
-		ulong len = file.Length - offset;
+		ulong len = file.GetAttributes().Length - offset;
 		if (len > data.length)
 			len = data.length;
 
@@ -65,7 +63,7 @@ class TmpFS : FileSystemProto {
 		TmpFileNode node = cast(TmpFileNode)file;
 		ulong end = offset + data.length;
 
-		if (end > file.Length) {
+		if (end > file.GetAttributes().Length) {
 			byte[] tmp = new byte[end];
 
 			if (node.data !is null) {
@@ -83,7 +81,7 @@ class TmpFS : FileSystemProto {
 	override FSNode Create(DirectoryNode parent, FileType type, FileAttributes fileAttributes) {
 		switch (type) {
 			case FileType.Directory:
-				auto ret = DirectoryNode(this, fileAttributes);
+				auto ret = new DirectoryNode(this, fileAttributes);
 				parent.AddNode(ret);
 				return ret;
 			
@@ -98,13 +96,13 @@ class TmpFS : FileSystemProto {
 	}
 
 	override bool Remove(DirectoryNode parent, FSNode node) {
-		if (node.Type == FSType.FILE) {
+		if (node.Type == FileType.File) {
 			TmpFileNode n = cast(TmpFileNode)node;
 			if (n.data !is null)
 				delete n.data;
 
 			return true;
-		} else if (node.Type == FSType.DIRECTORY) {
+		} else if (node.Type == FileType.Directory) {
 			if (!(cast(DirectoryNode)node).Childrens.Count)
 				return true;
 		}

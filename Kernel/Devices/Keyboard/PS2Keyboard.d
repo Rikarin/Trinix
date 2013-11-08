@@ -75,7 +75,7 @@ public:
 		Port.Write!ubyte(0x60, 0xF4);
 
 		
-		pipe = new PipeDev(128, "keyboard");
+		pipe = new PipeDev("keyboard", 128);
 		DeviceManager.DevFS.AddNode(pipe);
 
 		DeviceManager.RequestIRQ(this, 1);

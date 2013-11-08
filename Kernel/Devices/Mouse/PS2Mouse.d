@@ -76,7 +76,7 @@ public:
 		PIC.EOI(12);
 		LocalAPIC.EOI();
 
-		pipe = new PipeDev(0x1C00, "mouse");
+		pipe = new PipeDev("mouse", 0x1C00);
 		DeviceManager.DevFS.AddNode(pipe);
 
 		DeviceManager.RequestIRQ(this, 12);

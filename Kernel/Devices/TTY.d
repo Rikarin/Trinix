@@ -34,8 +34,8 @@ public:
 		inQueue  = new Queue!char();
 		outQueue = new Queue!char();
 
-		master = new PTYDev(this);
-		slave  = new TTYDev(this);
+		master = new PTYDev(this, "pty");
+		slave  = new TTYDev(this, "tty");
 
 		cannonBuffer = new char[512];
 
