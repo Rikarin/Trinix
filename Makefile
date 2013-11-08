@@ -115,7 +115,10 @@ runtime:
 $(DISK): Disk/Trinix-Kernel
 	@echo "Generating a Hard Disk image..."
 	@rm -f $(DISK)
-	
+	@grub-mkrescue -o $(DISK) Disk
+
+
+fixme:
 	@-dito-generate $(DISK) 100M 50M
 	@dito-format $(DISK):1 ext2
 	@dito-format $(DISK):2 ext2

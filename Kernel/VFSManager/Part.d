@@ -41,11 +41,8 @@ private:
         foreach (i; 0 .. 4) {
     		if ((entry[i].Bootable == 0 || entry[i].Bootable == 0x80) && entry[i].ID
     			&& entry[i].StartLBA && entry[i].Size && entry[i].StartLBA < dev.Blocks
-    			&& entry[i].Size < dev.Blocks) {
+    			&& entry[i].Size < dev.Blocks)
     			partitions.Add(new Partition(dev, cast(ubyte)(i + 1), entry[i].StartLBA, entry[i].Size));
-            import Core.Log;
-            Log.PrintSP("!@#$");
-        }
     	}
 
        // delete mbr; TODO: fixme
