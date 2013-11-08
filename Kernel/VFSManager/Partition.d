@@ -21,12 +21,11 @@ public:
 
 
 	this(BlockDeviceProto dev, ubyte number, ulong start, ulong count) {
-		cache = new BlockCache(dev);
-
-		this.dev = dev;
+		cache       = new BlockCache(dev, 0x10000);
+		this.dev    = dev;
 		this.number = number;
-		this.start = start;
-		this.count = count;
+		this.start  = start;
+		this.count  = count;
 	}
 
 	ulong Read(ulong offset, byte[] data) {

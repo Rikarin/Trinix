@@ -1,76 +1,73 @@
 module VFSManager.BlockCache;
 
 import Devices.BlockDeviceProto;
-import Architectures.Timing;
-
-import System.Collections.Generic.List;
+import System.DateTime;
 
 
 class BlockCache {
 private:
 	struct CachedBlock {
-		ulong id = 0;
-		Time LastUse = cast(Time)0;
-		bool Dirty = false;
+		ulong ID;
+		DateTime LastUse;
+		bool Dirty;
 		byte[] Data;
 	}
 
 	BlockDeviceProto dev;
-	List!CachedBlock cache;
+	CachedBlock[] cache;
 
 
-	bool GetCache(ulong block, byte[] data) {
-		for (ulong i = 0; i < cache.Count; i++) {
-			if (cache[i].id == block && cache[i].LastUse != cast(Time)0) {
-				cache[i].LastUse = Timing.CurrentTime();
-				data = cache[i].Data;
+	bool GetCache(ulong offset, byte[] data) {
+		foreach (x; cache) {
+			if (x.ID == offset && x.LastUse !is null) {
+				x.LastUse = DateTime.Now;
+				data[] = x.Data[0 .. $];
 				return true;
 			}
 		}
+
 		return false;
 	}
 
-	bool SetCache(ulong block, byte[] data, bool dirty = false) {
+	bool SetCache(ulong offset, byte[] data, bool dirty = false) {
 		CachedBlock* best;
 
-		foreach (x; cache) {
-			if (x.id == block) {
+		foreach (ref x; cache) {
+			if (x.ID == offset) {
 				best = &x;
 				break;
 			}
 
-			if (x.LastUse < best.LastUse)
+			if (x.LastUse.Ticks < best.LastUse.Ticks)
 				best = &x;
 		}
 
-		if (best.Dirty && (best.id != block || !dirty))
-			dev.Write(best.id, best.Data);
+		if (best.Dirty && (best.ID != offset || !dirty))
+			dev.Write(best.ID, best.Data);
 
-		best.id = block;
-		best.LastUse = Timing.CurrentTime();
-		best.Dirty = dirty;
-		best.Data = cast(byte[])data;
+		best.ID      = offset;
+		best.LastUse = DateTime.Now;
+		best.Dirty   = dirty;
+		best.Data    = data;
 		return true;
 	}
 
 
 public:
-	this(BlockDeviceProto dev) {
+	this(BlockDeviceProto dev, ulong size) {
 		this.dev = dev;
-		cache = new List!CachedBlock();
+		cache = new CachedBlock[size];
 	}
 
 	~this() {
 		Sync();
-		//delete...
+		delete cache;
 	}
 
 	void Sync() {
-		foreach (x; cache) {
-			if (x.Dirty) {
-				dev.Write(x.id, x.Data);
-			}
-		}
+		foreach (x; cache)
+			if (x.Dirty)
+				dev.Write(x.ID, x.Data);
 	}
 
 	ulong Read(ulong offset, byte[] data) {
@@ -91,6 +88,7 @@ public:
 		if (data.length <= dev.BlockSize()) {
 			if (!SetCache(offset, data, true))
 				return dev.Write(offset, data);
+
 			return data.length;
 		} else
 			return dev.Write(offset, data);
