@@ -24,12 +24,14 @@ class ProcFS : FileSystemProto {
 		ProcFS ret = new ProcFS();
 		ret.rootNode = new DirectoryNode(ret, FSNode.NewAttributes("/"));
 		ret.Identifier = "ProcFS";
-		//ret.rootNode.SetParent(mountPoint); TODO
-		mountPoint.Mount(ret.rootNode);
+		ret.rootNode.Parent = mountPoint;
 
+		mountPoint.Mount(ret.rootNode);
 		return ret;
 	}
 
+	override FileAttributes GetAttributes(FSNode node) { return node.GetAttributes(); }
+	override void SetAttributes(FSNode node, FileAttributes fileAttributes) { node.SetAttributes(fileAttributes); }
 	override ulong Read(FileNode file, ulong offset, byte[] data) { return 0; }
 	override ulong Write(FileNode file, ulong offset, byte[] data) { return 0; }
 	override FSNode Create(DirectoryNode parent, FileType type, FileAttributes fileAttributes) { return null; }

@@ -87,7 +87,7 @@ extern(C) void StartSystem() {
 	Log.Result(true);
 
 	Log.Print("Detecting hard drives");
-	ATAController.Detect();
+	//ATAController.Detect();
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
@@ -105,6 +105,10 @@ extern(C) void StartSystem() {
 	Log.Print("Booting complete, starting init process");
 	Log.Result(false);
 
+	VFS.CreateDirectory("test");
+	VFS.CreateDirectory("test2");
+
+	VFS.PrintTree(VFS.RootNode);
 	//import Devices.PCI.PCIDev;
 	//PCIDev.ScanDevices();
 
@@ -117,14 +121,3 @@ extern(C) void StartSystem() {
 extern(C) void apEntry() {
 	while (true) { }
 }
-
-/*
-FileAttributes fa;
-			
-			fa.Name        = name;
-			fa.AccessTime  = fa.CreateTime = fa.ModifyTime = DateTime.now;
-			fa.Permissions = 644;
-			fa.Type        = type;
-			fa.UID         = 123;
-			fa.GID         = 456;
-*/

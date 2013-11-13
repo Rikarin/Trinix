@@ -31,6 +31,8 @@ class TmpFS : FileSystemProto {
 	override bool Unmount() { return true; }
 	override bool LoadContent(DirectoryNode dir) { return true; }
 	override Partition GetPartition() { return null; }
+	override FileAttributes GetAttributes(FSNode node) { return node.GetAttributes(); }
+	override void SetAttributes(FSNode node, FileAttributes fileAttributes) { node.SetAttributes(fileAttributes); }
 
 
 	static TmpFS Mount(DirectoryNode mountPoint) {
@@ -41,7 +43,7 @@ class TmpFS : FileSystemProto {
 		ret.isWritable = true;
 		ret.rootNode = new DirectoryNode(ret, FSNode.NewAttributes("/"));
 		ret.Identifier = "TmpFS";
-		//ret.rootNode.SetParent(mountPoint); TODO
+		ret.rootNode.Parent = mountPoint;
 
 		mountPoint.Mount(ret.rootNode);
 		return ret;

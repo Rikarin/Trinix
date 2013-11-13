@@ -36,7 +36,7 @@ static:
 
 		Log.Print(" - Mounting ProcFS");
 		ProcFS.Mount(CreateDirectory("proc"));
-		Log.Result(true);
+		Log.Result(false);
 
 		Log.Print(" - Setting up serial devices ttyS0 - ttyS3");
 		DeviceManager.DevFS.AddNode(new SerialDev("ttyS0", new SerialPort(SerialPort.COM1)));
@@ -95,7 +95,7 @@ static:
 		if (p[0] is null)
 			node = root;
 
-		foreach (x; p[1 .. $]) {
+		foreach (x; p) {
 			if (x == "..")
 				node = node.Parent;
 			else if (x !is null && x != ".") {
