@@ -1,10 +1,10 @@
 module Devices.ATA.ATAController;
 
-static import Architectures.Port;
 import Core.DeviceManager;
-import Devices.ATA.ATADrive;
 import Devices.DeviceProto;
-import VFSManager.Part;
+import Devices.ATA.ATADrive;
+import VFSManager.Partition;
+static import Architectures.Port;
 
 import System.Threading.Mutex;
 
@@ -101,9 +101,9 @@ public:
 				ATADrive d = c[i].drives[j];
 
 				if (d) {
-					Part.Register(d);
-					DeviceManager.RegisterDevice(d, DeviceInfo("ATA Driver " ~ (i ? "#1 " : "#2") ~ 
-					(j ? "Master" : "Slave"), DeviceType.BlockDevice));
+					Partition.ReadTable(d);
+					//DeviceManager.RegisterDevice(d, DeviceInfo("ATA Driver " ~ (i ? "#1 " : "#2") ~ 
+					//(j ? "Master" : "Slave"), DeviceType.BlockDevice));
 				}
 			}
 		}

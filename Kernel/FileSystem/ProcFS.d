@@ -24,7 +24,6 @@ class ProcFS : FileSystemProto {
 		ProcFS ret = new ProcFS();
 		ret.rootNode = new DirectoryNode(ret, FSNode.NewAttributes("/"));
 		ret.Identifier = "ProcFS";
-		ret.rootNode.Parent = mountPoint;
 
 		mountPoint.Mount(ret.rootNode);
 		return ret;

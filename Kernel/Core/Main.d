@@ -14,7 +14,6 @@ import Architectures.Paging;
 import Architectures.Multiprocessor;
 
 import VFSManager.VFS;
-import VFSManager.Part;
 
 import TaskManager.Task;
 import TaskManager.Process;
@@ -72,9 +71,6 @@ extern(C) void StartSystem() {
 	Log.Print("Initializing device manger");
 	Log.Result(DeviceManager.Init());
 
-	Log.Print("Initializing partition manager");
-	Log.Result(Part.Init());
-
 	Log.Print("Initializing VFS manger");
 	Log.Result(VFS.Init());
 
@@ -87,7 +83,7 @@ extern(C) void StartSystem() {
 	Log.Result(true);
 
 	Log.Print("Detecting hard drives");
-	//ATAController.Detect();
+	ATAController.Detect();
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
@@ -107,6 +103,12 @@ extern(C) void StartSystem() {
 
 	VFS.CreateDirectory("test");
 	VFS.CreateDirectory("test2");
+
+
+	//nefunguje
+	//VFS.CreateFile("tmp/subor.dat");
+	//VFS.CreateDirectory("test2/omg");
+	//VFS.CreateDirectory("test2/omg/lol");
 
 	VFS.PrintTree(VFS.RootNode);
 	//import Devices.PCI.PCIDev;

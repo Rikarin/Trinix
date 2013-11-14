@@ -37,7 +37,6 @@ public:
 	@property FileType Type() { return attribs.Type; }
 	@property FileSystemProto FileSystem() { return fs; }
 	@property DirectoryNode Parent() { return parent; }
-	@property void Parent(DirectoryNode parent) { this.parent = parent; } //TODO
 	
 	ulong Read(ulong offset, byte[] data);
 	ulong Write(ulong offset, byte[] data);

@@ -21,7 +21,6 @@ public:
 	@property bool IsLoaded() { return isLoaded; }
 	@property void IsLoaded(bool value) { isLoaded = value; }
 	@property override FileType Type() { return mounts ? FileType.Mountpoint : FileType.Directory; }
-	override @property void Parent(DirectoryNode parent) { this.parent = parent; } //TODO
 		
 	override ulong Read(ulong offset, byte[] data) { return 0; }
 	override ulong Write(ulong offset, byte[] data) { return 0; }
@@ -77,8 +76,9 @@ public:
 
 	bool Mount(DirectoryNode childRoot) {
 		if (Mountpointable()) {
-			mounts = childRoot;
-			attribs.Type = FileType.Mountpoint;
+			childRoot.parent = this;
+			mounts           = childRoot;
+			attribs.Type     = FileType.Mountpoint;
 			return true;
 		}
 
@@ -134,7 +134,7 @@ public:
 			}
 		}
 
-		return fs.Create(this, FileType.Directory, fileAttributes);
+		return fs.Create(this, type, fileAttributes);
 	}
 
 	bool Remove(FSNode child) {

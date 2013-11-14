@@ -96,7 +96,7 @@ Disk/Trinix-Kernel: $(OBJS)
 #   Debug   #
 #############
 debug: all Trinix.img
-	@${EMU} -hda Trinix.img -boot c -m 512 -serial /dev/ttyS0 \
+	@${EMU} -hda Trinix.img -hdb disk.img -boot c -m 512 -serial /dev/ttyS0 \
 	-vga vmware -monitor stdio
 	
 
