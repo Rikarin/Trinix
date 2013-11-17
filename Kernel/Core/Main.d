@@ -78,10 +78,6 @@ extern(C) void StartSystem() {
 	Log.Result(Task.Init());
 
 //==================== DEVICES ====================
-	Log.Print("Initializing timer ticks = 100Hz");
-	new Timer(100);
-	Log.Result(true);
-
 	Log.Print("Detecting hard drives");
 	ATAController.Detect();
 	Log.Result(true);
@@ -98,19 +94,34 @@ extern(C) void StartSystem() {
 	//BGA.Init(800, 600);
 	Log.Result(true);
 
+	Log.Print("Initializing timer ticks = 100Hz");
+	new Timer(100);
+	Log.Result(true);
+
 	Log.Print("Booting complete, starting init process");
 	Log.Result(false);
 
-	VFS.CreateDirectory("test");
-	VFS.CreateDirectory("test2");
 
+	import FileSystem.Ext2;
+	import VFSManager.Partition;
+	auto ext = VFS.CreateDirectory("ext");
+	Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hda1"));
+
+	VFS.PrintTree(VFS.RootNode);
+
+
+	/*auto aa = VFS.Find("/dev/hda1");
+	if(aa) {
+		byte[1000] xx;
+		aa.Read(0, xx);
+		Log.PrintSP(cast(string)xx);
+	}*/
 
 	//nefunguje
 	//VFS.CreateFile("tmp/subor.dat");
 	//VFS.CreateDirectory("test2/omg");
 	//VFS.CreateDirectory("test2/omg/lol");
 
-	VFS.PrintTree(VFS.RootNode);
 	//import Devices.PCI.PCIDev;
 	//PCIDev.ScanDevices();
 

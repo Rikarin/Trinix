@@ -39,7 +39,7 @@ class TmpFS : FileSystemProto {
 		if (mountPoint && !mountPoint.Mountpointable())
 			return null;
 
-		TmpFS ret = new TmpFS();
+		auto ret = new TmpFS();
 		ret.isWritable = true;
 		ret.rootNode = new DirectoryNode(ret, FSNode.NewAttributes("/"));
 		ret.Identifier = "TmpFS";

@@ -102,8 +102,8 @@ public:
 
 				if (d) {
 					Partition.ReadTable(d);
-					//DeviceManager.RegisterDevice(d, DeviceInfo("ATA Driver " ~ (i ? "#1 " : "#2") ~ 
-					//(j ? "Master" : "Slave"), DeviceType.BlockDevice));
+					DeviceManager.RegisterDevice(d, DeviceInfo("ATA Driver " ~ (i ? "#1 " : "#2") ~ 
+					(j ? "Master" : "Slave"), DeviceType.BlockDevice));
 				}
 			}
 		}

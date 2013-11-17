@@ -1,9 +1,15 @@
 module FileSystem.Ext2;
 
+import VFSManager.FSNode;
+import VFSManager.FileNode;
 import VFSManager.Partition;
+import VFSManager.DirectoryNode;
+import VFSManager.FileSystemProto;
+
+import System.IO.FileAttributes;
 
 
-class Ext2 {
+class Ext2 : FileSystemProto {
 private:
 	struct Superblock {
 	align(1):
@@ -89,7 +95,6 @@ private:
 	}
 
 
-	enum BLOCK_SIZE = 0x123; //todo
 	Partition part;
 
 	Superblock sb;
@@ -97,16 +102,37 @@ private:
 	bool groupsDirty;
 	bool sbDirty;
 
-	@property ulong BlockSize() { return 0; } //todo
-	@property ulong NumGroups() { return 0; }
+	@property ulong BlockSize() { return 1024 << sb.BlockSize; }
+	@property ulong NumGroups() { return (sb.NumInodes / sb.InodesPerGroup) + (sb.NumInodes % sb.InodesPerGroup != 0); }
 
+
+
+	this(Partition part) {
+		this.part = part;
+
+		part.Read(0, (cast(byte *)&sb)[0 .. 512]);
+
+		import Core.Log;
+		import System.Convert;
+		Log.PrintSP("groups: " ~ Convert.ToString(NumGroups));
+
+		groups = new Group[NumGroups];
+		ReadBlocks(1, (cast(byte *)&groups)[0 .. groups.length * Group.sizeof]);
+
+
+		//inode bufer ?!
+	}
+
+	~this() {
+
+	}
 
 	ulong ReadBlocks(ulong offset, byte[] data) {
-		return part.Read(offset * BlockSize / BLOCK_SIZE, data);
+		return part.Read(offset * BlockSize / part.BlockSize, data);
 	}
 
 	ulong WriteBlocks(ulong offset, byte[] data) {
-		return part.Write(offset * BlockSize / BLOCK_SIZE, data);
+		return part.Write(offset * BlockSize / part.BlockSize, data);
 	}
 
 	ulong ReadGroupBlocks(ulong group, ulong offset, byte[] data) {
@@ -279,4 +305,37 @@ private:
 	}
 
 	//ulong GetIndirect(ulong block, int level, )
+
+
+
+
+
+
+
+public:
+	override bool Unmount() { return true; }
+	override bool LoadContent(DirectoryNode dir) { return true; }
+	override Partition GetPartition() { return part; }
+	override FileAttributes GetAttributes(FSNode node) { return node.GetAttributes(); }
+	override void SetAttributes(FSNode node, FileAttributes fileAttributes) { node.SetAttributes(fileAttributes); }
+
+	override ulong Read(FileNode file, ulong offset, byte[] data) { return 0; }
+	override ulong Write(FileNode file, ulong offset, byte[] data) { return 0; }
+	override FSNode Create(DirectoryNode parent, FileType type, FileAttributes fileAttributes) { return null; }
+	override bool Remove(DirectoryNode parent, FSNode node) { return false; }
+
+
+
+	public static Ext2 Mount(DirectoryNode mountPoint, Partition part) {
+		if (mountPoint && !mountPoint.Mountpointable())
+			return null;
+
+		auto ret = new Ext2(part);
+		ret.isWritable = true;
+		ret.rootNode = new DirectoryNode(ret, FSNode.NewAttributes("/"));
+		ret.Identifier = "Ext2";
+
+		mountPoint.Mount(ret.rootNode);
+		return ret;
+	}
 }

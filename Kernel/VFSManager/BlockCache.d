@@ -71,7 +71,7 @@ public:
 	}
 
 	ulong Read(ulong offset, byte[] data) {
-		if (data.length <= dev.BlockSize()) {
+		/*if (data.length <= dev.BlockSize()) {
 			if (GetCache(offset, data))
 				return 0;
 
@@ -80,17 +80,17 @@ public:
 
 			SetCache(offset, data);
 			return data.length;
-		} else
+		} else*/
 			return dev.Read(offset, data);
 	}
 
 	ulong Write(ulong offset, byte[] data) {
-		if (data.length <= dev.BlockSize()) {
+	/*	if (data.length <= dev.BlockSize()) {
 			if (!SetCache(offset, data, true))
 				return dev.Write(offset, data);
 
 			return data.length;
-		} else
+		} else*/
 			return dev.Write(offset, data);
 	}
 }

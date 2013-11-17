@@ -60,7 +60,7 @@ public:
     }
 
 	private this(BlockDeviceProto dev, ulong start, ulong count, FileAttributes fileAttributes) {
-		//cache       = new BlockCache(dev, 0x10000);
+		cache       = new BlockCache(dev, 0x10000);
 		this.dev    = dev;
 		this.start  = start;
 		this.count  = count;

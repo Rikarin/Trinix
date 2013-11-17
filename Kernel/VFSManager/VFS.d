@@ -98,15 +98,12 @@ static:
 		foreach (x; p) {
 			if (x == "..")
 				node = node.Parent;
-			else if (x !is null && x != ".") {
+			else if (x !is null && x != "." && x != "") {
 				if (node.GetAttributes().Type & (FileType.Directory | FileType.Mountpoint))
 					node = (cast(DirectoryNode)node).GetChild(x);
 				else
-					node = null;
+					return null;
 			}
-
-			if (node is null)
-				return null;
 		}
 
 		return node;

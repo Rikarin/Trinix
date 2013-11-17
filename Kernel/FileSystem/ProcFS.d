@@ -21,7 +21,7 @@ class ProcFS : FileSystemProto {
 		if (mountPoint is null || !mountPoint.Mountpointable())
 			return null;
 
-		ProcFS ret = new ProcFS();
+		auto ret = new ProcFS();
 		ret.rootNode = new DirectoryNode(ret, FSNode.NewAttributes("/"));
 		ret.Identifier = "ProcFS";
 
