@@ -1,6 +1,7 @@
 MANIFEST=\
+	HACKING.md \
 	LICENSE \
-	README \
+	README.md \
 	posix.mak \
 	win32.mak \
 	win64.mak \
@@ -30,6 +31,9 @@ MANIFEST=\
 	src\core\threadasm.S \
 	src\core\time.d \
 	src\core\vararg.d \
+	\
+	src\core\internal\hash.d \
+	src\core\internal\convert.d \
 	\
 	src\core\stdc\complex.d \
 	src\core\stdc\config.d \
@@ -65,15 +69,23 @@ MANIFEST=\
 	src\core\sys\freebsd\dlfcn.d \
 	src\core\sys\freebsd\execinfo.d \
 	\
+	src\core\sys\freebsd\sys\elf.d \
+	src\core\sys\freebsd\sys\elf_common.d \
+	src\core\sys\freebsd\sys\elf32.d \
+	src\core\sys\freebsd\sys\elf64.d \
 	src\core\sys\freebsd\sys\event.d \
+	src\core\sys\freebsd\sys\link_elf.d \
 	\
 	src\core\sys\linux\config.d \
 	src\core\sys\linux\dlfcn.d \
 	src\core\sys\linux\elf.d \
 	src\core\sys\linux\epoll.d \
+	src\core\sys\linux\errno.d \
 	src\core\sys\linux\execinfo.d \
 	src\core\sys\linux\link.d \
 	\
+	src\core\sys\linux\sys\inotify.d \
+	src\core\sys\linux\sys\mman.d \
 	src\core\sys\linux\sys\signalfd.d \
 	src\core\sys\linux\sys\xattr.d \
 	\
@@ -140,10 +152,10 @@ MANIFEST=\
 	src\core\sys\windows\windows.d \
 	\
 	src\gc\gc.d \
-	src\gc\gcalloc.d \
-	src\gc\gcbits.d \
-	src\gc\gcstats.d \
-	src\gc\gcx.d \
+	src\gc\os.d \
+	src\gc\bits.d \
+	src\gc\stats.d \
+	src\gc\proxy.d \
 	\
 	src\gcstub\gc.d \
 	\
@@ -166,7 +178,8 @@ MANIFEST=\
 	src\rt\cover.d \
 	src\rt\critical_.d \
 	src\rt\deh.d \
-	src\rt\deh2.d \
+	src\rt\deh_win32.d \
+	src\rt\deh_win64_posix.d \
 	src\rt\dmain2.d \
 	src\rt\dylib_fixes.c \
 	src\rt\image.d \
@@ -227,10 +240,34 @@ MANIFEST=\
 	src\rt\typeinfo\ti_void.d \
 	src\rt\typeinfo\ti_wchar.d \
 	\
-	src\rt\util\console.d \
+	src\rt\util\array.d \
 	src\rt\util\container.d \
 	src\rt\util\hash.d \
 	src\rt\util\string.d \
 	src\rt\util\utf.d \
 	\
-	src\etc\linux\memoryerror.d
+	src\etc\linux\memoryerror.d \
+	\
+	test\exceptions\Makefile \
+	test\exceptions\src\stderr_msg.d \
+	test\exceptions\src\unittest_assert.d \
+	test\init_fini\src\runtime_args.d \
+	test\init_fini\src\thread_join.d \
+	test\init_fini\Makefile \
+	test\shared\src\host.c \
+	test\shared\src\lib.d \
+	test\shared\src\liblinkdep.d \
+	test\shared\src\libloaddep.d \
+	test\shared\src\link.d \
+	test\shared\src\linkD.c \
+	test\shared\src\linkDR.c \
+	test\shared\src\link_linkdep.d \
+	test\shared\src\link_loaddep.d \
+	test\shared\src\load.d \
+	test\shared\src\loadDR.c \
+	test\shared\src\load_linkdep.d \
+	test\shared\src\load_loaddep.d \
+	test\shared\src\plugin.d \
+	test\shared\.gitignore \
+	test\shared\Makefile \
+
