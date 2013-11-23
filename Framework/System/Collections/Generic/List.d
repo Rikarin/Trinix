@@ -34,18 +34,14 @@ class List(T) {
 		//delete array;
 		array = newArray;
 	}
-	
-	this() {
-		array = new T[4];
-	}
-	
-	this(long capacity) {
+
+	this(long capacity = 4) {
 		array = new T[capacity];
 	}
 	
-	~this() {
+/*	~this() {
 		delete array;
-	}
+	}*/
 	
 	void Add(T item) {
 		if (Count == Capacity)

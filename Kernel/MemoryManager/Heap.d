@@ -8,7 +8,7 @@ import System.Threading;
 
 class Heap {
 private:
-	const uint MAGIC = 0xDEADC0D;
+	enum MAGIC = 0xDEADC0D;
 	
 	struct Header {
 		uint magic;

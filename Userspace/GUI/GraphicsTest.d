@@ -19,7 +19,8 @@ class Application {
 		window.Show();
 
 		while (true) {}
-		return 0;
+		assert(0);
+		//return 0;
 	}
 }
 

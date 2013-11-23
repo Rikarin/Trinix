@@ -14,8 +14,8 @@ extern(C) void* malloc(ulong size, uint ba) {
 }
 
 extern(C) void free(void* ptr) { return;
-	if (PageAllocator.IsInit)
-		Memory.KernelHeap.Free(ptr);
+	//if (PageAllocator.IsInit)
+	//	Memory.KernelHeap.Free(ptr);
 }
 
 

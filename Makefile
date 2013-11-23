@@ -53,7 +53,7 @@ OBJS = $(patsubst %,$(OBJ_DIR)/%,$(_SRC:=.o))
 #############
 #   Flags   #
 #############
-DFLAGS = -c -O -m64 -release -property -Idruntime/import -IKernel -IFramework -IKernel/Architectures/x86_64 -debug=only -vtls
+DFLAGS = -c -O -de -w -m64 -release -property -Idruntime/import -IKernel -IFramework -IKernel/Architectures/x86_64 -debug=only -vtls -g
 CFLAGS = -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -c -g
 LDFLAGS = -o Disk/Trinix-Kernel -T Kernel/Architectures/x86_64/Linker.ld -Map Linker.map
 ASFLAGS = -f elf64

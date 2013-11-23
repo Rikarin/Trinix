@@ -473,7 +473,6 @@ static:
 						break;
 					default:
 						return KnownColor.UnknownColor;
-						break;
 				}
 				break;
 			case 5:
@@ -510,7 +509,6 @@ static:
 						break;
 					default:
 						return KnownColor.UnknownColor;
-						break;
 				}
 				break;
 			case 6:
@@ -547,7 +545,6 @@ static:
 						break;
 					default:
 						return KnownColor.UnknownColor;
-						break;
 				}
 				break;
 			case 7:
@@ -579,7 +576,6 @@ static:
 						break;
 					default:
 						return KnownColor.UnknownColor;
-						break;
 				}
 				break;
 			case 8:
@@ -608,7 +604,6 @@ static:
 						break;
 					default:
 						return KnownColor.UnknownColor;
-						break;
 				}
 				break;
 			case 9:
@@ -671,7 +666,6 @@ static:
 						break;
 					default:
 						return KnownColor.UnknownColor;
-						break;
 				}
 				break;
 			case 10:
@@ -714,7 +708,6 @@ static:
 						break;
 					default:
 						return KnownColor.UnknownColor;
-						break;
 				}
 				break;
 			case 11:
@@ -749,7 +742,6 @@ static:
 						break;
 					default:
 						return KnownColor.UnknownColor;
-						break;
 				}
 				break;
 			case 12:
@@ -771,7 +763,6 @@ static:
 						break;
 					default:
 						return KnownColor.UnknownColor;
-						break;
 				}
 				break;
 			case 13:
@@ -793,7 +784,6 @@ static:
 						break;
 					default:
 						return KnownColor.UnknownColor;
-						break;
 				}
 				break;
 			case 14:
@@ -816,7 +806,6 @@ static:
 						break;
 					default:
 						return KnownColor.UnknownColor;
-						break;
 				}
 				break;
 			case 15:
@@ -835,7 +824,6 @@ static:
 				break;
 			default:
 				return KnownColor.UnknownColor;
-				break;
 		}
 		return KnownColor.UnknownColor;
 	}

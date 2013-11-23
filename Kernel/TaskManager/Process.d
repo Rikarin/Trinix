@@ -190,7 +190,6 @@ public:
 				Thread t = new Thread(cast(void function(ulong*))start.ThreadEntry, cast(void *)x, ret);
 				Task.Procs.Add(ret);
 				return ret.ResID();
-				break;
 
 			default:
 		}

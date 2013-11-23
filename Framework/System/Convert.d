@@ -197,6 +197,7 @@ static:
 			switch (x) {
 				case '-':
 					neg = true;
+					break;
 
 				case 'x':
 					continue;

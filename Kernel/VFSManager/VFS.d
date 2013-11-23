@@ -219,7 +219,7 @@ static:
 		if (params is null || !params.length)
 			return ~0UL;
 
-		final switch (params[0]) {
+		switch (params[0]) {
 			case IFace.VFS.S_FIND:
 				FSNode ret = VFS.Find(*cast(string *)params[1], params.length >= 3 ? cast(DirectoryNode)Res.GetByID(params[2], IFace.FSNode.OBJECT) : null);
 				return ret is null ? 0 : ret.ResID();
@@ -252,8 +252,9 @@ static:
 
 			case IFace.VFS.S_GET_CWD:
 				return Task.CurrentProcess.GetCWD().ResID();
-		}
 
-		return ~0UL;
+			default:
+				return ~0UL;
+		}
 	}
 }

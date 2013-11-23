@@ -5,7 +5,7 @@ import System.IO;
 
 
 class HelloDev : CharNode {
-	const string hello = "hello world";
+	string hello = "hello world";
 
 	this(string name) {
 		super(NewAttributes(name));

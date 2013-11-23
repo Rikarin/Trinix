@@ -149,7 +149,6 @@ public:
 					return ~0UL;
 				
 				return (new Thread(cast(void function(ulong *))params[1])).ResID();
-				break;
 
 			default:
 		}
