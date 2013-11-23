@@ -13,6 +13,7 @@ import System.Convert;
 
 static import Userspace.GUI.GraphicsTest;
 
+
 class Compositor {
 private:
 	ulong wid = 1;
@@ -35,22 +36,22 @@ public:
 		ctx.BackBuffer = new byte[size];
 
 		//selectCtx   = new Graphics(true); todo
-		//procWins    = new List!(Window.ProcessWindows)();
-		//requestPipe = Directory.CreatePipe("/dev/compositor");
+		procWins    = new List!(Window.ProcessWindows)();
+		requestPipe = Directory.CreatePipe("/dev/compositor");
 
 		/** Mouse hanlder */
 		//(new Thread(&MouseHandler)).Start();
 
 
-		//auto startInfo = new ProcessStartInfo();
-		//startInfo.ThreadEntry = &Userspace.GUI.GraphicsTest.construct;
-		//Process.Start(startInfo);
+		auto startInfo = new ProcessStartInfo();
+		startInfo.ThreadEntry = &Userspace.GUI.GraphicsTest.construct;
+		Process.Start(startInfo);
 
-		/*while (true) {
+		while (true) {
 			ProcessRequest();
 			ProcessCommands();
 			Process.Switch();
-		}*/
+		}
 	}
 
 

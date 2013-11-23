@@ -1,6 +1,6 @@
 module Devices.Port.SerialPort;
 
-import Architectures.Port;
+import Architectures;
 
 
 class SerialPort {

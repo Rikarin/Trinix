@@ -1,11 +1,12 @@
 module Devices.PCI.PCIDev;
 
-import Devices.DeviceProto;
-import Core.DeviceManager;
-import Devices.PCI.PCIDevNames;
-import Architectures.Port;
-import System.Collections.All;
-import System.Collections.Generic.List;
+import Core;
+import Devices;
+import Devices.PCI;
+import Architectures;
+
+import System.Collections;
+import System.Collections.Generic;
 
 
 class PCIDev : DeviceProto {

@@ -1,3 +1,3 @@
-module System.Drawing.All;
+module System.Drawing;
 
 public import System.Drawing.Color;

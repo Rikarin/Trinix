@@ -1,12 +1,9 @@
 module FileSystem.TmpFS;
 
-import System.DateTime;
-import VFSManager.FSNode;
-import VFSManager.FileNode;
-import VFSManager.Partition;
-import VFSManager.DirectoryNode;
-import VFSManager.FileSystemProto;
-import System.IO.FileAttributes;
+import VFSManager;
+
+import System;
+import System.IO;
 
 
 class TmpFileNode : FileNode {

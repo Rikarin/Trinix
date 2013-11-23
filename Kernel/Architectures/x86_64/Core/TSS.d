@@ -1,11 +1,7 @@
 module Architectures.x86_64.Core.TSS;
 
-import Architectures.CPU;
-import Architectures.x86_64.Core.GDT;
-import Architectures.x86_64.Core.Descriptor;
-
-import MemoryManager.Memory;
-import MemoryManager.PageAllocator;
+import Architectures;
+import MemoryManager;
 
 
 class TSS

@@ -1,6 +1,6 @@
 module System.String;
 
-import System.SystemException;
+import System;
 
 
 class String {

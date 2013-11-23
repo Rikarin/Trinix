@@ -1,6 +1,7 @@
 module MemoryManager.PageAllocator;
 
-import MemoryManager.Memory;
+import MemoryManager;
+
 
 class PageAllocator {
 static:

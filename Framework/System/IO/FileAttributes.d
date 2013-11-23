@@ -1,6 +1,6 @@
 module System.IO.FileAttributes;
 
-import System.DateTime;
+import System;
 
 
 enum FileType : ubyte {

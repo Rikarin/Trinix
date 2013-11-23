@@ -1,12 +1,11 @@
 module TaskManager.Task;
 
-import TaskManager.Process;
-import TaskManager.Thread;
-import TaskManager.Signal;
-import Architectures.Port;
-import System.DateTime;
-import System.Collections.Generic.List;
-import Core.Log;
+import Core;
+import TaskManager;
+import Architectures;
+
+import System;
+import System.Collections.Generic;
 
 
 extern(C) ulong read_rip();

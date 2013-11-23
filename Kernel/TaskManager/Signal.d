@@ -1,16 +1,12 @@
 module TaskManager.Signal;
 
-import TaskManager.Task;
-import TaskManager.Thread;
-import TaskManager.Process;
-import Architectures.CPU;
-import Architectures.Core;
+import Core;
+import TaskManager;
+import Architectures;
 
-import Core.Log;
-import System.Convert;
-
-import System.Collections.Generic.List;
-import System.Threading.All;
+import System;
+import System.Threading;
+import System.Collections.Generic;
 
 
 struct SignalState {

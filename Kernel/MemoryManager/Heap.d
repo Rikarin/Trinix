@@ -1,8 +1,10 @@
 module MemoryManager.Heap;
 
-import System.Threading.All;
-import Architectures.Paging;
-import MemoryManager.Memory;
+import Architectures;
+import MemoryManager;
+
+import System.Threading;
+
 
 class Heap {
 private:

@@ -1,8 +1,7 @@
 module FileSystem.NullDev;
 
-import VFSManager.CharNode;
-import VFSManager.DirectoryNode;
-import System.IO.FileAttributes;
+import VFSManager;
+import System.IO;
 
 
 class NullDev : CharNode {

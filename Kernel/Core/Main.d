@@ -1,37 +1,27 @@
 module Core.Main;
 
-import Core.Log;
-import Core.DeviceManager;
-
-import MemoryManager.Heap;
-import MemoryManager.Memory;
-import MemoryManager.PhysMem;
-import MemoryManager.PageAllocator;
-
-import Architectures.CPU;
-import Architectures.Main;
-import Architectures.Paging;
-import Architectures.Multiprocessor;
-
-import VFSManager.VFS;
-
-import TaskManager.Task;
-import TaskManager.Process;
-
-import SyscallManager.Res;
-import SyscallManager.Syscall;
-
-import Devices.Timer;
-import Devices.Display.BGA;
-import Devices.Mouse.PS2Mouse;
-import Devices.ATA.ATAController;
-import Devices.Keyboard.PS2Keyboard;
+import Core;
+import VFSManager;
+import TaskManager;
+import MemoryManager;
+import Architectures;
+import SyscallManager;
+import Devices;
+import Devices.Disk;
+import Devices.Mouse;
+import Devices.Display;
+import Devices.Keyboard;
 
 
 /+
 Pipe dead
 paging - kopirovanie stranok pri vytvoreni noveho procesu
-opravit read v ata drivru
+
+package.d - vytvorit pre importovanie balikov
+pouzit new tst().metoda() miesto (new tst()).metoda()
+"test"[0 ..5]
+
+wtf is arch.timing?...
 +/
 
 
@@ -101,11 +91,14 @@ extern(C) void StartSystem() {
 	Log.Print("Booting complete, starting init process");
 	Log.Result(false);
 
+	//VFS.CreatePipe("/test");
+	auto a = VFS.CreateFile("tesdd");
+	//a.Write(0, cast(byte[])"test");
 
-	import FileSystem.Ext2;
-	import VFSManager.Partition;
-	auto ext = VFS.CreateDirectory("ext");
-	Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hda1"));
+	//import FileSystem.Ext2;
+	//import VFSManager.Partition;
+	//auto ext = VFS.CreateDirectory("ext");
+	//Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hda1"));
 
 	VFS.PrintTree(VFS.RootNode);
 
@@ -117,15 +110,10 @@ extern(C) void StartSystem() {
 		Log.PrintSP(cast(string)xx);
 	}*/
 
-	//nefunguje
-	//VFS.CreateFile("tmp/subor.dat");
-	//VFS.CreateDirectory("test2/omg");
-	//VFS.CreateDirectory("test2/omg/lol");
-
 	//import Devices.PCI.PCIDev;
 	//PCIDev.ScanDevices();
 
-	//static import Userspace.GUI.Compositor;
+	static import Userspace.GUI.Compositor;
 	//Process.CreateProcess(cast(void function())&Userspace.GUI.Compositor.construct, ["/System/Bin/Compositor", "--single", "--nothing"]);
 
 	while (true) {}

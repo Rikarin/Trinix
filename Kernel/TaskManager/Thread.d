@@ -1,19 +1,13 @@
 module TaskManager.Thread;
 
-import Architectures.CPU;
-import Architectures.Core;
-import Architectures.Port;
+import TaskManager;
+import Architectures;
+import MemoryManager;
+import SyscallManager;
 
-import TaskManager.Task;
-import TaskManager.Process;
-
-import MemoryManager.Memory;
-import SyscallManager.Resource;
-
+import System;
 import System.IFace;
-import System.DateTime;
-import SyscallManager.Syscall;
-import System.Collections.Generic.List;
+import System.Collections.Generic;
 
 
 class Thread : Resource {

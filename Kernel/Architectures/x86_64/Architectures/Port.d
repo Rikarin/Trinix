@@ -1,6 +1,6 @@
 module Architectures.Port;
 
-import Architectures.CPU;
+import Architectures;
 
 
 class Port {

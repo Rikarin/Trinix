@@ -1,6 +1,6 @@
 module Architectures.Timing;
 
-import Devices.DeviceProto;
+import Devices;
 
 
 struct Time {

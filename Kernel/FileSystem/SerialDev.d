@@ -1,12 +1,11 @@
 module FileSystem.SerialDev;
 
-import VFSManager.CharNode;
-import VFSManager.DirectoryNode;
-import Devices.Port.SerialPort;
-import TaskManager.Task;
+import VFSManager;
+import TaskManager;
+import Devices.Port;
 
-import System.DateTime;
-import System.IO.FileAttributes;
+import System;
+import System.IO;
 
 
 class SerialDev : CharNode {

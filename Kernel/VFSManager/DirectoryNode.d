@@ -1,13 +1,11 @@
 module VFSManager.DirectoryNode;
 
-import VFSManager.FileSystemProto;
-import VFSManager.FSNode;
-import VFSManager.FileNode;
+import VFSManager;
 
+import System;
+import System.IO;
 import System.IFace;
-import System.DateTime;
-import System.Collections.Generic.List;
-import System.IO.FileAttributes;
+import System.Collections.Generic;
 
 
 class DirectoryNode : FSNode {
@@ -122,17 +120,8 @@ public:
 		if (mounts)
 			return mounts.Create(type, fileAttributes);
 
-		if (fs is null) {
-			switch (type) {
-				case FileType.Directory:
-					FSNode ret = new DirectoryNode(null, fileAttributes);
-					AddNode(ret);
-					return ret;
-
-				default:
-					return null;
-			}
-		}
+		if (fs is null)
+			return null;
 
 		return fs.Create(this, type, fileAttributes);
 	}
@@ -159,6 +148,9 @@ public:
 	}
 
 	void AddNode(FSNode node) {
+		if (mounts)
+			mounts.AddNode(node);
+		
 		childrens.Add(node);
 		node.parent = this;
 	}

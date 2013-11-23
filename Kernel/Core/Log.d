@@ -1,7 +1,7 @@
 module Core.Log;
 
-import Architectures.Port;
-import Devices.Port.SerialPort;
+import Devices.Port;
+import Architectures;
 
 
 class Log {

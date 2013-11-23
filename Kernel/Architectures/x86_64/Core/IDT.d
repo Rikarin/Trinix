@@ -1,12 +1,9 @@
 module Architectures.x86_64.Core.IDT;
 
-import Core.DeviceManager;
-import System.Collections.All;
-import Architectures.CPU;
-import Architectures.Core;
-import Architectures.Port;
-import Architectures.x86_64.Core.Descriptor;
-import Architectures.Paging;
+import Core;
+import Architectures;
+
+import System.Collections;
 
 
 struct InterruptStack {

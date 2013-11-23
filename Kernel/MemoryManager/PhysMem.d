@@ -1,11 +1,11 @@
 module MemoryManager.PhysMem;
 
-import System.SystemException;
-import System.Collections.All;
+import Core;
+import Architectures;
+import MemoryManager;
 
-import Core.Log;
-import Architectures.Paging;
-import MemoryManager.Memory;
+import System;
+import System.Collections;
 
 
 class PhysMem {

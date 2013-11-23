@@ -1,17 +1,16 @@
 module Devices.Mouse.PS2Mouse;
 
-import Architectures.Core;
-import Architectures.Port;
-import Core.DeviceManager;
-import Devices.DeviceProto;
-import FileSystem.PipeDev;
+import Core;
+import Devices;
+import VFSManager;
+import Architectures;
 
-import System.Threading.All;
+import System.Threading;
 
 
 class PS2Mouse : DeviceProto {
 private:
-	PipeDev pipe;
+	PipeNode pipe;
 
 
 	enum Bits {
@@ -76,9 +75,7 @@ public:
 		PIC.EOI(12);
 		LocalAPIC.EOI();
 
-		pipe = new PipeDev("mouse", 0x1C00);
-		DeviceManager.DevFS.AddNode(pipe);
-
+		pipe = VFS.CreatePipe("mouse", DeviceManager.DevFS, 0x1C00);
 		DeviceManager.RequestIRQ(this, 12);
 		DeviceManager.RegisterDevice(this, DeviceInfo("Standard PS2 mouse", DeviceType.Mouse));
 	}

@@ -1,11 +1,11 @@
 module Devices.Timer;
 
-import Core.DeviceManager;
-import Architectures.Port;
-import Architectures.Core;
-import Devices.DeviceProto;
-import TaskManager.Task;
-import System.DateTime;
+import Core;
+import Devices;
+import TaskManager;
+import Architectures;
+
+import System;
 
 
 class Timer : DeviceProto {

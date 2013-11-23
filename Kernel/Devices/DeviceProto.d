@@ -1,6 +1,6 @@
 module Devices.DeviceProto;
 
-import Architectures.Core;
+import Architectures;
 
 
 abstract class DeviceProto {

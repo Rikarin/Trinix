@@ -1,12 +1,11 @@
 module Architectures.x86_64.Core.LocalAPIC;
 
-import Core.Log;
-import MemoryManager.Memory;
-import System.Threading.All;
+import Core;
+import MemoryManager;
+import Architectures;
 
-import Architectures.Port;
-import Architectures.Paging;
-import Architectures.x86_64.Core.Info;
+import System.Threading;
+
 
 class LocalAPIC {
 public:

@@ -1,8 +1,7 @@
 module SyscallManager.Syscall;
 
-import Architectures.CPU;
-import Architectures.Port;
-import SyscallManager.Res;
+import Architectures;
+import SyscallManager;
 
 
 class Syscall {

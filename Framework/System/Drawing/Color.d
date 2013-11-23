@@ -1,6 +1,6 @@
 module System.Drawing.Color;
 
-import System.Convert;
+import System;
 
 
 //ARGB = Alpha Red Green Blue

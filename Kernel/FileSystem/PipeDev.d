@@ -1,15 +1,13 @@
 module FileSystem.PipeDev;
 
-import VFSManager.PipeNode;
-import VFSManager.DirectoryNode;
-import Devices.Random;
-import TaskManager.Thread;
-import TaskManager.Task;
+import Devices;
+import VFSManager;
+import TaskManager;
 
-import System.DateTime;
-import System.Threading.All;
-import System.IO.FileAttributes;
-import System.Collections.Generic.List;
+import System;
+import System.IO;
+import System.Threading : Mutex;
+import System.Collections.Generic;
 
 
 class PipeDev : PipeNode {

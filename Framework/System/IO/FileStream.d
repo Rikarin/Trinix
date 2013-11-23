@@ -1,42 +1,37 @@
 module System.IO.FileStream;
 
-import System.IO.Stream;
-import System.ResourceCaller;
+import System.IO;
+
 import System.IFace;
+import System.ResourceCaller;
 
 
 class FileStream : Stream {
 private:
 	ResourceCaller syscall;
-	Stat stats;
+	FileAttributes attribs;
 
 
-	ref Stat ReloadStats() {
-		ulong[1] tmp = [cast(ulong)&stats];
-		syscall.Call(IFace.FSNode.RSTATS, tmp);
-		return stats;
+	ref FileAttributes Reload() {
+		ulong[1] tmp = [cast(ulong)&attribs];
+		syscall.Call(IFace.FSNode.RATTRIBUTES, tmp);
+		return attribs;
+	}
+
+	void WriteAttribs() {
+		ulong[1] tmp = [cast(ulong)&attribs];
+		syscall.Call(IFace.FSNode.WATTRIBUTES, tmp);	
 	}
 
 
 public:
-	struct Stat {
-		ulong type;
-		ulong length;
-		ulong uid;
-		ulong gid;
-		ulong atime;
-		ulong ctime;
-		ulong mtime;
-	}
-
-
 	@property override bool CanRead() { return false; }
 	@property override bool CanSeek() { return false; }
 	@property override bool CanTimeout() { return false; }
 	@property override bool CanWrite() { return false; }
 
 	@property override long Length() {
-		return ReloadStats().length;
+		return Reload().Length;
 	}
 
 	@property override void Length(long value) {}
@@ -48,12 +43,12 @@ public:
 
 
 	this(string path) {
-		ulong[2] tmp = [IFace.FSNode.SFIND, cast(ulong)&path];
-		id = ResourceCaller.StaticCall(IFace.FSNode.OBJECT, tmp);
+		ulong[2] tmp = [IFace.VFS.S_FIND, cast(ulong)&path];
+		id = ResourceCaller.StaticCall(IFace.VFS.OBJECT, tmp);
 	
 		if (!id) {
-			tmp = [IFace.FSNode.SMKFILE, cast(ulong)&path];
-			id = ResourceCaller.StaticCall(IFace.FSNode.OBJECT, tmp);
+			tmp = [IFace.VFS.S_MK_FILE, cast(ulong)&path];
+			id = ResourceCaller.StaticCall(IFace.VFS.OBJECT, tmp);
 		}
 		
 		syscall = new ResourceCaller(id, IFace.FSNode.OBJECT);

@@ -1,10 +1,9 @@
 module VFSManager.FileNode;
 
-import VFSManager.FSNode;
-import VFSManager.DirectoryNode;
-import VFSManager.FileSystemProto;
-import System.DateTime;
-import System.IO.FileAttributes;
+import VFSManager;
+
+import System;
+import System.IO;
 
 
 class FileNode : FSNode {

@@ -1,11 +1,11 @@
 module System.Windows.Window;
 
-import System.IO.FileStream;
-import System.IO.Directory;
+import System;
+import System.IO;
+import System.Diagnostics;
+import System.Collections.Generic;
+
 import Userspace.Libs.Graphics;
-import System.Collections.Generic.List;
-import System.Diagnostics.Process;
-import System.Convert;
 
 
 abstract class Window {

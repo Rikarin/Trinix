@@ -1,19 +1,18 @@
 module Devices.Keyboard.PS2Keyboard;
 
-import Architectures.Core;
-import Architectures.Port;
-import Core.DeviceManager;
-import Devices.Keyboard.KeyCodes;
-import Devices.DeviceProto;
-import FileSystem.PipeDev;
+import Core;
+import Devices;
+import Devices.Keyboard;
+import VFSManager;
+import Architectures;
 
-import System.Threading.All;
+import System.Threading;
 
 
 class PS2Keyboard : DeviceProto {
 private:
 	ubyte keyset;
-	PipeDev pipe;
+	PipeNode pipe;
 
 
 public:
@@ -75,9 +74,7 @@ public:
 		Port.Write!ubyte(0x60, 0xF4);
 
 		
-		pipe = new PipeDev("keyboard", 128);
-		DeviceManager.DevFS.AddNode(pipe);
-
+		pipe = VFS.CreatePipe("keyboard", DeviceManager.DevFS);
 		DeviceManager.RequestIRQ(this, 1);
 		DeviceManager.RegisterDevice(this, DeviceInfo("Standard PS2 keyboard", DeviceType.Keyboard));
 	}

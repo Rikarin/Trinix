@@ -1,12 +1,9 @@
 module Architectures.x86_64.Core.GDT;
 
-import System.Collections.All;
+import MemoryManager;
+import Architectures;
 
-import MemoryManager.Memory;
-import MemoryManager.PageAllocator;
-
-import Architectures.CPU;
-import Architectures.x86_64.Core.Descriptor;
+import System.Collections;
 
 
 class GDT {

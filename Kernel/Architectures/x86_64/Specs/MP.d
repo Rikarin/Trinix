@@ -1,8 +1,8 @@
 module Architectures.x86_64.Specs.MP;
 
-import System.Collections.All;
-import MemoryManager.Memory;
-import Architectures.x86_64.Core.Info;
+import MemoryManager;
+import Architectures;
+import System.Collections;
 
 
 class MP {

@@ -1,13 +1,7 @@
 module Architectures.Multiprocessor;
 
-import Core.Log;
-
-import Architectures.Port;
-import Architectures.x86_64.Core.Info;
-import Architectures.x86_64.Core.IOAPIC;
-import Architectures.x86_64.Core.LocalAPIC;
-import Architectures.x86_64.Specs.MP;
-import Architectures.x86_64.Specs.ACPI;
+import Core;
+import Architectures;
 
 
 class Multiprocessor {

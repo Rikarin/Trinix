@@ -1,8 +1,7 @@
 module System.IO.FileSystemInfo;
 
-import System.IO.FileAttributes;
-import System.DateTime;
-import System.String;
+import System;
+import System.IO;
 
 import System.IFace;
 import System.ResourceCaller;

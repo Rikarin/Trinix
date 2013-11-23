@@ -1,6 +1,6 @@
 module Devices.Random;
 
-import Architectures.Timing;
+import System;
 
 
 class Random {
@@ -8,7 +8,7 @@ static:
 	private __gshared long num;
 
 	@property long Number() {
-		return (Rand1(~0UL) - Rand2(~0UL) + Rand3(~0UL)) * Timing.CurrentTime().InSeconds();
+		return (Rand1(~0UL) - Rand2(~0UL) + Rand3(~0UL)) * DateTime.Now.Ticks;
 	}
 
 private:

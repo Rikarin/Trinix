@@ -1,7 +1,7 @@
-module Devices.ATA.ATADrive;
+module Devices.Disk.ATADrive;
 
-import Devices.ATA.ATAController;
-import Devices.BlockDeviceProto;
+import Devices;
+import Devices.Disk;
 
 
 class ATADrive : BlockDeviceProto {

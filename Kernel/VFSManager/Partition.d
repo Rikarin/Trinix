@@ -1,13 +1,11 @@
 module VFSManager.Partition;
 
-import Core.DeviceManager;
-import Devices.BlockDeviceProto;
-import VFSManager.FSNode;
-import VFSManager.BlockNode;
-import VFSManager.BlockCache;
+import Core;
+import Devices;
+import VFSManager;
 
-import System.IO.FileAttributes;
-import System.Collections.Bitfield;
+import System.IO;
+import System.Collections;
 
 
 class Partition : BlockNode {

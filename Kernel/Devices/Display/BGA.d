@@ -1,8 +1,7 @@
 module Devices.Display.BGA;
 
-import Architectures.Port;
-import Architectures.Paging;
-import MemoryManager.Memory;
+import Architectures;
+import MemoryManager;
 
 
 class BGA {

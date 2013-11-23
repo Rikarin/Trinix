@@ -1,6 +1,7 @@
 module Architectures.x86_64.Core.Info;
 
-import MemoryManager.Memory;
+import MemoryManager;
+
 
 struct Info {
 public:

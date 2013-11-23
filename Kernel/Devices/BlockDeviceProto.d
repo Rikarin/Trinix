@@ -1,6 +1,6 @@
 module Devices.BlockDeviceProto;
 
-import Devices.DeviceProto;
+import Devices;
 
 
 abstract class BlockDeviceProto : DeviceProto {

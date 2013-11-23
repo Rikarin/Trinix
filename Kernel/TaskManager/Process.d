@@ -1,24 +1,16 @@
 module TaskManager.Process;
 
-import Core.DeviceManager;
-import Architectures.Paging;
+import Core;
+import Architectures;
 
-import VFSManager.VFS;
-import VFSManager.FSNode;
-import VFSManager.DirectoryNode;
+import VFSManager;
+import TaskManager;
+import SyscallManager;
 
-import TaskManager.Task;
-import TaskManager.Thread;
-import TaskManager.Signal;
-
-import SyscallManager.Res;
-import SyscallManager.Resource;
-
+import System;
 import System.IFace;
-import System.Collections.Generic.List;
-import System.Diagnostics.ProcessStartInfo;
-import System.Diagnostics.Process : SigNum;
-import System.Convert;
+import System.Collections.Generic;
+import System.Diagnostics : SigNum, ProcessStartInfo;
 
 
 class Process : Resource {

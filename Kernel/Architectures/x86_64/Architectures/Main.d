@@ -1,15 +1,8 @@
 module Architectures.Main;
 
-import Architectures.CPU;
-import Architectures.x86_64.Linker;
-import Architectures.x86_64.Core.GDT;
-import Architectures.x86_64.Core.TSS;
-import Architectures.x86_64.Core.IDT;
-import Architectures.x86_64.Core.Info;
-
-import MemoryManager.PageAllocator;
-import MemoryManager.Memory;
-import Core.Log;
+import Core;
+import Architectures;
+import MemoryManager;
 
 class Architecture {
 public:

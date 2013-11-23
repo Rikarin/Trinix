@@ -1,8 +1,7 @@
 module VFSManager.PipeNode;
 
-import VFSManager.FSNode;
-import VFSManager.DirectoryNode;
-import System.IO.FileAttributes;
+import VFSManager;
+import System.IO;
 
 
 abstract class PipeNode : FSNode {

@@ -1,9 +1,10 @@
 module SyscallManager.Resource;
 
-import System.Threading.All;
-import System.Collections.Generic.List;
-import SyscallManager.Res;
+import SyscallManager;
+
 import System.IFace;
+import System.Threading;
+import System.Collections.Generic;
 
 
 class Resource {

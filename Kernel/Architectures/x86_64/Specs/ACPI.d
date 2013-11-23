@@ -1,10 +1,9 @@
 module Architectures.x86_64.Specs.ACPI;
 
-import System.Collections.All;
-import MemoryManager.Memory;
+import Architectures;
+import MemoryManager;
 
-import Architectures.Paging;
-import Architectures.x86_64.Core.Info;
+import System.Collections;
 
 
 class ACPI {

@@ -1,12 +1,12 @@
 module Devices.TTY;
 
-import VFSManager.CharNode;
-import TaskManager.Process;
+import VFSManager;
+import TaskManager;
 
 import System.Termios;
-import System.Threading.Mutex;
-import System.IO.FileAttributes;
-import System.Collections.Generic.Queue;
+import System.IO;
+import System.Threading;
+import System.Collections.Generic;
 
 
 class TTY {

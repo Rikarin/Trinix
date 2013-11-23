@@ -1,15 +1,11 @@
 module Architectures.Paging;
 
-import MemoryManager.Memory;
-import MemoryManager.PhysMem;
-import MemoryManager.PageAllocator;
+import MemoryManager;
+import Architectures;
 
-import System.Collections.All;
-import System.SystemException;
-
-import Architectures.CPU;
-import Architectures.x86_64.Core.IDT;
-import System.Diagnostics.Process : SigNum;
+import System;
+import System.Collections;
+import System.Diagnostics : SigNum;
 
 
 alias PageTableEntry!"primary" PTE;

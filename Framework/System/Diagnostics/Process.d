@@ -1,10 +1,10 @@
 module System.Diagnostics.Process;
 
+import System;
+import System.Diagnostics;
+
 import System.IFace;
 import System.ResourceCaller;
-import System.Convert;
-
-import System.Diagnostics.ProcessStartInfo;
 
 
 enum SigNum {

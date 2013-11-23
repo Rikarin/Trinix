@@ -1,7 +1,7 @@
 module VFSManager.BlockCache;
 
-import Devices.BlockDeviceProto;
-import System.DateTime;
+import Devices;
+import System;
 
 
 class BlockCache {

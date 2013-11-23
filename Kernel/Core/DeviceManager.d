@@ -1,12 +1,11 @@
 module Core.DeviceManager;
 
-import Architectures.Core;
-import Devices.DeviceProto;
-import VFSManager.FSNode;
-import VFSManager.DirectoryNode;
+import Devices;
+import VFSManager;
+import Architectures;
 
-import System.IO.FileAttributes;
-import System.Collections.Generic.List;
+import System.IO;
+import System.Collections.Generic;
 
 
 enum DeviceType {
@@ -44,7 +43,6 @@ public:
 
 	bool Init() {
 		devices = new List!Data();
-		DevFS = new DirectoryNode(null, FSNode.NewAttributes("dev"));
 		IRQHandler[] = null;
 
 		return true;

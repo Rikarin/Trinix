@@ -1,15 +1,10 @@
 module FileSystem.ProcFS;
 
-import TaskManager.Task;
-import VFSManager.FSNode;
-import VFSManager.FileNode;
-import VFSManager.Partition;
-import VFSManager.DirectoryNode;
-import VFSManager.FileSystemProto;
+import VFSManager;
+import TaskManager;
 
-import System.Convert;
-import System.DateTime;
-import System.IO.FileAttributes;
+import System;
+import System.IO;
 
 
 class ProcFS : FileSystemProto {

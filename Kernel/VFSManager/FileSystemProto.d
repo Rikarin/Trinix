@@ -1,12 +1,9 @@
 module VFSManager.FileSystemProto;
 
-import VFSManager.FSNode;
-import VFSManager.DirectoryNode;
-import VFSManager.FileNode;
-import VFSManager.Partition;
+import VFSManager;
 
-import System.DateTime;
-import System.IO.FileAttributes;
+import System;
+import System.IO;
 
 
 abstract class FileSystemProto {

@@ -1,12 +1,12 @@
-module Devices.ATA.ATAController;
+module Devices.Disk.ATAController;
 
-import Core.DeviceManager;
-import Devices.DeviceProto;
-import Devices.ATA.ATADrive;
-import VFSManager.Partition;
-static import Architectures.Port;
+import Core;
+import Devices;
+import Devices.Disk;
+import VFSManager;
+static import Architectures;
 
-import System.Threading.Mutex;
+import System.Threading;
 
 
 class ATAController : DeviceProto {

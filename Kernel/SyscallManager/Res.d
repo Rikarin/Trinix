@@ -1,12 +1,11 @@
 module SyscallManager.Res;
 
-import Core.Log;
-import SyscallManager.Resource;
+import Core;
+import SyscallManager;
 
 import System.IFace;
-import VFSManager.FSNode;
+import System.Collections.Generic;
 
-import System.Collections.Generic.List;
 
 class Res {
 static:
@@ -36,14 +35,16 @@ public:
 		resources = new List!Resource(0x200); //TODO: FIXME PLZ
 		resources.Add(new NullRes()); //mask index 0
 		
+		import VFSManager.VFS;
 		import TaskManager.Process; //TODO FIX THIS FUCKIN HACK
 		import TaskManager.Thread; //THIS TOO
-		StaticCallTable aa = {IFace.FSNode.OBJECT, &FSNode.SCall};
-		staticCalls[0] = aa;
+
+		StaticCallTable aa = {IFace.VFS.OBJECT, &VFS.SCall};
+		staticCalls[0]     = aa;
 		StaticCallTable ab = {IFace.Process.OBJECT, &Process.SCall};
-		staticCalls[1] = ab;
+		staticCalls[1]     = ab;
 		StaticCallTable ac = {IFace.Thread.OBJECT, &Thread.SCall};
-		staticCalls[2] = ac;
+		staticCalls[2]     = ac;
 
 		return true;
 	}
@@ -62,7 +63,7 @@ public:
 		debug (only) {
 			import TaskManager.Task;
 
-			if (id != 5 && !(id == 2 && resource == ~1UL)) { //compositor spamming this shit
+			if (id != 3 && !(id == 3 && resource == ~1UL)) { //compositor spamming this shit
 				import System.Convert;
 				Log.PrintSP("\n[Service Thread: " ~ Convert.ToString(Task.CurrentThread.ID, 16));
 				Log.PrintSP(", RES: " ~ Convert.ToString(resource, 16));

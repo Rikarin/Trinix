@@ -1,5 +1,6 @@
 module Architectures.x86_64.Core.Descriptor;
 
+
 enum SystemSegmentType : ubyte {
 	LocalDescriptorTable	= 0b0010,
 	AvailableTSS			= 0b1001,

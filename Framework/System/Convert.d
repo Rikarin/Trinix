@@ -1,6 +1,6 @@
 module System.Convert;
 
-import System.SystemException;
+import System;
 
 
 class Convert {

@@ -1,6 +1,6 @@
 module Architectures.x86_64.Core.PIC;
 
-import Architectures.Port;
+import Architectures;
 
 
 class PIC {

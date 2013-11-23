@@ -7,27 +7,31 @@ class IFace {
 
 		READ = 0x01,
 		WRITE,
-		SFIND,
-		SMKDIR,
 
-		RSTATS,
-		WSTATS,
+		RATTRIBUTES,
+		WATTRIBUTES,
 
 		SETCWD,
 		REMOVE,
-		SGETRFN,
-		SGETCWD,
 		GETPATH, //OK FSI
 		GETNCHILD,
 		GETIDXCHILD,
+	}
 
-		SMKFILE,
-		CREATETTY,
-		SMKPIPE,
+	enum VFS : ulong {
+		OBJECT = 0x2,
+
+		S_FIND = 0x1,
+		S_MK_DIR,
+		S_GET_RFN,
+		S_GET_CWD,
+		S_MK_FILE,
+		S_MK_PIPE,
+		S_CREATE_TTY,
 	}
 
 	enum Process : ulong {
-		OBJECT = 0x2,
+		OBJECT = 0x3,
 
 		SET_FD = 0x1,
 		GET_FD,
@@ -40,7 +44,7 @@ class IFace {
 	}
 
 	enum Thread : ulong {
-		OBJECT = 0x3,
+		OBJECT = 0x4,
 
 		S_CREATE = 0x1
 	}

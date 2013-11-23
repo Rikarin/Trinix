@@ -1,9 +1,9 @@
 module MemoryManager.Memory;
 
-import MemoryManager.PageAllocator;
-import MemoryManager.Heap;
-import Core.Log;
-import System.Convert;
+import Core;
+import MemoryManager;
+
+import System;
 
 alias ubyte* PhysicalAddress;
 alias ubyte* VirtualAddress;

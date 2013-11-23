@@ -1,6 +1,7 @@
 module System.Collections.BitArray;
 
-import System.SystemException;
+import System;
+
 
 class BitArray {
 private:

@@ -1,6 +1,6 @@
 module System.Diagnostics.ProcessStartInfo;
 
-import System.IO.Stream;
+import System.IO;
 
 
 class ProcessStartInfo {

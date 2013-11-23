@@ -1,10 +1,7 @@
 module Architectures.x86_64.Core.IOAPIC;
 
-import MemoryManager.Memory;
-import Architectures.Port;
-import Architectures.Paging;
-import Architectures.x86_64.Core.PIC;
-import Architectures.x86_64.Core.Info;
+import MemoryManager;
+import Architectures;
 
 
 class IOAPIC {

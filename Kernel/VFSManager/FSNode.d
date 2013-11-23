@@ -1,14 +1,11 @@
 module VFSManager.FSNode;
 
-import SyscallManager.Res;
-import SyscallManager.Resource;
-import VFSManager.FileSystemProto;
-import VFSManager.DirectoryNode;
+import VFSManager;
+import SyscallManager;
 
+import System;
+import System.IO;
 import System.IFace;
-import System.String;
-import System.DateTime;
-import System.IO.FileAttributes;
 
 
 abstract class FSNode : Resource {
@@ -20,13 +17,13 @@ package:
 
 	this() {
 		const CallTable[] callTable = [
-			{IFace.FSNode.READ,      &SC_Read},
-			{IFace.FSNode.WRITE,     &SC_Write},
-			{IFace.FSNode.SETCWD,    &SC_SetCWD},
-			{IFace.FSNode.REMOVE,    &SC_Remove},
-			{IFace.FSNode.GETPATH,   &SC_GetPath},
-
-			{IFace.FSNode.RSTATS,    &SC_ReadStats},
+			{IFace.FSNode.READ,        &SC_Read},
+			{IFace.FSNode.WRITE,       &SC_Write},
+			{IFace.FSNode.SETCWD,      &SC_SetCWD},
+			{IFace.FSNode.REMOVE,      &SC_Remove},
+			{IFace.FSNode.GETPATH,     &SC_GetPath},
+			{IFace.FSNode.WATTRIBUTES, &SC_ReadAttributes},
+			{IFace.FSNode.RATTRIBUTES, &SC_ReadAttributes},
 		];
 
 		super(IFace.FSNode.OBJECT, callTable);
@@ -63,66 +60,6 @@ public:
 
 //TODO
 private:
-	public static ulong SCall(ulong[] params) {
-		import VFSManager.VFS; //TODO: FIXME
-		import TaskManager.Task; //TODO: METOO
-		import Devices.TTY; //TODO FIX ME PLZ
-		import FileSystem.PipeDev; //SHIT HAPPENS
-
-		if (params is null || !params.length)
-			return ~0UL;
-
-		final switch (params[0]) {
-			case IFace.FSNode.SFIND:
-				FSNode ret = VFS.Find(*cast(string *)params[1], params.length >= 3 ? cast(DirectoryNode)Res.GetByID(params[2], IFace.FSNode.OBJECT) : null);
-				return ret is null ? 0 : ret.ResID();
-
-			case IFace.FSNode.SMKDIR:
-				DirectoryNode ret = VFS.CreateDirectory(*cast(string *)params[1], params.length >= 3 ? cast(DirectoryNode)Res.GetByID(params[2], IFace.FSNode.OBJECT) : null);
-				return ret is null ? 0 : ret.ResID();
-
-			case IFace.FSNode.SMKFILE:
-				FSNode ret = VFS.CreateFile(*cast(string *)params[1], params.length >= 3 ? cast(DirectoryNode)Res.GetByID(params[2], IFace.FSNode.OBJECT) : null);
-				return ret is null ? 0 : ret.ResID();
-
-			case IFace.FSNode.SMKPIPE:
-				/*if (params.length > 1) {
-					string s = (*cast(string *)params[1]);
-					string name = s[String.LastIndexOf(s, '/') + 1 .. $];
-					string path = s[0 .. String.LastIndexOf(s, '/')];
-
-					auto dir = VFS.Find(path);
-					if (dir is null)
-						return 0;
-
-					auto ret = new PipeDev(0x2000, name);
-					(cast(DirectoryNode)dir).AddNode(ret);
-					return ret.ResID();
-				}
-
-				return (new PipeDev(0x2000)).ResID();*/
-				break;
-			case IFace.FSNode.CREATETTY:
-				/*if (params.length < 3)
-					return ~0UL;
-
-				PTYDev master;
-				TTYDev slave;
-				new TTY(master, slave);
-				*cast(ulong *)params[1] = master.ResID();
-				*cast(ulong *)params[2] = slave.ResID();
-				return 0;*/
-				break;
-			case IFace.FSNode.SGETRFN:
-				return VFS.RootNode.ResID();
-
-			case IFace.FSNode.SGETCWD:
-				return Task.CurrentProcess.GetCWD().ResID();
-		}
-
-		return ~0UL;
-	}
-
 	ulong SC_Read(ulong[] params) {
 		return Read(params[0], *(cast(byte[] *)params[1]));
 	}
@@ -156,23 +93,19 @@ private:
 		return ret.length;
 	}
 
-	ulong SC_WriteStats(ulong[] params) {
-		return 0;
-	}
-
-	ulong SC_ReadStats(ulong[] params) {
+	ulong SC_WriteAttributes(ulong[] params) {
 		if (params is null || params.length < 1)
 			return 0;
 
-		//auto stats   = cast(FileStream.Stat *)params[0];
-	/*	stats.type   = Type;
-		stats.length = Length;
-		stats.uid    = UID;
-		stats.gid    = GID;
-		stats.ctime  = CreateTime.Ticks;
-		stats.mtime  = ModifyTime.Ticks;
-		stats.atime  = AccessTime.Ticks;*/
+		*(cast(FileAttributes *)params[0]) = attribs;
+		return 1;
+	}
 
+	ulong SC_ReadAttributes(ulong[] params) {
+		if (params is null || params.length < 1)
+			return 0;
+
+		attribs = *(cast(FileAttributes *)params[0]);
 		return 1;
 	}
 }

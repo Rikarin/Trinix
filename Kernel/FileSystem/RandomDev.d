@@ -1,9 +1,8 @@
 module FileSystem.RandomDev;
 
-import VFSManager.CharNode;
-import VFSManager.DirectoryNode;
-import Devices.Random;
-import System.IO.FileAttributes;
+import Devices;
+import VFSManager;
+import System.IO;
 
 
 class RandomDev : CharNode {
