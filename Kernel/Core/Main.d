@@ -69,7 +69,7 @@ extern(C) void StartSystem() {
 
 //==================== DEVICES ====================
 	Log.Print("Detecting hard drives");
-	ATAController.Detect();
+//	ATAController.Detect();
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
@@ -101,7 +101,7 @@ extern(C) void StartSystem() {
 	//Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hda1"));
 
 	VFS.PrintTree(VFS.RootNode);
-
+	
 
 	/*auto aa = VFS.Find("/dev/hda1");
 	if(aa) {

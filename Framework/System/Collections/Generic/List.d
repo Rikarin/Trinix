@@ -67,7 +67,7 @@ class List(T) {
 	}
 	
 	void Clear() {
-		array[0 .. $] = null;
+		array[] = null;
 		count = 0;
 	}
 	

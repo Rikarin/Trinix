@@ -85,8 +85,8 @@ public:
 		ret.cwd         = VFS.RootNode;
 		ret.state       = State.Running;
 
-		ret.descriptors = new List!FSNode();
-		ret.threads     = new List!Thread();
+	//	ret.descriptors = new List!FSNode();
+	//	ret.threads     = new List!Thread();
 		ret.signalQueue = new List!SigNum();
 
 		Thread t = new Thread();
@@ -116,8 +116,8 @@ public:
 		ret.state       = State.Running;
 		ret.cmdline     = args;
 
-		ret.descriptors = new List!FSNode();
-		ret.threads     = new List!Thread();
+		//ret.descriptors = new List!FSNode();
+	//	ret.threads     = new List!Thread();
 		ret.signalQueue = new List!SigNum();
 
 
@@ -169,8 +169,8 @@ public:
 				ret.state       = State.Running;
 				ret.cmdline     = start.Arguments;
 
-				ret.descriptors = new List!FSNode();
-				ret.threads     = new List!Thread();
+			//	ret.descriptors = new List!FSNode();
+			//	ret.threads     = new List!Thread();
 				ret.signalQueue = new List!SigNum();
 
 				/** Add descriptors */

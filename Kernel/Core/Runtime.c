@@ -50,6 +50,14 @@ int pthread_mutex_init() { return 0; }
 int pthread_mutex_destroy() { return 0; }
 void _d_monitor_destroy() { }
 
+void program_invocation_name() {}
+void stderr() {}
+void fprintf() {}
+void dl_iterate_phdr() {}
+void __tls_get_addr() {}
+
+void _memset128ii() {}
+
 /*void remap() {
 	unsigned long addr = 0;
 	unsigned long *pd = (unsigned long *)0x22000;

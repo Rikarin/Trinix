@@ -22,15 +22,6 @@ _SRC += $(wildcard Kernel/Devices/ATA/*.[d|c|s])
 _SRC += $(wildcard Kernel/Core/*.[d|c|s])
 _SRC += $(wildcard Kernel/Resources/Keymaps/*.[d|c|s])
 
-_SRC += $(wildcard Framework/System/*.[d|c|s])
-_SRC += $(wildcard Framework/System/Collections/*.[d|c|s])
-_SRC += $(wildcard Framework/System/Collections/Generic/*.[d|c|s])
-_SRC += $(wildcard Framework/System/Diagnostics/*.[d|c|s])
-_SRC += $(wildcard Framework/System/Drawing/*.[d|c|s])
-_SRC += $(wildcard Framework/System/IO/*.[d|c|s])
-_SRC += $(wildcard Framework/System/Threading/*.[d|c|s])
-_SRC += $(wildcard Framework/System/Windows/*.[d|c|s])
-
 
 
 ######################
@@ -39,12 +30,6 @@ _SRC += $(wildcard Framework/System/Windows/*.[d|c|s])
 _SRC += $(wildcard Userspace/*.[d|c|s])
 _SRC += $(wildcard Userspace/GUI/*.[d|c|s])
 _SRC += $(wildcard Userspace/Libs/*.[d|c|s])
-
-
-
-#_SRC += $(wildcard Framework/Beta/System/Collections/*.[d|c|s])
-#_SRC += $(wildcard Framework/Beta/System/Collections/Generic/*.[d|c|s])
-#_SRC += $(wildcard Framework/Beta/System/*.[d|c|s])
 
 OBJS = $(patsubst %,$(OBJ_DIR)/%,$(_SRC:=.o))
 
@@ -88,7 +73,7 @@ img: Trinix.img
 Disk/Trinix-Kernel: $(OBJS)
 	@echo $$(($$(cat buildnum) + 1)) > buildnum
 	@echo "Build number:" $$(cat buildnum)
-	@ld $(LDFLAGS) $(OBJS) druntime/lib/libdruntime-linux64.a
+	@ld $(LDFLAGS) $(OBJS) druntime/lib/libdruntime-linux64.a Framework.lib
 
 
 

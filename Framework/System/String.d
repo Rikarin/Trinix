@@ -217,9 +217,7 @@ class String {
 		foreach (i, x; str) {
 			foreach (y; delimiter) {
 				if (x == y) {
-					import Core.Log;
-					Log.Print(" XXXX: " ~ cast(immutable(char)[])str[a .. i]);
-					ret[b++] = new String("abc");//cast(immutable(char)[])str[a .. i]);
+					ret[b++] = cast(immutable(char)[])str[a .. i];
 					a = i + 1;
 					break;
 				}

@@ -1,4 +1,4 @@
-module System.Threaing.Thread;
+module System.Threading.Thread;
 
 import System.IFace;
 import System.ResourceCaller;

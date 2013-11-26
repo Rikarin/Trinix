@@ -28,7 +28,7 @@ public:
 	this(string name, ulong length) { 
 		super(NewAttributes(name));
 
-		waitingQueue = new List!Thread();
+	//	waitingQueue = new List!Thread();
 		buffer = new byte[length];
 		mutex = new Mutex();
 	}
