@@ -8,18 +8,6 @@ start64:
 	mov RBP, 0x20000
 	mov RSP, RBP
 
-	static_ctors_loop:
-		mov rbx, start_ctors
-		jmp .test
-
-		.body:
-			call [rbx]
-			add rbx, 8
-
-		.test:
-			cmp rbx, end_ctors
-			jb .body
-
 	call StartSystem
 
 

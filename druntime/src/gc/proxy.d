@@ -203,22 +203,16 @@ extern (C)
 
     void* gc_malloc( size_t sz, uint ba = 0 )
     {
-        if( proxy is null )
-            return _gc.malloc( sz, ba );
-        return proxy.gc_malloc( sz, ba );
+        return malloc( sz, ba );
     }
 
     BlkInfo gc_qalloc( size_t sz, uint ba = 0 )
     {
-        if( proxy is null )
-        {
-            BlkInfo retval;
-            retval.base = malloc(sz, ba);
-            retval.size = sz;
-            retval.attr = ba;
-            return retval;
-        }
-        return proxy.gc_qalloc( sz, ba );
+		BlkInfo retval;
+		retval.base = malloc(sz, ba);
+		retval.size = sz;
+		retval.attr = ba;
+		return retval;
     }
 
     void* gc_calloc( size_t sz, uint ba = 0 )

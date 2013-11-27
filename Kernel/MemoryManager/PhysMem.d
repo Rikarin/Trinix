@@ -16,7 +16,6 @@ static:
 
 	void Init() {
 		frames = new BitArray(0x1_000_000, false);
-		pointer = 0;
 
 		Paging.KernelPaging = new Paging();
 		for (ulong i = 0xC00_0000; i < 0xFFF_0000; i += 0x1000)
@@ -32,12 +31,15 @@ static:
 		if (page.Present)
 			return;//throw new MemoryException();
 
-		long index = pointer != ~0UL ? pointer++ : frames.FirstFreeBit();
-		frames[index] = true;
+		long index     = pointer != ~0UL ? pointer++ : frames.FirstFreeBit();
+		frames[index]  = true;
 
-		page.Present = true;
-		page.Address = index;
-		page.User = user;
+		import Core, System;
+		Log.Print("addr: " ~ Convert.ToString(cast(ulong)index, 16));
+
+		page.Present   = true;
+		page.Address   = index;
+		page.User      = user;
 		page.ReadWrite = writable;
 	}
 	
