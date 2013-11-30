@@ -1,5 +1,6 @@
 module Architectures.Paging;
 
+import TaskManager;
 import MemoryManager;
 import Architectures;
 
@@ -293,29 +294,25 @@ class Paging {
 		if (root.Entries[start[3]].Present)
 			pdpt = root.Tables[start[3]];
 		else
-			return cast(PhysicalAddress)(add & 0xFF_FFFF);
+			return cast(PhysicalAddress)(add - 0xC000000);
 			
 		PageLevel!2* pd;
 		if (pdpt.Entries[start[2]].Present)
 			pd = pdpt.Tables[start[2]];
 		else
-			return cast(PhysicalAddress)(add & 0xFF_FFFF);
+			return cast(PhysicalAddress)(add - 0xC000000);
 			
 		PageLevel!1* pt;
 		if (pd.Entries[start[1]].Present)
 			pt = pd.Tables[start[1]];
 		else
-			return cast(PhysicalAddress)(add & 0xFF_FFFF);
+			return cast(PhysicalAddress)(add - 0xC000000);
 			
 		return pt.Entries[start[0]].Location;
 	}
 
 
 	static void PageFaultHandler(InterruptStack* stack) {
-		import TaskManager.Signal; //TODO: FIXME
-		import TaskManager.Thread; //METOO
-		import TaskManager.Task; //METOO
-
 		if (stack.RIP == Signal.SignalReturn)
 			Signal.ReturnFromSignalHandler();
 		else if (stack.RIP == Thread.ThreadReturn) {
@@ -329,14 +326,4 @@ class Paging {
 		
 		Signal.Handler(Task.CurrentProcess, SigNum.SIGSEGV);
 	}
-
-	/*void GeneralProtectionFaultHandler(InterruptStack *stack) {
-		import Core.Log;
-		Log.Print(" ==== General Protection Fault ====", 0x200);
-
-		asm {
-			cli;
-			hlt;
-		}
-	}*/
 }

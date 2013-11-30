@@ -230,9 +230,9 @@ private:
 	}
 
 	ulong SC_GetFD(ulong[] params) {
-		if (params is null || params.length < 1 || params[0] >= FileDescriptors.Count)
+		if (params is null || params.length < 1 || params[0] >= descriptors.Count)
 			return ~0UL;
 
-		return FileDescriptors[params[0]].ResID();
+		return descriptors[params[0]].ResID();
 	}
 }

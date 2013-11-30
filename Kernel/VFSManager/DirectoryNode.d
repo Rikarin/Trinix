@@ -53,7 +53,7 @@ public:
 		];*/
 		//AddCallTable(callTable);
 
-	//	childrens    = new List!FSNode();
+		childrens    = new List!FSNode();
 		attribs      = fileAttributes;
 		fs           = fileSystem;
 		attribs.Type = FileType.Directory;

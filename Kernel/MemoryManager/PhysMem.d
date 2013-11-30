@@ -15,10 +15,10 @@ static:
 
 
 	void Init() {
-		frames = new BitArray(0x1_000_000, false);
+		frames = new BitArray(0x1000000, false);
 
 		Paging.KernelPaging = new Paging();
-		for (ulong i = 0xC00_0000; i < 0xFFF_0000; i += 0x1000)
+		for (ulong i = 0xC000000; i < 0xFFF0000; i += 0x1000)
 			Paging.KernelPaging.AllocFrame(cast(VirtualAddress)i, true, true); //true for test task manager
 
 		Paging.KernelPaging.Install();
@@ -33,9 +33,6 @@ static:
 
 		long index     = pointer != ~0UL ? pointer++ : frames.FirstFreeBit();
 		frames[index]  = true;
-
-		import Core, System;
-		Log.Print("addr: " ~ Convert.ToString(cast(ulong)index, 16));
 
 		page.Present   = true;
 		page.Address   = index;
