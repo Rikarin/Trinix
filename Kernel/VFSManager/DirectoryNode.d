@@ -1,11 +1,12 @@
 module VFSManager.DirectoryNode;
 
-import VFSManager;
+import VFSManager.FSNode;
+import VFSManager.FileSystemProto;
 
 import System;
 import System.IO;
 import System.IFace;
-import System.Collections.Generic;
+import System.Collections.Generic.List;
 
 
 class DirectoryNode : FSNode {
@@ -38,7 +39,7 @@ public:
 		return parent;
 	}
 
-	@property List!(FSNode) Childrens() {
+	@property List!FSNode Childrens() {
 		if (mounts)
 			return mounts.Childrens;
 		

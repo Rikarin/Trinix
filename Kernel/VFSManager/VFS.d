@@ -1,29 +1,16 @@
 module VFSManager.VFS;
+import Core;
+import FileSystem;
+import VFSManager;
+import TaskManager;
+import SyscallManager;
 
-import Core.Log;
-import Core.DeviceManager;
-import VFSManager.FSNode;
-import VFSManager.PipeNode;
-import VFSManager.DirectoryNode;
-import TaskManager.Task;
-import SyscallManager.Res;
+import Devices;
+import Devices.Port;
 
-import FileSystem.DevFS;
-import FileSystem.TmpFS;
-import FileSystem.ProcFS;
-import FileSystem.NullDev;
-import FileSystem.ZeroDev;
-import FileSystem.PipeDev;
-import FileSystem.HelloDev;
-import FileSystem.RandomDev;
-import FileSystem.SerialDev;
-
-import Devices.TTY;
-import Devices.Port.SerialPort;
-
+import System;
 import System.IFace;
-import System.String;
-import System.IO.FileAttributes;
+import System.IO;
 
 
 class VFS {

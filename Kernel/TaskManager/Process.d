@@ -60,7 +60,7 @@ public:
 
 	
 	@property ulong ID() { return id; }
-	@property List!(FSNode) FileDescriptors() { return descriptors; }
+	@property List!FSNode FileDescriptors() { return descriptors; }
 
 	DirectoryNode GetCWD() { return cwd; }
 	void SetCWD(DirectoryNode value) { cwd = value; }

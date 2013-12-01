@@ -11,7 +11,7 @@ class Resource {
 private:
 	Mutex lock;
 	ulong id, type;
-	List!(CallTable) callTables;
+	List!CallTable callTables;
 
 
 	ulong DoCall(ulong id, ulong[] params) {
@@ -48,7 +48,7 @@ public:
 
 protected:
 	this(ulong type, const CallTable[] ct) {
-		callTables = new List!(CallTable)();
+		callTables = new List!CallTable();
 		lock = new Mutex();
 
 		this.type = type;
