@@ -27,9 +27,9 @@ _SRC += $(wildcard Kernel/Resources/Keymaps/*.[d|c|s])
 ######################
 #   Userspace apps   #
 ######################
-_SRC += $(wildcard Userspace/*.[d|c|s])
-_SRC += $(wildcard Userspace/GUI/*.[d|c|s])
-_SRC += $(wildcard Userspace/Libs/*.[d|c|s])
+#_SRC += $(wildcard Userspace/*.[d|c|s])
+#_SRC += $(wildcard Userspace/GUI/*.[d|c|s])
+#_SRC += $(wildcard Userspace/Libs/*.[d|c|s])
 
 OBJS = $(patsubst %,$(OBJ_DIR)/%,$(_SRC:=.o))
 

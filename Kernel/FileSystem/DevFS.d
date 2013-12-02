@@ -39,7 +39,7 @@ class DevFS : FileSystemProto {
 	}
 
 	override bool Remove(DirectoryNode parent, FSNode node) {
-		if (node.Type == FileType.Directory) {
+		if (node.GetAttributes().Type == FileType.Directory) {
 			if (!(cast(DirectoryNode)node).Childrens.Count)
 				return true;
 		}

@@ -1,4 +1,5 @@
 module VFSManager.VFS;
+
 import Core;
 import FileSystem;
 import VFSManager;
@@ -194,7 +195,7 @@ static:
 		if (parent is null)
 			return false;
 
-		if (parent.Type & (FileType.Directory | FileType.Mountpoint))
+		if (parent.GetAttributes().Type & (FileType.Directory | FileType.Mountpoint))
 			return (cast(DirectoryNode)parent).Remove(node);
 
 		return false;

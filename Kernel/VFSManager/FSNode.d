@@ -31,7 +31,6 @@ package:
 
 
 public:
-	@property FileType Type() { return attribs.Type; }
 	@property FileSystemProto FileSystem() { return fs; }
 	@property DirectoryNode Parent() { return parent; }
 	

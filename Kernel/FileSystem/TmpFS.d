@@ -94,17 +94,20 @@ class TmpFS : FileSystemProto {
 	}
 
 	override bool Remove(DirectoryNode parent, FSNode node) {
-		if (node.Type == FileType.File) {
-			TmpFileNode n = cast(TmpFileNode)node;
-			if (n.data !is null)
-				delete n.data;
+		switch (node.GetAttributes().Type) {
+			case FileType.Directory:
+				if (!(cast(DirectoryNode)node).Childrens.Count)
+					return true;
+				return false;
 
-			return true;
-		} else if (node.Type == FileType.Directory) {
-			if (!(cast(DirectoryNode)node).Childrens.Count)
+			case FileType.File:
+				TmpFileNode n = cast(TmpFileNode)node;
+				if (n.data !is null)
+					delete n.data;
 				return true;
-		}
 
-		return false;
+			default:
+				return false;
+		}
 	}
 }

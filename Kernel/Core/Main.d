@@ -113,7 +113,7 @@ extern(C) void StartSystem() {
 	//import Devices.PCI.PCIDev;
 	//PCIDev.ScanDevices();
 
-	static import Userspace.GUI.Compositor;
+	//static import Userspace.GUI.Compositor;
 	//Process.CreateProcess(cast(void function())&Userspace.GUI.Compositor.construct, ["/System/Bin/Compositor", "--single", "--nothing"]);
 
 	while (true) {}

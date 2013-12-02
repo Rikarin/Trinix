@@ -1,12 +1,11 @@
 module VFSManager.DirectoryNode;
 
-import VFSManager.FSNode;
-import VFSManager.FileSystemProto;
+import VFSManager;
 
 import System;
 import System.IO;
 import System.IFace;
-import System.Collections.Generic.List;
+import System.Collections.Generic;
 
 
 class DirectoryNode : FSNode {
@@ -19,7 +18,6 @@ package:
 public:
 	@property bool IsLoaded() { return isLoaded; }
 	@property void IsLoaded(bool value) { isLoaded = value; }
-	@property override FileType Type() { return mounts ? FileType.Mountpoint : FileType.Directory; }
 		
 	override ulong Read(ulong offset, byte[] data) { return 0; }
 	override ulong Write(ulong offset, byte[] data) { return 0; }
