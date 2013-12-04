@@ -8,40 +8,59 @@ import System.Threading;
 
 class Heap {
 private:
-	enum MAGIC = 0xDEADC0D;
+	enum Magic = 0xDEADC0DE;
 	
 	struct Header {
-		uint magic;
-		bool isHole;
-		ulong size;
+		uint Magic;
+		bool IsHole;
+		ulong Size;
 	}
 	
 	struct Footer {
-		uint magic;
-		Header *header;
+		uint Magic;
+		Header *Head;
 	}
 	
 	struct Index {
-		Header** data;
-		ulong size;
+		Header** Data;
+		ulong Size;
 	}
 	
 	ulong free, start, end;
-	bool usable;
 	Index index;
 	Paging page;
 	Mutex mutex;
 	
 
 public:
-	__gshared const uint MIN_SIZE = 0x200000;
+	enum MinSize = 0x200000;
 
 
-	this() {
+	this(ulong offset, ulong size, ulong indexSize, Paging paging) {
 		mutex = new Mutex();
-		usable = false;
-		index.data = null;
-		index.size = 0;
+
+		start = offset + indexSize;
+		end   = offset + size;
+		page  = paging;
+		
+		for (ulong i = offset; i < end; i += 0x1000)
+			page.AllocFrame(cast(VirtualAddress)i, false, true);
+		page.Install();
+
+		index.Data = cast(Header **)offset;
+		index.Size = 0;
+
+		Header *hole = cast(Header *)start;
+		hole.Size    = end - start;
+		hole.Magic   = Magic;
+		hole.IsHole  = true;
+
+		Footer *holeFooter = cast(Footer *)end - Footer.sizeof;
+		holeFooter.Head    = hole;
+		holeFooter.Magic   = Magic;
+
+		InsertIntoIndex(hole);
+		free = end - start;
 	}
 	
 	~this() {
@@ -54,11 +73,11 @@ public:
 		ulong newSize = size + Header.sizeof + Footer.sizeof;
 		
 		ulong iter = 0;
-		for (; iter < index.size; iter++)
-			if (index.data[iter].size >= newSize)
+		for (; iter < index.Size; iter++)
+			if (index.Data[iter].Size >= newSize)
 				break;
 				
-		if (iter == index.size) {
+		if (iter == index.Size) {
 			if (noExpand) {
 				mutex.Release();
 				return null;
@@ -69,29 +88,29 @@ public:
 			return Alloc(size, true);
 		}
 		
-		Header *header = index.data[iter];
-		Footer *footer = cast(Footer *)(header + header.size - Footer.sizeof);
-		header.isHole = false;
+		Header *header = index.Data[iter];
+		Footer *footer = cast(Footer *)(header + header.Size - Footer.sizeof);
+		header.IsHole  = false;
 		
 		RemoveFromIndex(header);
-		if (header.size > (newSize + Header.sizeof + Footer.sizeof)) {
+		if (header.Size > (newSize + Header.sizeof + Footer.sizeof)) {
 			Footer *newFooter = cast(Footer *)(header + newSize - Footer.sizeof);
-			newFooter.header = header;
-			newFooter.magic = MAGIC;
+			newFooter.Head    = header;
+			newFooter.Magic   = Magic;
 			
 			Header *newHeader = cast(Header *)(header + newSize);
-			newHeader.isHole = true;
-			newHeader.magic = MAGIC;
-			newHeader.size = header.size - newSize;
+			newHeader.IsHole  = true;
+			newHeader.Magic   = Magic;
+			newHeader.Size    = cast(ulong)footer - cast(ulong)newHeader + newSize;
 
-			header.size = newSize;			
-			footer.header = newHeader;
-			footer.magic = MAGIC;
+			header.Size   = newSize;			
+			footer.Head   = newHeader;
+			footer.Magic  = Magic;
 			
 			InsertIntoIndex(newHeader);
 		}
 		
-		free -= header.size;
+		free -= header.Size;
 		mutex.Release();
 		
 		return cast(void *)(header + Header.sizeof);
@@ -102,71 +121,41 @@ public:
 			return;
 			
 		Header *header = cast(Header *)(ptr - Header.sizeof);
-		if(header.magic != MAGIC)
+		if(header.Magic != Magic)
 			return;
 			
-		Footer *footer = cast(Footer *)(header + header.size - Footer.sizeof);
-		if (footer.magic != MAGIC)
+		Footer *footer = cast(Footer *)(header + header.Size - Footer.sizeof);
+		if (footer.Magic != Magic)
 			return;
 			
 		mutex.WaitOne();
-		free += header.size;
+		free += header.Size;
 		
 		Footer *prevFooter = cast(Footer *)(cast(ulong)header - Footer.sizeof);
-		if (prevFooter.magic == MAGIC && prevFooter.header.isHole) {
-			header = prevFooter.header;
+		if (prevFooter.Magic == Magic && prevFooter.Head.IsHole) {
+			header = prevFooter.Head;
 			RemoveFromIndex(header);
 			
-			footer.header = header;
-			header.size = (cast(ulong)footer - cast(ulong)header + Footer.sizeof);
+			footer.Head = header;
+			header.Size = (cast(ulong)footer - cast(ulong)header + Footer.sizeof);
 		}
 		
 		Header *nextHeader = cast(Header *)(footer - Footer.sizeof);
-		if (nextHeader.magic == MAGIC && nextHeader.isHole) {
+		if (nextHeader.Magic == Magic && nextHeader.IsHole) {
 			RemoveFromIndex(nextHeader);
-			footer = cast(Footer *)(footer + nextHeader.size);
+			footer = cast(Footer *)(footer + nextHeader.Size);
 			
-			footer.header = header;
-			header.size = (cast(ulong)footer - cast(ulong)header + Footer.sizeof);
+			footer.Head = header;
+			header.Size = (cast(ulong)footer - cast(ulong)header + Footer.sizeof);
 		}
 		
-		header.isHole = true;
+		header.IsHole = true;
 		InsertIntoIndex(header);
 		
-		if (cast(ulong)footer == (end - Footer.sizeof) && header.size >= 0x2000 && (end - start > MIN_SIZE))
+		if (cast(ulong)footer == (end - Footer.sizeof) && header.Size >= 0x2000 && (end - start > MinSize))
 			Contract();
 			
 		mutex.Release();
-	}
-	
-	void Create(ulong start, ulong size, ulong indexSize, Paging page) {
-		if (usable)
-			return;
-			
-			this.start = start + indexSize;
-			this.end = start + size;
-			this.page = page;
-			
-			for (ulong i = start; i < end; i += 0x1000)
-				page.AllocFrame(cast(VirtualAddress)i, false, true);
-			page.Install();
-
-			index.data = cast(Header **)start;
-			index.size = 0;
-
-			Header *hole = cast(Header *)this.start;
-			hole.size = end - this.start;
-			hole.magic = MAGIC;
-			hole.isHole = true;
-
-			Footer *holeFooter = cast(Footer *)end - Footer.sizeof;
-			holeFooter.header = hole;
-			holeFooter.magic = MAGIC;
-
-			InsertIntoIndex(hole);
-
-			usable = true;
-			free = end - this.start;
 	}
 
 	void Expand(ulong quantity) {
@@ -179,26 +168,27 @@ public:
 			page.AllocFrame(cast(VirtualAddress)i, false, true);
 
 		Footer *lastFooter = cast(Footer *)end - Footer.sizeof;
-		Header *lastHeader = lastFooter.header;
-		if (lastHeader.isHole) {
+		Header *lastHeader = lastFooter.Head;
+
+		if (lastHeader.IsHole) {
 			RemoveFromIndex(lastHeader);
-			lastHeader.size += quantity;
+			lastHeader.Size += quantity;
 
 			lastFooter = cast(Footer *)newEnd - Footer.sizeof;
-			lastFooter.magic = MAGIC;
-			lastFooter.header = lastHeader;
+			lastFooter.Magic = Magic;
+			lastFooter.Head  = lastHeader;
 
 			InsertIntoIndex(lastHeader);
 		} else {
 			lastHeader = cast(Header *)end;
 			lastFooter = cast(Footer *)newEnd - Footer.sizeof;
 
-			lastHeader.isHole = true;
-			lastHeader.magic = MAGIC;
-			lastHeader.size = quantity;
+			lastHeader.IsHole = true;
+			lastHeader.Magic  = Magic;
+			lastHeader.Size   = quantity;
 
-			lastFooter.magic = MAGIC;
-			lastFooter.header = lastHeader;
+			lastFooter.Magic = Magic;
+			lastFooter.Head  = lastHeader;
 
 			InsertIntoIndex(lastHeader);
 		}
@@ -209,13 +199,13 @@ public:
 
 	void Contract() {
 		Footer *lastFooter = cast(Footer *)end - Footer.sizeof;
-		Header *lastHeader = lastFooter.header;
+		Header *lastHeader = lastFooter.Head;
 
-		if (!lastHeader.isHole)
+		if (!lastHeader.IsHole)
 			return;
 
 		ulong quantity = 0;
-		while ((end - start) - quantity > MIN_SIZE && (lastHeader.size - quantity) > 0x1000)
+		while ((end - start) - quantity > MinSize && (lastHeader.Size - quantity) > 0x1000)
 			quantity += 0x1000;
 
 		if (!quantity)
@@ -225,10 +215,10 @@ public:
 		free -= quantity;
 
 		RemoveFromIndex(lastHeader);
-		lastHeader.size -= quantity;
-		lastFooter = lastFooter - quantity;
-		lastFooter.magic = MAGIC;
-		lastFooter.header = lastHeader;
+		lastHeader.Size -= quantity;
+		lastFooter      -= quantity;
+		lastFooter.Magic = Magic;
+		lastFooter.Head  = lastHeader;
 		InsertIntoIndex(lastHeader);
 
 		for (ulong i = newEnd; i < end; i += 0x1000)
@@ -239,9 +229,9 @@ public:
 
 
 	private void RemoveFromIndex(uint idx) {
-		index.size--;
-		while (idx < index.size)
-			index.data[idx] = index.data[++idx];
+		index.Size--;
+		while (idx < index.Size)
+			index.Data[idx] = index.Data[++idx];
 	}
 
 	private void RemoveFromIndex(Header *header) {
@@ -251,32 +241,33 @@ public:
 	}
 
 	private uint FindIndexEntry(Header *header) {
-		for (uint i = 0; i < index.size; i++)
-			if (index.data[i] == header)
+		for (uint i = 0; i < index.Size; i++)
+			if (index.Data[i] == header)
 				return i;
+
 		return ~0U;
 	}
 
 	private void InsertIntoIndex(Header *header) {
-		if ((index.size * (Header *).sizeof + cast(ulong)index.data) >= start)
+		if ((index.Size * (Header *).sizeof + cast(ulong)index.Data) >= start)
 			return;
 
-		uint iter = 0;
-		while (iter < index.size && cast(ulong)index.data[iter] < header.size)
-			if (index.data[iter++] == header)
+		ulong iter = 0;
+		while (iter < index.Size && index.Data[iter].Size < header.Size)
+			if (index.Data[iter++] == header)
 				return;
 
-		if (iter == index.size)
-			index.data[index.size++] = header;
+		if (iter == index.Size)
+			index.Data[index.Size++] = header;
 		else {
-			uint pos = iter;
-			iter = cast(uint)index.size;
+			ulong pos = iter;
+			iter = index.Size;
 
 			while (iter > pos)
-				index.data[iter] = index.data[--iter];
+				index.Data[iter] = index.Data[--iter];
 
-			index.size++;
-			index.data[pos] = header;
+			index.Size++;
+			index.Data[pos] = header;
 		}
 	}
 }

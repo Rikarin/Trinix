@@ -40,8 +40,7 @@ extern(C) void StartSystem() {
 
 	Log.Print("Initializing kernel heap");
 
-	//Memory.KernelHeap = new Heap();
-	//Memory.KernelHeap.Create(cast(ulong)PageAllocator.AllocPage(), Heap.MIN_SIZE, 0x10000, Paging.KernelPaging);
+	//Memory.KernelHeap = new Heap(cast(ulong)PageAllocator.AllocPage(), Heap.MinSize, 0x10000, Paging.KernelPaging);
 	//PageAllocator.IsInit = true;
 	Log.Result(false);
 
