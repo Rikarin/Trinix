@@ -119,28 +119,27 @@ class PCIDev : DeviceProto {
     };
     
     enum BarType {
-        BAR_TYPE_MEM = 0,
-        BAR_TYPE_IO
+        Memory = 0,
+        IO
     };
 
     
 private:
-	private static __gshared List!PCIDev list;
+	enum BaseRegister = 0xCFC;
+	enum DataRegister = 0xCF8;
+	enum IRQLine      = 0x3C;
+	enum IRQPin       = 0x3D;
 
-	enum PCI_BASE_REG = 0xCFC;
-	enum PCI_DATA_REG = 0xCF8;
-	enum PCI_IRQ_LINE = 0x3C;
-	enum PCI_IRQ_PIN  = 0x3D;
-
-	enum PCI_BASE_ADDRESS_0            = 0x10;
-	enum PCI_BASE_ADDRESS_SPACE        = 0x01;
-	enum PCI_BASE_ADDRESS_SPACE_MEMORY = 0x00;
-	enum PCI_IO_RESOURCE_MEM           = 0x00;
-	enum PCI_IO_RESOURCE_IO            = 0x01;
-	enum PCI_BASE_ADDRESS_MEM_MASK     = ~0x0;
-	enum PCI_BASE_ADDRESS_IO_MASK      = ~0x03;
+	enum BaseAddress0           = 0x10;
+	enum BaseAddressSpace       = 0x01;
+	enum BaseAddressSpaceMemory = 0x00;
+	enum IOResourceMemory       = 0x00;
+	enum IOResourceIO           = 0x01;
+	enum BaseAddressMemoryMask  = ~0x0;
+	enum BaseAddressIOMask      = ~0x03;
 
 
+	__gshared List!PCIDev list;
     ubyte bus, dev, func;
     Common common;
     uint devi[60];
@@ -164,9 +163,9 @@ public:
 		this.func = func;
 		common = cmn;
 
-		irq = Read!byte(PCI_IRQ_PIN);
+		irq = Read!byte(IRQPin);
 		if (irq)
-			irq = Read!byte(PCI_IRQ_LINE);
+			irq = Read!byte(IRQLine);
 
 		DeviceManager.RegisterDevice(this, DeviceInfo("Device", DeviceType.PCI));
 	}
@@ -179,8 +178,8 @@ public:
 		c.Function = func;
 		c.Register = reg & 0xFC;
 
-		Port.Write!byte(PCI_DATA_REG, *cast(byte *)&c);
-		ushort base = PCI_BASE_REG + (reg & 0x03);
+		Port.Write!byte(DataRegister, *cast(byte *)&c);
+		ushort base = BaseRegister + (reg & 0x03);
 
 		switch (ts) {
 			case 1:
@@ -202,8 +201,8 @@ public:
 		c.Function = func;
 		c.Register = reg & 0xFC;
 
-		Port.Write!byte(PCI_DATA_REG, *cast(byte *)&c);
-		ushort base = PCI_BASE_REG + (reg & 0x03);
+		Port.Write!byte(DataRegister, *cast(byte *)&c);
+		ushort base = BaseRegister + (reg & 0x03);
 
 		final switch (ts) {
 			case 1:
@@ -222,8 +221,8 @@ public:
 		int tmp = Read!int(0x10 + (barNum << 2));
 
 		if (tmp & 1)
-			return BarType.BAR_TYPE_IO;
-		return BarType.BAR_TYPE_MEM;
+			return BarType.IO;
+		return BarType.Memory;
 	}
 
 	uint GetBar(int barNum) {
@@ -246,7 +245,7 @@ public:
 		size[] = 0;
 
 		foreach (i; 0 .. count) {
-			byte reg = cast(byte)(PCI_BASE_ADDRESS_0 + (i << 2));
+			byte reg = cast(byte)(BaseAddress0 + (i << 2));
 			uint l = Read!byte(reg);
 			Write!byte(reg, ~0);
 
@@ -259,21 +258,21 @@ public:
 			if (l == 0xFFFFFFFF)
 				l = 0;
 
-			if ((l & PCI_BASE_ADDRESS_SPACE) == PCI_BASE_ADDRESS_SPACE_MEMORY) {
-				base[i] = l & PCI_BASE_ADDRESS_MEM_MASK;
-				size[i] = GetSize(sz, PCI_BASE_ADDRESS_MEM_MASK);
-				type[i] = PCI_IO_RESOURCE_MEM;
+			if ((l & BaseAddressSpace) == BaseAddressSpaceMemory) {
+				base[i] = l & BaseAddressMemoryMask;
+				size[i] = GetSize(sz, BaseAddressMemoryMask);
+				type[i] = IOResourceIO;
 			} else {
-				base[i] = l & PCI_BASE_ADDRESS_IO_MASK;
-				size[i] = GetSize(sz, PCI_BASE_ADDRESS_IO_MASK);
-				type[i] = PCI_IO_RESOURCE_IO;
+				base[i] = l & BaseAddressIOMask;
+				size[i] = GetSize(sz, BaseAddressIOMask);
+				type[i] = IOResourceIO;
 			}
 		}
 	}
 
 
 static:
-	@property bool IsPresent() { return Port.Read!uint(PCI_DATA_REG) != 0xFFFFFFFF; }
+	@property bool IsPresent() { return Port.Read!uint(DataRegister) != 0xFFFFFFFF; }
 
 	void ScanDevices() {
 		if (!IsPresent)

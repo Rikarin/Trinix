@@ -7,6 +7,7 @@ import MemoryManager;
 import Architectures;
 import SyscallManager;
 import Devices;
+import Devices.PCI;
 import Devices.Disk;
 import Devices.Mouse;
 import Devices.Display;
@@ -80,9 +81,13 @@ extern(C) void StartSystem() {
 	//new PS2Mouse();
 	Log.Result(true);
 
-	Log.Print("Setup BGA driver 800x600");
+	Log.Print("Setuping BGA driver 800x600");
 	//BGA.Init(800, 600);
 	Log.Result(true);
+
+	Log.Print("Finding PCI devices");
+	//PCIDev.ScanDevices();
+	Log.Result(false);
 
 	Log.Print("Initializing timer ticks = 100Hz");
 	new Timer(100);
@@ -109,9 +114,6 @@ extern(C) void StartSystem() {
 		aa.Read(0, xx);
 		Log.PrintSP(cast(string)xx);
 	}*/
-
-	//import Devices.PCI.PCIDev;
-	//PCIDev.ScanDevices();
 
 	//static import Userspace.GUI.Compositor;
 	//Process.CreateProcess(cast(void function())&Userspace.GUI.Compositor.construct, ["/System/Bin/Compositor", "--single", "--nothing"]);

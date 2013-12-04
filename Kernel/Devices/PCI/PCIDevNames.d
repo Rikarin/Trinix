@@ -1,133 +1,171 @@
 module Devices.PCI.PCIDevNames;
 
-enum PCI_CLASS_NOT_DEFINED        = 0x00;
-enum PCI_CLASS_NOT_DEFINED_VGA    = 0x0001;
 
-enum PCI_BASE_CLASS_STORAGE       = 0x01;
-enum PCI_CLASS_STORAGE_SCSI       = 0x0100;
-enum PCI_CLASS_STORAGE_IDE        = 0x0101;
-enum PCI_CLASS_STORAGE_FLOPPY     = 0x0102;
-enum PCI_CLASS_STORAGE_IPI        = 0x0103;
-enum PCI_CLASS_STORAGE_RAID       = 0x0104;
-enum PCI_CLASS_STORAGE_SATA       = 0x0106;
-enum PCI_CLASS_STORAGE_SATA_AHCI  = 0x010601;
-enum PCI_CLASS_STORAGE_SAS        = 0x0107;
-enum PCI_CLASS_STORAGE_OTHER      = 0x0180;
+enum PCIBaseClass {
+    Storage       = 0x01,
+    Network       = 0x02,
+    Display       = 0x03,
+    Multimedia    = 0x04,
+    Memory        = 0x05,
+    Bridge        = 0x06,
+    Communication = 0x07,
+    System        = 0x08,
+    Input         = 0x09,
+    Docking       = 0x0A,
+    Processor     = 0x0B,
+    Serial        = 0x0C,
+    Wireless      = 0x0D,
+    Intelligent   = 0x0E,
+    Satellite     = 0x0F,
+    Crypt         = 0x10,
+    SignalProcessing = 0x11,
+    Others        = 0xFF
+}
 
-enum PCI_BASE_CLASS_NETWORK       = 0x02;
-enum PCI_CLASS_NETWORK_ETHERNET   = 0x0200;
-enum PCI_CLASS_NETWORK_TOKEN_RING = 0x0201;
-enum PCI_CLASS_NETWORK_FDDI       = 0x0202;
-enum PCI_CLASS_NETWORK_ATM        = 0x0203;
-enum PCI_CLASS_NETWORK_OTHER      = 0x0280;
+struct PCIClass {
+    enum NotDefined    = 0x00;
+    enum NotDefinedVGA = 0x01;
 
-enum PCI_BASE_CLASS_DISPLAY       = 0x03;
-enum PCI_CLASS_DISPLAY_VGA        = 0x0300;
-enum PCI_CLASS_DISPLAY_XGA        = 0x0301;
-enum PCI_CLASS_DISPLAY_3D         = 0x0302;
-enum PCI_CLASS_DISPLAY_OTHER      = 0x0380;
+    enum Storage {
+        SCSI      = 0x100,
+        IDE       = 0x101,
+        Floppy    = 0x102,
+        IPI       = 0x103,
+        RAID      = 0x104,
+        SATA      = 0x106,
+        SATA_AHCI = 0x10601,
+        SAS       = 0x107,
+        Other     = 0x180
+    }
 
-enum PCI_BASE_CLASS_MULTIMEDIA    = 0x04;
-enum PCI_CLASS_MULTIMEDIA_VIDEO	  = 0x0400;
-enum PCI_CLASS_MULTIMEDIA_AUDIO	  = 0x0401;
-enum PCI_CLASS_MULTIMEDIA_PHONE	  = 0x0402;
-enum PCI_CLASS_MULTIMEDIA_OTHER	  = 0x0480;
+    enum Network {
+        Ethernet  = 0x200,
+        TokenRing = 0x201,
+        FDDI      = 0x202,
+        ATM       = 0x203,
+        Other     = 0x280
+    }
 
-enum PCI_BASE_CLASS_MEMORY        = 0x05;
-enum PCI_CLASS_MEMORY_RAM         = 0x0500;
-enum PCI_CLASS_MEMORY_FLASH       = 0x0501;
-enum PCI_CLASS_MEMORY_OTHER       = 0x0580;
+    enum Display {
+        VGA       = 0x300,
+        XGA       = 0x301,
+        N3D       = 0x302,
+        Other     = 0x380
+    }
 
-enum PCI_BASE_CLASS_BRIDGE        = 0x06;
-enum PCI_CLASS_BRIDGE_HOST        = 0x0600;
-enum PCI_CLASS_BRIDGE_ISA         = 0x0601;
-enum PCI_CLASS_BRIDGE_EISA        = 0x0602;
-enum PCI_CLASS_BRIDGE_MC          = 0x0603;
-enum PCI_CLASS_BRIDGE_PCI         = 0x0604;
-enum PCI_CLASS_BRIDGE_PCMCIA      = 0x0605;
-enum PCI_CLASS_BRIDGE_NUBUS       = 0x0606;
-enum PCI_CLASS_BRIDGE_CARDBUS     = 0x0607;
-enum PCI_CLASS_BRIDGE_RACEWAY     = 0x0608;
-enum PCI_CLASS_BRIDGE_OTHER       = 0x0680;
+    enum Multimedia {
+        Video     = 0x400,
+        Audio     = 0x401,
+        Phone     = 0x402,
+        Other     = 0x480
+    }
 
-enum PCI_BASE_CLASS_COMMUNICATION        = 0x07;
-enum PCI_CLASS_COMMUNICATION_SERIAL	     = 0x0700;
-enum PCI_CLASS_COMMUNICATION_PARALLEL    = 0x0701;
-enum PCI_CLASS_COMMUNICATION_MULTISERIAL = 0x0702;
-enum PCI_CLASS_COMMUNICATION_MODEM       = 0x0703;
-enum PCI_CLASS_COMMUNICATION_OTHER       = 0x0780;
+    enum Memory {
+        RAM       = 0x500,
+        Flash     = 0x501,
+        Other     = 0x580
+    }
 
-enum PCI_BASE_CLASS_SYSTEM        = 0x08;
-enum PCI_CLASS_SYSTEM_PIC         = 0x0800;
-enum PCI_CLASS_SYSTEM_PIC_IOAPIC  = 0x080010;
-enum PCI_CLASS_SYSTEM_PIC_IOXAPIC = 0x080020;
-enum PCI_CLASS_SYSTEM_DMA         = 0x0801;
-enum PCI_CLASS_SYSTEM_TIMER       = 0x0802;
-enum PCI_CLASS_SYSTEM_RTC         = 0x0803;
-enum PCI_CLASS_SYSTEM_PCI_HOTPLUG = 0x0804;
-enum PCI_CLASS_SYSTEM_SDHCI       = 0x0805;
-enum PCI_CLASS_SYSTEM_OTHER       = 0x0880;
+    enum Bridge {
+        Host      = 0x600,
+        ISA       = 0x601,
+        EISA      = 0x602,
+        MC        = 0x603,
+        PCI       = 0x604,
+        PCMCIA    = 0x605,
+        NuBUS     = 0x606,
+        CardBus   = 0x607,
+        Raceway   = 0x608,
+        Other     = 0x680
+    }
 
-enum PCI_BASE_CLASS_INPUT         = 0x09;
-enum PCI_CLASS_INPUT_KEYBOARD     = 0x0900;
-enum PCI_CLASS_INPUT_PEN          = 0x0901;
-enum PCI_CLASS_INPUT_MOUSE        = 0x0902;
-enum PCI_CLASS_INPUT_SCANNER      = 0x0903;
-enum PCI_CLASS_INPUT_GAMEPORT     = 0x0904;
-enum PCI_CLASS_INPUT_OTHER        = 0x0980;
+    enum Communication {
+        Serial    = 0x700,
+        Parallel  = 0x701,
+        MSerial   = 0x702,
+        Modem     = 0x703,
+        Other     = 0x780
+    }
 
-enum PCI_BASE_CLASS_DOCKING       = 0x0a;
-enum PCI_CLASS_DOCKING_GENERIC    = 0x0a00;
-enum PCI_CLASS_DOCKING_OTHER      = 0x0a80;
+    enum System {
+        PIC       = 0x800,
+        IOAPIC    = 0x80010,
+        IOXAPIC   = 0x80020,
+        DMA       = 0x801,
+        Timer     = 0x802,
+        RTC       = 0x803,
+        Hotplug   = 0x804,
+        SDHCI     = 0x805,
+        Other     = 0x880
+    }
 
-enum PCI_BASE_CLASS_PROCESSOR     = 0x0b;
-enum PCI_CLASS_PROCESSOR_386      = 0x0b00;
-enum PCI_CLASS_PROCESSOR_486      = 0x0b01;
-enum PCI_CLASS_PROCESSOR_PENTIUM  = 0x0b02;
-enum PCI_CLASS_PROCESSOR_ALPHA    = 0x0b10;
-enum PCI_CLASS_PROCESSOR_POWERPC  = 0x0b20;
-enum PCI_CLASS_PROCESSOR_MIPS     = 0x0b30;
-enum PCI_CLASS_PROCESSOR_CO       = 0x0b40;
+    enum Input {
+        Keyboard  = 0x900,
+        Pen       = 0x901,
+        Mouse     = 0x902,
+        Scanner   = 0x903,
+        Gameport  = 0x904,
+        Other     = 0x980
+    }
 
-enum PCI_BASE_CLASS_SERIAL        = 0x0c;
-enum PCI_CLASS_SERIAL_FW          = 0x0c00;
-enum PCI_CLASS_SERIAL_FW_OHCI     = 0x0c0010;
-enum PCI_CLASS_SERIAL_ACCESS      = 0x0c01;
-enum PCI_CLASS_SERIAL_SSA         = 0x0c02;
-enum PCI_CLASS_SERIAL_USB         = 0x0c03;
-enum PCI_CLASS_SERIAL_USB_UHCI    = 0x0c0300;
-enum PCI_CLASS_SERIAL_USB_OHCI    = 0x0c0310;
-enum PCI_CLASS_SERIAL_USB_EHCI    = 0x0c0320;
-enum PCI_CLASS_SERIAL_FIBER       = 0x0c04;
-enum PCI_CLASS_SERIAL_SMBUS       = 0x0c05;
+    enum Docking {
+        Generic   = 0xA00,
+        Other     = 0xA80
+    }
 
-enum PCI_BASE_CLASS_WIRELESS      = 0x0d;
-enum PCI_CLASS_WIRELESS_RF_CTRL   = 0x0d10;
-enum PCI_CLASS_WIRELESS_WHCI      = 0x0d1010;
+    enum Processor {
+        I386      = 0xB00,
+        I486      = 0xB01,
+        Pentium   = 0xB02,
+        Alpha     = 0xB10,
+        PowerPC   = 0xB20,
+        MIPS      = 0xB30,
+        CO        = 0xB40
+    }
 
-enum PCI_BASE_CLASS_INTELLIGENT   = 0x0e;
-enum PCI_CLASS_INTELLIGENT_I2O    = 0x0e00;
+    enum Serial {
+        FW        = 0xC00,
+        FW_OHCI   = 0xC0010,
+        Access    = 0xC01,
+        SSA       = 0xC02,
+        USB       = 0xC03,
+        USB_UHCI  = 0xC0300,
+        USB_OHCI  = 0xC0310,
+        USB_EHCI  = 0xC0320,
+        Fiber     = 0xC04,
+        SMBus     = 0xC05
+    }
 
-enum PCI_BASE_CLASS_SATELLITE     = 0x0f;
-enum PCI_CLASS_SATELLITE_TV       = 0x0f00;
-enum PCI_CLASS_SATELLITE_AUDIO    = 0x0f01;
-enum PCI_CLASS_SATELLITE_VOICE    = 0x0f03;
-enum PCI_CLASS_SATELLITE_DATA     = 0x0f04;
+    enum Wireless {
+        RF_CTRL   = 0xD10,
+        WHCI      = 0xD1010
+    }
 
-enum PCI_BASE_CLASS_CRYPT         = 0x10;
-enum PCI_CLASS_CRYPT_NETWORK      = 0x1000;
-enum PCI_CLASS_CRYPT_ENTERTAINMENT= 0x1001;
-enum PCI_CLASS_CRYPT_OTHER        = 0x1080;
+    enum Intelligent {
+        I20       = 0xE00
+    }
 
-enum PCI_BASE_CLASS_SIGNAL_PROCESSING = 0x11;
-enum PCI_CLASS_SP_DPIO            = 0x1100;
-enum PCI_CLASS_SP_OTHER           = 0x1180;
+    enum {
+        TV        = 0xF00,
+        Audio     = 0xF01,
+        Voice     = 0xF03,
+        Data      = 0xF04
+    }
 
-enum PCI_CLASS_OTHERS             = 0xff;
+    enum Crypt {
+        Network   = 0x1000,
+        Entertaim = 0x1001,
+        Other     = 0x1080
+    }
 
+    enum SignalProcessing {
+        DPIO      = 0x1100,
+        Other     = 0x1180
+    }
+}
 
-struct PCIvendor {
-	ushort id;
+struct PCIVendor {
+	ushort Identifier;
 	string Vendor;
 }
 
@@ -138,7 +176,7 @@ struct VendorDeviceTable {
 }
 
 
-PCIvendor VendorArray[] = [
+__gshared PCIVendor VendorArray[] = [
     { 0x0000, "Gammagraphx, Inc. (or missing ID)"},
     { 0x0010, "Allied Telesis, Inc"},
     { 0x001a, "Ascend Communications, Inc."},
@@ -2147,7 +2185,7 @@ PCIvendor VendorArray[] = [
     { 0xffff, "Illegal Vendor ID"}
 ];
 
-VendorDeviceTable BusDeviceNames[] = [
+__gshared VendorDeviceTable BusDeviceNames[] = [
     { 0x0010, 0x8139, "AT-2500TX V3 Ethernet"}, 
     { 0x001c, 0x0001, "PCAN-PCI CAN-Bus controller"}, 
     { 0x0070, 0x0003, "WinTV PVR-250"}, 
