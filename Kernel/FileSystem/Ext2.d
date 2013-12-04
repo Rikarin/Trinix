@@ -1,12 +1,7 @@
 module FileSystem.Ext2;
 
-import VFSManager.FSNode;
-import VFSManager.FileNode;
-import VFSManager.Partition;
-import VFSManager.DirectoryNode;
-import VFSManager.FileSystemProto;
-
-import System.IO.FileAttributes;
+import VFSManager;
+import System.IO;
 
 
 class Ext2 : FileSystemProto {
@@ -102,8 +97,8 @@ private:
 	bool groupsDirty;
 	bool sbDirty;
 
-	@property ulong BlockSize() { return 0; }//1024 << sb.BlockSize; }
-	@property ulong NumGroups() { return (sb.NumInodes / sb.InodesPerGroup) + (sb.NumInodes % sb.InodesPerGroup != 0); }
+	@property uint BlockSize() { return 0; }//1024 << sb.BlockSize; }
+	@property uint NumGroups() { return (sb.NumInodes / sb.InodesPerGroup) + (sb.NumInodes % sb.InodesPerGroup != 0); }
 
 
 
@@ -225,7 +220,7 @@ private:
 		groupsDirty = true;
 	}
 
-	uint AllocBlock(ulong group) {
+	ulong AllocBlock(ulong group) {
 		if (group > NumGroups)
 			return 0;
 
@@ -245,7 +240,7 @@ private:
 		}
 
 		//Allocate a block
-		uint i = 4 + sb.InodesPerGroup * Inode.sizeof / BlockSize + 1;
+		ulong i = 4 + sb.InodesPerGroup * Inode.sizeof / BlockSize + 1;
 		while (blockBitmap[i / 8] & (1 << (i & 7)) && i < sb.BlocksPerGroup)
 			i++;
 
@@ -304,7 +299,7 @@ private:
 		return ret;
 	}
 
-	ulong GetIndirect(uint block, int level, uint[] blockList, ulong index, ulong length, uint[] indirects) {
+	ulong GetIndirect(ulong block, int level, ulong[] blockList, ulong index, ulong length, ulong[] indirects) {
 		if (level > 3)
 			return 0;
 
@@ -338,7 +333,7 @@ private:
 		}
 	}
 
-	ulong SetIndirect(uint* block, int level, uint[] blockList, ulong index, ulong group, uint[] indirects) {
+	ulong SetIndirect(ulong* block, int level, ulong[] blockList, ulong index, ulong group, ulong[] indirects) {
 		if (level > 3)
 			return 0;
 
@@ -346,7 +341,7 @@ private:
 			*block = blockList[index];
 			return 1;
 		} else {
-			byte[] blocks = new byte[BlockSize];
+			ulong[] blocks = new ulong[BlockSize / 8];
 			ulong i, totalSetCount;
 
 			if (indirects) {
@@ -365,7 +360,7 @@ private:
 				i++;
 			}
 
-			if (!WriteBlocks(blocks, *block))
+			if (!WriteBlocks(*block, (cast(byte *)&blocks)[0 .. blocks.length * 8]))
 				return 0;
 			
 			delete blocks;
@@ -373,9 +368,9 @@ private:
 		}
 	}
 
-	uint[] GetBlocks(Inode* node, uint[] indirects) {
+	ulong[] GetBlocks(Inode* node, ulong[] indirects) {
 		int numBlocks = node.SizeLow / BlockSize + ((node.SizeLow % BlockSize) != 0);
-		uint[] blocklist = new int[numBlocks + 1];
+		ulong[] blockList = new ulong[numBlocks + 1];
 
 		if (indirects)
 			indirects[0] = 1;
@@ -395,19 +390,19 @@ private:
 		return blockList;
 	}
 
-	ulong SetBlocks(Inode* node, uint[] blocks, int group, uint[] indirects) {
+	ulong SetBlocks(Inode* node, ulong[] blocks, int group, ulong[] indirects) {
 		int i;
 		for (; i < blocks[i] && i < 12; i++)
-			node.Direct[i] = blocks[i];
+			node.Direct[i] = cast(uint)blocks[i];
 
 		if (indirects)
 			indirects[0] = 1;
 		if (blocks[i])
-			i += SetIndirect(node.Indirect, 1, blocks, i, group, indirects);
+			i += SetIndirect(cast(ulong *)&node.Indirect, 1, blocks, i, group, indirects);
 		if (blocks[i])
-			i += SetIndirect(node.Dindirect, 2, blocks, i, group, indirects);
+			i += SetIndirect(cast(ulong *)&node.Dindirect, 2, blocks, i, group, indirects);
 		if (blocks[i])
-			i += SetIndirect(node.Indirect, 3, blocks, i, group, indirects);
+			i += SetIndirect(cast(ulong *)&node.Indirect, 3, blocks, i, group, indirects);
 
 		if (blocks[i])
 			return 0;

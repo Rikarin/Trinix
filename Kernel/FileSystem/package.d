@@ -1,7 +1,7 @@
 module FileSystem;
 
 public import FileSystem.DevFS;
-//public import FileSystem.Ext2;
+public import FileSystem.Ext2;
 public import FileSystem.HelloDev;
 public import FileSystem.NullDev;
 public import FileSystem.PipeDev;

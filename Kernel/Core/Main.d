@@ -99,10 +99,11 @@ extern(C) void StartSystem() {
 	auto a = VFS.CreateFile("tesdd");
 	//a.Write(0, cast(byte[])"test");
 
-	//import FileSystem.Ext2;
-	//import VFSManager.Partition;
-	//auto ext = VFS.CreateDirectory("ext");
-	//Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hda1"));
+
+
+	import FileSystem;
+	auto ext = VFS.CreateDirectory("ext");
+	Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hda1")); //Po namontovani miznu zariadenia
 
 	VFS.PrintTree(VFS.RootNode);
 	
