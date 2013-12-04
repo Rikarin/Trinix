@@ -21,7 +21,7 @@ package.d - vytvorit pre importovanie balikov
 pouzit new tst().metoda() miesto (new tst()).metoda()
 "test"[0 ..5]
 
-wtf is arch.timing?...
+todo makefile
 +/
 
 
@@ -69,7 +69,7 @@ extern(C) void StartSystem() {
 
 //==================== DEVICES ====================
 	Log.Print("Detecting hard drives");
-//	ATAController.Detect();
+	ATAController.Detect();
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");

@@ -19,7 +19,7 @@ struct SignalState {
 class Signal {
 static:
 private:
-	//__gshared List!Process retsFromSignal;
+	__gshared List!Process retsFromSignal;
 	__gshared Mutex lock;
 
 	const byte isDeadly[] = [
@@ -97,7 +97,7 @@ public:
 
 	bool Init() {
 		lock = new Mutex();
-	//	retsFromSignal = new List!Process();
+		retsFromSignal = new List!Process();
 
 		return true;
 	}
@@ -107,7 +107,7 @@ public:
 			Log.PrintSP("\nReturn from signal process: " ~ Convert.ToString(Task.CurrentProcess.id));
 
 		lock.WaitOne();
-	//	retsFromSignal.Add(Task.CurrentProcess);
+		retsFromSignal.Add(Task.CurrentProcess);
 		lock.Release();
 
 		Task.Switch();
@@ -115,7 +115,7 @@ public:
 
 	void FixStack() {
 		lock.WaitOne();
-/*		long idx = retsFromSignal.IndexOf(Task.CurrentProcess);
+		long idx = retsFromSignal.IndexOf(Task.CurrentProcess);
 
 		if (idx == -1) {
 			lock.Release();
@@ -129,7 +129,7 @@ public:
 		proc.threads[0].rip = proc.signalState.rip;
 		proc.threads[0].rsp = proc.signalState.rsp;
 		proc.threads[0].rbp = proc.signalState.rbp;
-		//delete proc.signalStack;*/
+		delete proc.signalStack;
 	}
 
 	void Handler(Process process, SigNum signal) {

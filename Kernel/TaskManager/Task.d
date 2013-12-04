@@ -35,8 +35,8 @@ public:
 
 
 	bool Init() {
-	//	Procs = new List!Process(0x200); //FIX ME ;((((
-	//	Threads = new List!Thread(0x200); //ME TOO PLZZZZ
+		Procs = new List!Process(0x200); //FIX ME ;((((
+		Threads = new List!Thread(0x200); //ME TOO PLZZZZ
 
 		Process.Init();
 		currentThread = Threads[0];

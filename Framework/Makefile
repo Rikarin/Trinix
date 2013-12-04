@@ -15,7 +15,4 @@ DFLAGS = -O -de -w -m64 -release -property -I../druntime/import -IFramework -lib
 
 
 all:
-	dmd $(_SRC) -of../Framework.lib $(DFLAGS)
-
-clean:
-	@rm -rf ../Framework.lib
+	@dmd $(_SRC) -of../Obj/Framework.lib $(DFLAGS)

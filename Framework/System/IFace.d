@@ -35,7 +35,6 @@ class IFace {
 
 		SET_FD = 0x1,
 		GET_FD,
-		GET_PID, //todo
 		CURRENT,
 		S_CREATE,
 		SEND_SIGNAL,

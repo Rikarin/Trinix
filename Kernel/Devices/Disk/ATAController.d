@@ -45,11 +45,11 @@ public:
 	void Unlock() { mutex.Release(); }
 
 	T Read(T)(short port) {
-		return cast(T)Architectures.Port.Port.Read!T(cast(short)(base + port));
+		return cast(T)Architectures.Port.Read!T(cast(short)(base + port));
 	}
 
 	void Write(T)(short port, T value) {
-		Architectures.Port.Port.Write!T(cast(short)(base + port), value);
+		Architectures.Port.Write!T(cast(short)(base + port), value);
 	}
 
 
