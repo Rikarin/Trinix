@@ -1,6 +1,7 @@
 module Core.Main;
 
 import Core;
+import FileSystem;
 import VFSManager;
 import TaskManager;
 import MemoryManager;
@@ -15,14 +16,9 @@ import Devices.Keyboard;
 
 
 /+
-Pipe dead
-paging - kopirovanie stranok pri vytvoreni noveho procesu
-
-package.d - vytvorit pre importovanie balikov
-pouzit new tst().metoda() miesto (new tst()).metoda()
-"test"[0 ..5]
-
-todo makefile
+	Pipe dead
+	paging - kopirovanie stranok pri vytvoreni noveho procesu
+	todo makefile
 +/
 
 
@@ -95,18 +91,21 @@ extern(C) void StartSystem() {
 	Log.Print("Booting complete, starting init process");
 	Log.Result(false);
 
-	//VFS.CreatePipe("/test");
-	auto a = VFS.CreateFile("tesdd");
+	//auto a = VFS.CreatePipe("/test");
+	//auto a = VFS.CreateFile("tesdd");
 	//a.Write(0, cast(byte[])"test");
 
-
-
-	import FileSystem;
 	auto ext = VFS.CreateDirectory("ext");
-	Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hda1")); //Po namontovani miznu zariadenia
+	auto xx = Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hda1"));
+
+	auto test = new Ext2FileNode(xx, FSNode.NewAttributes("aaa"));
+	auto data = new byte[256];
+	xx.Read(test, 0, data);
+
+
+
 
 	VFS.PrintTree(VFS.RootNode);
-	
 
 	/*auto aa = VFS.Find("/dev/hda1");
 	if(aa) {

@@ -1,11 +1,11 @@
 module Userspace.Init;
 
-import System.IO.FileStream;
+import System.IO;
+import System.Threading;
+import System.Diagnostics;
 
 import System.IFace;
 import System.ResourceCaller;
-import System.Threading.Thread;
-import System.Diagnostics.Process;
 
 
 class Init {

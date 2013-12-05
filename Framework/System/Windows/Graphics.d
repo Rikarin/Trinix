@@ -1,6 +1,6 @@
-module Userspace.Libs.Graphics;
+module System.Windows.Graphics;
 
-import System.Windows.Window;
+import System.Windows;
 
 
 class Graphics {

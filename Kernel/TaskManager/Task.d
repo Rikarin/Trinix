@@ -125,7 +125,7 @@ public:
 
 		if (CurrentThread == CurrentProcess.threads[0] && CurrentProcess.signalStack is null) {
 			if (CurrentProcess.signalQueue.Count) {
-				CurrentProcess.signalStack = (new ulong[Thread.STACK_SIZE]).ptr + Thread.STACK_SIZE;
+				CurrentProcess.signalStack = new ulong[Thread.STACK_SIZE].ptr + Thread.STACK_SIZE;
 				*CurrentProcess.signalStack = Signal.SignalReturn;
 
 				CurrentProcess.signalState.rip = CurrentThread.rip;

@@ -50,9 +50,9 @@ _D += $(wildcard Kernel/Devices/Keyboard/*.d)
 ######################
 #   Userspace apps   #
 ######################
-#_SRC += $(wildcard Userspace/*.[c|s])
-#_SRC += $(wildcard Userspace/GUI/*.[c|s])
-#_SRC += $(wildcard Userspace/Libs/*.[c|s])
+_D += $(wildcard Userspace/*.d)
+_D += $(wildcard Userspace/GUI/*.d)
+_D += $(wildcard Userspace/Libs/*.d)
 
 OBJS = $(patsubst %,$(OBJ_DIR)/%,$(_SRC:=.o))
 
@@ -61,7 +61,7 @@ OBJS = $(patsubst %,$(OBJ_DIR)/%,$(_SRC:=.o))
 #############
 #   Flags   #
 #############
-DFLAGS = -c -O -de -w -m64 -release -property -Idruntime/import -IKernel -IFramework -IKernel/Architectures/x86_64 -debug=only -vtls -g -allinst
+DFLAGS = -c -O -de -wi -m64 -release -property -Idruntime/import -IKernel -IFramework -IKernel/Architectures/x86_64 -debug=only -vtls -g -allinst
 CFLAGS = -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -c -g
 LDFLAGS = -o Disk/Trinix-Kernel -T Kernel/Architectures/x86_64/Linker.ld -Map Linker.map
 ASFLAGS = -f elf64
@@ -172,6 +172,7 @@ $(OBJ_DIR)/Framework.lib:
 	@echo "[ D ] Compiling Framework..."
 	cd Framework; make
 
-druntime/lib/libdruntime-linux64.a:
+#druntime/lib/libdruntime-linux64.a:
+runtime:
 	@echo "[ D ] Compiling D runtime library..."
 	@cd druntime; make -f posix.mak MODEL=64

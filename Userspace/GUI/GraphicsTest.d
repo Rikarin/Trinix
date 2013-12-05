@@ -1,6 +1,6 @@
 module Userspace.GUI.GraphicsTest;
 
-import System.Windows.Window;
+import System.Windows;
 
 
 class GraphicsTest : Window {
@@ -15,7 +15,7 @@ class GraphicsTest : Window {
 class Application {
 	public static long Main(string[] args) {
 		auto window = new GraphicsTest();
-		//window.ths = window;
+		window.ths = window;
 		window.Show();
 
 		while (true) {}

@@ -4,6 +4,18 @@ import VFSManager;
 import System.IO;
 
 
+class Ext2FileNode : FileNode {
+package:
+	ulong inode;
+
+
+public:
+	this(FileSystemProto fileSystem, FileAttributes fileAttributes) {
+		super(fileSystem, fileAttributes);
+	}
+}
+
+
 class Ext2 : FileSystemProto {
 private:
 	struct Superblock {
@@ -410,7 +422,53 @@ private:
 		return i;
 	}	
 
+	ulong MakeBlocks(Inode* node, ulong group) {
+		ulong blocksNeeded = node.SizeLow / BlockSize;
+		if (node.SizeLow % BlockSize)
+			blocksNeeded++;
 
+		ulong[] blockList = new ulong[blocksNeeded + 1];
+		for (int i = 0; i < blocksNeeded; i++) {
+			node.Direct[i] = cast(uint)AllocBlock(group);
+			blockList[i] = node.Direct[i];
+
+			if (!node.Direct[i]) {
+				delete blockList;
+				return 0;
+			}
+		}
+
+		return blocksNeeded;
+	}
+
+	ulong ReadData(Inode* node, byte[] data) {
+		ulong len = data.length > node.SizeLow ? node.SizeLow : data.length;
+		ulong[] blockList = GetBlocks(node, null);
+		ulong readcount;
+
+		for (int i = 0; blockList[i]; i++) {
+			ulong size = len > BlockSize ? BlockSize : len;
+			ReadBlocks(blockList[i], data[BlockSize * i .. size]);
+			len -= size;
+			readcount += size;
+		}
+
+		delete blockList;
+		return readcount;
+	}
+
+
+
+
+	FileAttributes GetStats(ulong inode) {
+		Inode node = ReadInode(inode);
+
+		FileAttributes ret;
+		ret.Length = node.SizeLow;
+		//todo
+
+		assert(0);
+	}
 
 
 
@@ -421,11 +479,9 @@ public:
 	override FileAttributes GetAttributes(FSNode node) { return node.GetAttributes(); }
 	override void SetAttributes(FSNode node, FileAttributes fileAttributes) { node.SetAttributes(fileAttributes); }
 
-	override ulong Read(FileNode file, ulong offset, byte[] data) { return 0; }
 	override ulong Write(FileNode file, ulong offset, byte[] data) { return 0; }
 	override FSNode Create(DirectoryNode parent, FileType type, FileAttributes fileAttributes) { return null; }
 	override bool Remove(DirectoryNode parent, FSNode node) { return false; }
-
 
 
 	public static Ext2 Mount(DirectoryNode mountPoint, Partition part) {
@@ -439,5 +495,40 @@ public:
 
 		mountPoint.Mount(ret.rootNode);
 		return ret;
+	}
+
+	override ulong Read(FileNode file, ulong offset, byte[] data) {
+		Inode* node = new Inode();
+
+		if (!ReadBlocks((cast(Ext2FileNode)file).inode, (cast(byte *)&node)[0 .. Inode.sizeof])) {
+			delete node;
+			return 0;
+		}
+
+		if (offset > node.SizeLow) {
+			delete node;
+			return 0;
+		}
+
+		if (offset + data.length > node.SizeLow) {
+			delete node;
+			return 0;
+		}
+
+		ulong startBlock  = offset / BlockSize;
+		ulong blockOffset = offset % BlockSize;
+		ulong numBlocks   = data.length / BlockSize;
+
+		if ((data.length + blockOffset) % BlockSize)
+			numBlocks++;
+
+		ulong[] blockList = GetBlocks(node, null);
+		byte[] blocks = new byte[numBlocks * BlockSize];
+
+		for (int i = 0; i < startBlock + numBlocks && blockList[i]; i++)
+			ReadBlocks(blockList[i], blocks[i * numBlocks * BlockSize .. BlockSize]);
+
+		data[] = blocks[blockOffset .. data.length];
+		return data.length;
 	}
 }

@@ -108,7 +108,7 @@ public:
 		if (!LoadContent())
 			return null;
 
-		foreach (x; childrens)
+		foreach (x; childrens[0 .. $]) //TODO
 			if (x.GetAttributes().Name == name)
 				return x;
 

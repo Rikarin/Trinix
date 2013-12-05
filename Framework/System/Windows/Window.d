@@ -2,15 +2,14 @@ module System.Windows.Window;
 
 import System;
 import System.IO;
+import System.Windows;
 import System.Diagnostics;
 import System.Collections.Generic;
-
-//import Userspace.Libs.Graphics;
 
 
 abstract class Window {
 protected:
-//	Graphics ctx;
+	Graphics ctx;
 	static __gshared ProcessWindows pwins;
 	static __gshared Window ths;
 
@@ -111,10 +110,10 @@ public:
 	void Show() {
 		SendCommand(100, 100, Width, Height, Commands.NewWindow, true);
 
-	//	ctx = new Graphics(this);
-	//	ctx.Fill(0xFFFFFF);
+		ctx = new Graphics(this);
+		ctx.Fill(0xFFFFFF);
 		FormStyle.RenderDecorationSimple(this, true);
-	//	ctx.Flip();
+		ctx.Flip();
 	}
 
 
@@ -176,20 +175,20 @@ private:
 	static:
 		void RenderDecorationSimple(Window win, bool focused = false) {
 			foreach (i; 0 .. win.Height) {
-			//	win.ctx.Pixel(0, i) = 0x3E3E3E;
-			//	win.ctx.Pixel(win.Width - 1, i) = 0x3E3E3E;
+				win.ctx.Pixel(0, i) = 0x3E3E3E;
+				win.ctx.Pixel(win.Width - 1, i) = 0x3E3E3E;
 			}
 
 			foreach (i; 1 .. 24) {
 				foreach (j; 1 .. win.Width - 1) {
-			//		win.ctx.Pixel(j, i) = focused ? 0x00A2E8 : 0xB4B4B4;
+					win.ctx.Pixel(j, i) = focused ? 0x00A2E8 : 0xB4B4B4;
 				}
 			}
 
 			foreach (i; 0 .. win.Width) {
-			//	win.ctx.Pixel(i, 0) = 0x3E3E3E;
-			//	win.ctx.Pixel(i, 24 - 1) = 0x3E3E3E;
-			//	win.ctx.Pixel(i, win.Height - 1) = 0x3E3E3E;
+				win.ctx.Pixel(i, 0) = 0x3E3E3E;
+				win.ctx.Pixel(i, 24 - 1) = 0x3E3E3E;
+				win.ctx.Pixel(i, win.Height - 1) = 0x3E3E3E;
 			}
 		}
 	}

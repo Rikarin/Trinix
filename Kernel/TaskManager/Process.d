@@ -93,7 +93,7 @@ public:
 		t.id = Task.NewTID();
 		t.parent = ret;
 		t.state = Thread.State.Running;
-		t.kernelStack = (new ulong[Thread.STACK_SIZE]).ptr;
+		t.kernelStack = new ulong[Thread.STACK_SIZE].ptr;
 		t.SetKernelStack();
 		ret.threads.Add(t);
 
@@ -126,7 +126,7 @@ public:
 		if (args !is null)
 			a[] = args[0 .. $];
 
-		ulong* x = (new ulong[2]).ptr;
+		ulong* x = new ulong[2].ptr;
 		x[0] = cast(ulong)a.ptr;
 		x[1] = a.length;
 
@@ -180,7 +180,7 @@ public:
 				if (start.Arguments !is null)
 					a[] = start.Arguments[0 .. $];
 
-				ulong* x = (new ulong[2]).ptr;
+				ulong* x = new ulong[2].ptr;
 				x[0] = cast(ulong)a.ptr;
 				x[1] = a.length;
 

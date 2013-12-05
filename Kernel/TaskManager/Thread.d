@@ -50,9 +50,9 @@ public:
 		parent.threads.Add(this);
 		id = Task.NewTID();
 		this.parent  = parent;
-		kernelStack  = (new ulong[STACK_SIZE]).ptr;
-		syscallStack = (new ulong[STACK_SIZE]).ptr;
-		userStack    = (new ulong[STACK_SIZE]).ptr; //process.heap.alloc..;
+		kernelStack  = new ulong[STACK_SIZE].ptr;
+		syscallStack = new ulong[STACK_SIZE].ptr;
+		userStack    = new ulong[STACK_SIZE].ptr; //process.heap.alloc..;
 		state        = State.Running;
 
 		//Set user stack

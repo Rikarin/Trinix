@@ -42,7 +42,7 @@ static:
 		Log.Result(true);
 
 		Log.Print(" - Mounting ProcFS");
-		ProcFS.Mount(CreateDirectory("proc"));
+		//ProcFS.Mount(CreateDirectory("proc"));
 		Log.Result(false);
 
 		Log.Print(" - Setting up serial devices ttyS0 - ttyS3");
@@ -102,7 +102,7 @@ static:
 		if (p[0] is null)
 			node = root;
 
-		foreach (x; p) {
+		foreach (x; p[0 .. $]) { //TODO
 			if (x == "..")
 				node = node.Parent;
 			else if (x !is null && x != "." && x != "") {

@@ -1,17 +1,11 @@
 module Userspace.GUI.Compositor;
 
-import Userspace.Libs.Graphics;
-import System.IO.Directory;
-import System.IO.FileStream;
-
-import System.Threading.Thread;
-import System.Diagnostics.Process;
-import System.Diagnostics.ProcessStartInfo;
-import System.Windows.Window;
-import System.Collections.Generic.List;
-import System.Convert;
-
-static import Userspace.GUI.GraphicsTest;
+import System;
+import System.IO;
+import System.Windows;
+import System.Threading;
+import System.Diagnostics;
+import System.Collections.Generic;
 
 
 class Compositor {
