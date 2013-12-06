@@ -8,17 +8,33 @@ class List(T) {
 	private T[] array;
 	private long count;
 
-	//FOREACH
-	private ulong _f, _b;
-	@property ref inout(T) front() inout { return array[_f]; }
-	//@property ref inout(T) back() inout  { return array[_b]; }
-	@property bool empty()               { if (count == _f) { _f = 0; return true; } return false; }
-	void popFront() { _f++; }
-	//void popBack()  { _b++; }
-	
-
 	@property long Capacity() { return array.length; }
 	@property long Count()    { return count; }
+
+
+	int opApply(int delegate(ref T) dg) {
+		int result;
+
+		for (long i = 0; i < count; i++) {
+			result = dg(array[i]);
+			if (result)
+				break;
+		}
+
+		return result;
+	}
+
+	int opApplyReverse(int delegate(ref T) dg) {
+		int result;
+
+		for (long i = count; i >= 0; i--) {
+			result = dg(array[i]);
+			if (result)
+				break;
+		}
+
+		return result;
+	}
 
 
 	void opIndexAssign(T value, long index) { array[index] = value; }

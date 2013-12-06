@@ -14,6 +14,7 @@ import Devices.Mouse;
 import Devices.Display;
 import Devices.Keyboard;
 
+import System;
 
 /+
 	Pipe dead
@@ -98,11 +99,9 @@ extern(C) void StartSystem() {
 	auto ext = VFS.CreateDirectory("ext");
 	auto xx = Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hda1"));
 
-	auto test = new Ext2FileNode(xx, FSNode.NewAttributes("aaa"));
-	auto data = new byte[256];
-	xx.Read(test, 0, data);
-
-
+//	auto test = new Ext2FileNode(xx, FSNode.NewAttributes("aaa"));
+//	auto data = new byte[256];
+//	xx.Read(test, 0, data);
 
 
 	VFS.PrintTree(VFS.RootNode);

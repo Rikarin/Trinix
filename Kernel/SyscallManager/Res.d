@@ -1,6 +1,8 @@
 module SyscallManager.Res;
 
 import Core;
+import VFSManager;
+import TaskManager;
 import SyscallManager;
 
 import System.IFace;
@@ -15,7 +17,13 @@ private:
 		ulong function(ulong[] params) CallBack;
 	}
 
-	__gshared StaticCallTable[3] staticCalls;
+
+	__gshared const StaticCallTable[] staticCalls = [
+        {IFace.VFS.OBJECT, &VFS.SCall},
+        {IFace.Process.OBJECT, &Process.SCall},
+        {IFace.Thread.OBJECT, &Thread.SCall}
+    ];
+
 	__gshared List!Resource resources;
 
 
@@ -34,17 +42,6 @@ public:
 	bool Init() {
 		resources = new List!Resource(0x200); //TODO: FIXME PLZ
 		resources.Add(new NullRes()); //mask index 0
-		
-		import VFSManager.VFS;
-		import TaskManager.Process; //TODO FIX THIS FUCKIN HACK
-		import TaskManager.Thread; //THIS TOO
-
-		StaticCallTable aa = {IFace.VFS.OBJECT, &VFS.SCall};
-		staticCalls[0]     = aa;
-		StaticCallTable ab = {IFace.Process.OBJECT, &Process.SCall};
-		staticCalls[1]     = ab;
-		StaticCallTable ac = {IFace.Thread.OBJECT, &Thread.SCall};
-		staticCalls[2]     = ac;
 
 		return true;
 	}

@@ -1,6 +1,7 @@
 module VFSManager.FSNode;
 
 import VFSManager;
+import TaskManager;
 import SyscallManager;
 
 import System;
@@ -57,7 +58,6 @@ public:
 	}
 
 
-//TODO
 private:
 	ulong SC_Read(ulong[] params) {
 		return Read(params[0], *(cast(byte[] *)params[1]));
@@ -67,9 +67,7 @@ private:
 		return Write(params[0], *(cast(byte[] *)params[1]));
 	}
 
-	ulong SC_SetCWD(ulong[]) {
-		import TaskManager.Task; //TODO: FIXME
-		
+	ulong SC_SetCWD(ulong[]) {		
 		if (GetAttributes().Type == FileType.Directory)
 			Task.CurrentProcess.SetCWD(cast(DirectoryNode)this);
 
@@ -77,13 +75,10 @@ private:
 	}
 
 	ulong SC_Remove(ulong[]) {
-		import VFSManager.VFS; //TODO: FIXME
 		return VFS.Remove(this) ? 1 : 0;
 	}
 
 	ulong SC_GetPath(ulong[] params) {
-		import VFSManager.VFS; //TODO: FIXME
-
 		string ret = VFS.Path(this);
 		if (ret.length > params[1])
 			return ~0UL;

@@ -102,7 +102,7 @@ static:
 		if (p[0] is null)
 			node = root;
 
-		foreach (x; p[0 .. $]) { //TODO
+		foreach (x; p) {
 			if (x == "..")
 				node = node.Parent;
 			else if (x !is null && x != "." && x != "") {

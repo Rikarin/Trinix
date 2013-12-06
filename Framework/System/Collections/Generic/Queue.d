@@ -7,6 +7,19 @@ class Queue(T) {
 
 	@property long Count() { return count; }
 
+
+	int opApply(int delegate(ref T) dg) {
+		int result;
+
+		for (long i = 0; i < count; i++) {
+			result = dg(array[i]);
+			if (result)
+				break;
+		}
+
+		return result;
+	}
+
 	
 	private void Resize() {
 		T[] newArray = new T[array.length * 2];

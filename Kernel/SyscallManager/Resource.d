@@ -15,11 +15,9 @@ private:
 
 
 	ulong DoCall(ulong id, ulong[] params) {
-		//foreach (x; callTables) { //TODO: reverse foreach. NEED have to fixed foreach for list
-		for (long i = 0; i < callTables.Count; i++) {
-			if (callTables[i].id == id)
-				return callTables[i].CallBack(params);
-		}
+		foreach_reverse (x; callTables)
+			if (x.id == id)
+				return x.CallBack(params);
 		
 		return ~0UL;
 	}

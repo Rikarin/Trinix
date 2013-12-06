@@ -139,7 +139,7 @@ public:
 
 
 //Syscalls
-	ulong SCall(ulong[] params) {
+	public static ulong SCall(ulong[] params) {
 		if (params is null || !params.length)
 			return ~0UL;
 
