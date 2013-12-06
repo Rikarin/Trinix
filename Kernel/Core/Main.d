@@ -92,12 +92,8 @@ extern(C) void StartSystem() {
 	Log.Print("Booting complete, starting init process");
 	Log.Result(false);
 
-	//auto a = VFS.CreatePipe("/test");
-	//auto a = VFS.CreateFile("tesdd");
-	//a.Write(0, cast(byte[])"test");
-
-	auto ext = VFS.CreateDirectory("ext");
-	auto xx = Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hda1"));
+	//auto ext = VFS.CreateDirectory("ext");
+	//auto xx = Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hda1"));
 
 //	auto test = new Ext2FileNode(xx, FSNode.NewAttributes("aaa"));
 //	auto data = new byte[256];
@@ -105,6 +101,8 @@ extern(C) void StartSystem() {
 
 
 	VFS.PrintTree(VFS.RootNode);
+
+
 
 	/*auto aa = VFS.Find("/dev/hda1");
 	if(aa) {

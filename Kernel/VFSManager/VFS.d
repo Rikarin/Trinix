@@ -160,7 +160,7 @@ static:
 			return null;
 
 		if (dir.GetAttributes().Type & (FileType.Directory | FileType.Mountpoint))
-			return cast(DirectoryNode)(cast(DirectoryNode)dir).Create(FileType.File, FSNode.NewAttributes(path));
+			return (cast(DirectoryNode)dir).Create(FileType.File, FSNode.NewAttributes(path));
 
 		return null;
 	}
