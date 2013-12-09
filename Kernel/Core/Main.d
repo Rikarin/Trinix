@@ -17,8 +17,15 @@ import Devices.Keyboard;
 import System;
 
 /+
-	Pipe dead
+IMPORTANT:
+	Dokoncit EXT2
+	ELF parser
+	Linker
 	paging - kopirovanie stranok pri vytvoreni noveho procesu
+
+
+NEJAKE NEPODSTATNE SRACKY:
+	Pipe dead
 	todo makefile
 +/
 
@@ -92,12 +99,15 @@ extern(C) void StartSystem() {
 	Log.Print("Booting complete, starting init process");
 	Log.Result(false);
 
-	//auto ext = VFS.CreateDirectory("ext");
-	//auto xx = Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hda1"));
+	//Log.Print("UTF-8 test: おはようございます私わTrinityOSです");
 
-//	auto test = new Ext2FileNode(xx, FSNode.NewAttributes("aaa"));
-//	auto data = new byte[256];
-//	xx.Read(test, 0, data);
+	auto ext = VFS.CreateDirectory("ext");
+	auto xx = Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hda1"));
+
+	//auto test = new Ext2FileNode(xx, FSNode.NewAttributes("aaa"));
+	//test.inode = 3;
+	//auto data = new byte[256];
+	//xx.Read(test, 0, data);
 
 
 	VFS.PrintTree(VFS.RootNode);

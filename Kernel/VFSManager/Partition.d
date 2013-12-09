@@ -54,11 +54,11 @@ public:
     	}
 
     	Letter++;
-       // delete mbr; TODO: fixme
+        //TODO delete mbr;
     }
 
 	private this(BlockDeviceProto dev, ulong start, ulong count, FileAttributes fileAttributes) {
-		cache       = new BlockCache(dev, 0x10000);
+		//cache       = new BlockCache(dev, 0x10000);
 		this.dev    = dev;
 		this.start  = start;
 		this.count  = count;
@@ -67,10 +67,16 @@ public:
 	}
 
 	override ulong Read(ulong offset, byte[] data) {
-		return cache.Read(offset + this.start, data);
+        if (offset + start > start + count)
+            return 0;
+
+		return dev.Read(offset + start, data);
 	}
 
 	override ulong Write(ulong offset, byte[] data) {
-		return cache.Write(offset + this.start, data);
+        if (offset + start > start + count)
+            return 0;
+
+		return dev.Write(offset + start, data);
 	}
 }

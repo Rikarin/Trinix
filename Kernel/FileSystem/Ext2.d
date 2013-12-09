@@ -6,7 +6,7 @@ import System.IO;
 
 class Ext2FileNode : FileNode {
 package:
-	ulong inode;
+	public ulong inode;
 
 
 public:
@@ -92,6 +92,7 @@ private:
 	}
 
 	struct Group {
+	align(1):
 		uint BlockBitmap;
 		uint InodeBitmap;
 		uint InodeTable;
@@ -109,7 +110,7 @@ private:
 	bool groupsDirty;
 	bool sbDirty;
 
-	@property uint BlockSize() { return 0; }//1024 << sb.BlockSize; }
+	@property uint BlockSize() { return 1024 << sb.BlockSize; }
 	@property uint NumGroups() { return (sb.NumInodes / sb.InodesPerGroup) + (sb.NumInodes % sb.InodesPerGroup != 0); }
 
 
@@ -117,14 +118,14 @@ private:
 	this(Partition part) {
 		this.part = part;
 
-		part.Read(0, (cast(byte *)&sb)[0 .. 512]);
+		part.Read(0, (cast(byte *)&sb)[0 .. Superblock.sizeof]);
 
-		import Core.Log;
-		import System.Convert;
-		Log.PrintSP("groups: " ~ Convert.ToString(NumGroups));
+		import Core, System;
+		Log.PrintSP("groups: " ~ Convert.ToString(sb.BlockSize) ~ "\n");
+		Log.PrintSP("groups: " ~ Convert.ToString(sb.NumFreeBlocks) ~ "\n");
 
-		groups = new Group[NumGroups];
-		ReadBlocks(1, (cast(byte *)&groups)[0 .. groups.length * Group.sizeof]);
+		//groups = new Group[NumGroups];
+		//ReadBlocks(1, (cast(byte *)&groups)[0 .. groups.length * Group.sizeof]);
 
 
 		//inode bufer ?!
@@ -500,11 +501,14 @@ public:
 	override ulong Read(FileNode file, ulong offset, byte[] data) {
 		Inode* node = new Inode();
 
+		import Core, System;
+		Log.PrintSP("out: " ~ Convert.ToString(Inode.sizeof));
+
 		if (!ReadBlocks((cast(Ext2FileNode)file).inode, (cast(byte *)&node)[0 .. Inode.sizeof])) {
-			delete node;
+			//delete node;
 			return 0;
 		}
-
+return 0;
 		if (offset > node.SizeLow) {
 			delete node;
 			return 0;
