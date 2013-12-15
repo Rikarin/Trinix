@@ -139,7 +139,6 @@ private:
 	enum BaseAddressIOMask      = ~0x03;
 
 
-	__gshared List!PCIDev list;
     ubyte bus, dev, func;
     Common common;
     uint devi[60];
@@ -163,6 +162,9 @@ public:
 		this.func = func;
 		common = cmn;
 
+		import System, Core;
+		Log.PrintSP("\nPCI: " ~ Convert.ToString(dev));
+
 		irq = Read!byte(IRQPin);
 		if (irq)
 			irq = Read!byte(IRQLine);
@@ -170,7 +172,7 @@ public:
 		DeviceManager.RegisterDevice(this, DeviceInfo("Device", DeviceType.PCI));
 	}
 
-	uint ReadValue(uint reg, uint ts) {
+	uint ReadValue(int reg, int ts) {
 		ConfAdd c;
 		c.Enable   = 1;
 		c.Bus      = bus;
@@ -178,22 +180,22 @@ public:
 		c.Function = func;
 		c.Register = reg & 0xFC;
 
-		Port.Write!byte(DataRegister, *cast(byte *)&c);
+		Port.Write!uint(DataRegister, *cast(uint *)&c);
 		ushort base = BaseRegister + (reg & 0x03);
 
 		switch (ts) {
 			case 1:
-				return Port.Read!byte(base);
+				return Port.Read!ubyte(base);
 			case 2:
-				return Port.Read!short(base);
+				return Port.Read!ushort(base);
 			case 3:
-				return Port.Read!int(base);
+				return Port.Read!uint(base);
 			default:
 				return 0;
 		}
 	}
 
-	void WriteValue(uint reg, int value, uint ts) {
+	void WriteValue(int reg, int value, int ts) {
 		ConfAdd c;
 		c.Enable   = 1;
 		c.Bus      = bus;
@@ -201,24 +203,24 @@ public:
 		c.Function = func;
 		c.Register = reg & 0xFC;
 
-		Port.Write!byte(DataRegister, *cast(byte *)&c);
+		Port.Write!uint(DataRegister, *cast(uint *)&c);
 		ushort base = BaseRegister + (reg & 0x03);
 
 		final switch (ts) {
 			case 1:
-				Port.Write!byte(base, cast(byte)value);
+				Port.Write!ubyte(base, cast(byte)value);
 				break;
 			case 2:
-				Port.Write!short(base, cast(short)value);
+				Port.Write!ushort(base, cast(short)value);
 				break;
 			case 3:
-				Port.Write!int(base, value);
+				Port.Write!uint(base, value);
 				break;
 		}
 	}
 
 	BarType GetBarType(int barNum) {
-		int tmp = Read!int(0x10 + (barNum << 2));
+		int tmp = Read!uint(0x10 + (barNum << 2));
 
 		if (tmp & 1)
 			return BarType.IO;
@@ -226,7 +228,7 @@ public:
 	}
 
 	uint GetBar(int barNum) {
-		int tmp = Read!int(0x10 + (barNum << 2));
+		int tmp = Read!uint(0x10 + (barNum << 2));
 
 		if (tmp & 1)
 			return tmp & ~0x03;
@@ -245,11 +247,11 @@ public:
 		size[] = 0;
 
 		foreach (i; 0 .. count) {
-			byte reg = cast(byte)(BaseAddress0 + (i << 2));
-			uint l = Read!byte(reg);
+			uint reg = cast(byte)(BaseAddress0 + (i << 2));
+			ubyte l = Read!byte(reg);
 			Write!byte(reg, ~0);
 
-			uint sz = Read!byte(reg);
+			ubyte sz = Read!byte(reg);
 			Write!byte(reg, 1);
 
 			if (!sz || sz == 0xFFFFFFFF)
@@ -261,7 +263,7 @@ public:
 			if ((l & BaseAddressSpace) == BaseAddressSpaceMemory) {
 				base[i] = l & BaseAddressMemoryMask;
 				size[i] = GetSize(sz, BaseAddressMemoryMask);
-				type[i] = IOResourceIO;
+				type[i] = IOResourceMemory;
 			} else {
 				base[i] = l & BaseAddressIOMask;
 				size[i] = GetSize(sz, BaseAddressIOMask);
@@ -278,25 +280,31 @@ static:
 		if (!IsPresent)
 			return;
 
+		auto pf = new PCIDev(0, 0, 0, cast(Common)0);
 		foreach (byte bus; 0 .. 4) {
 			foreach (byte dev; 0 .. 32) {
 				foreach (byte func; 0 .. 8) {
+					pf.bus = bus;
+					pf.dev = dev;
+					pf.func = func;
+
 					uint tmp[4];
-					PCIDev pf = new PCIDev(bus, dev, func, cast(Common)0);
+					foreach (uint i, ref x; tmp)
+						x = pf.Read!uint(i << 2);
 
-					foreach (i; 0 .. 4)
-						tmp[i] = pf.Read!uint(i << 2);
+					auto cfg = cast(Common *)tmp.ptr;
 
-					delete pf;
-					Common* cfg = cast(Common *)tmp.ptr;
+
+					import System, Core;
+					Log.PrintSP(" " ~ Convert.ToString(cfg.ClassCode));
+
+
 					if (cfg.VendorID == 0xFFFF || !cfg.VendorID)
 						continue;
 
-					PCIDev newDev = new PCIDev(bus, dev, func, *cfg);
-					foreach (i; 0 .. 60)
-						newDev.devi[i] = newDev.Read!uint((i << 2) + 16);
-
-					list.Add(newDev);
+					auto newDev = new PCIDev(bus, dev, func, *cfg);
+					foreach (uint i, ref x; newDev.devi)
+						x = newDev.Read!uint((i << 2) + 16);
 				}
 			}
 		}

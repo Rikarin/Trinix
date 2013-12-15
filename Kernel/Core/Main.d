@@ -14,9 +14,12 @@ import Devices.Mouse;
 import Devices.Display;
 import Devices.Keyboard;
 
-import System;
-
 /+
+HEAP
+PCI
+AHCI
+
+
 IMPORTANT:
 	Dokoncit EXT2
 	ELF parser
@@ -73,7 +76,7 @@ extern(C) void StartSystem() {
 
 //==================== DEVICES ====================
 	Log.Print("Detecting hard drives");
-	ATAController.Detect();
+	//ATAController.Detect();
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
@@ -89,7 +92,7 @@ extern(C) void StartSystem() {
 	Log.Result(true);
 
 	Log.Print("Finding PCI devices");
-	//PCIDev.ScanDevices();
+	PCIDev.ScanDevices();
 	Log.Result(false);
 
 	Log.Print("Initializing timer ticks = 100Hz");
@@ -99,19 +102,35 @@ extern(C) void StartSystem() {
 	Log.Print("Booting complete, starting init process");
 	Log.Result(false);
 
-	//Log.Print("UTF-8 test: おはようございます私わTrinityOSです");
 
-	auto ext = VFS.CreateDirectory("ext");
-	auto xx = Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hda1"));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//auto ext = VFS.CreateDirectory("ext");
+	//auto xx = Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hda1"));
 
 	//auto test = new Ext2FileNode(xx, FSNode.NewAttributes("aaa"));
 	//test.inode = 3;
 	//auto data = new byte[256];
 	//xx.Read(test, 0, data);
 
-
-	VFS.PrintTree(VFS.RootNode);
-
+	//VFS.PrintTree(VFS.RootNode);
 
 
 	/*auto aa = VFS.Find("/dev/hda1");

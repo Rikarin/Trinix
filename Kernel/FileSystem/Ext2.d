@@ -118,17 +118,10 @@ private:
 	this(Partition part) {
 		this.part = part;
 
-		part.Read(0, (cast(byte *)&sb)[0 .. Superblock.sizeof]);
+		part.Read(2, (cast(byte *)&sb)[0 .. Superblock.sizeof]);
 
-		import Core, System;
-		Log.PrintSP("groups: " ~ Convert.ToString(sb.BlockSize) ~ "\n");
-		Log.PrintSP("groups: " ~ Convert.ToString(sb.NumFreeBlocks) ~ "\n");
-
-		//groups = new Group[NumGroups];
-		//ReadBlocks(1, (cast(byte *)&groups)[0 .. groups.length * Group.sizeof]);
-
-
-		//inode bufer ?!
+		groups = new Group[NumGroups];
+		ReadBlocks(1, (cast(byte *)&groups)[0 .. groups.length * Group.sizeof]);
 	}
 
 	~this() {
@@ -499,25 +492,16 @@ public:
 	}
 
 	override ulong Read(FileNode file, ulong offset, byte[] data) {
-		Inode* node = new Inode();
+		Inode node;
 
-		import Core, System;
-		Log.PrintSP("out: " ~ Convert.ToString(Inode.sizeof));
+		if (!ReadBlocks((cast(Ext2FileNode)file).inode, (cast(byte *)&node)[0 .. Inode.sizeof]))
+			return 0;
 
-		if (!ReadBlocks((cast(Ext2FileNode)file).inode, (cast(byte *)&node)[0 .. Inode.sizeof])) {
-			//delete node;
+		if (offset > node.SizeLow)
 			return 0;
-		}
-return 0;
-		if (offset > node.SizeLow) {
-			delete node;
-			return 0;
-		}
 
-		if (offset + data.length > node.SizeLow) {
-			delete node;
+		if (offset + data.length > node.SizeLow)
 			return 0;
-		}
 
 		ulong startBlock  = offset / BlockSize;
 		ulong blockOffset = offset % BlockSize;
@@ -526,7 +510,7 @@ return 0;
 		if ((data.length + blockOffset) % BlockSize)
 			numBlocks++;
 
-		ulong[] blockList = GetBlocks(node, null);
+		ulong[] blockList = GetBlocks(&node, null);
 		byte[] blocks = new byte[numBlocks * BlockSize];
 
 		for (int i = 0; i < startBlock + numBlocks && blockList[i]; i++)
