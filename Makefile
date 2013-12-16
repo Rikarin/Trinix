@@ -170,7 +170,7 @@ $(OBJ_DIR)/%.s.o: $(SRC_DIR)/%.s
 
 $(OBJ_DIR)/Framework.lib:
 	@echo "[ D ] Compiling Framework..."
-	cd Framework; make
+	@cd Framework; make
 
 #druntime/lib/libdruntime-linux64.a:
 runtime:

@@ -165,9 +165,9 @@ public:
 		import System, Core;
 		Log.PrintSP("\nPCI: " ~ Convert.ToString(dev));
 
-		irq = Read!byte(IRQPin);
+		/*irq = Read!byte(IRQPin); //asi funguje
 		if (irq)
-			irq = Read!byte(IRQLine);
+			irq = Read!byte(IRQLine);*/
 
 		DeviceManager.RegisterDevice(this, DeviceInfo("Device", DeviceType.PCI));
 	}
@@ -188,7 +188,7 @@ public:
 				return Port.Read!ubyte(base);
 			case 2:
 				return Port.Read!ushort(base);
-			case 3:
+			case 4:
 				return Port.Read!uint(base);
 			default:
 				return 0;
@@ -213,7 +213,7 @@ public:
 			case 2:
 				Port.Write!ushort(base, cast(short)value);
 				break;
-			case 3:
+			case 4:
 				Port.Write!uint(base, value);
 				break;
 		}
@@ -276,14 +276,15 @@ public:
 static:
 	@property bool IsPresent() { return Port.Read!uint(DataRegister) != 0xFFFFFFFF; }
 
+
 	void ScanDevices() {
 		if (!IsPresent)
 			return;
 
 		auto pf = new PCIDev(0, 0, 0, cast(Common)0);
-		foreach (byte bus; 0 .. 4) {
-			foreach (byte dev; 0 .. 32) {
-				foreach (byte func; 0 .. 8) {
+		foreach (ubyte bus; 0 .. 4) {
+			foreach (ubyte dev; 0 .. 32) {
+				foreach (ubyte func; 0 .. 8) {
 					pf.bus = bus;
 					pf.dev = dev;
 					pf.func = func;
@@ -293,14 +294,15 @@ static:
 						x = pf.Read!uint(i << 2);
 
 					auto cfg = cast(Common *)tmp.ptr;
-
-
-					import System, Core;
-					Log.PrintSP(" " ~ Convert.ToString(cfg.ClassCode));
-
-
 					if (cfg.VendorID == 0xFFFF || !cfg.VendorID)
 						continue;
+
+					import System, Core;
+					Log.PrintSP(" | " ~ Convert.ToString(tmp[0], 16));
+					Log.PrintSP(" " ~ Convert.ToString(tmp[1], 16));
+					Log.PrintSP(" " ~ Convert.ToString(tmp[2], 16));
+					Log.PrintSP(" " ~ Convert.ToString(tmp[3], 16));
+
 
 					auto newDev = new PCIDev(bus, dev, func, *cfg);
 					foreach (uint i, ref x; newDev.devi)
