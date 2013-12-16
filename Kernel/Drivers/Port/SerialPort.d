@@ -1,4 +1,4 @@
-module Devices.Port.SerialPort;
+module Drivers.Port.SerialPort;
 
 import Architectures;
 

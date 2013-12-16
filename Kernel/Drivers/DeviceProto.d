@@ -1,4 +1,4 @@
-module Devices.DeviceProto;
+module Drivers.DeviceProto;
 
 import Architectures;
 

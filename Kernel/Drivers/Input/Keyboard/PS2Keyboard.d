@@ -1,10 +1,9 @@
-module Devices.Keyboard.PS2Keyboard;
+module Drivers.Input.Keyboard.PS2Keyboard;
 
 import Core;
-import Devices;
-import Devices.Keyboard;
 import VFSManager;
 import Architectures;
+import Drivers.Input.Keyboard;
 
 import System.Threading;
 

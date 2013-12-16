@@ -1,6 +1,6 @@
-module Devices.BlockDeviceProto;
+module Drivers.BlockDeviceProto;
 
-import Devices;
+import Drivers;
 
 
 abstract class BlockDeviceProto : DeviceProto {

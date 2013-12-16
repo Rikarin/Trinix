@@ -1,7 +1,8 @@
 module FileSystem.RandomDev;
 
-import Devices;
 import VFSManager;
+import Drivers.Common.Random;
+
 import System.IO;
 
 

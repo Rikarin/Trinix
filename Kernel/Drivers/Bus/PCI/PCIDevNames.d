@@ -1,4 +1,4 @@
-module Devices.PCI.PCIDevNames;
+module Drivers.Bus.PCI.PCIDevNames;
 
 
 enum PCIBaseClass {

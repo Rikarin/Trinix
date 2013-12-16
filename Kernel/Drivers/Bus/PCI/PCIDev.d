@@ -1,8 +1,7 @@
-module Devices.PCI.PCIDev;
+module Drivers.Bus.PCI.PCIDev;
 
 import Core;
-import Devices;
-import Devices.PCI;
+import Drivers.Bus.PCI;
 import Architectures;
 
 import System.Collections;

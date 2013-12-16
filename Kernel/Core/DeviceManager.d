@@ -1,6 +1,6 @@
 module Core.DeviceManager;
 
-import Devices;
+import Drivers;
 import VFSManager;
 import Architectures;
 

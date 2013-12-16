@@ -1,7 +1,7 @@
-module Devices.Timer;
+module Drivers.Timer.Timer;
 
 import Core;
-import Devices;
+import Drivers;
 import TaskManager;
 import Architectures;
 

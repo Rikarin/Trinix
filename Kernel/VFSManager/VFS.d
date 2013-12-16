@@ -5,9 +5,7 @@ import FileSystem;
 import VFSManager;
 import TaskManager;
 import SyscallManager;
-
-import Devices;
-import Devices.Port;
+import Drivers.Port.SerialPort;
 
 import System;
 import System.IFace;

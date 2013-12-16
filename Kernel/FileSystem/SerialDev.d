@@ -2,7 +2,7 @@ module FileSystem.SerialDev;
 
 import VFSManager;
 import TaskManager;
-import Devices.Port;
+import Drivers.Port.SerialPort;
 
 import System;
 import System.IO;

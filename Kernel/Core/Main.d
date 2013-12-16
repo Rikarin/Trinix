@@ -7,17 +7,18 @@ import TaskManager;
 import MemoryManager;
 import Architectures;
 import SyscallManager;
-import Devices;
-import Devices.PCI;
-import Devices.Disk;
-import Devices.Mouse;
-import Devices.Display;
-import Devices.Keyboard;
+
 
 /+
 HEAP
 PCI
 AHCI
+gpt
+
+new:
+HPET
+acpi battery
+
 
 
 IMPORTANT:
@@ -92,11 +93,11 @@ extern(C) void StartSystem() {
 	Log.Result(true);
 
 	Log.Print("Finding PCI devices");
-	PCIDev.ScanDevices();
+	//PCIDev.ScanDevices();
 	Log.Result(false);
 
 	Log.Print("Initializing timer ticks = 100Hz");
-	new Timer(100);
+	//new Timer(100);
 	Log.Result(true);
 
 	Log.Print("Booting complete, starting init process");

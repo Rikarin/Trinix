@@ -1,6 +1,5 @@
 module FileSystem.PipeDev;
 
-import Devices;
 import VFSManager;
 import TaskManager;
 

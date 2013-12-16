@@ -1,4 +1,4 @@
-module Devices.Keyboard.KeyCodes;
+module Drivers.Input.Keyboard.KeyCodes;
 
 
 enum Key : byte {

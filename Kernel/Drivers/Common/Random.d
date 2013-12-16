@@ -1,4 +1,4 @@
-module Devices.Random;
+module Drivers.Common.Random;
 
 import System;
 

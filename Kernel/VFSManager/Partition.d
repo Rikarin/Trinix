@@ -1,7 +1,7 @@
 module VFSManager.Partition;
 
 import Core;
-import Devices;
+import Drivers;
 import VFSManager;
 
 import System.IO;

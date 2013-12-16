@@ -1,4 +1,4 @@
-module Devices.TTY;
+module Drivers.TTY.TTY;
 
 import VFSManager;
 import TaskManager;
