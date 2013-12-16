@@ -15,6 +15,3 @@ public import Architectures.x86_64.Core.Info;
 public import Architectures.x86_64.Core.IOAPIC;
 public import Architectures.x86_64.Core.LocalAPIC;
 public import Architectures.x86_64.Core.Descriptor;
-
-public import Architectures.x86_64.Specs.MP;
-public import Architectures.x86_64.Specs.ACPI;

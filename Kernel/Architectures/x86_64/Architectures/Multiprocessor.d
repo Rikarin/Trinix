@@ -1,6 +1,7 @@
 module Architectures.Multiprocessor;
 
 import Core;
+import Drivers.Power;
 import Architectures;
 
 

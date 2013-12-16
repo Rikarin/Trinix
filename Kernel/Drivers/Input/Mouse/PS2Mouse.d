@@ -1,6 +1,7 @@
 module Drivers.Input.Mouse.PS2Mouse;
 
 import Core;
+import Drivers;
 import VFSManager;
 import Architectures;
 

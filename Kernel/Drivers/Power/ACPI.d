@@ -1,4 +1,4 @@
-module Architectures.x86_64.Specs.ACPI;
+module Drivers.Power.ACPI;
 
 import Architectures;
 import MemoryManager;

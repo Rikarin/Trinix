@@ -1,6 +1,7 @@
 module Drivers.Bus.PCI.PCIDev;
 
 import Core;
+import Drivers;
 import Drivers.Bus.PCI;
 import Architectures;
 

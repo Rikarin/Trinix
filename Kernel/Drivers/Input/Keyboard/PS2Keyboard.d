@@ -1,6 +1,7 @@
 module Drivers.Input.Keyboard.PS2Keyboard;
 
 import Core;
+import Drivers;
 import VFSManager;
 import Architectures;
 import Drivers.Input.Keyboard;

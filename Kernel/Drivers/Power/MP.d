@@ -1,4 +1,4 @@
-module Architectures.x86_64.Specs.MP;
+module Drivers.Power.MP;
 
 import MemoryManager;
 import Architectures;
