@@ -427,7 +427,13 @@ static:
 					foreach (uint i, ref x; newDev.devi)
 						x = newDev.Read!uint((i << 2) + 16);
 
-					//Log.Print(" - PCI: " ~ Convert.ToString(bus) ~ " " ~ Convert.ToString(dev) ~ " " ~ Convert.ToString(func) ~ " " ~ ClassName ~ " | "  ~ VendorDevice ~ " | " ~ Vendor ~ " |\n");
+					Log.PrintSP("\nPCI: " ~ 
+						Convert.ToString(newDev.bus) ~ " " ~
+						Convert.ToString(newDev.dev) ~ " " ~
+						Convert.ToString(newDev.func) ~ " " ~
+						newDev.ClassName ~ " | "  ~
+						newDev.VendorDevice ~ " | " ~ 
+						newDev.Vendor);
 				}
 			}
 		}

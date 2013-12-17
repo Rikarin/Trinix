@@ -32,6 +32,11 @@ static:
 			sp.WriteLine("\nBooting...");
 	}
 	
+	void Print(string msg, bool result) {
+		Print(msg);
+		Result(result);
+	}
+
 	void Print(string msg, ushort color = 0x700) {
 		foreach (char s; msg) {
 			if (pos >= 2000) {

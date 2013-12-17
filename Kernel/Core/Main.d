@@ -95,8 +95,8 @@ extern(C) void StartSystem() {
 	Log.Result(true);
 
 	Log.Print("Finding PCI devices");
-	Log.Result(true);
 	PCIDev.ScanDevices();
+	Log.Result(true);
 
 	Log.Print("Initializing timer ticks = 100Hz");
 	//new Timer(100);
@@ -145,7 +145,6 @@ extern(C) void StartSystem() {
 
 	//static import Userspace.GUI.Compositor;
 	//Process.CreateProcess(cast(void function())&Userspace.GUI.Compositor.construct, ["/System/Bin/Compositor", "--single", "--nothing"]);
-
 	while (true) {}
 }
 
