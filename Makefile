@@ -120,7 +120,7 @@ Disk/Trinix-Kernel: $(OBJS) $(OBJ_DIR)/Kernel.o druntime/lib/libdruntime-linux64
 #############
 debug: all Trinix.img
 	@${EMU} -hda Trinix.img -hdb disk.img -boot c -m 512 -serial /dev/ttyS0 \
-	-vga vmware -monitor stdio
+	-vga vmware -monitor stdio -device ahci,id=ahci0
 	
 
 

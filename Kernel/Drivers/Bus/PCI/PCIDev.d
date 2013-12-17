@@ -5,6 +5,7 @@ import Drivers;
 import Drivers.Bus.PCI;
 import Architectures;
 
+import System;
 import System.Collections;
 import System.Collections.Generic;
 
@@ -18,7 +19,7 @@ class PCIDev : DeviceProto {
         ushort StatusRegister;
         ubyte RevisionID;
         ubyte ProgInterface;
-        ubyte Subclass;
+        ubyte SubClass;
         ubyte ClassCode;
         ubyte CachelineSize;
         ubyte Latency;
@@ -115,7 +116,7 @@ class PCIDev : DeviceProto {
         private ubyte Flags2;
 
         mixin(Bitfield!(Flags1, "Function", 3, "Device", 5));
-        mixin(Bitfield!(Flags1, "rsvd", 7, "Enable", 1));
+        mixin(Bitfield!(Flags2, "rsvd", 7, "Enable", 1));
     };
     
     enum BarType {
@@ -162,14 +163,11 @@ public:
 		this.func = func;
 		common = cmn;
 
-		import System, Core;
-		Log.PrintSP("\nPCI: " ~ Convert.ToString(dev));
-
-		/*irq = Read!byte(IRQPin); //asi funguje
+		irq = Read!byte(IRQPin);
 		if (irq)
-			irq = Read!byte(IRQLine);*/
+			irq = Read!byte(IRQLine);
 
-		DeviceManager.RegisterDevice(this, DeviceInfo("Device", DeviceType.PCI));
+		DeviceManager.RegisterDevice(this, DeviceInfo(ClassName, DeviceType.PCI));
 	}
 
 	uint ReadValue(int reg, int ts) {
@@ -272,6 +270,134 @@ public:
 		}
 	}
 
+	@property string Vendor() {
+		foreach (x; VendorArray) {
+			if (x.Identifier == common.VendorID)
+				return x.Name;
+		}
+
+		return "Unknown vendor";
+	}
+
+	@property string VendorDevice() {
+		foreach (x; BusDeviceNames) {
+			if (x.Vendor == common.VendorID && x.Device == common.DeviceID)
+				return x.Name;
+		}
+
+		return "Unknown device";
+	}
+
+	@property string ClassName() {
+		uint code = (common.ClassCode << 8) + common.SubClass;
+    
+		switch (code) {
+			case PCIClass.NotDefined: return "Unknown device/VGA";
+			case PCIClass.NotDefinedVGA: return "Unknown/VGA";
+			case PCIClass.Storage.SCSI: return "SCSI-Disk";
+			case PCIClass.Storage.IDE: return "IDE-Disk";
+			case PCIClass.Storage.Floppy: return "Floppy-Disk";
+			case PCIClass.Storage.IPI: return "IPI-Disk";
+			case PCIClass.Storage.RAID: return "RAID";
+			case PCIClass.Storage.SATA: return "SATA";
+			case PCIClass.Storage.SATA_AHCI: return "SATA AHCI";
+			case PCIClass.Storage.SAS: return "SAS";
+			case PCIClass.Storage.Other: return "Other Storage";
+
+			case PCIClass.Network.Ethernet: return "Ethernet";
+			case PCIClass.Network.TokenRing: return "Tokenring";
+			case PCIClass.Network.FDDI: return "FDDI";
+			case PCIClass.Network.ATM: return "ATM";
+			case PCIClass.Network.Other: return "Other";
+
+			case PCIClass.Display.VGA: return "VGA";
+			case PCIClass.Display.XGA: return "XGA";
+			case PCIClass.Display.N3D: return "3D";
+			case PCIClass.Display.Other: return "Other Disp";
+
+			case PCIClass.Multimedia.Video: return "Video";
+			case PCIClass.Multimedia.Audio: return "Audio";
+			case PCIClass.Multimedia.Phone: return "Phone";
+			case PCIClass.Multimedia.Other: return "Other Mmedia";
+
+			case PCIClass.Memory.RAM: return "RAM";
+			case PCIClass.Memory.Flash: return "FLASH";
+			case PCIClass.Memory.Other: return "Other Mem";
+
+			case PCIClass.Bridge.Host: return "Host Bridge";
+			case PCIClass.Bridge.ISA: return "ISA Bridge";
+			case PCIClass.Bridge.EISA: return "EISA Bridge";
+			case PCIClass.Bridge.MC: return "MC Bridge";
+			case PCIClass.Bridge.PCI: return "PCI Bridge";
+			case PCIClass.Bridge.PCMCIA: return "PCMCIA Bridge";
+			case PCIClass.Bridge.NuBUS: return "NUBUS Bridge";
+			case PCIClass.Bridge.CardBus: return "CardBus Bridge";
+			case PCIClass.Bridge.Raceway: return "Raceway Bridge";
+			case PCIClass.Bridge.Other: return "Other Bridge";
+
+			case PCIClass.Communication.Serial: return "Serial";
+			case PCIClass.Communication.Parallel: return "Parallel";
+			case PCIClass.Communication.MSerial: return "MultiSerial";
+			case PCIClass.Communication.Modem: return "Modem";
+			case PCIClass.Communication.Other: return "Other Comm";
+
+			case PCIClass.System.PIC: return "PIC";
+			case PCIClass.System.IOAPIC: return "IOAPIC";
+			case PCIClass.System.IOXAPIC: return "IOXAPIC";
+			case PCIClass.System.DMA: return "DMA";
+			case PCIClass.System.Timer: return "Timer";
+			case PCIClass.System.RTC: return "RTC";
+			case PCIClass.System.Hotplug: return "PCI Hotplug";
+			case PCIClass.System.SDHCI: return "SDHCI";
+			case PCIClass.System.Other: return "Other System";
+
+			case PCIClass.Input.Keyboard: return "Keyboard";
+			case PCIClass.Input.Pen: return "Pen";
+			case PCIClass.Input.Mouse: return "Mouse";
+			case PCIClass.Input.Scanner: return "SCANNER";
+			case PCIClass.Input.Gameport: return "Gameport";
+			case PCIClass.Input.Other: return "Other Input";
+
+			case PCIClass.Docking.Generic: return "Docking generic";
+			case PCIClass.Docking.Other: return "Docking Other";
+
+			case PCIClass.Processor.I386: return "i386";
+			case PCIClass.Processor.I486: return "i486";
+			case PCIClass.Processor.Pentium: return "Pentium";
+			case PCIClass.Processor.Alpha: return "Alpha";
+			case PCIClass.Processor.MIPS: return "MIPS";
+			case PCIClass.Processor.CO: return "CO???";
+
+			case PCIClass.Serial.FW: return "Firewire";
+			case PCIClass.Serial.FW_OHCI: return "Firewire-OHCI";
+			case PCIClass.Serial.SSA: return "SSA";
+			case PCIClass.Serial.USB: return "USB";
+			case PCIClass.Serial.USB_UHCI: return "USB UHCI";
+			case PCIClass.Serial.USB_OHCI: return "USB OHCI";
+			case PCIClass.Serial.USB_EHCI: return "USB EHCI";
+			case PCIClass.Serial.Fiber: return "Fiber";
+			case PCIClass.Serial.SMBus: return "SMBUS";
+
+			case PCIClass.Wireless.RF_CTRL: return "Wireless rf control";
+			case PCIClass.Wireless.WHCI: return "Wireless rf control";
+
+			case PCIClass.Intelligent.I20: return "Intelligent I2O";
+
+			case PCIClass.Satellite.TV: return "Satellite Tv";
+			case PCIClass.Satellite.Audio: return "Satellite Audio";
+			case PCIClass.Satellite.Voice: return "Satellite Voice";
+			case PCIClass.Satellite.Data: return "Satellite Data";
+
+			case PCIClass.Crypt.Network: return "Crypt Network";
+			case PCIClass.Crypt.Entertaim: return "Crypt Entertainment";
+			case PCIClass.Crypt.Other: return "Crypt Other";
+
+			case PCIClass.SignalProcessing.DPIO: return "DPIO";
+			case PCIClass.SignalProcessing.Other: return "DSP Other";
+			default: return "Invalid class subclass";
+		}
+	}
+
 
 static:
 	@property bool IsPresent() { return Port.Read!uint(DataRegister) != 0xFFFFFFFF; }
@@ -297,16 +423,11 @@ static:
 					if (cfg.VendorID == 0xFFFF || !cfg.VendorID)
 						continue;
 
-					import System, Core;
-					Log.PrintSP(" | " ~ Convert.ToString(tmp[0], 16));
-					Log.PrintSP(" " ~ Convert.ToString(tmp[1], 16));
-					Log.PrintSP(" " ~ Convert.ToString(tmp[2], 16));
-					Log.PrintSP(" " ~ Convert.ToString(tmp[3], 16));
-
-
 					auto newDev = new PCIDev(bus, dev, func, *cfg);
 					foreach (uint i, ref x; newDev.devi)
 						x = newDev.Read!uint((i << 2) + 16);
+
+					//Log.Print(" - PCI: " ~ Convert.ToString(bus) ~ " " ~ Convert.ToString(dev) ~ " " ~ Convert.ToString(func) ~ " " ~ ClassName ~ " | "  ~ VendorDevice ~ " | " ~ Vendor ~ " |\n");
 				}
 			}
 		}

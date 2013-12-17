@@ -145,7 +145,7 @@ struct PCIClass {
         I20       = 0xE00
     }
 
-    enum {
+    enum Satellite {
         TV        = 0xF00,
         Audio     = 0xF01,
         Voice     = 0xF03,
@@ -166,7 +166,7 @@ struct PCIClass {
 
 struct PCIVendor {
 	ushort Identifier;
-	string Vendor;
+	string Name;
 }
 
 struct VendorDeviceTable {
@@ -10985,7 +10985,3 @@ __gshared VendorDeviceTable BusDeviceNames[] = [
     { 0xfffd, 0x0101, "PCI Event Channel Controller"}, 
     { 0xfffe, 0x0710, "Virtual SVGA"},
 ];
-
-
-//enum PCI_VENTABLE_LEN = (vendorArray.sizeof / PCIvendor.sizeof);
-//enum PCI_DEVICE_TABLE_LEN = (BusDeviceNames.sizeof / vendorDeviceTable.sizeof);

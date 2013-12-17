@@ -8,6 +8,8 @@ import MemoryManager;
 import Architectures;
 import SyscallManager;
 
+import Drivers.Bus.PCI;
+
 
 /+
 HEAP
@@ -93,8 +95,8 @@ extern(C) void StartSystem() {
 	Log.Result(true);
 
 	Log.Print("Finding PCI devices");
-	//PCIDev.ScanDevices();
-	Log.Result(false);
+	Log.Result(true);
+	PCIDev.ScanDevices();
 
 	Log.Print("Initializing timer ticks = 100Hz");
 	//new Timer(100);
