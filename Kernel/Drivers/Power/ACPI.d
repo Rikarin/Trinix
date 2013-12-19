@@ -25,22 +25,14 @@ public:
 	}
 
 	bool ReadTable() {
-		if (ptrRSDP.Revision && ptrRSDP.ptrXSDT) {
-			ptrXSDT = cast(XSDT *)Paging.KernelPaging.MapRegion(cast(PhysicalAddress)ptrRSDP.ptrXSDT, RSDT.sizeof);
-			
-			if (!Validate(ptrXSDT, "XSDT"))
-				return false;
-		} else {
-			ptrRSDT = cast(RSDT *)Paging.KernelPaging.MapRegion(cast(PhysicalAddress)ptrRSDP.ptrRSDT, RSDT.sizeof);
+		bool a = ptrRSDP.Revision && ptrRSDP.ptrXSDT;
+		ptrHeader = cast(ACPIHeader *)Paging.KernelPaging.MapRegion(cast(PhysicalAddress)(a ? ptrRSDP.ptrXSDT : ptrRSDP.ptrRSDT), ACPIHeader.sizeof);
 
-			if (!Validate(ptrRSDT, "RSDT"))
-				return false;
-		}
+		if (!Validate(ptrHeader, (a ? "XSDT" : "RSDT")))
+			return false;
 
-		if (ptrXSDT !is null)
-			FindDescriptors(ptrXSDT);
-		else
-			FindDescriptors(ptrRSDT);
+		if (ptrHeader !is null)
+			FindDescriptors(ptrHeader);
 
 		if (ptrMADT is null)
 			return false;
@@ -61,15 +53,9 @@ private:
 
 	__gshared bool isLegacyRSDP;
 	__gshared RSDP* ptrRSDP;
-
-	//__gshared RSDT* ptrRSDT;
-	//__gshared XSDT* ptrXSDT;
-
-
-	__gshared ACPIHeader ptrHeader;
-
 	__gshared MADT* ptrMADT;
 
+	__gshared ACPIHeader* ptrHeader;
 	__gshared HeaderHPET* ptrHPET;
 
 
@@ -115,7 +101,7 @@ private:
 		return false;
 	}
 
-	bool Validate(T)(T ptr, string str) {
+	bool Validate(ACPIHeader* ptr, string str) {
 		if (!IsChecksumValid(cast(ubyte *)ptr, ptr.Length))
 			return false;
 
@@ -125,7 +111,7 @@ private:
 		return false;
 	}
 	
-	void FindDescriptors(T)(T ptr) {
+	void FindDescriptors(ACPIHeader* ptr) {
 		uint* endByte = cast(uint *)((cast(ubyte *)ptr) + ptr.Length);
 		uint* curByte = cast(uint *)(ptr + 1);
 		
@@ -162,36 +148,6 @@ private:
 		ubyte[3] reserved;
 	}
 
-	struct RSDT {
-	align(1):
-		char[4] Signature;
-		uint Length;
-		
-		ubyte Revision;
-		ubyte Checksum;
-		ubyte[6] OEMID;
-		
-		ulong OEMTableID;
-		uint OEMRevision;
-		uint CreatorID;
-		uint CreatorRevision;
-	}
-
-	struct XSDT {
-	align(1):
-		char[4] Signature;
-		uint Length;
-		
-		ubyte Revision;
-		ubyte Checksum;
-		ubyte[6] OEMID;
-
-		ulong OEMTableID;
-		uint OEMRevision;
-		uint CreatorID;
-		uint CreatorRevision;
-	}
-
 	struct MADT {
 	align(1):
 		ACPIHeader Header;
@@ -200,13 +156,6 @@ private:
 		uint Flags;
 	}
 
-
-
-
-
-
-
-//new
 	struct ACPIHeader {
 	align(1):
 		char[4] Signature;
@@ -241,13 +190,6 @@ private:
 		ubyte Attribute;
 	}
 
-
-
-
-
-
-
-
 	struct EntryLocalAPIC {
 	align(1):
 		ubyte Type;
@@ -277,7 +219,7 @@ private:
 		ubyte Source;
 
 		uint GlobalSystemInterrupt;
-		ushort Flags;
+		private ushort Flags;
 
 		mixin(Bitfield!(Flags, "po", 2, "el", 2, "reserved", 12));
 	}
@@ -286,7 +228,7 @@ private:
 	align(1):
 		ubyte Type;
 		ubyte Length;
-		ushort Flags;
+		private ushort Flags;
 
 		uint GlobalSystemInterrupt;
 
@@ -299,7 +241,7 @@ private:
 		ubyte Length;
 		
 		ubyte ACPICPUID;
-		ushort Flags;
+		private ushort Flags;
 		ubyte LocalAPICLINT;
 
 		mixin(Bitfield!(Flags, "polarity", 2, "trigger", 2, "reserved", 12));
@@ -309,7 +251,7 @@ private:
 	align(1):
 		ubyte Type;
 		ubyte Length;
-		ushort reserved;
+		private ushort reserved;
 		ulong LocalAPICAddr;
 	}
 
@@ -331,7 +273,7 @@ private:
 		ubyte ACPICPUID;
 		ubyte LocalSAPICID;
 		ubyte LocalSAPICEID;
-		ubyte[3] reserved;
+		private ubyte[3] reserved;
 		uint Flags;
 		uint ACPICPUUID;
 	}
@@ -354,12 +296,12 @@ private:
 
 	void ReadHPET() {
 		import Core, System;
-		Log.Print(" ticks: " ~ Convert.ToString(ptrHPET.MinTickInPeriodicMode));
+		Log.Print(" ticks: " ~ Convert.ToString(ptrHPET.BaseAddress.RegisterBitWidth, 16));
 	}
 	
 	void ReadMADT() {
 		ubyte* curByte = (cast(ubyte *)ptrMADT) + MADT.sizeof - 4;
-		ubyte* endByte = curByte + (ptrMADT.Length - MADT.sizeof);
+		ubyte* endByte = curByte + (ptrMADT.Header.Length - MADT.sizeof);
 		endByte--;
 		
 		Info.LocalAPICAddress = cast(PhysicalAddress)ptrMADT.LocalAPICAddr;
