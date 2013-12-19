@@ -1,12 +1,11 @@
 # Trinix #
 Trinix is a hobby operating system written from scratch. OS is written in D (http://www.dlang.org/) and asm (NASM). It means OS is fully OOP. For now only 64-bit is supported. Development began one beautiful day in January and continues to this day. We have a framework based on .NET-like classes, interfaces and other .NET things.
 
-(Sorry for bad english, if you have a better translation contact me by mail or irc)
+(Sorry for bad english)
 
 
 # Community #
-If you have any questions or feedback, you can contact me by E-Mail: `Bloodman@gshost.eu` or on IRC: `#Trinix` on `Freenode`.
-(We are looking for developers and testers)
+If you have any questions or feedback, you can contact me on IRC: `#Trinix` on `Freenode`.
 
 
 # How to build #
@@ -19,7 +18,7 @@ If you have any questions or feedback, you can contact me by E-Mail: `Bloodman@g
 # Features #
 * GRUB Multiboot 2 bootloader
 * GDT, IDT, TSS tables for 64-bit mode
-* ACPI driver (needs to be fixed for version 2)
+* ACPI driver
 * LocalAPIC, IOAPIC drivers with multiprocessor configuration
 * Cache info from CPU
 * Basic timer based on APIC
@@ -43,4 +42,4 @@ druntime:
 	
 	
 # Licence #
-Still working on it but this OS is now opensource for non-commercial use. Please don't redistribute source code of this OS. You can modify only for personal use or development.
+Still working on it but this OS is now opensource for non-commercial use. Please don't redistribute modified source code of this OS. You can modify it only for personal or development use.
