@@ -25,25 +25,22 @@ public:
 	}
 
 	bool ReadTable() {
-		ptrXSDT = null;
-		ptrRSDT = null;
-
-		if (ptrRSDP.Revision >= 1 && ptrRSDP.ptrXSDT) {
+		if (ptrRSDP.Revision && ptrRSDP.ptrXSDT) {
 			ptrXSDT = cast(XSDT *)Paging.KernelPaging.MapRegion(cast(PhysicalAddress)ptrRSDP.ptrXSDT, RSDT.sizeof);
 			
-			if (!ValidateXSDT())
+			if (!Validate(ptrXSDT, "XSDT"))
 				return false;
 		} else {
 			ptrRSDT = cast(RSDT *)Paging.KernelPaging.MapRegion(cast(PhysicalAddress)ptrRSDP.ptrRSDT, RSDT.sizeof);
 
-			if (!ValidateRSDT())
+			if (!Validate(ptrRSDT, "RSDT"))
 				return false;
 		}
 
 		if (ptrXSDT !is null)
-			FindDescriptors();
+			FindDescriptors(ptrXSDT);
 		else
-			FindDescriptors32();
+			FindDescriptors(ptrRSDT);
 
 		if (ptrMADT is null)
 			return false;
@@ -51,21 +48,32 @@ public:
 		if (!InitializeRedirectionEntries())
 			return false;
 
+		if (ptrHPET)
+			ReadHPET();
+
 		ReadMADT();
 		return true;
 	}
 
 
 private:
-	const uint maxEntries = 256;
+	enum maxEntries = 256;
 
 	__gshared bool isLegacyRSDP;
 	__gshared RSDP* ptrRSDP;
-	__gshared RSDT* ptrRSDT;
-	__gshared XSDT* ptrXSDT;
+
+	//__gshared RSDT* ptrRSDT;
+	//__gshared XSDT* ptrXSDT;
+
+
+	__gshared ACPIHeader ptrHeader;
+
 	__gshared MADT* ptrMADT;
 
-	struct acpiMPBase {
+	__gshared HeaderHPET* ptrHPET;
+
+
+	/*struct acpiMPBase {
 		EntryLocalAPIC*[maxEntries] LocalAPICs;
 		uint NumLocalAPICs;
 
@@ -80,7 +88,7 @@ private:
 
 		EntryLocalAPICNMI*[maxEntries] LocalAPICNMIs;
 		uint MumLocalAPICNMIs;
-	}
+	}*/
 
 	
 	bool FindRSDP() {
@@ -97,14 +105,7 @@ private:
 
 	bool Scan(ubyte* start, ubyte* end) {
 		for(ubyte* currentByte = start; currentByte < end - 8; currentByte += 16) {
-			if (cast(char)*(currentByte + 0) == 'R' &&
-					cast(char)*(currentByte + 1) == 'S' &&
-					cast(char)*(currentByte + 2) == 'D' &&
-					cast(char)*(currentByte + 3) == ' ' &&
-					cast(char)*(currentByte + 4) == 'P' &&
-					cast(char)*(currentByte + 5) == 'T' &&
-					cast(char)*(currentByte + 6) == 'R' &&
-					cast(char)*(currentByte + 7) == ' ') {
+			if (currentByte[0 .. 8] == "RSD PTR ") {
 				ptrRSDP = cast(RSDP *)currentByte;
 				isLegacyRSDP = (ptrRSDP.Revision == 0);
 				return true;
@@ -114,63 +115,33 @@ private:
 		return false;
 	}
 
-	bool ValidateRSDT() {
-		if (!IsChecksumValid(cast(ubyte *)ptrRSDT, ptrRSDT.Length))
+	bool Validate(T)(T ptr, string str) {
+		if (!IsChecksumValid(cast(ubyte *)ptr, ptr.Length))
 			return false;
 
-		if (ptrRSDT.Signature[0] == 'R' &&
-				ptrRSDT.Signature[1] == 'S' &&
-				ptrRSDT.Signature[2] == 'D' &&
-				ptrRSDT.Signature[3] == 'T')
-			return true;
-
-		return false;
-	}
-
-	bool ValidateXSDT() {
-		if (!IsChecksumValid(cast(ubyte *)ptrXSDT, ptrXSDT.Length))
-			return false;
-
-		if (ptrXSDT.Signature[0] == 'X' &&
-				ptrXSDT.Signature[1] == 'S' &&
-				ptrXSDT.Signature[2] == 'D' &&
-				ptrXSDT.Signature[3] == 'T')
+		if (ptr.Signature[0 .. 4] == str)
 			return true;
 
 		return false;
 	}
 	
-	void FindDescriptors32() {
-		uint* endByte = cast(uint *)((cast(ubyte *)ptrRSDT) + ptrRSDT.Length);
-		uint* curByte = cast(uint *)(ptrRSDT + 1);
+	void FindDescriptors(T)(T ptr) {
+		uint* endByte = cast(uint *)((cast(ubyte *)ptr) + ptr.Length);
+		uint* curByte = cast(uint *)(ptr + 1);
 		
 		for (; curByte < endByte; curByte++) {
 			DescriptorHeader* curTable = cast(DescriptorHeader *)Paging.KernelPaging.MapRegion(cast(PhysicalAddress)(*curByte), MADT.sizeof);
 			
-			if (curTable.Signature[0] == 'A' &&
-					curTable.Signature[1] == 'P' &&
-					curTable.Signature[2] == 'I' &&
-					curTable.Signature[3] == 'C')
-				ptrMADT = cast(MADT *)(cast(ubyte *)curTable);
+			if (curTable.Signature[0 .. 4] == "APIC")
+				ptrMADT = cast(MADT *)curTable;
+			else if (curTable.Signature[0 .. 4] == "HPET")
+				ptrHPET = cast(HeaderHPET *)curTable;
+
+			import Core, System;
+			Log.Print(" FD:" ~ cast(string)curTable.Signature[0 .. 4]);
 		}
 	}
 
-	void FindDescriptors() { //TODO fix
-		ulong* endByte = cast(ulong *)((cast(ubyte *)ptrXSDT) + ptrXSDT.Length);
-		ulong* curByte = cast(ulong *)(ptrXSDT + 1);
-
-		for (; curByte < endByte; curByte++) {
-			DescriptorHeader* curTable = cast(DescriptorHeader *)Paging.KernelPaging.MapRegion(cast(PhysicalAddress)(*curByte), MADT.sizeof);
-
-			if (curTable.Signature[0] == 'A' &&
-					curTable.Signature[1] == 'P' &&
-					curTable.Signature[2] == 'I' &&
-					curTable.Signature[3] == 'C') {
-				ptrMADT = cast(MADT*)curTable;
-			}
-		}
-	}
-	
 	
 	struct DescriptorHeader {
 	align(1):
@@ -223,6 +194,21 @@ private:
 
 	struct MADT {
 	align(1):
+		ACPIHeader Header;
+		uint LocalAPICAddr;
+		
+		uint Flags;
+	}
+
+
+
+
+
+
+
+//new
+	struct ACPIHeader {
+	align(1):
 		char[4] Signature;
 		uint Length;
 		
@@ -234,10 +220,33 @@ private:
 		uint OEMRevision;
 		uint CreatorID;
 		uint CreatorRevision;
-		uint LocalAPICAddr;
-		
-		uint Flags;
 	}
+
+	struct ACPIAddressFormat {
+	align(1):
+		ubyte AddressSpaceID;
+		ubyte RegisterBitWidth;
+		ubyte RegisterBitOffset;
+		private ubyte reserved;
+		ulong Address;
+	}
+
+	struct HeaderHPET {
+	align(1):
+		ACPIHeader Header;
+		uint EventTimerBlockID;
+		ACPIAddressFormat BaseAddress;
+		ubyte HPETNumber;
+		ushort MinTickInPeriodicMode;
+		ubyte Attribute;
+	}
+
+
+
+
+
+
+
 
 	struct EntryLocalAPIC {
 	align(1):
@@ -341,7 +350,12 @@ private:
 			Info.RedirectionEntries[i].vector = cast(ubyte)(i + 32);
 		}
 		return true;
-	}	
+	}
+
+	void ReadHPET() {
+		import Core, System;
+		Log.Print(" ticks: " ~ Convert.ToString(ptrHPET.MinTickInPeriodicMode));
+	}
 	
 	void ReadMADT() {
 		ubyte* curByte = (cast(ubyte *)ptrMADT) + MADT.sizeof - 4;
@@ -359,7 +373,7 @@ private:
 					Info.NumLAPICs++;
 					break;
 
-				case 1:  // IO APIC entry
+				case 1: // IO APIC entry
 					auto ioapicInfo = cast(EntryIOAPIC *)curByte;
 					Info.IOAPICs[Info.NumIOAPICs].ID = ioapicInfo.IOAPICID;
 					Info.IOAPICs[Info.NumIOAPICs].Ver = 0;
