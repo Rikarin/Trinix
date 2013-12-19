@@ -58,24 +58,6 @@ private:
 	__gshared ACPIHeader* ptrHeader;
 	__gshared HeaderHPET* ptrHPET;
 
-
-	/*struct acpiMPBase {
-		EntryLocalAPIC*[maxEntries] LocalAPICs;
-		uint NumLocalAPICs;
-
-		EntryIOAPIC*[maxEntries] IOAPICs;
-		uint NumIOAPICs;
-
-		EntryInterruptSourceOverride*[maxEntries] IntSources;
-		uint NumIntSources;
-
-		EntryNMISource*[maxEntries] NMISources;
-		uint NumNMISources;
-
-		EntryLocalAPICNMI*[maxEntries] LocalAPICNMIs;
-		uint MumLocalAPICNMIs;
-	}*/
-
 	
 	bool FindRSDP() {
 		if (Scan(cast(ubyte *)0xE0000 + cast(ulong)Memory.VirtualStart, cast(ubyte *)0xFFFFF + cast(ulong)Memory.VirtualStart))
@@ -122,9 +104,6 @@ private:
 				ptrMADT = cast(MADT *)curTable;
 			else if (curTable.Signature[0 .. 4] == "HPET")
 				ptrHPET = cast(HeaderHPET *)curTable;
-
-			import Core, System;
-			Log.Print(" FD:" ~ cast(string)curTable.Signature[0 .. 4]);
 		}
 	}
 

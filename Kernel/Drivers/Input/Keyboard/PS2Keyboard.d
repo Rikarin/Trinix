@@ -24,9 +24,9 @@ public:
 		}
 
 		Port.Write!ubyte(0x60, 0xF2);
-		do {
+		do
 			status = Port.Read!ubyte(0x64);
-		} while (!(status & 1));
+		while (!(status & 1));
 
 		while ((status & 1) == 1) {
 			code   = Port.Read!ubyte(0x60);
@@ -39,9 +39,9 @@ public:
 			Port.Write!ubyte(0x60, 0xF0);
 			Port.Write!ubyte(0x60, 0x00);
 
-			do {
+			do
 				status = Port.Read!ubyte(0x64);
-			} while (!(status & 1));
+			while (!(status & 1));
 
 
 			status = Port.Read!ubyte(0x64);
