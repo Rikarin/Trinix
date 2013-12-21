@@ -9,6 +9,7 @@ import Architectures;
 import SyscallManager;
 
 import Drivers.Bus.PCI;
+import Drivers.Disk.IDE;
 
 
 /+
@@ -79,7 +80,7 @@ extern(C) void StartSystem() {
 
 //==================== DEVICES ====================
 	Log.Print("Detecting hard drives");
-	//ATAController.Detect();
+	ATAController.Detect();
 	Log.Result(true);
 
 	Log.Print("Initializing PS/2 keyboard driver");
@@ -133,7 +134,7 @@ extern(C) void StartSystem() {
 	//auto data = new byte[256];
 	//xx.Read(test, 0, data);
 
-	//VFS.PrintTree(VFS.RootNode);
+	VFS.PrintTree(VFS.RootNode);
 
 
 	/*auto aa = VFS.Find("/dev/hda1");

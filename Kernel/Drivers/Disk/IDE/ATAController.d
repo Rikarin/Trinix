@@ -1,8 +1,8 @@
-module Devices.Disk.ATAController;
+module Drivers.Disk.IDE.ATAController;
 
 import Core;
-import Devices;
-import Devices.Disk;
+import Drivers;
+import Drivers.Disk.IDE;
 import VFSManager;
 static import Architectures;
 

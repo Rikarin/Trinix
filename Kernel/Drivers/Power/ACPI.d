@@ -274,8 +274,8 @@ private:
 	}
 
 	void ReadHPET() {
-		import Core, System;
-		Log.Print(" ticks: " ~ Convert.ToString(ptrHPET.BaseAddress.RegisterBitWidth, 16));
+		//import Core, System;
+		//Log.Print(" add: " ~ Convert.ToString(ptrHPET));
 	}
 	
 	void ReadMADT() {
