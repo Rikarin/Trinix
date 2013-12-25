@@ -121,7 +121,7 @@ private:
 		part.Read(2, (cast(byte *)&sb)[0 .. Superblock.sizeof]);
 
 		groups = new Group[NumGroups];
-		ReadBlocks(1, (cast(byte *)&groups)[0 .. groups.length * Group.sizeof]);
+		ReadBlocks(2, (cast(byte *)groups.ptr)[0 .. NumGroups * Group.sizeof]);
 	}
 
 	~this() {
@@ -129,6 +129,8 @@ private:
 	}
 
 	ulong ReadBlocks(ulong offset, byte[] data) {
+		import Core, System;
+		Log.PrintSP("\nReadBlocks: " ~ Convert.ToString(offset));
 		return part.Read(offset * BlockSize / part.BlockSize, data);
 	}
 
@@ -174,8 +176,14 @@ private:
 		}
 
 		Inode ret;
-		(cast(byte *)&ret)[0 .. Inode.sizeof] = buffer[inooffset .. Inode.sizeof];
-		delete buffer;
+		//(cast(byte *)&ret)[0 .. Inode.sizeof] = buffer[inooffset .. Inode.sizeof];
+
+		import Core, System;
+		Log.PrintSP("\nReadInode " ~ Convert.ToString(inooffset));
+
+		foreach (x; buffer[inooffset .. inooffset + Inode.sizeof])
+			Log.PrintSP(" " ~ Convert.ToString(cast(ubyte)x, 16));
+		//delete buffer;
 
 		return ret;
 	}
@@ -492,10 +500,11 @@ public:
 	}
 
 	override ulong Read(FileNode file, ulong offset, byte[] data) {
-		Inode node;
+		Inode node = ReadInode((cast(Ext2FileNode)file).inode);
 
-		if (!ReadBlocks((cast(Ext2FileNode)file).inode, (cast(byte *)&node)[0 .. Inode.sizeof]))
-			return 0;
+		//if (!ReadBlocks((cast(Ext2FileNode)file).inode, (cast(byte *)&node)[0 .. Inode.sizeof]))
+	//	if (!*(cast(ulong *)&node))
+	//		return 0;
 
 		if (offset > node.SizeLow)
 			return 0;
@@ -518,5 +527,15 @@ public:
 
 		data[] = blocks[blockOffset .. data.length];
 		return data.length;
+	}
+
+
+
+
+
+	void readdir() {
+		Inode dir = ReadInode(2);
+		import Core, System;
+		Log.PrintSP("\nreaddir: " ~ Convert.ToString(dir.SizeLow));
 	}
 }

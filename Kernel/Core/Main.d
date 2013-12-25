@@ -29,6 +29,8 @@ IMPORTANT:
 	ELF parser
 	Linker
 	paging - kopirovanie stranok pri vytvoreni noveho procesu
+	need to fix install stack
+	ATA Write() Treba prerobit tak ze ak zapisuje pod 256B tak si zvysok precita a prepise iba tie cisla ktore su v poly
 
 
 NEJAKE NEPODSTATNE SRACKY:
@@ -85,15 +87,15 @@ extern(C) void StartSystem() {
 
 	Log.Print("Initializing PS/2 keyboard driver");
 	//new PS2Keyboard();
-	Log.Result(true);
+	Log.Result(false);
 
 	Log.Print("Initializing PS/2 mouse driver");
 	//new PS2Mouse();
-	Log.Result(true);
+	Log.Result(false);
 
 	Log.Print("Setuping BGA driver 800x600");
 	//BGA.Init(800, 600);
-	Log.Result(true);
+	Log.Result(false);
 
 	Log.Print("Finding PCI devices");
 	PCIDev.ScanDevices();
@@ -101,54 +103,63 @@ extern(C) void StartSystem() {
 
 	Log.Print("Initializing timer ticks = 100Hz");
 	//new Timer(100);
-	Log.Result(true);
+	Log.Result(false);
 
 	Log.Print("Booting complete, starting init process");
 	Log.Result(false);
+	test();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//auto ext = VFS.CreateDirectory("ext");
-	//auto xx = Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hda1"));
-
-	//auto test = new Ext2FileNode(xx, FSNode.NewAttributes("aaa"));
-	//test.inode = 3;
-	//auto data = new byte[256];
-	//xx.Read(test, 0, data);
-
-	VFS.PrintTree(VFS.RootNode);
-
-
-	/*auto aa = VFS.Find("/dev/hda1");
-	if(aa) {
-		byte[1000] xx;
-		aa.Read(0, xx);
-		Log.PrintSP(cast(string)xx);
-	}*/
-
-	//static import Userspace.GUI.Compositor;
-	//Process.CreateProcess(cast(void function())&Userspace.GUI.Compositor.construct, ["/System/Bin/Compositor", "--single", "--nothing"]);
 	while (true) {}
 }
 
 extern(C) void apEntry() {
 	while (true) { }
+}
+
+
+
+
+
+void test() {
+	auto ext = VFS.CreateDirectory("ext");
+	auto xx = Ext2.Mount(ext, cast(Partition)VFS.Find("/dev/hdb1"));
+
+	auto test = new Ext2FileNode(xx, FSNode.NewAttributes("aaa"));
+	test.inode = 4; //4
+	auto data = new byte[2];
+
+	VFS.PrintTree(VFS.RootNode);
+	//xx.Read(test, 0, data);
+
+	xx.readdir();
+
+
+
+
+
+/*	auto aa = VFS.Find("/dev/hda1");
+	if(aa) {
+		byte[60] xx;
+		aa.Read(0, xx);
+
+		import System;
+		foreach (x; xx)
+			Log.PrintSP(" " ~ Convert.ToString(cast(ubyte)x, 16));
+	}
+
+	Log.PrintSP("\n\n\n\n");
+
+	auto ff = VFS.Find("/dev/hda1");
+	if(ff) {
+		byte[60] xx;
+		aa.Read(0, xx);
+
+		import System;
+		foreach (x; xx)
+			Log.PrintSP(" " ~ Convert.ToString(cast(ubyte)x, 16));
+	}*/
+
+
+	//static import Userspace.GUI.Compositor;
+	//Process.CreateProcess(cast(void function())&Userspace.GUI.Compositor.construct, ["/System/Bin/Compositor", "--single", "--nothing"]);
 }
