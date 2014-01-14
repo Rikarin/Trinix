@@ -102,6 +102,15 @@ private:
 		private ushort unused[7];
 	}
 
+	struct DirInfo {
+	align(1):
+		uint Inode;
+		ushort RecordLength;
+		ubyte NameLength;
+		ubyte FileType;
+		char Name;
+	}
+
 
 	Partition part;
 
@@ -129,8 +138,6 @@ private:
 	}
 
 	ulong ReadBlocks(ulong offset, byte[] data) {
-		import Core, System;
-		Log.PrintSP("\nReadBlocks: " ~ Convert.ToString(offset));
 		return part.Read(offset * BlockSize / part.BlockSize, data);
 	}
 
@@ -158,9 +165,9 @@ private:
 		return WriteBlocks(offset + group * sb.BlocksPerGroup, data);
 	}
 
-	Inode ReadInode(ulong number) {
+	bool ReadInode(out Inode inode, ulong number) {
 		if (number > sb.NumInodes)
-			return cast(Inode)0;
+			return false;
 
 		ulong group = (number - 1) / sb.InodesPerGroup;
 		ulong offset = (number - 1) % sb.InodesPerGroup;
@@ -172,20 +179,13 @@ private:
 		byte[] buffer = new byte[2 * BlockSize];
 		if (!ReadBlocks(inoblock, buffer)) {
 			delete buffer;
-			return cast(Inode)0;
+			return false;
 		}
 
-		Inode ret;
-		//(cast(byte *)&ret)[0 .. Inode.sizeof] = buffer[inooffset .. Inode.sizeof];
-
-		import Core, System;
-		Log.PrintSP("\nReadInode " ~ Convert.ToString(inooffset));
-
-		foreach (x; buffer[inooffset .. inooffset + Inode.sizeof])
-			Log.PrintSP(" " ~ Convert.ToString(cast(ubyte)x, 16));
+		(cast(byte *)&inode)[0 .. Inode.sizeof] = buffer[inooffset .. inooffset + Inode.sizeof];
+		
 		//delete buffer;
-
-		return ret;
+		return true;
 	}
 
 	void WriteInode(ulong number, Inode data) {
@@ -382,7 +382,7 @@ private:
 		}
 	}
 
-	ulong[] GetBlocks(Inode* node, ulong[] indirects) {
+	ulong[] GetBlocks(in Inode node, ulong[] indirects) {
 		int numBlocks = node.SizeLow / BlockSize + ((node.SizeLow % BlockSize) != 0);
 		ulong[] blockList = new ulong[numBlocks + 1];
 
@@ -404,7 +404,7 @@ private:
 		return blockList;
 	}
 
-	ulong SetBlocks(Inode* node, ulong[] blocks, int group, ulong[] indirects) {
+	ulong SetBlocks(in Inode node, ulong[] blocks, int group, ulong[] indirects) {
 		int i;
 		for (; i < blocks[i] && i < 12; i++)
 			node.Direct[i] = cast(uint)blocks[i];
@@ -448,14 +448,14 @@ private:
 		ulong[] blockList = GetBlocks(node, null);
 		ulong readcount;
 
-		for (int i = 0; blockList[i]; i++) {
+		foreach (i, x; blockList) {
 			ulong size = len > BlockSize ? BlockSize : len;
-			ReadBlocks(blockList[i], data[BlockSize * i .. size]);
+			ReadBlocks(x, data[BlockSize * i .. size]);
 			len -= size;
 			readcount += size;
 		}
 
-		delete blockList;
+		//delete blockList;
 		return readcount;
 	}
 
@@ -463,10 +463,10 @@ private:
 
 
 	FileAttributes GetStats(ulong inode) {
-		Inode node = ReadInode(inode);
+	//	Inode node = ReadInode(inode);
 
-		FileAttributes ret;
-		ret.Length = node.SizeLow;
+	//	FileAttributes ret;
+	//	ret.Length = node.SizeLow;
 		//todo
 
 		assert(0);
@@ -500,7 +500,8 @@ public:
 	}
 
 	override ulong Read(FileNode file, ulong offset, byte[] data) {
-		Inode node = ReadInode((cast(Ext2FileNode)file).inode);
+		Inode node;
+		ReadInode(node, (cast(Ext2FileNode)file).inode);
 
 		//if (!ReadBlocks((cast(Ext2FileNode)file).inode, (cast(byte *)&node)[0 .. Inode.sizeof]))
 	//	if (!*(cast(ulong *)&node))
@@ -534,8 +535,22 @@ public:
 
 
 	void readdir() {
-		Inode dir = ReadInode(2);
-		import Core, System;
+		Inode dir;
+		ReadInode(dir, 2);
+
+//		byte[] buffer = new byte[dir.SizeLow];
+//		ReadData(dir, buffer);
+
+		foreach (x; (cast(byte *)&dir)[0 .. Inode.sizeof])
+			Log.PrintSP(" " ~ Convert.ToString(cast(ubyte)x, 16));
+
+	/*	DirInfo* dirinfo = cast(DirInfo *)buffer.ptr;
+		while (cast(ulong)dirinfo < (cast(ulong)buffer.ptr + dir.SizeLow)) {
+			Log.Print("@ " ~ Convert.ToString(dirinfo.RecordLength));
+			dirinfo += dirinfo.RecordLength;
+			break;
+		}
+*/
 		Log.PrintSP("\nreaddir: " ~ Convert.ToString(dir.SizeLow));
 	}
 }

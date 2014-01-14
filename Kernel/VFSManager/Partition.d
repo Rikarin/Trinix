@@ -46,11 +46,11 @@ public:
 
     	MBREntryT* entry = cast(MBREntryT *)(cast(ulong)mbr.ptr + 0x1BE);
 
-        foreach (i; 0 .. 4) {
-    		if ((entry[i].Bootable == 0 || entry[i].Bootable == 0x80) && entry[i].ID
-    			&& entry[i].StartLBA && entry[i].Size && entry[i].StartLBA < dev.Blocks
-    			&& entry[i].Size < dev.Blocks)
-    			DeviceManager.DevFS.AddNode(new Partition(dev, entry[i].StartLBA, entry[i].Size, FSNode.NewAttributes("hd" ~ Letter ~ cast(char)('1' + i))));
+        foreach (i, ref x; entry[0 .. 4]) {
+    		if ((x.Bootable == 0 || x.Bootable == 0x80) && x.ID
+    			&& x.StartLBA && x.Size && x.StartLBA < dev.Blocks
+    			&& x.Size < dev.Blocks)
+    			DeviceManager.DevFS.AddNode(new Partition(dev, x.StartLBA, x.Size, FSNode.NewAttributes("hd" ~ Letter ~ cast(char)('1' + i))));
     	}
 
     	Letter++;

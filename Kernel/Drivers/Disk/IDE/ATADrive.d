@@ -40,11 +40,11 @@ public:
 	}
 
 	override ulong Read(ulong offset, byte[] data) {
-		if (offset + (data.length / 256) > blockCount)
+		if (offset + (data.length / BlockSize) > blockCount)
 			return 0;
 
 		controller.Lock();
-		CMDCommon(offset, cast(byte)(data.length / 256 + (data.length % 256 ? 1 : 0)));
+		CMDCommon(offset, cast(byte)(data.length / BlockSize + (data.length % BlockSize ? 1 : 0)));
 		controller.Write!byte(ATAController.Port.Command, ATAController.Cmd.Read);
 		while (!(controller.Read!byte(ATAController.Port.Command) & 0x08)) { }
 
@@ -55,7 +55,7 @@ public:
 		}
 
 		//flush buffer
-		for (int i = 0; i < 256; i++)
+		for (int i = 0; i < BlockSize; i++)
 			controller.Read!short(ATAController.Port.Data);
 
 		controller.Unlock();
@@ -63,11 +63,11 @@ public:
 	}
 
 	override ulong Write(ulong offset, byte[] data) {
-		if (offset + data.length / 256 > blockCount)
+		if (offset + data.length / BlockSize > blockCount)
 			return 0;
 
 		controller.Lock();
-		CMDCommon(offset, cast(byte)(data.length / 256));
+		CMDCommon(offset, cast(byte)(data.length / BlockSize + (data.length % BlockSize ? 1 : 0)));
 		controller.Write!byte(ATAController.Port.Command, ATAController.Cmd.Write);
 		while (!(controller.Read!byte(ATAController.Port.Command) & 0x08)) { }
 
