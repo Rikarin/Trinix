@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5E388702-A5EB-4DFF-9A9C-D59DAE72A604}</ProjectGuid>
+    <UseDefaultCompiler>true</UseDefaultCompiler>
+    <IncrementalLinking>true</IncrementalLinking>
+    <PreferOneStepBuild>true</PreferOneStepBuild>
+    <Compiler>DMD2</Compiler>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug</OutputPath>
+    <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
+    <ObjectsDirectory>obj\Debug</ObjectsDirectory>
+    <DebugLevel>0</DebugLevel>
+    <UnittestMode>false</UnittestMode>
+    <Externalconsole>true</Externalconsole>
+    <Target>Executable</Target>
+    <OutputName>Kernel</OutputName>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="Execute" command="..\..\Tools\Run.bat" />
+        <Command type="Build" command="D:\Instalacky\plink.exe -ssh -l root -i G:/private2.ppk 192.168.0.104 cd /os/Source/Kernel/;make" />
+        <Command type="Clean" command="D:\Instalacky\plink.exe -ssh -l root -i G:/private2.ppk 192.168.0.104 cd /os/Source/Kernel/;make clean" />
+      </CustomCommands>
+    </CustomCommands>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release</OutputPath>
+    <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
+    <ObjectsDirectory>obj\Release</ObjectsDirectory>
+    <DebugLevel>0</DebugLevel>
+    <UnittestMode>false</UnittestMode>
+    <Externalconsole>true</Externalconsole>
+    <Target>Executable</Target>
+    <OutputName>Kernel</OutputName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Unittest|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Unittest</OutputPath>
+    <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
+    <ObjectsDirectory>obj\Unittest</ObjectsDirectory>
+    <DebugLevel>0</DebugLevel>
+    <UnittestMode>true</UnittestMode>
+    <Externalconsole>true</Externalconsole>
+    <Target>Executable</Target>
+    <OutputName>Kernel</OutputName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Architectures\" />
+    <Folder Include="Architectures\x86_64\" />
+    <Folder Include="Core\" />
+    <Folder Include="Architectures\x86_64\Boot\" />
+    <Folder Include="ObjectManager\" />
+    <Folder Include="Architectures\x86_64\Core\" />
+    <Folder Include="Library\" />
+    <Folder Include="Architectures\x86_64\Architecture\" />
+    <Folder Include="SyscallManager\" />
+    <Folder Include="VFSManager\" />
+    <Folder Include="FileSystem\" />
+    <Folder Include="Linker\" />
+    <Folder Include="FileSystem\Ext2\" />
+    <Folder Include="Drivers\" />
+    <Folder Include="TaskManager\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Architectures\x86_64\Linker.ld" />
+    <None Include="Core\Runtime.c" />
+    <None Include="Architectures\x86_64\Boot\Boot.s" />
+    <None Include="Architectures\x86_64\Boot\Load.s" />
+    <None Include="Architectures\x86_64\Architecture\CPU.s" />
+    <None Include="Linker.map" />
+    <None Include="Library\LibraryLoader.dx" />
+    <None Include="Library\Elf.dx" />
+    <None Include="TaskManager\Process.s" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\Main.d" />
+    <Compile Include="ObjectManager\package.d" />
+    <Compile Include="ObjectManager\IStaticModule.d" />
+    <Compile Include="Core\Log.d" />
+    <Compile Include="Core\package.d" />
+    <Compile Include="Core\Multiboot.d" />
+    <Compile Include="MemoryManager\package.d" />
+    <Compile Include="MemoryManager\PhysicalMemory.d" />
+    <Compile Include="Architectures\x86_64\Core\GDT.d" />
+    <Compile Include="Library\package.d" />
+    <Compile Include="Library\Bitfield.d" />
+    <Compile Include="Architectures\x86_64\Core\SystemSegmentType.d" />
+    <Compile Include="Architectures\x86_64\Core\package.d" />
+    <Compile Include="Architectures\x86_64\Core\TSS.d" />
+    <Compile Include="Architectures\x86_64\Core\IDT.d" />
+    <Compile Include="Architectures\x86_64\Architecture\Port.d" />
+    <Compile Include="Architectures\x86_64\Architecture\package.d" />
+    <Compile Include="Architectures\x86_64\Architecture\Linker.d" />
+    <Compile Include="Architectures\x86_64\Architecture\CPU.d" />
+    <Compile Include="Architectures\x86_64\Architecture\Main.d" />
+    <Compile Include="Library\BitArray.d" />
+    <Compile Include="MemoryManager\VirtualMemory.d" />
+    <Compile Include="MemoryManager\Paging.d" />
+    <Compile Include="MemoryManager\Heap.d" />
+    <Compile Include="SyscallManager\Resource.d" />
+    <Compile Include="SyscallManager\SyscallTypes.d" />
+    <Compile Include="SyscallManager\package.d" />
+    <Compile Include="Library\List.d" />
+    <Compile Include="SyscallManager\ResourceManager.d" />
+    <Compile Include="VFSManager\FSNode.d" />
+    <Compile Include="VFSManager\FileAttributes.d" />
+    <Compile Include="VFSManager\package.d" />
+    <Compile Include="VFSManager\DirectoryNode.d" />
+    <Compile Include="VFSManager\Partition.d" />
+    <Compile Include="VFSManager\FileNode.d" />
+    <Compile Include="VFSManager\BlockNode.d" />
+    <Compile Include="ObjectManager\IBlockDevice.d" />
+    <Compile Include="VFSManager\BlockCache.d" />
+    <Compile Include="ObjectManager\DeviceManager.d" />
+    <Compile Include="Library\LinkedList.d" />
+    <Compile Include="VFSManager\VFS.d" />
+    <Compile Include="VFSManager\IFileSystem.d" />
+    <Compile Include="FileSystem\DevFS.d" />
+    <Compile Include="FileSystem\package.d" />
+    <Compile Include="FileSystem\TmpFS.d" />
+    <Compile Include="Library\String.d" />
+    <Compile Include="ObjectManager\Module.d" />
+    <Compile Include="VFSManager\MemoryNode.d" />
+    <Compile Include="FileSystem\Ext2\Ext2FileSystem.d" />
+    <Compile Include="FileSystem\Ext2\package.d" />
+    <Compile Include="FileSystem\Ext2\Ext2FileNode.d" />
+    <Compile Include="FileSystem\Ext2\Ext2DirectoryNode.d" />
+    <Compile Include="FileSystem\Ext2\Ext2BlockNode.d" />
+    <Compile Include="FileSystem\Ext2\Ext2CharNode.d" />
+    <Compile Include="VFSManager\CharNode.d" />
+    <Compile Include="VFSManager\PipeNode.d" />
+    <Compile Include="FileSystem\Ext2\Ext2PipeNode.d" />
+    <Compile Include="FileSystem\NullDev.d" />
+    <Compile Include="FileSystem\ZeroDev.d" />
+    <Compile Include="Core\DateTime.d" />
+    <Compile Include="FileSystem\RandomDev.d" />
+    <Compile Include="Drivers\ATA\ATAController.d" />
+    <Compile Include="Drivers\ATA\ATADrive.d" />
+    <Compile Include="Drivers\ATA\package.d" />
+    <Compile Include="Drivers\PIT.d" />
+    <Compile Include="Drivers\PIC.d" />
+    <Compile Include="Library\SpinLock.d" />
+    <Compile Include="SyscallManager\SyscallHandler.d" />
+    <Compile Include="TaskManager\Process.d" />
+    <Compile Include="TaskManager\Thread.d" />
+    <Compile Include="TaskManager\Task.d" />
+    <Compile Include="TaskManager\package.d" />
+    <Compile Include="TaskManager\Mutex.d" />
+    <Compile Include="TaskManager\Semaphore.d" />
+    <Compile Include="Architectures\x86_64\Architecture\Time.d" />
+  </ItemGroup>
+</Project>

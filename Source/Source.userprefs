@@ -1,0 +1,16 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Kernel\TaskManager\Thread.d">
+    <Files>
+      <File FileName="Kernel\Core\Main.d" Line="32" Column="32" />
+      <File FileName="Kernel\TaskManager\Task.d" Line="1" Column="1" />
+      <File FileName="Kernel\TaskManager\Process.d" Line="1" Column="1" />
+      <File FileName="Kernel\TaskManager\Thread.d" Line="28" Column="28" />
+      <File FileName="Kernel\MemoryManager\Paging.d" Line="4" Column="4" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

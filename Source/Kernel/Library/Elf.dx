@@ -1,0 +1,478 @@
+﻿module Library.Elf;
+
+import Core;
+import Library;
+
+//ELF64 support only
+public class Elf : LibraryLoader {
+	private struct EHeader {
+		ubyte[16] Identifier;
+		ushort Type;
+		ushort Machine;
+		uint Version;
+		ulong Entry;
+		ulong ProgramHeaderOffset;
+		ulong SectionHeaderOffset;
+		uint Flags;
+		ushort ElfHeaderSize;
+		ushort ProgramHeaderEntrySize;
+		ushort ProgramHeaderNumber;
+		ushort SectionHeaderEntrySize;
+		ushort SectionHeaderNumber;
+		ushort TableIndex;
+	}
+
+	private struct SHeader {
+		uint Name;
+		uint Type;
+		ulong Flags;
+		ulong Address;
+		ulong Offset;
+		ulong Size;
+		uint Link;
+		uint Info;
+		ulong AddressAlign;
+		ulong EntrySize;
+	}
+
+	private struct PHeader {
+		uint Type;
+		uint Flags;
+		ulong Offset;
+		ulong VirtualAddress;
+		private ulong PhysicalAddress;
+		ulong FileSize;
+		ulong MemorySize;
+		ulong Align;
+	}
+
+	private struct Dynamic {
+		long Tag;
+		union {
+			ulong Value;
+			ulong Ptr;
+		}
+	}
+
+	private struct Symbol {
+		uint Name;
+		ubyte Info;
+		ubyte Other;
+		ushort SectionTableIndex;
+		ulong Value;
+		ulong Size;
+	}
+
+	private struct Relocation {
+		ulong Offset;
+		ulong Info;
+	}
+
+	private struct RelocationA {
+		ulong Offset;
+		ulong Info;
+		long Addend;
+	}
+
+	private enum RelocationType {
+		R_X86_64_NONE,
+		R_X86_64_64,
+		R_X86_64_PC32,
+		R_X86_64_GOT32,
+		R_X86_64_PLT32,
+		R_X86_64_COPY,
+		R_X86_64_GLOB_DAT,
+		R_X86_64_JUMP_SLOT,
+		R_X86_64_RELATIVE
+	}
+
+	enum {
+		PT_NULL,	//0
+		PT_LOAD,	//1
+		PT_DYNAMIC,	//2
+		PT_INTERP,	//3
+		PT_NOTE,	//4
+		PT_SHLIB,	//5
+		PT_PHDR,	//6
+		PT_LOPROC = 0x70000000,
+		PT_HIPROC = 0x7fffffff
+	}
+
+	enum {
+		DT_NULL,	//!< Marks End of list
+		DT_NEEDED,	//!< Offset in strtab to needed library
+		DT_PLTRELSZ,	//!< Size in bytes of PLT
+		DT_PLTGOT,	//!< Address of PLT/GOT
+		DT_HASH,	//!< Address of symbol hash table
+		DT_STRTAB,	//!< String Table address
+		DT_SYMTAB,	//!< Symbol Table address
+		DT_RELA,	//!< Relocation table address
+		DT_RELASZ,	//!< Size of relocation table
+		DT_RELAENT,	//!< Size of entry in relocation table
+		DT_STRSZ,	//!< Size of string table
+		DT_SYMENT,	//!< Size of symbol table entry
+		DT_INIT,	//!< Address of initialisation function
+		DT_FINI,	//!< Address of termination function
+		DT_SONAME,	//!< String table offset of so name
+		DT_RPATH,	//!< String table offset of library path
+		DT_SYMBOLIC,//!< Reverse order of symbol searching for library, search libs first then executable
+		DT_REL,	//!< Relocation Entries (Elf32_Rel instead of Elf32_Rela)
+		DT_RELSZ,	//!< Size of above table (bytes)
+		DT_RELENT,	//!< Size of entry in above table
+		DT_PLTREL,	//!< Relocation entry of PLT
+		DT_DEBUG,	//!< Debugging Entry - Unknown contents
+		DT_TEXTREL,	//!< Indicates that modifcations to a non-writeable segment may occur
+		DT_JMPREL,	//!< Address of PLT only relocation entries
+		DT_LOPROC = 0x70000000,	//!< Low Definable
+		DT_HIPROC = 0x7FFFFFFF	//!< High Definable
+	}
+
+	protected override void* Relocate(string[] args) {
+		EHeader* header = cast(EHeader *)_base;
+
+		Log.WriteLine("Elf", "{");
+		Log.WriteLine("EHeader", "{");
+		Log.WriteLine("Identifier", cast(string)header.Identifier);
+		Log.WriteLine("Type", header.Type);
+		Log.WriteLine("Machine", header.Machine);
+		Log.WriteLine("Version", header.Version);
+		Log.WriteLine("Entry", header.Entry);
+		Log.WriteLine("ProgramHeaderOffset", header.ProgramHeaderOffset);
+		Log.WriteLine("SectionHeaderOffset", header.SectionHeaderOffset);
+		Log.WriteLine("Flags", header.Flags);
+		Log.WriteLine("ElfHeaderSize", header.ElfHeaderSize);
+		Log.WriteLine("ProgramHeaderEntrySize", header.ProgramHeaderEntrySize);
+		Log.WriteLine("ProgramHeaderNumber", header.ProgramHeaderNumber);
+		Log.WriteLine("SectionHeaderEntrySize", header.SectionHeaderEntrySize);
+		Log.WriteLine("SectionHeaderNumber", header.SectionHeaderNumber);
+		Log.WriteLine("TableIndex", header.TableIndex);
+		Log.WriteLine("}");
+		scope(exit) Log.WriteLine("}");
+
+		PHeader* pheader = cast(PHeader *)(cast(ulong)header + cast(ulong)header.ProgramHeaderOffset);
+		Dynamic* dynamic;
+		ulong compiledBase = -1;
+
+		// Scan for dynamic table
+		foreach (x; pheader[0 .. header.ProgramHeaderNumber]) {
+			if (x.Type == PT_DYNAMIC)
+				dynamic = cast(Dynamic *)x.Offset;
+			else if (x.Type == PT_LOAD && compiledBase > x.VirtualAddress)
+				compiledBase = x.VirtualAddress;
+		}
+
+		ulong baseDiff = cast(ulong)header - compiledBase;
+		Log.WriteLine("BaseDiff", baseDiff);
+
+		if (dynamic is null) {
+			Log.WriteLine("Error", "Relocation: No PT_DYNAMIC segment");
+			return cast(void *)(cast(ulong)dynamic + baseDiff);
+		}
+
+		dynamic = cast(Dynamic *)(cast(ulong)dynamic + baseDiff);
+		Symbol* symbol;
+		byte* stringTable;
+		uint* hashTab;
+
+		// Parse dynamic table
+		for (int i = 0; dynamic[i].Tag != DT_NULL; i++) {
+			switch (dynamic[i].Tag) {
+				case DT_SYMTAB:
+					dynamic[i].Ptr += baseDiff;
+					symbol = cast(Symbol *)dynamic[i].Ptr;
+					break;
+
+				case DT_STRTAB:
+					dynamic[i].Ptr += baseDiff;
+					stringTable = cast(byte *)dynamic[i].Ptr;
+					break;
+
+				case DT_HASH:
+					dynamic[i].Ptr += baseDiff;
+					hashTab = cast(uint *)dynamic[i].Ptr;
+					break;
+
+				default:
+			}
+		}
+
+		if (symbol is null || stringTable is null || hashTab is null) {
+			Log.WriteLine("Error", "Relocation: Missing Symbol, String of HashTable");
+			return null;
+		}
+
+		Relocation* relocation;
+		RelocationA* relocationA;
+		long relocationCount;
+		long relocationACount;
+		void* pltRel;
+		long pltSize;
+		long pltType;
+
+		for (int i = 0; dynamic[i].Tag != DT_NULL; i++) {
+			switch (dynamic[i].Tag) {
+				case DT_SONAME:
+					break;
+
+				case DT_NEEDED:
+					string libPath = (cast(char *)(cast(ulong)stringTable + dynamic[i].Value)).ToString();
+					if (Load(libPath, null, args) is null) {
+						Log.WriteLine("Error", "Unable to load required library");
+						Log.WriteLine("Library", libPath);
+						return null;
+					}
+					break;
+
+				case DT_REL:
+					dynamic[i].Ptr += baseDiff;
+					relocation = cast(Relocation *)dynamic[i].Ptr;
+					break;
+
+				case DT_RELSZ:
+					relocationCount = dynamic[i].Value / Relocation.sizeof;
+					break;
+
+				case DT_RELENT:
+					if (dynamic[i].Value != Relocation.sizeof) {
+						Log.WriteLine("Error", "Relocation: DT_RELENT != Relocation.sizeof");
+						return null;
+					}
+					break;
+
+				case DT_RELA:
+					dynamic[i].Ptr += baseDiff;
+					relocationA = cast(RelocationA *)dynamic[i].Ptr;
+					break;
+
+				case DT_RELASZ:
+					relocationACount = dynamic[i].Value / RelocationA.sizeof;
+					break;
+
+				case DT_RELAENT:
+					if (dynamic[i].Value != RelocationA.sizeof) {
+						Log.WriteLine("Error", "Relocation: DT_RELAENT != RelocationA.sizeof");
+						return null;
+					}
+					break;
+
+				case DT_JMPREL:
+					dynamic[i].Ptr += baseDiff;
+					pltRel = cast(void *)dynamic[i].Ptr;
+					break;
+
+				case DT_PLTREL:
+					pltType = dynamic[i].Value;
+					break;
+
+				case DT_PLTRELSZ:
+					pltSize = dynamic[i].Value;
+					break;
+
+				default:
+			}
+		}
+
+		int Reloc(ulong info, void* ptr, long addend) {
+			return DoReloc(stringTable, symbol, info, ptr, addend);
+		}
+
+		int fail;
+
+		if (relocation) {
+			Log.WriteLine("RelocationCount", relocationCount);
+
+			foreach (x; relocation[0 .. relocationCount]) {
+				ulong* ptr = cast(ulong *)(x.Offset + baseDiff);
+				fail |= Reloc(x.Info, ptr, *ptr);
+			}
+		}
+
+		if (relocationA) {
+			Log.WriteLine("RelocationACount", relocationACount);
+			
+			foreach (x; relocationA[0 .. relocationACount]) {
+				ulong* ptr = cast(ulong *)(x.Offset + baseDiff);
+				fail |= Reloc(x.Info, ptr, x.Addend);
+			}
+		}
+
+		if (pltRel && pltType) {
+			if (pltType == DT_REL) {
+				Relocation* plt = cast(Relocation *)pltRel;
+				ulong count = pltSize / Relocation.sizeof;
+
+				Log.WriteLine("plt Relocation count", count);
+				foreach (x; plt[0 .. count]) {
+					ulong* ptr = cast(ulong *)(x.Offset + baseDiff);
+					fail |= Reloc(x.Info, ptr, *ptr);
+				}
+			} else {
+				RelocationA* plt = cast(RelocationA *)pltRel;
+				ulong count = pltSize / RelocationA.sizeof;
+
+				Log.WriteLine("plt RelocationA count", count);
+				foreach (x; plt[0 .. count]) {
+					ulong* ptr = cast(ulong *)(x.Offset + baseDiff);
+					fail |= Reloc(x.Info, ptr, x.Addend);
+				}
+			}
+		}
+
+		if (fail) {
+			Log.WriteLine("Jolanda", "Spadlo to!");
+			return null;
+		}
+
+		void* ret = cast(void *)(cast(ulong)header.Entry + baseDiff);
+		Log.WriteLine("RelocationDone", cast(ulong)ret);
+		return ret;
+	}
+
+	protected override bool GetSymbol(string name, ref void* ret, ref long size) {
+		EHeader* header = cast(EHeader *)_base;
+		ulong baseDiff;
+		Dynamic* dynamic;
+
+		PHeader* pheader = cast(PHeader *)(cast(ulong)header + header.ProgramHeaderOffset);
+		foreach (x; pheader[0 .. header.ProgramHeaderNumber]) {
+			if (x.Type == PT_DYNAMIC)
+				dynamic = cast(Dynamic *)x.VirtualAddress;
+			else if (x.Type == PT_LOAD && baseDiff > x.VirtualAddress)
+				baseDiff = x.VirtualAddress;
+		}
+
+		if (dynamic is null) {
+			Log.WriteLine("Error", "Unable to find PT_DYNAMIC segment");
+			return false;
+		}
+
+		baseDiff = cast(ulong)header - baseDiff;
+		dynamic = cast(Dynamic *)(cast(ulong)dynamic + baseDiff);
+
+		Symbol* symbol;
+		byte* stringTable;
+		uint* pBuckets;
+		
+		// Parse dynamic table
+		for (int i = 0; dynamic[i].Tag != DT_NULL; i++) {
+			switch (dynamic[i].Tag) {
+				case DT_SYMTAB:
+					dynamic[i].Ptr += baseDiff;
+					symbol = cast(Symbol *)dynamic[i].Ptr;
+					break;
+					
+				case DT_STRTAB:
+					dynamic[i].Ptr += baseDiff;
+					stringTable = cast(byte *)dynamic[i].Ptr;
+					break;
+					
+				case DT_HASH:
+					dynamic[i].Ptr += baseDiff;
+					pBuckets = cast(uint *)dynamic[i].Ptr;
+					break;
+					
+				default:
+			}
+		}
+
+		uint nBuckets = pBuckets[0];
+		pBuckets = &pBuckets[2];
+		uint* pCahins = &pBuckets[nBuckets];
+
+		uint nameHash = HashName(name);
+		nameHash %= nBuckets;
+
+		int i = pBuckets[nameHash];
+		if (symbol[i].SectionTableIndex && (cast(char *)(cast(ulong)stringTable + cast(ulong)symbol[i].Name)).ToString() == name) {
+			ret = cast(void *)(cast(ulong)symbol[i].Value + baseDiff);
+			size = symbol[i].Size;
+
+			Log.WriteLine("{");
+			Log.WriteLine("name", name);
+			Log.WriteLine("ret", cast(ulong)ret);
+			Log.WriteLine("}");
+			return true;
+		}
+
+		while (pCahins[i]) {
+			i = pCahins[i];
+			if (symbol[i].SectionTableIndex && (cast(char *)(cast(ulong)stringTable + cast(ulong)symbol[i].Name)).ToString() == name) {
+				ret = cast(void *)(cast(ulong)symbol[i].Value + baseDiff);
+				size = symbol[i].Size;
+				
+				Log.WriteLine("{");
+				Log.WriteLine("name", name);
+				Log.WriteLine("ret", cast(ulong)ret);
+				Log.WriteLine("}");
+				return true;
+			}
+		}
+	
+		return false;
+	}
+
+	private bool DoReloc(byte* stringTable, Symbol* symbol, ulong info, void* ptr, long addend) {
+		int sym = cast(int)(info >> 32);
+		int type = cast(int)(info & 0xFFFFFFFF);
+		string symName = (cast(char *)(cast(ulong)stringTable + cast(ulong)symbol[sym].Name)).ToString();
+		void* symval;
+		long size;
+
+		switch (type) {
+			case RelocationType.R_X86_64_NONE:
+				break;
+
+			case RelocationType.R_X86_64_64:
+				if (!super.GetSymbol(symName, symval, size, null))
+					return false;
+
+				*cast(ulong *)ptr = cast(ulong)symval + addend;
+				break;
+
+			case RelocationType.R_X86_64_COPY:
+				if (!super.GetSymbol(symName, symval, size, null))
+					return false;
+
+				(cast(byte *)ptr)[0 .. size] = (cast(byte *)symval)[0 .. size];
+				break;
+
+			case RelocationType.R_X86_64_GLOB_DAT:
+				goto case RelocationType.R_X86_64_JUMP_SLOT;
+
+			case RelocationType.R_X86_64_JUMP_SLOT:
+				if (!super.GetSymbol(symName, symval, size, null))
+					return false;
+				
+				*cast(ulong *)ptr = cast(ulong)symval;
+				break;
+
+			case RelocationType.R_X86_64_RELATIVE:
+				*cast(ulong *)ptr = cast(ulong)_base + addend;
+				break;
+
+			default:
+				return false;
+		}
+
+		return true;
+	}
+
+	private uint HashName(string name) {
+		uint h;
+		uint g;
+		
+		foreach (x; name) {
+			h = (h << 4) + x;
+			if ((g = h) & 0xF0000000)
+				h ^= g >> 24;
+			
+			h &= ~g;
+		}
+		
+		return h;
+	}
+
+	protected override bool CheckMagic() {
+		return (cast(EHeader *)_base).Identifier[4] == 2;
+	}
+}

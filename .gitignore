@@ -1,12 +1,2 @@
-/Obj/Kernel/MemoryManager/*.o
-*.o
-*.bin
-/Build/Linker.map
-/Linker.map
-
-/Disk/Trinix-Kernel
-
-/Trinix.img
-/disk.img
-
-/Obj/Framework.lib
+/VMware
+/Tools/Debugger/Debugger/bin/Debug/Logs/*.log

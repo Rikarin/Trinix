@@ -1,0 +1,1280 @@
+
+Discarded input sections
+
+ .note.GNU-stack
+                0x0000000000000000        0x0 obj/Runtime.o
+ .group.d_dso   0x0000000000000000       0x14 obj/Runtime.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD obj/Runtime.o
+                0x0000000000400000                PROVIDE (__executable_start, 0x400000)
+                0x00000000004000b0                . = (0x400000 + SIZEOF_HEADERS)
+
+.interp
+ *(.interp)
+
+.note.gnu.build-id
+ *(.note.gnu.build-id)
+
+.hash
+ *(.hash)
+
+.gnu.hash
+ *(.gnu.hash)
+
+.dynsym
+ *(.dynsym)
+
+.dynstr
+ *(.dynstr)
+
+.gnu.version
+ *(.gnu.version)
+
+.gnu.version_d
+ *(.gnu.version_d)
+
+.gnu.version_r
+ *(.gnu.version_r)
+
+.rela.dyn       0x00000000004000b0        0x0
+ *(.rela.init)
+ *(.rela.text .rela.text.* .rela.gnu.linkonce.t.*)
+ *(.rela.fini)
+ *(.rela.rodata .rela.rodata.* .rela.gnu.linkonce.r.*)
+ *(.rela.data .rela.data.* .rela.gnu.linkonce.d.*)
+ .rela.data._D11TypeInfo_xv6__initZ
+                0x0000000000000000        0x0 obj/Runtime.o
+ .rela.data._D12TypeInfo_Pxv6__initZ
+                0x0000000000000000        0x0 obj/Runtime.o
+ .rela.data._D13TypeInfo_APxv6__initZ
+                0x0000000000000000        0x0 obj/Runtime.o
+ .rela.data._D33TypeInfo_S6object14OffsetTypeInfo6__initZ
+                0x0000000000000000        0x0 obj/Runtime.o
+ .rela.data._D38TypeInfo_E14TypeInfo_Class10ClassFlags6__initZ
+                0x0000000000000000        0x0 obj/Runtime.o
+ .rela.data._D40TypeInfo_E15TypeInfo_Struct11StructFlags6__initZ
+                0x0000000000000000        0x0 obj/Runtime.o
+ .rela.data._D29TypeInfo_S6object10ModuleInfo6__initZ
+                0x0000000000000000        0x0 obj/Runtime.o
+ .rela.data._D21TypeInfo_DFC6ObjectZv6__initZ
+                0x0000000000000000        0x0 obj/Runtime.o
+ .rela.data._D22TypeInfo_ADFC6ObjectZv6__initZ
+                0x0000000000000000        0x0 obj/Runtime.o
+ .rela.data._D25TypeInfo_S6object7AARange6__initZ
+                0x0000000000000000        0x0 obj/Runtime.o
+ .rela.data._D11TypeInfo_Pv6__initZ
+                0x0000000000000000        0x0 obj/Runtime.o
+ *(.rela.tdata .rela.tdata.* .rela.gnu.linkonce.td.*)
+ *(.rela.tbss .rela.tbss.* .rela.gnu.linkonce.tb.*)
+ *(.rela.ctors)
+ *(.rela.dtors)
+ *(.rela.got)
+ .rela.got      0x0000000000000000        0x0 obj/Runtime.o
+ *(.rela.sharable_data .rela.sharable_data.* .rela.gnu.linkonce.shrd.*)
+ *(.rela.sharable_bss .rela.sharable_bss.* .rela.gnu.linkonce.shrb.*)
+ *(.rela.bss .rela.bss.* .rela.gnu.linkonce.b.*)
+ *(.rela.ldata .rela.ldata.* .rela.gnu.linkonce.l.*)
+ *(.rela.lbss .rela.lbss.* .rela.gnu.linkonce.lb.*)
+ *(.rela.lrodata .rela.lrodata.* .rela.gnu.linkonce.lr.*)
+ *(.rela.ifunc)
+
+.rela.plt       0x00000000004000b0        0x0
+ *(.rela.plt)
+                0x00000000004000b0                PROVIDE (__rela_iplt_start, .)
+ *(.rela.iplt)
+ .rela.iplt     0x0000000000000000        0x0 obj/Runtime.o
+                0x00000000004000b0                PROVIDE (__rela_iplt_end, .)
+
+.init
+ *(.init)
+
+.plt            0x00000000004000b0        0x0
+ *(.plt)
+ *(.iplt)
+ .iplt          0x0000000000000000        0x0 obj/Runtime.o
+
+.text           0x00000000004000b0     0x6c48
+ *(.text.unlikely .text.*_unlikely)
+ *(.text .stub .text.* .gnu.linkonce.t.*)
+ .text          0x00000000004000b0        0x0 obj/Runtime.o
+ .text._D9invariant12_d_invariantFC6ObjectZv
+                0x00000000004000b0       0x70 obj/Runtime.o
+                0x00000000004000b0                _D9invariant12_d_invariantFC6ObjectZv
+ .text._D9invariant8__assertFiZv
+                0x0000000000400120       0x18 obj/Runtime.o
+                0x0000000000400120                _D9invariant8__assertFiZv
+ .text._d_run_main
+                0x0000000000400138       0x10 obj/Runtime.o
+                0x0000000000400138                _d_run_main
+ .text._D6object6Object8ToStringMFZAya
+                0x0000000000400148       0x60 obj/Runtime.o
+                0x0000000000400148                _D6object6Object8ToStringMFZAya
+ .text._D6object6Object11GetHashCodeMFNbNeZm
+                0x00000000004001a8       0x58 obj/Runtime.o
+                0x00000000004001a8                _D6object6Object11GetHashCodeMFNbNeZm
+ .text._D6object6Object5opCmpMFC6ObjectZi
+                0x0000000000400200       0xc8 obj/Runtime.o
+                0x0000000000400200                _D6object6Object5opCmpMFC6ObjectZi
+ .text._D6object6Object8opEqualsMFC6ObjectZb
+                0x00000000004002c8       0x60 obj/Runtime.o
+                0x00000000004002c8                _D6object6Object8opEqualsMFC6ObjectZb
+ .text._D6object6Object15ReferenceEqualsFC6ObjectC6ObjectZb
+                0x0000000000400328       0x18 obj/Runtime.o
+                0x0000000000400328                _D6object6Object15ReferenceEqualsFC6ObjectC6ObjectZb
+ .text._D6object6Object6EqualsFC6ObjectC6ObjectZb
+                0x0000000000400340       0xa0 obj/Runtime.o
+                0x0000000000400340                _D6object6Object6EqualsFC6ObjectC6ObjectZb
+ .text._D6object6Object7FactoryFAyaZC6Object
+                0x00000000004003e0       0x48 obj/Runtime.o
+                0x00000000004003e0                _D6object6Object7FactoryFAyaZC6Object
+ .text._D6object8opEqualsFxC6ObjectxC6ObjectZb
+                0x0000000000400428       0x18 obj/Runtime.o
+                0x0000000000400428                _D6object8opEqualsFxC6ObjectxC6ObjectZb
+ .text._D6object8opEqualsFC6ObjectC6ObjectZb
+                0x0000000000400440       0x18 obj/Runtime.o
+                0x0000000000400440                _D6object8opEqualsFC6ObjectC6ObjectZb
+ .text._D6object9Interface6OffsetMxFNaNbNdNfZm
+                0x0000000000400458       0x58 obj/Runtime.o
+                0x0000000000400458                _D6object9Interface6OffsetMxFNaNbNdNfZm
+ .text._D6object9Interface12VirtualTableMFNaNbNdNfZAPv
+                0x00000000004004b0       0x60 obj/Runtime.o
+                0x00000000004004b0                _D6object9Interface12VirtualTableMFNaNbNdNfZAPv
+ .text._D6object9Interface9ClassInfoMFNaNbNdNfZC14TypeInfo_Class
+                0x0000000000400510       0x58 obj/Runtime.o
+                0x0000000000400510                _D6object9Interface9ClassInfoMFNaNbNdNfZC14TypeInfo_Class
+ .text._D6object9Interface11__xopEqualsFKxS6object9InterfaceKxS6object9InterfaceZb
+                0x0000000000400568       0x70 obj/Runtime.o
+                0x0000000000400568                _D6object9Interface11__xopEqualsFKxS6object9InterfaceKxS6object9InterfaceZb
+ .text._D6object14OffsetTypeInfo11__xopEqualsFKxS6object14OffsetTypeInfoKxS6object14OffsetTypeInfoZb
+                0x00000000004005d8       0x28 obj/Runtime.o
+                0x00000000004005d8                _D6object14OffsetTypeInfo11__xopEqualsFKxS6object14OffsetTypeInfoKxS6object14OffsetTypeInfoZb
+ .text._D6object8TypeInfo8ToStringMxFZAya
+                0x0000000000400600       0x60 obj/Runtime.o
+                0x0000000000400600                _D6object8TypeInfo8ToStringMxFZAya
+ .text._D6object8TypeInfo11GetHashCodeMxFNbNeZm
+                0x0000000000400660       0x58 obj/Runtime.o
+                0x0000000000400660                _D6object8TypeInfo11GetHashCodeMxFNbNeZm
+ .text._D6object8TypeInfo5opCmpMFC6ObjectZi
+                0x00000000004006b8       0x90 obj/Runtime.o
+                0x00000000004006b8                _D6object8TypeInfo5opCmpMFC6ObjectZi
+ .text._D6object8TypeInfo8opEqualsMFC6ObjectZb
+                0x0000000000400748       0xd8 obj/Runtime.o
+                0x0000000000400748                _D6object8TypeInfo8opEqualsMFC6ObjectZb
+ .text._D6object8TypeInfo7GetHashMxFNbNexPvZm
+                0x0000000000400820       0x60 obj/Runtime.o
+                0x0000000000400820                _D6object8TypeInfo7GetHashMxFNbNexPvZm
+ .text._D6object8TypeInfo6EqualsMxFxPvxPvZb
+                0x0000000000400880       0x70 obj/Runtime.o
+                0x0000000000400880                _D6object8TypeInfo6EqualsMxFxPvxPvZb
+ .text._D6object8TypeInfo7CompareMxFxPvxPvZi
+                0x00000000004008f0       0x58 obj/Runtime.o
+                0x00000000004008f0                _D6object8TypeInfo7CompareMxFxPvxPvZi
+ .text._D6object8TypeInfo5TSizeMxFNaNbNdNfZm
+                0x0000000000400948       0x60 obj/Runtime.o
+                0x0000000000400948                _D6object8TypeInfo5TSizeMxFNaNbNdNfZm
+ .text._D6object8TypeInfo4SwapMxFPvPvZv
+                0x00000000004009a8       0xa0 obj/Runtime.o
+                0x00000000004009a8                _D6object8TypeInfo4SwapMxFPvPvZv
+ .text._D6object8TypeInfo4NextMNgFNaNbNdZNgC8TypeInfo
+                0x0000000000400a48       0x60 obj/Runtime.o
+                0x0000000000400a48                _D6object8TypeInfo4NextMNgFNaNbNdZNgC8TypeInfo
+ .text._D6object8TypeInfo4InitMxFNaNbNdNfZAxv
+                0x0000000000400aa8       0x60 obj/Runtime.o
+                0x0000000000400aa8                _D6object8TypeInfo4InitMxFNaNbNdNfZAxv
+ .text._D6object8TypeInfo5FlagsMxFNaNbNdNfZk
+                0x0000000000400b08       0x58 obj/Runtime.o
+                0x0000000000400b08                _D6object8TypeInfo5FlagsMxFNaNbNdNfZk
+ .text._D6object8TypeInfo5OffTiMxFZAxS6object14OffsetTypeInfo
+                0x0000000000400b60       0x60 obj/Runtime.o
+                0x0000000000400b60                _D6object8TypeInfo5OffTiMxFZAxS6object14OffsetTypeInfo
+ .text._D6object8TypeInfo7DestroyMxFPvZv
+                0x0000000000400bc0       0x58 obj/Runtime.o
+                0x0000000000400bc0                _D6object8TypeInfo7DestroyMxFPvZv
+ .text._D6object8TypeInfo8PostblitMxFPvZv
+                0x0000000000400c18       0x58 obj/Runtime.o
+                0x0000000000400c18                _D6object8TypeInfo8PostblitMxFPvZv
+ .text._D6object8TypeInfo6TAlignMxFNaNbNdNfZm
+                0x0000000000400c70       0x60 obj/Runtime.o
+                0x0000000000400c70                _D6object8TypeInfo6TAlignMxFNaNbNdNfZm
+ .text._D6object8TypeInfo8ArgTypesMFNbNfJC8TypeInfoJC8TypeInfoZi
+                0x0000000000400cd0       0x68 obj/Runtime.o
+                0x0000000000400cd0                _D6object8TypeInfo8ArgTypesMFNbNfJC8TypeInfoJC8TypeInfoZi
+ .text._D6object8TypeInfo6RTInfoMxFNaNbNdNfZPyv
+                0x0000000000400d38       0x60 obj/Runtime.o
+                0x0000000000400d38                _D6object8TypeInfo6RTInfoMxFNaNbNdNfZPyv
+ .text._D6object16TypeInfo_Typedef8ToStringMxFZAya
+                0x0000000000400d98       0x60 obj/Runtime.o
+                0x0000000000400d98                _D6object16TypeInfo_Typedef8ToStringMxFZAya
+ .text._D6object16TypeInfo_Typedef8opEqualsMFC6ObjectZb
+                0x0000000000400df8       0xd8 obj/Runtime.o
+                0x0000000000400df8                _D6object16TypeInfo_Typedef8opEqualsMFC6ObjectZb
+ .text._D6object16TypeInfo_Typedef4InitMxFNaNbNdNfZAxv
+                0x0000000000400ed0       0x80 obj/Runtime.o
+                0x0000000000400ed0                _D6object16TypeInfo_Typedef4InitMxFNaNbNdNfZAxv
+ .text._D6object16TypeInfo_Pointer8ToStringMxFZAya
+                0x0000000000400f50       0xa0 obj/Runtime.o
+                0x0000000000400f50                _D6object16TypeInfo_Pointer8ToStringMxFZAya
+ .text._D6object16TypeInfo_Pointer8opEqualsMFC6ObjectZb
+                0x0000000000400ff0       0xa8 obj/Runtime.o
+                0x0000000000400ff0                _D6object16TypeInfo_Pointer8opEqualsMFC6ObjectZb
+ .text._D6object16TypeInfo_Pointer7GetHashMxFNbNexPvZm
+                0x0000000000401098       0x68 obj/Runtime.o
+                0x0000000000401098                _D6object16TypeInfo_Pointer7GetHashMxFNbNexPvZm
+ .text._D6object16TypeInfo_Pointer6EqualsMxFxPvxPvZb
+                0x0000000000401100       0x78 obj/Runtime.o
+                0x0000000000401100                _D6object16TypeInfo_Pointer6EqualsMxFxPvxPvZb
+ .text._D6object16TypeInfo_Pointer7CompareMxFxPvxPvZi
+                0x0000000000401178       0x88 obj/Runtime.o
+                0x0000000000401178                _D6object16TypeInfo_Pointer7CompareMxFxPvxPvZi
+ .text._D6object16TypeInfo_Pointer5TSizeMxFNaNbNdNfZm
+                0x0000000000401200       0x60 obj/Runtime.o
+                0x0000000000401200                _D6object16TypeInfo_Pointer5TSizeMxFNaNbNdNfZm
+ .text._D6object16TypeInfo_Pointer4SwapMxFPvPvZv
+                0x0000000000401260       0x78 obj/Runtime.o
+                0x0000000000401260                _D6object16TypeInfo_Pointer4SwapMxFPvPvZv
+ .text._D6object16TypeInfo_Pointer4NextMNgFNaNbNdZNgC8TypeInfo
+                0x00000000004012d8       0x58 obj/Runtime.o
+                0x00000000004012d8                _D6object16TypeInfo_Pointer4NextMNgFNaNbNdZNgC8TypeInfo
+ .text._D6object16TypeInfo_Pointer5FlagsMxFNaNbNdNfZk
+                0x0000000000401330       0x60 obj/Runtime.o
+                0x0000000000401330                _D6object16TypeInfo_Pointer5FlagsMxFNaNbNdNfZk
+ .text._D6object14TypeInfo_Array8ToStringMxFZAya
+                0x0000000000401390       0xa0 obj/Runtime.o
+                0x0000000000401390                _D6object14TypeInfo_Array8ToStringMxFZAya
+ .text._D6object14TypeInfo_Array8opEqualsMFC6ObjectZb
+                0x0000000000401430       0xa8 obj/Runtime.o
+                0x0000000000401430                _D6object14TypeInfo_Array8opEqualsMFC6ObjectZb
+ .text._D6object14TypeInfo_Array7GetHashMxFNbNexPvZm
+                0x00000000004014d8       0x60 obj/Runtime.o
+                0x00000000004014d8                _D6object14TypeInfo_Array7GetHashMxFNbNexPvZm
+ .text._D6object14TypeInfo_Array6EqualsMxFxPvxPvZb
+                0x0000000000401538       0xf0 obj/Runtime.o
+                0x0000000000401538                _D6object14TypeInfo_Array6EqualsMxFxPvxPvZb
+ .text._D6object14TypeInfo_Array7CompareMxFxPvxPvZi
+                0x0000000000401628      0x108 obj/Runtime.o
+                0x0000000000401628                _D6object14TypeInfo_Array7CompareMxFxPvxPvZi
+ .text._D6object14TypeInfo_Array5TSizeMxFNaNbNdNfZm
+                0x0000000000401730       0x60 obj/Runtime.o
+                0x0000000000401730                _D6object14TypeInfo_Array5TSizeMxFNaNbNdNfZm
+ .text._D6object14TypeInfo_Array4SwapMxFPvPvZv
+                0x0000000000401790       0x98 obj/Runtime.o
+                0x0000000000401790                _D6object14TypeInfo_Array4SwapMxFPvPvZv
+ .text._D6object14TypeInfo_Array4NextMNgFNaNbNdZNgC8TypeInfo
+                0x0000000000401828       0x58 obj/Runtime.o
+                0x0000000000401828                _D6object14TypeInfo_Array4NextMNgFNaNbNdZNgC8TypeInfo
+ .text._D6object14TypeInfo_Array5FlagsMxFNaNbNdNfZk
+                0x0000000000401880       0x60 obj/Runtime.o
+                0x0000000000401880                _D6object14TypeInfo_Array5FlagsMxFNaNbNdNfZk
+ .text._D6object14TypeInfo_Array6TAlignMxFNaNbNdNfZm
+                0x00000000004018e0       0x60 obj/Runtime.o
+                0x00000000004018e0                _D6object14TypeInfo_Array6TAlignMxFNaNbNdNfZm
+ .text._D6object14TypeInfo_Array8ArgTypesMFNbNfJC8TypeInfoJC8TypeInfoZi
+                0x0000000000401940       0x88 obj/Runtime.o
+                0x0000000000401940                _D6object14TypeInfo_Array8ArgTypesMFNbNfJC8TypeInfoJC8TypeInfoZi
+ .text._D6object20TypeInfo_StaticArray8ToStringMxFZAya
+                0x00000000004019c8       0x68 obj/Runtime.o
+                0x00000000004019c8                _D6object20TypeInfo_StaticArray8ToStringMxFZAya
+ .text._D6object20TypeInfo_StaticArray8opEqualsMFC6ObjectZb
+                0x0000000000401a30       0xb0 obj/Runtime.o
+                0x0000000000401a30                _D6object20TypeInfo_StaticArray8opEqualsMFC6ObjectZb
+ .text._D6object20TypeInfo_StaticArray7GetHashMxFNbNexPvZm
+                0x0000000000401ae0       0xa8 obj/Runtime.o
+                0x0000000000401ae0                _D6object20TypeInfo_StaticArray7GetHashMxFNbNexPvZm
+ .text._D6object20TypeInfo_StaticArray6EqualsMxFxPvxPvZb
+                0x0000000000401b88       0xb8 obj/Runtime.o
+                0x0000000000401b88                _D6object20TypeInfo_StaticArray6EqualsMxFxPvxPvZb
+ .text._D6object20TypeInfo_StaticArray7CompareMxFxPvxPvZi
+                0x0000000000401c40       0xc0 obj/Runtime.o
+                0x0000000000401c40                _D6object20TypeInfo_StaticArray7CompareMxFxPvxPvZi
+ .text._D6object20TypeInfo_StaticArray5TSizeMxFNaNbNdNfZm
+                0x0000000000401d00       0x70 obj/Runtime.o
+                0x0000000000401d00                _D6object20TypeInfo_StaticArray5TSizeMxFNaNbNdNfZm
+ .text._D6object20TypeInfo_StaticArray4SwapMxFPvPvZv
+                0x0000000000401d70       0x90 obj/Runtime.o
+                0x0000000000401d70                _D6object20TypeInfo_StaticArray4SwapMxFPvPvZv
+ .text._D6object20TypeInfo_StaticArray4InitMxFNaNbNdNfZAxv
+                0x0000000000401e00       0x68 obj/Runtime.o
+                0x0000000000401e00                _D6object20TypeInfo_StaticArray4InitMxFNaNbNdNfZAxv
+ .text._D6object20TypeInfo_StaticArray4NextMNgFNaNbNdZNgC8TypeInfo
+                0x0000000000401e68       0x58 obj/Runtime.o
+                0x0000000000401e68                _D6object20TypeInfo_StaticArray4NextMNgFNaNbNdZNgC8TypeInfo
+ .text._D6object20TypeInfo_StaticArray5FlagsMxFNaNbNdNfZk
+                0x0000000000401ec0       0x68 obj/Runtime.o
+                0x0000000000401ec0                _D6object20TypeInfo_StaticArray5FlagsMxFNaNbNdNfZk
+ .text._D6object20TypeInfo_StaticArray7DestroyMxFPvZv
+                0x0000000000401f28       0xc0 obj/Runtime.o
+                0x0000000000401f28                _D6object20TypeInfo_StaticArray7DestroyMxFPvZv
+ .text._D6object20TypeInfo_StaticArray8PostblitMxFPvZv
+                0x0000000000401fe8       0x98 obj/Runtime.o
+                0x0000000000401fe8                _D6object20TypeInfo_StaticArray8PostblitMxFPvZv
+ .text._D6object20TypeInfo_StaticArray6TAlignMxFNaNbNdNfZm
+                0x0000000000402080       0x70 obj/Runtime.o
+                0x0000000000402080                _D6object20TypeInfo_StaticArray6TAlignMxFNaNbNdNfZm
+ .text._D6object20TypeInfo_StaticArray8ArgTypesMFNbNfJC8TypeInfoJC8TypeInfoZi
+                0x00000000004020f0       0x78 obj/Runtime.o
+                0x00000000004020f0                _D6object20TypeInfo_StaticArray8ArgTypesMFNbNfJC8TypeInfoJC8TypeInfoZi
+ .text._D6object25TypeInfo_AssociativeArray8ToStringMxFZAya
+                0x0000000000402168       0xc8 obj/Runtime.o
+                0x0000000000402168                _D6object25TypeInfo_AssociativeArray8ToStringMxFZAya
+ .text._D6object25TypeInfo_AssociativeArray8opEqualsMFC6ObjectZb
+                0x0000000000402230       0xd0 obj/Runtime.o
+                0x0000000000402230                _D6object25TypeInfo_AssociativeArray8opEqualsMFC6ObjectZb
+ .text._D6object25TypeInfo_AssociativeArray6EqualsMxFNexPvxPvZb
+                0x0000000000402300       0x78 obj/Runtime.o
+                0x0000000000402300                _D6object25TypeInfo_AssociativeArray6EqualsMxFNexPvxPvZb
+ .text._D6object25TypeInfo_AssociativeArray7GetHashMxFNbNexPvZm
+                0x0000000000402378       0x68 obj/Runtime.o
+                0x0000000000402378                _D6object25TypeInfo_AssociativeArray7GetHashMxFNbNexPvZm
+ .text._D6object25TypeInfo_AssociativeArray5TSizeMxFNaNbNdNfZm
+                0x00000000004023e0       0x60 obj/Runtime.o
+                0x00000000004023e0                _D6object25TypeInfo_AssociativeArray5TSizeMxFNaNbNdNfZm
+ .text._D6object25TypeInfo_AssociativeArray4NextMNgFNaNbNdZNgC8TypeInfo
+                0x0000000000402440       0x58 obj/Runtime.o
+                0x0000000000402440                _D6object25TypeInfo_AssociativeArray4NextMNgFNaNbNdZNgC8TypeInfo
+ .text._D6object25TypeInfo_AssociativeArray5FlagsMxFNaNbNdNfZk
+                0x0000000000402498       0x60 obj/Runtime.o
+                0x0000000000402498                _D6object25TypeInfo_AssociativeArray5FlagsMxFNaNbNdNfZk
+ .text._D6object25TypeInfo_AssociativeArray6TAlignMxFNaNbNdNfZm
+                0x00000000004024f8       0x60 obj/Runtime.o
+                0x00000000004024f8                _D6object25TypeInfo_AssociativeArray6TAlignMxFNaNbNdNfZm
+ .text._D6object25TypeInfo_AssociativeArray8ArgTypesMFNbNfJC8TypeInfoJC8TypeInfoZi
+                0x0000000000402558       0x78 obj/Runtime.o
+                0x0000000000402558                _D6object25TypeInfo_AssociativeArray8ArgTypesMFNbNfJC8TypeInfoJC8TypeInfoZi
+ .text._D6object15TypeInfo_Vector8ToStringMxFZAya
+                0x00000000004025d0       0xa8 obj/Runtime.o
+                0x00000000004025d0                _D6object15TypeInfo_Vector8ToStringMxFZAya
+ .text._D6object15TypeInfo_Vector8opEqualsMFC6ObjectZb
+                0x0000000000402678       0xa8 obj/Runtime.o
+                0x0000000000402678                _D6object15TypeInfo_Vector8opEqualsMFC6ObjectZb
+ .text._D6object15TypeInfo_Vector6TAlignMxFNaNbNdNfZm
+                0x0000000000402720       0x60 obj/Runtime.o
+                0x0000000000402720                _D6object15TypeInfo_Vector6TAlignMxFNaNbNdNfZm
+ .text._D6object17TypeInfo_Function8ToStringMxFZAya
+                0x0000000000402780       0xa0 obj/Runtime.o
+                0x0000000000402780                _D6object17TypeInfo_Function8ToStringMxFZAya
+ .text._D6object17TypeInfo_Function8opEqualsMFC6ObjectZb
+                0x0000000000402820       0xb0 obj/Runtime.o
+                0x0000000000402820                _D6object17TypeInfo_Function8opEqualsMFC6ObjectZb
+ .text._D6object17TypeInfo_Function5TSizeMxFNaNbNdNfZm
+                0x00000000004028d0       0x60 obj/Runtime.o
+                0x00000000004028d0                _D6object17TypeInfo_Function5TSizeMxFNaNbNdNfZm
+ .text._D6object17TypeInfo_Delegate8ToStringMxFZAya
+                0x0000000000402930       0xa0 obj/Runtime.o
+                0x0000000000402930                _D6object17TypeInfo_Delegate8ToStringMxFZAya
+ .text._D6object17TypeInfo_Delegate8opEqualsMFC6ObjectZb
+                0x00000000004029d0       0xb0 obj/Runtime.o
+                0x00000000004029d0                _D6object17TypeInfo_Delegate8opEqualsMFC6ObjectZb
+ .text._D6object17TypeInfo_Delegate5TSizeMxFNaNbNdNfZm
+                0x0000000000402a80       0x60 obj/Runtime.o
+                0x0000000000402a80                _D6object17TypeInfo_Delegate5TSizeMxFNaNbNdNfZm
+ .text._D6object17TypeInfo_Delegate5FlagsMxFNaNbNdNfZk
+                0x0000000000402ae0       0x60 obj/Runtime.o
+                0x0000000000402ae0                _D6object17TypeInfo_Delegate5FlagsMxFNaNbNdNfZk
+ .text._D6object17TypeInfo_Delegate6TAlignMxFNaNbNdNfZm
+                0x0000000000402b40       0x60 obj/Runtime.o
+                0x0000000000402b40                _D6object17TypeInfo_Delegate6TAlignMxFNaNbNdNfZm
+ .text._D6object17TypeInfo_Delegate8ArgTypesMFNbNfJC8TypeInfoJC8TypeInfoZi
+                0x0000000000402ba0       0x88 obj/Runtime.o
+                0x0000000000402ba0                _D6object17TypeInfo_Delegate8ArgTypesMFNbNfJC8TypeInfoJC8TypeInfoZi
+ .text._D6object14TypeInfo_Class8ToStringMxFZAya
+                0x0000000000402c28       0x68 obj/Runtime.o
+                0x0000000000402c28                _D6object14TypeInfo_Class8ToStringMxFZAya
+ .text._D6object14TypeInfo_Class8opEqualsMFC6ObjectZb
+                0x0000000000402c90       0xf0 obj/Runtime.o
+                0x0000000000402c90                _D6object14TypeInfo_Class8opEqualsMFC6ObjectZb
+ .text._D6object14TypeInfo_Class7GetHashMxFNbNexPvZm
+                0x0000000000402d80       0x78 obj/Runtime.o
+                0x0000000000402d80                _D6object14TypeInfo_Class7GetHashMxFNbNexPvZm
+ .text._D6object14TypeInfo_Class6EqualsMxFxPvxPvZb
+                0x0000000000402df8       0x98 obj/Runtime.o
+                0x0000000000402df8                _D6object14TypeInfo_Class6EqualsMxFxPvxPvZb
+ .text._D6object14TypeInfo_Class7CompareMxFxPvxPvZi
+                0x0000000000402e90       0xa8 obj/Runtime.o
+                0x0000000000402e90                _D6object14TypeInfo_Class7CompareMxFxPvxPvZi
+ .text._D6object14TypeInfo_Class4NameMxFNaNbNdNfZAya
+                0x0000000000402f38       0x60 obj/Runtime.o
+                0x0000000000402f38                _D6object14TypeInfo_Class4NameMxFNaNbNdNfZAya
+ .text._D6object14TypeInfo_Class14ClassInvariantMxFNaNbNdNfZPFC6ObjectZv
+                0x0000000000402f98       0x58 obj/Runtime.o
+                0x0000000000402f98                _D6object14TypeInfo_Class14ClassInvariantMxFNaNbNdNfZPFC6ObjectZv
+ .text._D6object14TypeInfo_Class4BaseMFNaNbNdNfZC14TypeInfo_Class
+                0x0000000000402ff0       0x58 obj/Runtime.o
+                0x0000000000402ff0                _D6object14TypeInfo_Class4BaseMFNaNbNdNfZC14TypeInfo_Class
+ .text._D6object14TypeInfo_Class10InterfacesMFNaNbNdNfZAS6object9Interface
+                0x0000000000403048       0x60 obj/Runtime.o
+                0x0000000000403048                _D6object14TypeInfo_Class10InterfacesMFNaNbNdNfZAS6object9Interface
+ .text._D6object14TypeInfo_Class5TSizeMxFNaNbNdNfZm
+                0x00000000004030a8       0x60 obj/Runtime.o
+                0x00000000004030a8                _D6object14TypeInfo_Class5TSizeMxFNaNbNdNfZm
+ .text._D6object14TypeInfo_Class5FlagsMxFNaNbNdNfZk
+                0x0000000000403108       0x60 obj/Runtime.o
+                0x0000000000403108                _D6object14TypeInfo_Class5FlagsMxFNaNbNdNfZk
+ .text._D6object14TypeInfo_Class5OffTiMxFNaNbNdZAxS6object14OffsetTypeInfo
+                0x0000000000403168       0x60 obj/Runtime.o
+                0x0000000000403168                _D6object14TypeInfo_Class5OffTiMxFNaNbNdZAxS6object14OffsetTypeInfo
+ .text._D6object14TypeInfo_Class4InfoMxFNaNbNdNfZxC14TypeInfo_Class
+                0x00000000004031c8       0x58 obj/Runtime.o
+                0x00000000004031c8                _D6object14TypeInfo_Class4InfoMxFNaNbNdNfZxC14TypeInfo_Class
+ .text._D6object14TypeInfo_Class8TypeinfoMxFNaNbNdNfZxC14TypeInfo_Class
+                0x0000000000403220       0x58 obj/Runtime.o
+                0x0000000000403220                _D6object14TypeInfo_Class8TypeinfoMxFNaNbNdNfZxC14TypeInfo_Class
+ .text._D6object14TypeInfo_Class6RTInfoMxFNaNbNdNfZPyv
+                0x0000000000403278       0x58 obj/Runtime.o
+                0x0000000000403278                _D6object14TypeInfo_Class6RTInfoMxFNaNbNdNfZPyv
+ .text._D6object14TypeInfo_Class4FindFxAaZxC14TypeInfo_Class
+                0x00000000004032d0       0x18 obj/Runtime.o
+                0x00000000004032d0                _D6object14TypeInfo_Class4FindFxAaZxC14TypeInfo_Class
+ .text._D6object14TypeInfo_Class4FindFxAaZxC14TypeInfo_Class14__foreachbody2MFKPS6object10ModuleInfoZi
+                0x00000000004032e8       0xb0 obj/Runtime.o
+                0x00000000004032e8                _D6object14TypeInfo_Class4FindFxAaZxC14TypeInfo_Class14__foreachbody2MFKPS6object10ModuleInfoZi
+ .text._D6object14TypeInfo_Class6CreateMxFZC6Object
+                0x0000000000403398       0x90 obj/Runtime.o
+                0x0000000000403398                _D6object14TypeInfo_Class6CreateMxFZC6Object
+ .text._D6object18TypeInfo_Interface8ToStringMxFZAya
+                0x0000000000403428       0x60 obj/Runtime.o
+                0x0000000000403428                _D6object18TypeInfo_Interface8ToStringMxFZAya
+ .text._D6object18TypeInfo_Interface8opEqualsMFC6ObjectZb
+                0x0000000000403488       0xd0 obj/Runtime.o
+                0x0000000000403488                _D6object18TypeInfo_Interface8opEqualsMFC6ObjectZb
+ .text._D6object18TypeInfo_Interface7GetHashMxFNbNexPvZm
+                0x0000000000403558       0x90 obj/Runtime.o
+                0x0000000000403558                _D6object18TypeInfo_Interface7GetHashMxFNbNexPvZm
+ .text._D6object18TypeInfo_Interface6EqualsMxFxPvxPvZb
+                0x00000000004035e8       0xb8 obj/Runtime.o
+                0x00000000004035e8                _D6object18TypeInfo_Interface6EqualsMxFxPvxPvZb
+ .text._D6object18TypeInfo_Interface7CompareMxFxPvxPvZi
+                0x00000000004036a0       0xd0 obj/Runtime.o
+                0x00000000004036a0                _D6object18TypeInfo_Interface7CompareMxFxPvxPvZi
+ .text._D6object18TypeInfo_Interface5TSizeMxFNaNbNdNfZm
+                0x0000000000403770       0x60 obj/Runtime.o
+                0x0000000000403770                _D6object18TypeInfo_Interface5TSizeMxFNaNbNdNfZm
+ .text._D6object18TypeInfo_Interface5FlagsMxFNaNbNdNfZk
+                0x00000000004037d0       0x60 obj/Runtime.o
+                0x00000000004037d0                _D6object18TypeInfo_Interface5FlagsMxFNaNbNdNfZk
+ .text._D6object15TypeInfo_Struct8ToStringMxFZAya
+                0x0000000000403830       0x60 obj/Runtime.o
+                0x0000000000403830                _D6object15TypeInfo_Struct8ToStringMxFZAya
+ .text._D6object15TypeInfo_Struct8opEqualsMFC6ObjectZb
+                0x0000000000403890       0xe8 obj/Runtime.o
+                0x0000000000403890                _D6object15TypeInfo_Struct8opEqualsMFC6ObjectZb
+ .text._D6object15TypeInfo_Struct7GetHashMxFNaNbNfxPvZm
+                0x0000000000403978       0x78 obj/Runtime.o
+                0x0000000000403978                _D6object15TypeInfo_Struct7GetHashMxFNaNbNfxPvZm
+ .text._D6object15TypeInfo_Struct6EqualsMxFNaNbNexPvxPvZb
+                0x00000000004039f0       0xb8 obj/Runtime.o
+                0x00000000004039f0                _D6object15TypeInfo_Struct6EqualsMxFNaNbNexPvxPvZb
+ .text._D6object15TypeInfo_Struct7CompareMxFNaNbNexPvxPvZi
+                0x0000000000403aa8       0xc0 obj/Runtime.o
+                0x0000000000403aa8                _D6object15TypeInfo_Struct7CompareMxFNaNbNexPvxPvZi
+ .text._D6object15TypeInfo_Struct5TSizeMxFNaNbNdNfZm
+                0x0000000000403b68       0x68 obj/Runtime.o
+                0x0000000000403b68                _D6object15TypeInfo_Struct5TSizeMxFNaNbNdNfZm
+ .text._D6object15TypeInfo_Struct4InitMxFNaNbNdNfZAxv
+                0x0000000000403bd0       0x60 obj/Runtime.o
+                0x0000000000403bd0                _D6object15TypeInfo_Struct4InitMxFNaNbNdNfZAxv
+ .text._D6object15TypeInfo_Struct5FlagsMxFNaNbNdNfZk
+                0x0000000000403c30       0x58 obj/Runtime.o
+                0x0000000000403c30                _D6object15TypeInfo_Struct5FlagsMxFNaNbNdNfZk
+ .text._D6object15TypeInfo_Struct6TAlignMxFNaNbNdNfZm
+                0x0000000000403c88       0x58 obj/Runtime.o
+                0x0000000000403c88                _D6object15TypeInfo_Struct6TAlignMxFNaNbNdNfZm
+ .text._D6object15TypeInfo_Struct7DestroyMxFPvZv
+                0x0000000000403ce0       0x70 obj/Runtime.o
+                0x0000000000403ce0                _D6object15TypeInfo_Struct7DestroyMxFPvZv
+ .text._D6object15TypeInfo_Struct8PostblitMxFPvZv
+                0x0000000000403d50       0x70 obj/Runtime.o
+                0x0000000000403d50                _D6object15TypeInfo_Struct8PostblitMxFPvZv
+ .text._D6object15TypeInfo_Struct6RTInfoMxFNaNbNdNfZPyv
+                0x0000000000403dc0       0x58 obj/Runtime.o
+                0x0000000000403dc0                _D6object15TypeInfo_Struct6RTInfoMxFNaNbNdNfZPyv
+ .text._D6object15TypeInfo_Struct8ArgTypesMFNbNfJC8TypeInfoJC8TypeInfoZi
+                0x0000000000403e18       0x80 obj/Runtime.o
+                0x0000000000403e18                _D6object15TypeInfo_Struct8ArgTypesMFNbNfJC8TypeInfoJC8TypeInfoZi
+ .text._D6object14TypeInfo_Tuple8ToStringMxFZAya
+                0x0000000000403e98      0x128 obj/Runtime.o
+                0x0000000000403e98                _D6object14TypeInfo_Tuple8ToStringMxFZAya
+ .text._D6object14TypeInfo_Tuple8opEqualsMFC6ObjectZb
+                0x0000000000403fc0      0x160 obj/Runtime.o
+                0x0000000000403fc0                _D6object14TypeInfo_Tuple8opEqualsMFC6ObjectZb
+ .text._D6object14TypeInfo_Tuple7GetHashMxFNbNfxPvZm
+                0x0000000000404120       0x60 obj/Runtime.o
+                0x0000000000404120                _D6object14TypeInfo_Tuple7GetHashMxFNbNfxPvZm
+ .text._D6object14TypeInfo_Tuple6EqualsMxFxPvxPvZb
+                0x0000000000404180       0x60 obj/Runtime.o
+                0x0000000000404180                _D6object14TypeInfo_Tuple6EqualsMxFxPvxPvZb
+ .text._D6object14TypeInfo_Tuple7CompareMxFxPvxPvZi
+                0x00000000004041e0       0x60 obj/Runtime.o
+                0x00000000004041e0                _D6object14TypeInfo_Tuple7CompareMxFxPvxPvZi
+ .text._D6object14TypeInfo_Tuple5TSizeMxFNaNbNdNfZm
+                0x0000000000404240       0x60 obj/Runtime.o
+                0x0000000000404240                _D6object14TypeInfo_Tuple5TSizeMxFNaNbNdNfZm
+ .text._D6object14TypeInfo_Tuple4SwapMxFPvPvZv
+                0x00000000004042a0       0x60 obj/Runtime.o
+                0x00000000004042a0                _D6object14TypeInfo_Tuple4SwapMxFPvPvZv
+ .text._D6object14TypeInfo_Tuple7DestroyMxFPvZv
+                0x0000000000404300       0x60 obj/Runtime.o
+                0x0000000000404300                _D6object14TypeInfo_Tuple7DestroyMxFPvZv
+ .text._D6object14TypeInfo_Tuple8PostblitMxFPvZv
+                0x0000000000404360       0x60 obj/Runtime.o
+                0x0000000000404360                _D6object14TypeInfo_Tuple8PostblitMxFPvZv
+ .text._D6object14TypeInfo_Tuple6TAlignMxFNaNbNdNfZm
+                0x00000000004043c0       0x60 obj/Runtime.o
+                0x00000000004043c0                _D6object14TypeInfo_Tuple6TAlignMxFNaNbNdNfZm
+ .text._D6object14TypeInfo_Tuple8ArgTypesMFNbNfJC8TypeInfoJC8TypeInfoZi
+                0x0000000000404420       0x68 obj/Runtime.o
+                0x0000000000404420                _D6object14TypeInfo_Tuple8ArgTypesMFNbNfJC8TypeInfoJC8TypeInfoZi
+ .text._D6object14TypeInfo_Const8ToStringMxFZAya
+                0x0000000000404488       0xa8 obj/Runtime.o
+                0x0000000000404488                _D6object14TypeInfo_Const8ToStringMxFZAya
+ .text._D6object14TypeInfo_Const8opEqualsMFC6ObjectZb
+                0x0000000000404530       0xb8 obj/Runtime.o
+                0x0000000000404530                _D6object14TypeInfo_Const8opEqualsMFC6ObjectZb
+ .text._D6object18TypeInfo_Invariant8ToStringMxFZAya
+                0x00000000004045e8       0xa8 obj/Runtime.o
+                0x00000000004045e8                _D6object18TypeInfo_Invariant8ToStringMxFZAya
+ .text._D6object15TypeInfo_Shared8ToStringMxFZAya
+                0x0000000000404690       0xa8 obj/Runtime.o
+                0x0000000000404690                _D6object15TypeInfo_Shared8ToStringMxFZAya
+ .text._D6object14TypeInfo_Inout8ToStringMxFZAya
+                0x0000000000404738       0xa8 obj/Runtime.o
+                0x0000000000404738                _D6object14TypeInfo_Inout8ToStringMxFZAya
+ .text._D6object16MemberInfo_field6__ctorMFAyaC8TypeInfomZC6object16MemberInfo_field
+                0x00000000004047e0       0x40 obj/Runtime.o
+                0x00000000004047e0                _D6object16MemberInfo_field6__ctorMFAyaC8TypeInfomZC6object16MemberInfo_field
+ .text._D6object16MemberInfo_field4NameMFNaNbNdZAya
+                0x0000000000404820       0x60 obj/Runtime.o
+                0x0000000000404820                _D6object16MemberInfo_field4NameMFNaNbNdZAya
+ .text._D6object16MemberInfo_field8TypeinfoMFNaNbNdZC8TypeInfo
+                0x0000000000404880       0x58 obj/Runtime.o
+                0x0000000000404880                _D6object16MemberInfo_field8TypeinfoMFNaNbNdZC8TypeInfo
+ .text._D6object16MemberInfo_field6OffsetMFNaNbNdZm
+                0x00000000004048d8       0x58 obj/Runtime.o
+                0x00000000004048d8                _D6object16MemberInfo_field6OffsetMFNaNbNdZm
+ .text._D6object19MemberInfo_function6__ctorMFAyaC8TypeInfoPvkZC6object19MemberInfo_function
+                0x0000000000404930       0x48 obj/Runtime.o
+                0x0000000000404930                _D6object19MemberInfo_function6__ctorMFAyaC8TypeInfoPvkZC6object19MemberInfo_function
+ .text._D6object19MemberInfo_function4NameMFNaNbNdZAya
+                0x0000000000404978       0x60 obj/Runtime.o
+                0x0000000000404978                _D6object19MemberInfo_function4NameMFNaNbNdZAya
+ .text._D6object19MemberInfo_function8TypeinfoMFNaNbNdZC8TypeInfo
+                0x00000000004049d8       0x58 obj/Runtime.o
+                0x00000000004049d8                _D6object19MemberInfo_function8TypeinfoMFNaNbNdZC8TypeInfo
+ .text._D6object19MemberInfo_function2FPMFNaNbNdZPv
+                0x0000000000404a30       0x58 obj/Runtime.o
+                0x0000000000404a30                _D6object19MemberInfo_function2FPMFNaNbNdZPv
+ .text._D6object19MemberInfo_function5FlagsMFNaNbNdZk
+                0x0000000000404a88       0x58 obj/Runtime.o
+                0x0000000000404a88                _D6object19MemberInfo_function5FlagsMFNaNbNdZk
+ .text._D6object9Throwable6__ctorMFNaNbNfAyaC6object9ThrowableZC6object9Throwable
+                0x0000000000404ae0       0x30 obj/Runtime.o
+                0x0000000000404ae0                _D6object9Throwable6__ctorMFNaNbNfAyaC6object9ThrowableZC6object9Throwable
+ .text._D6object9Throwable6__ctorMFNaNbNfAyaAyamC6object9ThrowableZC6object9Throwable
+                0x0000000000404b10       0x50 obj/Runtime.o
+                0x0000000000404b10                _D6object9Throwable6__ctorMFNaNbNfAyaAyamC6object9ThrowableZC6object9Throwable
+ .text._D6object9Throwable8ToStringMFZAya
+                0x0000000000404b60       0x60 obj/Runtime.o
+                0x0000000000404b60                _D6object9Throwable8ToStringMFZAya
+ .text.rt_setTraceHandler
+                0x0000000000404bc0       0x18 obj/Runtime.o
+                0x0000000000404bc0                rt_setTraceHandler
+ .text.rt_getTraceHandler
+                0x0000000000404bd8       0x10 obj/Runtime.o
+                0x0000000000404bd8                rt_getTraceHandler
+ .text._d_traceContext
+                0x0000000000404be8       0x30 obj/Runtime.o
+                0x0000000000404be8                _d_traceContext
+ .text._D6object9Exception6__ctorMFNaNbNfAyaAyamC6object9ThrowableZC9Exception
+                0x0000000000404c18       0x50 obj/Runtime.o
+                0x0000000000404c18                _D6object9Exception6__ctorMFNaNbNfAyaAyamC6object9ThrowableZC9Exception
+ .text._D6object9Exception6__ctorMFNaNbNfAyaC6object9ThrowableAyamZC9Exception
+                0x0000000000404c68       0x48 obj/Runtime.o
+                0x0000000000404c68                _D6object9Exception6__ctorMFNaNbNfAyaC6object9ThrowableAyamZC9Exception
+ .text._D6object5Error6__ctorMFNaNbNfAyaC6object9ThrowableZC6object5Error
+                0x0000000000404cb0       0x38 obj/Runtime.o
+                0x0000000000404cb0                _D6object5Error6__ctorMFNaNbNfAyaC6object9ThrowableZC6object5Error
+ .text._D6object5Error6__ctorMFNaNbNfAyaAyamC6object9ThrowableZC6object5Error
+                0x0000000000404ce8       0x58 obj/Runtime.o
+                0x0000000000404ce8                _D6object5Error6__ctorMFNaNbNfAyaAyamC6object9ThrowableZC6object5Error
+ .text._D6object10ModuleInfo6AddrOfMFNaNbiZPv
+                0x0000000000404d40      0x170 obj/Runtime.o
+                0x0000000000404d40                _D6object10ModuleInfo6AddrOfMFNaNbiZPv
+ .text._D6object10ModuleInfo5IndexMFNaNbNdZk
+                0x0000000000404eb0       0x58 obj/Runtime.o
+                0x0000000000404eb0                _D6object10ModuleInfo5IndexMFNaNbNdZk
+ .text._D6object10ModuleInfo5IndexMFNaNbNdkZv
+                0x0000000000404f08       0x58 obj/Runtime.o
+                0x0000000000404f08                _D6object10ModuleInfo5IndexMFNaNbNdkZv
+ .text._D6object10ModuleInfo5FlagsMFNaNbNdZk
+                0x0000000000404f60       0x58 obj/Runtime.o
+                0x0000000000404f60                _D6object10ModuleInfo5FlagsMFNaNbNdZk
+ .text._D6object10ModuleInfo5FlagsMFNaNbNdkZv
+                0x0000000000404fb8       0x58 obj/Runtime.o
+                0x0000000000404fb8                _D6object10ModuleInfo5FlagsMFNaNbNdkZv
+ .text._D6object10ModuleInfo7TlsCtorMFNaNbNdZPFZv
+                0x0000000000405010       0x68 obj/Runtime.o
+                0x0000000000405010                _D6object10ModuleInfo7TlsCtorMFNaNbNdZPFZv
+ .text._D6object10ModuleInfo7TlsDtorMFNaNbNdZPFZv
+                0x0000000000405078       0x68 obj/Runtime.o
+                0x0000000000405078                _D6object10ModuleInfo7TlsDtorMFNaNbNdZPFZv
+ .text._D6object10ModuleInfo11XGetMembersMFNaNbNdZPv
+                0x00000000004050e0       0x68 obj/Runtime.o
+                0x00000000004050e0                _D6object10ModuleInfo11XGetMembersMFNaNbNdZPv
+ .text._D6object10ModuleInfo4CtorMFNaNbNdZPFZv
+                0x0000000000405148       0x68 obj/Runtime.o
+                0x0000000000405148                _D6object10ModuleInfo4CtorMFNaNbNdZPFZv
+ .text._D6object10ModuleInfo4DtorMFNaNbNdZPFZv
+                0x00000000004051b0       0x68 obj/Runtime.o
+                0x00000000004051b0                _D6object10ModuleInfo4DtorMFNaNbNdZPFZv
+ .text._D6object10ModuleInfo5ICtorMFNaNbNdZPFZv
+                0x0000000000405218       0x68 obj/Runtime.o
+                0x0000000000405218                _D6object10ModuleInfo5ICtorMFNaNbNdZPFZv
+ .text._D6object10ModuleInfo8UnitTestMFNaNbNdZPFZv
+                0x0000000000405280       0x68 obj/Runtime.o
+                0x0000000000405280                _D6object10ModuleInfo8UnitTestMFNaNbNdZPFZv
+ .text._D6object10ModuleInfo15importedModulesMFNaNbNdZAPS6object10ModuleInfo
+                0x00000000004052e8       0x88 obj/Runtime.o
+                0x00000000004052e8                _D6object10ModuleInfo15importedModulesMFNaNbNdZAPS6object10ModuleInfo
+ .text._D6object10ModuleInfo12localClassesMFNaNbNdZAC14TypeInfo_Class
+                0x0000000000405370       0x88 obj/Runtime.o
+                0x0000000000405370                _D6object10ModuleInfo12localClassesMFNaNbNdZAC14TypeInfo_Class
+ .text._D6object10ModuleInfo4nameMFNaNbNdZAya
+                0x00000000004053f8       0x58 obj/Runtime.o
+                0x00000000004053f8                _D6object10ModuleInfo4nameMFNaNbNdZAya
+ .text._D6object10ModuleInfo7opApplyFMDFKPS6object10ModuleInfoZiZi
+                0x0000000000405450       0x10 obj/Runtime.o
+                0x0000000000405450                _D6object10ModuleInfo7opApplyFMDFKPS6object10ModuleInfoZiZi
+ .text._D6object7Monitor11__xopEqualsFKxS6object7MonitorKxS6object7MonitorZb
+                0x0000000000405460       0x98 obj/Runtime.o
+                0x0000000000405460                _D6object7Monitor11__xopEqualsFKxS6object7MonitorKxS6object7MonitorZb
+ .text._D6object10GetMonitorFNaNbC6ObjectZPS6object7Monitor
+                0x00000000004054f8       0x18 obj/Runtime.o
+                0x00000000004054f8                _D6object10GetMonitorFNaNbC6ObjectZPS6object7Monitor
+ .text._D6object10SetMonitorFNaNbC6ObjectPS6object7MonitorZv
+                0x0000000000405510       0x18 obj/Runtime.o
+                0x0000000000405510                _D6object10SetMonitorFNaNbC6ObjectPS6object7MonitorZv
+ .text._d_monitordelete
+                0x0000000000405528       0x28 obj/Runtime.o
+                0x0000000000405528                _d_monitordelete
+ .text._d_monitorenter
+                0x0000000000405550       0x58 obj/Runtime.o
+                0x0000000000405550                _d_monitorenter
+ .text._d_monitorexit
+                0x00000000004055a8       0x38 obj/Runtime.o
+                0x00000000004055a8                _d_monitorexit
+ .text._d_monitor_devt
+                0x00000000004055e0       0xc8 obj/Runtime.o
+                0x00000000004055e0                _d_monitor_devt
+ .text.rt_attachDisposeEvent
+                0x00000000004056a8      0x1b0 obj/Runtime.o
+                0x00000000004056a8                rt_attachDisposeEvent
+ .text.rt_detachDisposeEvent
+                0x0000000000405858      0x130 obj/Runtime.o
+                0x0000000000405858                rt_detachDisposeEvent
+ .text._D6object10_xopEqualsFxPvxPvZb
+                0x0000000000405988       0x60 obj/Runtime.o
+                0x0000000000405988                _D6object10_xopEqualsFxPvxPvZb
+ .text._D6object7_xopCmpFxPvxPvZb
+                0x00000000004059e8       0x60 obj/Runtime.o
+                0x00000000004059e8                _D6object7_xopCmpFxPvxPvZb
+ .text._D6object15__T6LengthTAxvZ6LengthFNaNbNdNfAxvZl
+                0x0000000000405a48       0x10 obj/Runtime.o
+                0x0000000000405a48                _D6object15__T6LengthTAxvZ6LengthFNaNbNdNfAxvZl
+ .text._D6object14__T6LengthTAvZ6LengthFNaNbNdNfAvZl
+                0x0000000000405a58       0x10 obj/Runtime.o
+                0x0000000000405a58                _D6object14__T6LengthTAvZ6LengthFNaNbNdNfAvZl
+ .text._D6object23__T6LengthTAC8TypeInfoZ6LengthFNaNbNdNfAC8TypeInfoZl
+                0x0000000000405a68       0x10 obj/Runtime.o
+                0x0000000000405a68                _D6object23__T6LengthTAC8TypeInfoZ6LengthFNaNbNdNfAC8TypeInfoZl
+ .text._D6object24__T6LengthTAxC8TypeInfoZ6LengthFNaNbNdNfAxC8TypeInfoZl
+                0x0000000000405a78       0x10 obj/Runtime.o
+                0x0000000000405a78                _D6object24__T6LengthTAxC8TypeInfoZ6LengthFNaNbNdNfAxC8TypeInfoZl
+ .text._D6object25__T6LengthTADFC6ObjectZvZ6LengthFNaNbNdNfADFC6ObjectZvZl
+                0x0000000000405a88       0x10 obj/Runtime.o
+                0x0000000000405a88                _D6object25__T6LengthTADFC6ObjectZvZ6LengthFNaNbNdNfADFC6ObjectZvZl
+ .text._D6object7__arrayZ
+                0x0000000000405a98       0x18 obj/Runtime.o
+                0x0000000000405a98                _D6object7__arrayZ
+ .text._D6object8__assertFiZv
+                0x0000000000405ab0       0x18 obj/Runtime.o
+                0x0000000000405ab0                _D6object8__assertFiZv
+ .text._D6object15__unittest_failFiZv
+                0x0000000000405ac8       0x20 obj/Runtime.o
+                0x0000000000405ac8                _D6object15__unittest_failFiZv
+ .text._d_toObject
+                0x0000000000405ae8       0xc0 obj/Runtime.o
+                0x0000000000405ae8                _d_toObject
+ .text._d_interface_cast
+                0x0000000000405ba8       0xb0 obj/Runtime.o
+                0x0000000000405ba8                _d_interface_cast
+ .text._d_dynamic_cast
+                0x0000000000405c58       0x40 obj/Runtime.o
+                0x0000000000405c58                _d_dynamic_cast
+ .text._d_isbaseof2
+                0x0000000000405c98      0x160 obj/Runtime.o
+                0x0000000000405c98                _d_isbaseof2
+ .text._d_isbaseof
+                0x0000000000405df8       0xc8 obj/Runtime.o
+                0x0000000000405df8                _d_isbaseof
+ .text._d_interface_vtbl
+                0x0000000000405ec0       0xb0 obj/Runtime.o
+                0x0000000000405ec0                _d_interface_vtbl
+ .text._D7Runtime4Cast7__arrayZ
+                0x0000000000405f70       0x18 obj/Runtime.o
+                0x0000000000405f70                _D7Runtime4Cast7__arrayZ
+ .text._D7Runtime4Cast8__assertFiZv
+                0x0000000000405f88       0x18 obj/Runtime.o
+                0x0000000000405f88                _D7Runtime4Cast8__assertFiZv
+ .text._D7Runtime4Core9Exception12AssertHandleFNbNdNeZPFNbAyamAyaZv
+                0x0000000000405fa0       0x10 obj/Runtime.o
+                0x0000000000405fa0                _D7Runtime4Core9Exception12AssertHandleFNbNdNeZPFNbAyamAyaZv
+ .text._D7Runtime4Core9Exception12AssertHandleFNbNdNePFNbAyamAyaZvZv
+                0x0000000000405fb0       0x18 obj/Runtime.o
+                0x0000000000405fb0                _D7Runtime4Core9Exception12AssertHandleFNbNdNePFNbAyamAyaZvZv
+ .text._D7Runtime4Core9Exception10RangeError6__ctorMFNaNbNfAyamC6object9ThrowableZC7Runtime4Core9Exception10RangeError
+                0x0000000000405fc8       0x60 obj/Runtime.o
+                0x0000000000405fc8                _D7Runtime4Core9Exception10RangeError6__ctorMFNaNbNfAyamC6object9ThrowableZC7Runtime4Core9Exception10RangeError
+ .text._D7Runtime4Core9Exception11AssertError6__ctorMFNaNbNfAyamZC7Runtime4Core9Exception11AssertError
+                0x0000000000406028       0x48 obj/Runtime.o
+                0x0000000000406028                _D7Runtime4Core9Exception11AssertError6__ctorMFNaNbNfAyamZC7Runtime4Core9Exception11AssertError
+ .text._D7Runtime4Core9Exception11AssertError6__ctorMFNaNbNfC6object9ThrowableAyamZC7Runtime4Core9Exception11AssertError
+                0x0000000000406070       0x50 obj/Runtime.o
+                0x0000000000406070                _D7Runtime4Core9Exception11AssertError6__ctorMFNaNbNfC6object9ThrowableAyamZC7Runtime4Core9Exception11AssertError
+ .text._D7Runtime4Core9Exception11AssertError6__ctorMFNaNbNfAyaAyamC6object9ThrowableZC7Runtime4Core9Exception11AssertError
+                0x00000000004060c0       0x58 obj/Runtime.o
+                0x00000000004060c0                _D7Runtime4Core9Exception11AssertError6__ctorMFNaNbNfAyaAyamC6object9ThrowableZC7Runtime4Core9Exception11AssertError
+ .text._D7Runtime4Core9Exception13FinalizeError6__ctorMFNaNbNfC14TypeInfo_ClassC6object9ThrowableAyamZC7Runtime4Core9Exception13FinalizeError
+                0x0000000000406118       0x40 obj/Runtime.o
+                0x0000000000406118                _D7Runtime4Core9Exception13FinalizeError6__ctorMFNaNbNfC14TypeInfo_ClassC6object9ThrowableAyamZC7Runtime4Core9Exception13FinalizeError
+ .text._D7Runtime4Core9Exception13FinalizeError6__ctorMFNaNbNfC14TypeInfo_ClassAyamC6object9ThrowableZC7Runtime4Core9Exception13FinalizeError
+                0x0000000000406158       0x60 obj/Runtime.o
+                0x0000000000406158                _D7Runtime4Core9Exception13FinalizeError6__ctorMFNaNbNfC14TypeInfo_ClassAyamC6object9ThrowableZC7Runtime4Core9Exception13FinalizeError
+ .text._D7Runtime4Core9Exception13FinalizeError8ToStringMxFNfZAya
+                0x00000000004061b8       0x90 obj/Runtime.o
+                0x00000000004061b8                _D7Runtime4Core9Exception13FinalizeError8ToStringMxFNfZAya
+ .text._D7Runtime4Core9Exception15HiddenFuncError6__ctorMFNaNbNfC14TypeInfo_ClassZC7Runtime4Core9Exception15HiddenFuncError
+                0x0000000000406248       0x58 obj/Runtime.o
+                0x0000000000406248                _D7Runtime4Core9Exception15HiddenFuncError6__ctorMFNaNbNfC14TypeInfo_ClassZC7Runtime4Core9Exception15HiddenFuncError
+ .text._D7Runtime4Core9Exception16OutOfMemoryError6__ctorMFNaNbNfAyamC6object9ThrowableZC7Runtime4Core9Exception16OutOfMemoryError
+                0x00000000004062a0       0x60 obj/Runtime.o
+                0x00000000004062a0                _D7Runtime4Core9Exception16OutOfMemoryError6__ctorMFNaNbNfAyamC6object9ThrowableZC7Runtime4Core9Exception16OutOfMemoryError
+ .text._D7Runtime4Core9Exception16OutOfMemoryError8ToStringMxFNeZAya
+                0x0000000000406300       0x80 obj/Runtime.o
+                0x0000000000406300                _D7Runtime4Core9Exception16OutOfMemoryError8ToStringMxFNeZAya
+ .text._D7Runtime4Core9Exception27InvalidMemoryOperationError6__ctorMFNaNbNfAyamC6object9ThrowableZC7Runtime4Core9Exception27InvalidMemoryOperationError
+                0x0000000000406380       0x60 obj/Runtime.o
+                0x0000000000406380                _D7Runtime4Core9Exception27InvalidMemoryOperationError6__ctorMFNaNbNfAyamC6object9ThrowableZC7Runtime4Core9Exception27InvalidMemoryOperationError
+ .text._D7Runtime4Core9Exception27InvalidMemoryOperationError8ToStringMxFNeZAya
+                0x00000000004063e0       0x80 obj/Runtime.o
+                0x00000000004063e0                _D7Runtime4Core9Exception27InvalidMemoryOperationError8ToStringMxFNeZAya
+ .text._D7Runtime4Core9Exception11SwitchError6__ctorMFNaNbNfAyamC6object9ThrowableZC7Runtime4Core9Exception11SwitchError
+                0x0000000000406460       0x60 obj/Runtime.o
+                0x0000000000406460                _D7Runtime4Core9Exception11SwitchError6__ctorMFNaNbNfAyamC6object9ThrowableZC7Runtime4Core9Exception11SwitchError
+ .text._D7Runtime4Core9Exception16UnicodeException6__ctorMFNaNbNfAyamAyamC6object9ThrowableZC7Runtime4Core9Exception16UnicodeException
+                0x00000000004064c0       0x50 obj/Runtime.o
+                0x00000000004064c0                _D7Runtime4Core9Exception16UnicodeException6__ctorMFNaNbNfAyamAyamC6object9ThrowableZC7Runtime4Core9Exception16UnicodeException
+ .text.OnAssertError
+                0x0000000000406510       0x98 obj/Runtime.o
+                0x0000000000406510                OnAssertError
+ .text.OnAssertErrorMessage
+                0x00000000004065a8       0xc0 obj/Runtime.o
+                0x00000000004065a8                OnAssertErrorMessage
+ .text.OnUnittestErrorMessage
+                0x0000000000406668       0x50 obj/Runtime.o
+                0x0000000000406668                OnUnittestErrorMessage
+ .text.OnRangeError
+                0x00000000004066b8       0x70 obj/Runtime.o
+                0x00000000004066b8                OnRangeError
+ .text.OnFinalizeError
+                0x0000000000406728       0x78 obj/Runtime.o
+                0x0000000000406728                OnFinalizeError
+ .text.OnHiddenFuncError
+                0x00000000004067a0       0x38 obj/Runtime.o
+                0x00000000004067a0                OnHiddenFuncError
+ .text.OnOutOfMemoryError
+                0x00000000004067d8       0x10 obj/Runtime.o
+                0x00000000004067d8                OnOutOfMemoryError
+ .text.OnInvalidMemoryOperationError
+                0x00000000004067e8       0x10 obj/Runtime.o
+                0x00000000004067e8                OnInvalidMemoryOperationError
+ .text.OnSwitchError
+                0x00000000004067f8       0x70 obj/Runtime.o
+                0x00000000004067f8                OnSwitchError
+ .text.onUnicodeError
+                0x0000000000406868       0x88 obj/Runtime.o
+                0x0000000000406868                onUnicodeError
+ .text._d_assertm
+                0x00000000004068f0       0x68 obj/Runtime.o
+                0x00000000004068f0                _d_assertm
+ .text._d_assert_msg
+                0x0000000000406958       0x50 obj/Runtime.o
+                0x0000000000406958                _d_assert_msg
+ .text._d_assert
+                0x00000000004069a8       0x38 obj/Runtime.o
+                0x00000000004069a8                _d_assert
+ .text._d_unittestm
+                0x00000000004069e0       0x80 obj/Runtime.o
+                0x00000000004069e0                _d_unittestm
+ .text._d_unittest_msg
+                0x0000000000406a60       0x50 obj/Runtime.o
+                0x0000000000406a60                _d_unittest_msg
+ .text._d_unittest
+                0x0000000000406ab0       0x48 obj/Runtime.o
+                0x0000000000406ab0                _d_unittest
+ .text._d_array_bounds
+                0x0000000000406af8       0x68 obj/Runtime.o
+                0x0000000000406af8                _d_array_bounds
+ .text._d_arraybounds
+                0x0000000000406b60       0x38 obj/Runtime.o
+                0x0000000000406b60                _d_arraybounds
+ .text._d_switch_error
+                0x0000000000406b98       0x68 obj/Runtime.o
+                0x0000000000406b98                _d_switch_error
+ .text._d_hidden_func
+                0x0000000000406c00       0x28 obj/Runtime.o
+                0x0000000000406c00                _d_hidden_func
+ .text._D7Runtime7Monitor7Monitor11__xopEqualsFKxS7Runtime7Monitor7MonitorKxS7Runtime7Monitor7MonitorZb
+                0x0000000000406c28       0x94 obj/Runtime.o
+                0x0000000000406c28                _D7Runtime7Monitor7Monitor11__xopEqualsFKxS7Runtime7Monitor7MonitorKxS7Runtime7Monitor7MonitorZb
+ *fill*         0x0000000000406cbc        0x4 90909090
+ .text.d_dso_init
+                0x0000000000406cc0       0x38 obj/Runtime.o
+ *(.gnu.warning)
+
+.fini
+ *(.fini)
+                0x0000000000406cf8                PROVIDE (__etext, .)
+                0x0000000000406cf8                PROVIDE (_etext, .)
+                0x0000000000406cf8                PROVIDE (etext, .)
+
+.rodata         0x0000000000406d00     0x2030
+ *(.rodata .rodata.* .gnu.linkonce.r.*)
+ .rodata        0x0000000000406d00     0x2030 obj/Runtime.o
+                0x0000000000406db0                _D6Object7Monitor11__InterfaceZ
+                0x0000000000406e50                _D6Object6__initZ
+                0x0000000000406e70                _D6Object6__vtblZ
+                0x0000000000406ec0                _D8TypeInfo6__initZ
+                0x0000000000406ee0                _D8TypeInfo6__vtblZ
+                0x0000000000406f80                _D16TypeInfo_Typedef6__initZ
+                0x0000000000406fd0                _D16TypeInfo_Typedef6__vtblZ
+                0x0000000000407070                _D13TypeInfo_Enum6__initZ
+                0x00000000004070c0                _D13TypeInfo_Enum6__vtblZ
+                0x0000000000407170                _D16TypeInfo_Pointer6__initZ
+                0x00000000004071a0                _D16TypeInfo_Pointer6__vtblZ
+                0x0000000000407250                _D14TypeInfo_Array6__initZ
+                0x0000000000407280                _D14TypeInfo_Array6__vtblZ
+                0x0000000000407330                _D20TypeInfo_StaticArray6__initZ
+                0x0000000000407370                _D20TypeInfo_StaticArray6__vtblZ
+                0x0000000000407440                _D25TypeInfo_AssociativeArray6__initZ
+                0x0000000000407490                _D25TypeInfo_AssociativeArray6__vtblZ
+                0x0000000000407560                _D15TypeInfo_Vector6__initZ
+                0x0000000000407590                _D15TypeInfo_Vector6__vtblZ
+                0x0000000000407640                _D17TypeInfo_Function6__initZ
+                0x0000000000407680                _D17TypeInfo_Function6__vtblZ
+                0x0000000000407740                _D17TypeInfo_Delegate6__initZ
+                0x0000000000407780                _D17TypeInfo_Delegate6__vtblZ
+                0x0000000000407840                _D14TypeInfo_Class6__initZ
+                0x00000000004078f0                _D14TypeInfo_Class6__vtblZ
+                0x00000000004079c0                _D18TypeInfo_Interface6__initZ
+                0x00000000004079f0                _D18TypeInfo_Interface6__vtblZ
+                0x0000000000407ab0                _D15TypeInfo_Struct6__initZ
+                0x0000000000407b50                _D15TypeInfo_Struct6__vtblZ
+                0x0000000000407c00                _D14TypeInfo_Tuple6__initZ
+                0x0000000000407c30                _D14TypeInfo_Tuple6__vtblZ
+                0x0000000000407ce0                _D14TypeInfo_Const6__initZ
+                0x0000000000407d10                _D14TypeInfo_Const6__vtblZ
+                0x0000000000407dd0                _D18TypeInfo_Invariant6__initZ
+                0x0000000000407e00                _D18TypeInfo_Invariant6__vtblZ
+                0x0000000000407eb0                _D15TypeInfo_Shared6__initZ
+                0x0000000000407ee0                _D15TypeInfo_Shared6__vtblZ
+                0x0000000000407f90                _D14TypeInfo_Inout6__initZ
+                0x0000000000407fc0                _D14TypeInfo_Inout6__vtblZ
+                0x0000000000408060                _D6object10MemberInfo6__initZ
+                0x0000000000408090                _D6object10MemberInfo6__vtblZ
+                0x00000000004080e0                _D6object16MemberInfo_field6__initZ
+                0x0000000000408130                _D6object16MemberInfo_field6__vtblZ
+                0x0000000000408170                _D6object19MemberInfo_function6__initZ
+                0x00000000004081c0                _D6object19MemberInfo_function6__vtblZ
+                0x0000000000408230                _D6object9Throwable9TraceInfo11__InterfaceZ
+                0x00000000004082d0                _D6object9Throwable6__initZ
+                0x0000000000408330                _D6object9Throwable6__vtblZ
+                0x0000000000408360                _D9Exception6__initZ
+                0x00000000004083c0                _D9Exception6__vtblZ
+                0x00000000004083f0                _D6object5Error6__initZ
+                0x0000000000408450                _D6object5Error6__vtblZ
+                0x00000000004085b0                _D7Runtime4Core9Exception10RangeError6__initZ
+                0x0000000000408630                _D7Runtime4Core9Exception10RangeError6__vtblZ
+                0x0000000000408680                _D7Runtime4Core9Exception11AssertError6__initZ
+                0x0000000000408700                _D7Runtime4Core9Exception11AssertError6__vtblZ
+                0x00000000004087d0                _D7Runtime4Core9Exception13FinalizeError6__initZ
+                0x0000000000408850                _D7Runtime4Core9Exception13FinalizeError6__vtblZ
+                0x00000000004088b0                _D7Runtime4Core9Exception15HiddenFuncError6__initZ
+                0x0000000000408930                _D7Runtime4Core9Exception15HiddenFuncError6__vtblZ
+                0x0000000000408990                _D7Runtime4Core9Exception16OutOfMemoryError6__initZ
+                0x0000000000408a10                _D7Runtime4Core9Exception16OutOfMemoryError6__vtblZ
+                0x0000000000408a70                _D7Runtime4Core9Exception27InvalidMemoryOperationError6__initZ
+                0x0000000000408b00                _D7Runtime4Core9Exception27InvalidMemoryOperationError6__vtblZ
+                0x0000000000408b60                _D7Runtime4Core9Exception11SwitchError6__initZ
+                0x0000000000408be0                _D7Runtime4Core9Exception11SwitchError6__vtblZ
+                0x0000000000408c10                _D7Runtime4Core9Exception16UnicodeException6__initZ
+                0x0000000000408c90                _D7Runtime4Core9Exception16UnicodeException6__vtblZ
+
+.minfo_beg      0x0000000000408d30        0x0
+ .minfo_beg     0x0000000000408d30        0x0 obj/Runtime.o
+
+.minfo          0x0000000000408d30       0x30
+ .minfo         0x0000000000408d30       0x30 obj/Runtime.o
+
+.minfo_end      0x0000000000408d60        0x0
+ .minfo_end     0x0000000000408d60        0x0 obj/Runtime.o
+
+.deh_beg        0x0000000000408d60        0x0
+ .deh_beg       0x0000000000408d60        0x0 obj/Runtime.o
+
+.deh_eh         0x0000000000408d60       0x30
+ .deh_eh        0x0000000000408d60       0x30 obj/Runtime.o
+
+.deh_end        0x0000000000408d90        0x0
+ .deh_end       0x0000000000408d90        0x0 obj/Runtime.o
+
+.rodata1
+ *(.rodata1)
+
+.eh_frame_hdr
+ *(.eh_frame_hdr)
+
+.eh_frame
+ *(.eh_frame)
+
+.gcc_except_table
+ *(.gcc_except_table .gcc_except_table.*)
+                0x0000000000408d90                . = (ALIGN (0x200000) - ((0x200000 - .) & 0x1fffff))
+                0x0000000000609000                . = (0x200000 DATA_SEGMENT_ALIGN 0x1000)
+
+.eh_frame
+ *(.eh_frame)
+
+.gcc_except_table
+ *(.gcc_except_table .gcc_except_table.*)
+
+.tdata
+ *(.tdata .tdata.* .gnu.linkonce.td.*)
+
+.tbss
+ *(.tbss .tbss.* .gnu.linkonce.tb.*)
+ *(.tcommon)
+
+.preinit_array  0x0000000000609000        0x0
+                0x0000000000609000                PROVIDE (__preinit_array_start, .)
+ *(.preinit_array)
+                0x0000000000609000                PROVIDE (__preinit_array_end, .)
+
+.init_array     0x0000000000609000        0x0
+                0x0000000000609000                PROVIDE (__init_array_start, .)
+ *(SORT(.init_array.*))
+ *(.init_array)
+                0x0000000000609000                PROVIDE (__init_array_end, .)
+
+.fini_array     0x0000000000609000        0x0
+                0x0000000000609000                PROVIDE (__fini_array_start, .)
+ *(.fini_array)
+ *(SORT(.fini_array.*))
+                0x0000000000609000                PROVIDE (__fini_array_end, .)
+
+.ctors          0x0000000000609000        0x8
+ *crtbegin.o(.ctors)
+ *crtbegin?.o(.ctors)
+ *(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors)
+ *(SORT(.ctors.*))
+ .ctors.d_dso_ctor
+                0x0000000000609000        0x8 obj/Runtime.o
+ *(.ctors)
+
+.dtors          0x0000000000609008        0x8
+ *crtbegin.o(.dtors)
+ *crtbegin?.o(.dtors)
+ *(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
+ *(SORT(.dtors.*))
+ .dtors.d_dso_dtor
+                0x0000000000609008        0x8 obj/Runtime.o
+ *(.dtors)
+
+.jcr
+ *(.jcr)
+
+.data.rel.ro
+ *(.data.rel.ro.local* .gnu.linkonce.d.rel.ro.local.*)
+ *(.data.rel.ro* .gnu.linkonce.d.rel.ro.*)
+
+.dynamic
+ *(.dynamic)
+
+.got            0x0000000000609010      0x108
+ *(.got)
+ .got           0x0000000000609010      0x108 obj/Runtime.o
+ *(.igot)
+                0x0000000000609118                . = (. DATA_SEGMENT_RELRO_END 0x18)
+
+.got.plt        0x0000000000609118       0x18
+ *(.got.plt)
+ .got.plt       0x0000000000609118       0x18 obj/Runtime.o
+                0x0000000000609118                _GLOBAL_OFFSET_TABLE_
+ *(.igot.plt)
+ .igot.plt      0x0000000000000000        0x0 obj/Runtime.o
+
+.data           0x0000000000609130     0x1bb8
+ *(.data .data.* .gnu.linkonce.d.*)
+ .data          0x0000000000609130     0x16b8 obj/Runtime.o
+                0x0000000000609130                _D9invariant12__ModuleInfoZ
+                0x0000000000609148                _D4main12__ModuleInfoZ
+                0x0000000000609160                _D6Object7__ClassZ
+                0x0000000000609200                _D8TypeInfo7__ClassZ
+                0x00000000006092a0                _D16TypeInfo_Typedef7__ClassZ
+                0x0000000000609340                _D13TypeInfo_Enum7__ClassZ
+                0x00000000006093e0                _D16TypeInfo_Pointer7__ClassZ
+                0x0000000000609480                _D14TypeInfo_Array7__ClassZ
+                0x0000000000609520                _D20TypeInfo_StaticArray7__ClassZ
+                0x00000000006095c0                _D25TypeInfo_AssociativeArray7__ClassZ
+                0x0000000000609660                _D15TypeInfo_Vector7__ClassZ
+                0x0000000000609700                _D17TypeInfo_Function7__ClassZ
+                0x00000000006097a0                _D17TypeInfo_Delegate7__ClassZ
+                0x0000000000609838                _D14TypeInfo_Class10ClassFlags6__initZ
+                0x0000000000609840                _D14TypeInfo_Class7__ClassZ
+                0x00000000006098e0                _D18TypeInfo_Interface7__ClassZ
+                0x0000000000609978                _D15TypeInfo_Struct11StructFlags6__initZ
+                0x0000000000609980                _D15TypeInfo_Struct7__ClassZ
+                0x0000000000609a20                _D14TypeInfo_Tuple7__ClassZ
+                0x0000000000609ac0                _D14TypeInfo_Const7__ClassZ
+                0x0000000000609b60                _D18TypeInfo_Invariant7__ClassZ
+                0x0000000000609c00                _D15TypeInfo_Shared7__ClassZ
+                0x0000000000609ca0                _D14TypeInfo_Inout7__ClassZ
+                0x0000000000609d40                _D6object10MemberInfo7__ClassZ
+                0x0000000000609de0                _D6object16MemberInfo_field7__ClassZ
+                0x0000000000609e80                _D6object19MemberInfo_function7__ClassZ
+                0x0000000000609f20                _D6object9Throwable7__ClassZ
+                0x0000000000609fc0                _D9Exception7__ClassZ
+                0x000000000060a060                _D6object5Error7__ClassZ
+                0x000000000060a160                _D6object12__ModuleInfoZ
+                0x000000000060a240                _D7Runtime4Cast12__ModuleInfoZ
+                0x000000000060a260                _D7Runtime4Core9Exception10RangeError7__ClassZ
+                0x000000000060a300                _D7Runtime4Core9Exception11AssertError7__ClassZ
+                0x000000000060a3a0                _D7Runtime4Core9Exception13FinalizeError7__ClassZ
+                0x000000000060a440                _D7Runtime4Core9Exception15HiddenFuncError7__ClassZ
+                0x000000000060a4e0                _D7Runtime4Core9Exception16OutOfMemoryError7__ClassZ
+                0x000000000060a580                _D7Runtime4Core9Exception27InvalidMemoryOperationError7__ClassZ
+                0x000000000060a620                _D7Runtime4Core9Exception11SwitchError7__ClassZ
+                0x000000000060a6c0                _D7Runtime4Core9Exception16UnicodeException7__ClassZ
+                0x000000000060a760                _D7Runtime4Core9Exception12__ModuleInfoZ
+                0x000000000060a7d0                _D7Runtime7Monitor12__ModuleInfoZ
+ *fill*         0x000000000060a7e8        0x8 00
+ .data._D25TypeInfo_C6Object7Monitor6__initZ
+                0x000000000060a7f0       0x20 obj/Runtime.o
+                0x000000000060a7f0                _D25TypeInfo_C6Object7Monitor6__initZ
+ .data._D27TypeInfo_S6object9Interface6__initZ
+                0x000000000060a810       0x90 obj/Runtime.o
+                0x000000000060a810                _D27TypeInfo_S6object9Interface6__initZ
+ .data._D11TypeInfo_xv6__initZ
+                0x000000000060a8a0       0x20 obj/Runtime.o
+                0x000000000060a8a0                _D11TypeInfo_xv6__initZ
+ .data._D12TypeInfo_Pxv6__initZ
+                0x000000000060a8c0       0x20 obj/Runtime.o
+                0x000000000060a8c0                _D12TypeInfo_Pxv6__initZ
+ .data._D13TypeInfo_APxv6__initZ
+                0x000000000060a8e0       0x20 obj/Runtime.o
+                0x000000000060a8e0                _D13TypeInfo_APxv6__initZ
+ .data._D33TypeInfo_S6object14OffsetTypeInfo6__initZ
+                0x000000000060a900       0x90 obj/Runtime.o
+                0x000000000060a900                _D33TypeInfo_S6object14OffsetTypeInfo6__initZ
+ .data._D38TypeInfo_E14TypeInfo_Class10ClassFlags6__initZ
+                0x000000000060a990       0x40 obj/Runtime.o
+                0x000000000060a990                _D38TypeInfo_E14TypeInfo_Class10ClassFlags6__initZ
+ .data._D40TypeInfo_E15TypeInfo_Struct11StructFlags6__initZ
+                0x000000000060a9d0       0x40 obj/Runtime.o
+                0x000000000060a9d0                _D40TypeInfo_E15TypeInfo_Struct11StructFlags6__initZ
+ .data._D37TypeInfo_C6object9Throwable9TraceInfo6__initZ
+                0x000000000060aa10       0x20 obj/Runtime.o
+                0x000000000060aa10                _D37TypeInfo_C6object9Throwable9TraceInfo6__initZ
+ .data._D29TypeInfo_S6object10ModuleInfo6__initZ
+                0x000000000060aa30       0x90 obj/Runtime.o
+                0x000000000060aa30                _D29TypeInfo_S6object10ModuleInfo6__initZ
+ .data._D25TypeInfo_S6object7Monitor6__initZ
+                0x000000000060aac0       0x90 obj/Runtime.o
+                0x000000000060aac0                _D25TypeInfo_S6object7Monitor6__initZ
+ .data._D21TypeInfo_DFC6ObjectZv6__initZ
+                0x000000000060ab50       0x30 obj/Runtime.o
+                0x000000000060ab50                _D21TypeInfo_DFC6ObjectZv6__initZ
+ .data._D22TypeInfo_ADFC6ObjectZv6__initZ
+                0x000000000060ab80       0x20 obj/Runtime.o
+                0x000000000060ab80                _D22TypeInfo_ADFC6ObjectZv6__initZ
+ .data._D25TypeInfo_S6object7AARange6__initZ
+                0x000000000060aba0       0x90 obj/Runtime.o
+                0x000000000060aba0                _D25TypeInfo_S6object7AARange6__initZ
+ .data._D11TypeInfo_Pv6__initZ
+                0x000000000060ac30       0x20 obj/Runtime.o
+                0x000000000060ac30                _D11TypeInfo_Pv6__initZ
+ .data._D34TypeInfo_S7Runtime7Monitor7Monitor6__initZ
+                0x000000000060ac50       0x90 obj/Runtime.o
+                0x000000000060ac50                _D34TypeInfo_S7Runtime7Monitor7Monitor6__initZ
+ .data.d_dso_rec
+                0x000000000060ace0        0x8 obj/Runtime.o
+
+.data1
+ *(.data1)
+
+.sharable_data  0x0000000000800000        0x0
+                0x0000000000800000                PROVIDE (__sharable_data_start, .)
+ *(.sharable_data .sharable_data.* .gnu.linkonce.shrd.*)
+                0x0000000000800000                . = ALIGN ((. != 0x0)?0x200000:0x1)
+                0x0000000000800000                PROVIDE (__sharable_data_end, .)
+                0x0000000000800000                _edata = .
+                0x0000000000800000                PROVIDE (edata, .)
+                0x0000000000800000                __bss_start = .
+
+.bss            0x000000000060acf0       0xa0
+ *(.dynbss)
+ *(.bss .bss.* .gnu.linkonce.b.*)
+ .bss           0x000000000060acf0       0xa0 obj/Runtime.o
+                0x000000000060acf0                _D6object9Interface6__initZ
+                0x000000000060ad10                _D6object14OffsetTypeInfo6__initZ
+                0x000000000060ad20                _D6object12traceHandlerPFPvZC6object9Throwable9TraceInfo
+                0x000000000060ad28                _D6object10ModuleInfo6__initZ
+                0x000000000060ad30                _D6object7Monitor6__initZ
+                0x000000000060ad50                _D6object7AARange6__initZ
+                0x000000000060ad60                _D7Runtime4Core9Exception14_assertHandlerPFNbAyamAyaZv
+                0x000000000060ad70                _D7Runtime7Monitor7Monitor6__initZ
+ *(COMMON)
+                0x000000000060ad90                . = ALIGN ((. != 0x0)?0x8:0x1)
+
+.lbss
+ *(.dynlbss)
+ *(.lbss .lbss.* .gnu.linkonce.lb.*)
+ *(LARGE_COMMON)
+
+.sharable_bss   0x0000000000800000        0x0
+                0x0000000000800000                PROVIDE (__sharable_bss_start, .)
+ *(.dynsharablebss)
+ *(.sharable_bss .sharable_bss.* .gnu.linkonce.shrb.*)
+ *(SHARABLE_COMMON)
+                0x0000000000800000                . = ALIGN ((. != 0x0)?0x200000:0x1)
+                0x0000000000800000                PROVIDE (__sharable_bss_end, .)
+                0x0000000000800000                . = ALIGN (0x8)
+
+.lrodata
+ *(.lrodata .lrodata.* .gnu.linkonce.lr.*)
+
+.ldata          0x0000000000a0ad90        0x0
+ *(.ldata .ldata.* .gnu.linkonce.l.*)
+                0x0000000000a0ad90                . = ALIGN ((. != 0x0)?0x8:0x1)
+                0x0000000000a0ad90                . = ALIGN (0x8)
+                0x0000000000a0ad90                _end = .
+                0x0000000000a0ad90                PROVIDE (end, .)
+                0x0000000000a0ad90                . = DATA_SEGMENT_END (.)
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.note           0x0000000000000000        0x0
+ .note          0x0000000000000000        0x0 obj/Runtime.o
+
+.comment        0x0000000000000000        0x0
+ *(.comment)
+ .comment       0x0000000000000000        0x0 obj/Runtime.o
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x0000000000000000      0xee0
+ *(.debug_aranges)
+ .debug_aranges
+                0x0000000000000000      0xee0 obj/Runtime.o
+
+.debug_pubnames
+                0x0000000000000000     0x2fd9
+ *(.debug_pubnames)
+ .debug_pubnames
+                0x0000000000000000     0x2fd9 obj/Runtime.o
+
+.debug_info     0x0000000000000000     0xe9c4
+ *(.debug_info .gnu.linkonce.wi.*)
+ .debug_info    0x0000000000000000     0xe9c4 obj/Runtime.o
+
+.debug_abbrev   0x0000000000000000      0x169
+ *(.debug_abbrev)
+ .debug_abbrev  0x0000000000000000      0x169 obj/Runtime.o
+
+.debug_line     0x0000000000000000     0x22a8
+ *(.debug_line)
+ .debug_line    0x0000000000000000     0x22a8 obj/Runtime.o
+
+.debug_frame    0x0000000000000000     0x2260
+ *(.debug_frame)
+ .debug_frame   0x0000000000000000     0x2260 obj/Runtime.o
+
+.debug_str      0x0000000000000000        0x0
+ *(.debug_str)
+ .debug_str     0x0000000000000000        0x0 obj/Runtime.o
+
+.debug_loc      0x0000000000000000     0x4610
+ *(.debug_loc)
+ .debug_loc     0x0000000000000000     0x4610 obj/Runtime.o
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+
+.debug_pubtypes
+ *(.debug_pubtypes)
+
+.debug_ranges   0x0000000000000000      0xed0
+ *(.debug_ranges)
+ .debug_ranges  0x0000000000000000      0xed0 obj/Runtime.o
+
+.gnu.attributes
+ *(.gnu.attributes)
+
+/DISCARD/
+ *(.note.GNU-stack)
+ *(.gnu_debuglink)
+ *(.gnu.lto_*)
+OUTPUT(Runtime.a elf64-x86-64)

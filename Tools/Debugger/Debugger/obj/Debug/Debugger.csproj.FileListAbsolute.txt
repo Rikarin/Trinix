@@ -1,0 +1,8 @@
+C:\Users\Satoshi\Desktop\Trinix\Tools\Debugger\Debugger\bin\Debug\Debugger.exe.config
+C:\Users\Satoshi\Desktop\Trinix\Tools\Debugger\Debugger\bin\Debug\Debugger.exe
+C:\Users\Satoshi\Desktop\Trinix\Tools\Debugger\Debugger\bin\Debug\Debugger.pdb
+C:\Users\Satoshi\Desktop\Trinix\Tools\Debugger\Debugger\obj\Debug\Debugger.csprojResolveAssemblyReference.cache
+C:\Users\Satoshi\Desktop\Trinix\Tools\Debugger\Debugger\obj\Debug\Debugger.exe
+C:\Users\Satoshi\Desktop\Trinix\Tools\Debugger\Debugger\obj\Debug\Debugger.pdb
+C:\Users\Satoshi\Desktop\Trinix\Tools\Debugger\Debugger\obj\Debug\Debugger.InterruptHandler.resources
+C:\Users\Satoshi\Desktop\Trinix\Tools\Debugger\Debugger\obj\Debug\Debugger.csproj.GenerateResource.Cache

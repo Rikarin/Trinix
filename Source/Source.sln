@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "Kernel", "Kernel\Kernel.dproj", "{5E388702-A5EB-4DFF-9A9C-D59DAE72A604}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{B93E1E9D-35AB-408C-918D-9D583C5D7A7A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Storage", "Storage", "{F82CB059-D924-4CDE-ADB7-96BBEED22194}"
+EndProject
+Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "ATA", "Modules\Storage\ATA\ATA.dproj", "{D5971826-B19E-411A-ABA6-1DD95D52F65B}"
+EndProject
+Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "Runtime", "Runtime\Runtime.dproj", "{97D14203-57EC-4E79-9B90-8B1B863526F8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Unittest|Any CPU = Unittest|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5E388702-A5EB-4DFF-9A9C-D59DAE72A604}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E388702-A5EB-4DFF-9A9C-D59DAE72A604}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E388702-A5EB-4DFF-9A9C-D59DAE72A604}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E388702-A5EB-4DFF-9A9C-D59DAE72A604}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E388702-A5EB-4DFF-9A9C-D59DAE72A604}.Unittest|Any CPU.ActiveCfg = Unittest|Any CPU
+		{5E388702-A5EB-4DFF-9A9C-D59DAE72A604}.Unittest|Any CPU.Build.0 = Unittest|Any CPU
+		{97D14203-57EC-4E79-9B90-8B1B863526F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97D14203-57EC-4E79-9B90-8B1B863526F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97D14203-57EC-4E79-9B90-8B1B863526F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97D14203-57EC-4E79-9B90-8B1B863526F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97D14203-57EC-4E79-9B90-8B1B863526F8}.Unittest|Any CPU.ActiveCfg = Unittest|Any CPU
+		{97D14203-57EC-4E79-9B90-8B1B863526F8}.Unittest|Any CPU.Build.0 = Unittest|Any CPU
+		{D5971826-B19E-411A-ABA6-1DD95D52F65B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5971826-B19E-411A-ABA6-1DD95D52F65B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5971826-B19E-411A-ABA6-1DD95D52F65B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5971826-B19E-411A-ABA6-1DD95D52F65B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5971826-B19E-411A-ABA6-1DD95D52F65B}.Unittest|Any CPU.ActiveCfg = Unittest|Any CPU
+		{D5971826-B19E-411A-ABA6-1DD95D52F65B}.Unittest|Any CPU.Build.0 = Unittest|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F82CB059-D924-4CDE-ADB7-96BBEED22194} = {B93E1E9D-35AB-408C-918D-9D583C5D7A7A}
+		{D5971826-B19E-411A-ABA6-1DD95D52F65B} = {F82CB059-D924-4CDE-ADB7-96BBEED22194}
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Kernel\Kernel.dproj
+	EndGlobalSection
+EndGlobal
