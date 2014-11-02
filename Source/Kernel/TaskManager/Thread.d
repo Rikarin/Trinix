@@ -102,7 +102,7 @@ public final class Thread {
 		_syscallStack  = new ulong[StackSize];
 		_userStack     = new ulong[UserStackSize];//ParentProcess.AllocUserStack();
 
-		_savedState.SSE.Header = cast(ulong)new byte[0x20F].ptr;
+		_savedState.SSE.Header = cast(ulong)new byte[0x20F].ptr; //TODO: delete in destructor
 		_savedState.SSE.Data   = (_savedState.SSE.Header + 0x0F) & ~0x0F;
 
 		_process.Threads.Add(this);
@@ -364,19 +364,19 @@ public final class Thread {
 
 		if (isCurrentThread)
 			while (true)
-				Task.Reschedule();
+				Yield();
 	}
 
 	public void Yield() {
-		Task.Reschedule();
+		Task.Scheduler();
 	}
 
 	public void WaitForStatusEnd(ThreadStatus status) {
-		assert(status != ThreadStatus.Active);
-		assert(status != ThreadStatus.Dead);
+	//	assert(status != ThreadStatus.Active);
+	//	assert(status != ThreadStatus.Dead);
 
-		while (_status == status)
-			Task.Reschedule();
+		while (1) {}
+			//Yield(); FIXME
 	}
 
 	public ulong Sleep(ThreadStatus status, void* ptr, ulong num, SpinLock lock) {
@@ -387,8 +387,14 @@ public final class Thread {
 
 		if (lock)
 			lock.Release();
+		import Core;
 
-		WaitForStatusEnd(status);
+		//WaitForStatusEnd(status); FIXME
+		while (true) {
+			Log.WriteLine("Waiting...");
+		}
+
+
 		_waitPointer = null;
 		return _retStatus;
 	}

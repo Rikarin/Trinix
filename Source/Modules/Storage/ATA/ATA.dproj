@@ -26,8 +26,8 @@
     <OutputName>ATA</OutputName>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Build" command="D:\Instalacky\plink.exe -ssh -l root -i G:/private2.ppk 192.168.0.104 cd /os/Source/Modules/Storage/ATA/;make" />
-        <Command type="Clean" command="D:\Instalacky\plink.exe -ssh -l root -i G:/private2.ppk 192.168.0.104 cd /os/Source/Modules/Storage/ATA/;make clean" />
+        <Command type="Build" command="D:\Instalacky\plink.exe -ssh -l root -i G:/private2.ppk 192.168.0.109 cd /os/Source/Modules/Storage/ATA/;make" />
+        <Command type="Clean" command="D:\Instalacky\plink.exe -ssh -l root -i G:/private2.ppk 192.168.0.109 cd /os/Source/Modules/Storage/ATA/;make clean" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>

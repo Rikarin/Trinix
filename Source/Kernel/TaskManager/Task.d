@@ -82,46 +82,36 @@ public abstract final class Task : IStaticModule {
 		return true;
 	}
 
-	public static void Schelduler() {
-		//Log.WriteLine("Trying to reschedule");
-
+	public static void Scheduler() {
 		if (_spinLock.IsLocked)
 			return;
 	
 		if (CurrentThread._remaining--)
 			return;
 
-		/// Save RBP, RSP, RIP registers
 		void* rsp, rbp;
 		asm {
 			"mov %0, RSP" : "=r"(rsp);
 			"mov %0, RBP" : "=r"(rbp);
 		}
 
-		void* rip = _Proc_Read_RIP();
+		/*void* rip = _Proc_Read_RIP();
 		if (cast(ulong)rip == 0x12341234UL)
-			return;
+			return;*/
 
-		CurrentThread.SavedState.RIP = rip;
-		CurrentThread.SavedState.RSP = rsp;
-		CurrentThread.SavedState.RBP = rbp;
+		//CurrentThread.SavedState.RIP = rip;
+		//CurrentThread.SavedState.RSP = rsp;
+		//CurrentThread.SavedState.RBP = rbp;
 
 		Reschedule();
 	}
 
-	package static void Reschedule() {
-		if (_spinLock.IsLocked)
-			return;
-
+	private static void Reschedule() {
 		Thread next = GetNextToRun();
-		if (CurrentThread == next)
-			return;
-		//if (!next)
-		//	next = idle thread
-		if (next is null)
-			return;
-			
 		Log.WriteLine("Debug: rescheduled: ", next.ID);
+
+		//if (next is null || next == CurrentThread)
+			return;
 
 		/// Save SSE. I think this is shit... WE already had saved SSE in RBP - 0xFFF & ~0x0F
 		//TODO: need allocate some memory first....
@@ -130,24 +120,24 @@ public abstract final class Task : IStaticModule {
 		//Port.DisableSSE();
 
 		/// Change to next thread
-		_currentThread = next;
+		/*_currentThread = next;
 		_currentThread.SetKernelStack();
 		_currentThread.ParentProcess._paging.Install();
 
 		with (CurrentThread.SavedState)
-			SwitchTasks(RSP, RBP, RIP);
+			SwitchTasks(RSP, RBP, RIP);*/
 	}
 
 	private static Thread GetNextToRun() {
 		ThreadLock.WaitOne();
 		scope(exit) ThreadLock.Release();
 
-		if (CurrentThread.Status == ThreadStatus.Active) {}
-			Threads[CurrentThread.Priority].Add(CurrentThread);
-
 		Thread next = GetRunnable();
 		if (next)
 			next._remaining = next._quantum;
+
+		if (CurrentThread.Status == ThreadStatus.Active)
+			Threads[CurrentThread.Priority].Add(CurrentThread);
 
 		return next;
 	}
@@ -165,7 +155,14 @@ public abstract final class Task : IStaticModule {
 			}
 		}
 
-		return null;
+	//	if (CurrentThread.Status == ThreadStatus.Active)
+			return CurrentThread;
+
+		asm {
+			"cli";
+			"hlt";
+		}
+		return null; //TODO: return idle task
 	}
 
 	private static void SwitchTasks(void* rsp, void* rbp, void* rip) {		

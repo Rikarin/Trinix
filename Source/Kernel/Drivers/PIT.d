@@ -59,6 +59,6 @@ public abstract final class PIT : IStaticModule {
 			_seconds++;
 		}
 
-		Task.Schelduler();
+		Task.Scheduler();
 	}
 }

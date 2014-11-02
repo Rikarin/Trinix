@@ -112,7 +112,7 @@ public abstract final class IDT : IStaticModule {
 		else
 			const char[] GenerateIDT = `SetInterruptGate(` ~ idx.stringof ~ `, &isr` ~ idx.stringof[0 .. $ - 1] ~ `);` ~ GenerateIDT!(numberISRs, idx + 1);
 	}
-	
+
 	private static template GenerateISR(ulong num, bool needDummyError = true) {
 		const char[] GenerateISR = `private static void isr` ~ num.stringof[0 .. $ - 2] ~ `(){asm{"pop RBP";` ~
 			(needDummyError ? `"pushq 0";` : ``) ~ `"pushq ` ~ num.stringof[0 .. $ - 2] ~ `";"jmp %0" : : "r"(&IsrCommon);}}`;
@@ -126,6 +126,7 @@ public abstract final class IDT : IStaticModule {
 			~ GenerateISRs!(start + 1, end, needDummyError);
 	}
 
+	pragma(msg, GenerateISR!0);
 	mixin(GenerateISR!0);
 	mixin(GenerateISR!1);
 	mixin(GenerateISR!2);
@@ -144,7 +145,19 @@ public abstract final class IDT : IStaticModule {
 	mixin(GenerateISRs!(15, 49));
 	
 	private static void Dispatch(InterruptStack* stack) {
-		Port.SaveSSE(Task.CurrentThread.SavedState.SSE.Data);
+	//	Port.SaveSSE(Task.CurrentThread.SavedState.SSE.Data);
+
+		Log.WriteJSON("irq", stack.IntNumber);
+		Log.WriteJSON("rip", stack.RIP);
+		Log.WriteJSON("rbp", stack.RBP);
+		Log.WriteJSON("rsp", stack.RSP);
+		/*Log.WriteJSON("cs", stack.CS);
+		Log.WriteJSON("ss", stack.SS);*/
+		
+		/*Log.WriteJSON("gs", stack.GS);
+		Log.WriteJSON("fs", stack.FS);
+		Log.WriteJSON("es", stack.ES);
+		Log.WriteJSON("ds", stack.DS);*/
 
 		if (stack.IntNumber == 0xE)
 			Paging.PageFaultHandler(*stack);
@@ -173,12 +186,16 @@ public abstract final class IDT : IStaticModule {
 				Log.WriteJSON("addr0", *(cast(ulong *)stack.RSP));*/
 		}
 
-		if (stack.IntNumber >= 32)
-			DeviceManager.EOI(cast(int)stack.IntNumber - 32);
+		//if (stack.IntNumber >= 32)
+		//	DeviceManager.EOI(cast(int)stack.IntNumber - 32);
 
-		DeviceManager.Handler(*stack);
-		Port.Cli();
-		Port.RestoreSSE(Task.CurrentThread.SavedState.SSE.Data);
+		asm {
+		//	"outb %%DX, %%AL" : : "d"(0x20), "a"(0x20);
+		}
+
+		//DeviceManager.Handler(*stack);
+		//Port.Cli();
+	//	Port.RestoreSSE(Task.CurrentThread.SavedState.SSE.Data);
 	}
 	
 	private static void IsrIgnore() {
@@ -231,6 +248,11 @@ public abstract final class IDT : IStaticModule {
 			// Run dispatcher
 			"mov RDI, RSP";
 			"call %0" : : "r"(&Dispatch);
+
+			"push RAX";
+			"mov RAX, 0x20";
+			"outb 0x20, AL";
+			"pop RAX";
 			
 			// Restore segments
 			"popq RAX";
@@ -249,14 +271,14 @@ public abstract final class IDT : IStaticModule {
 			"pop R10";
 			"pop R9";
 			"pop R8";
-			"pop RBP";
+			"pop RDI";
 			"pop RDI";
 			"pop RSI";
 			"pop RDX";
 			"pop RCX";
 			"pop RBX";
 			"pop RAX";
-			
+
 			"add RSP, 16";
 			"iretq";
 		}
