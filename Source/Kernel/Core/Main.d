@@ -123,24 +123,24 @@ extern(C) void KernelMain(uint magic, void* info) {
 	PIT.Install();
 
 	Log.WriteJSON("}");
-	//VFS.PrintTree(VFS.Root);
+	VFS.PrintTree(VFS.Root);
 
-	for (int i = 0; i < 0x40000000; i++) {}
-	Log.WriteLine("aaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
-	//Thread thr = new Thread(Task.CurrentThread);
-	//thr.Start(&testfce, null);
-	//thr.AddActive();
 
+
+
+	Thread thr = new Thread(Task.CurrentThread);
+	thr.Start(&testfce, null);
+	thr.AddActive();
 
 	//asm { sysenter; }
-	//Task.CurrentThread.WaitEvents(ThreadEvent.DeadChild);
+	Task.CurrentThread.WaitEvents(ThreadEvent.DeadChild);
 
 
-	Log.WriteLine("Running.....", PIT.Uptime);
+	//Log.WriteLine("Running.....", PIT.Uptime);
 
 	while (true) {
-		//Log.WriteLine("Running.....", PIT.Uptime);
+		Log.WriteLine("Running.....", PIT.Uptime);
 	}
 
 /+	foreach (tmp; Multiboot.Modules[0 .. Multiboot.ModulesCount]) {
@@ -159,8 +159,12 @@ extern(C) void KernelMain(uint magic, void* info) {
 }
 
 void testfce() {
-	//for (int i = 0; i < 0x500000000; i++) {}
-	while (true) {}
+	for (int i = 0; i < 0x100; i++) {
+		asm {
+			"hlt";
+		}
+	}
+	//while (true) {}
 	//dorobit Exit thready
 }
 

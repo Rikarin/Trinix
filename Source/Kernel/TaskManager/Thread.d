@@ -4,6 +4,7 @@ import Core;
 import Library;
 import TaskManager;
 import Architecture;
+import ObjectManager;
 import SyscallManager;
 
 
@@ -142,6 +143,9 @@ public final class Thread {
 		delete _messages;
 		delete _kernelStack;
 		delete _syscallStack;
+
+		ulong* aa = cast(ulong *)_savedState.SSE.Header;
+		delete aa;
 	}
 
 	package void SetKernelStack() {
@@ -240,6 +244,7 @@ public final class Thread {
 			//copy args to user stack
 			
 			//Run(0x202, 0, 0x1B, 0x23); //User
+			DeviceManager.EOI(0);
 			Run(0x202, _kernelStack[0], 0x08, 0x10); //Kernel
 		}
 	}
@@ -372,11 +377,11 @@ public final class Thread {
 	}
 
 	public void WaitForStatusEnd(ThreadStatus status) {
-	//	assert(status != ThreadStatus.Active);
-	//	assert(status != ThreadStatus.Dead);
+		assert(status != ThreadStatus.Active);
+		assert(status != ThreadStatus.Dead);
 
-		while (1) {}
-			//Yield(); FIXME
+		while (_status == status)
+			Yield();
 	}
 
 	public ulong Sleep(ThreadStatus status, void* ptr, ulong num, SpinLock lock) {
@@ -387,14 +392,8 @@ public final class Thread {
 
 		if (lock)
 			lock.Release();
-		import Core;
 
-		//WaitForStatusEnd(status); FIXME
-		while (true) {
-			Log.WriteLine("Waiting...");
-		}
-
-
+		WaitForStatusEnd(status);
 		_waitPointer = null;
 		return _retStatus;
 	}

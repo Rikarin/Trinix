@@ -95,13 +95,13 @@ public abstract final class Task : IStaticModule {
 			"mov %0, RBP" : "=r"(rbp);
 		}
 
-		/*void* rip = _Proc_Read_RIP();
+		void* rip = _Proc_Read_RIP();
 		if (cast(ulong)rip == 0x12341234UL)
-			return;*/
+			return;
 
-		//CurrentThread.SavedState.RIP = rip;
-		//CurrentThread.SavedState.RSP = rsp;
-		//CurrentThread.SavedState.RBP = rbp;
+		CurrentThread.SavedState.RIP = rip;
+		CurrentThread.SavedState.RSP = rsp;
+		CurrentThread.SavedState.RBP = rbp;
 
 		Reschedule();
 	}
@@ -110,7 +110,7 @@ public abstract final class Task : IStaticModule {
 		Thread next = GetNextToRun();
 		Log.WriteLine("Debug: rescheduled: ", next.ID);
 
-		//if (next is null || next == CurrentThread)
+		if (next is null || next == CurrentThread)
 			return;
 
 		/// Save SSE. I think this is shit... WE already had saved SSE in RBP - 0xFFF & ~0x0F
@@ -120,24 +120,24 @@ public abstract final class Task : IStaticModule {
 		//Port.DisableSSE();
 
 		/// Change to next thread
-		/*_currentThread = next;
+		_currentThread = next;
 		_currentThread.SetKernelStack();
 		_currentThread.ParentProcess._paging.Install();
 
 		with (CurrentThread.SavedState)
-			SwitchTasks(RSP, RBP, RIP);*/
+			SwitchTasks(RSP, RBP, RIP);
 	}
 
 	private static Thread GetNextToRun() {
 		ThreadLock.WaitOne();
 		scope(exit) ThreadLock.Release();
 
-		Thread next = GetRunnable();
-		if (next)
-			next._remaining = next._quantum;
-
 		if (CurrentThread.Status == ThreadStatus.Active)
 			Threads[CurrentThread.Priority].Add(CurrentThread);
+
+		Thread next = GetRunnable();
+		if (next) //TODO: remove this aftre adding idle task
+			next._remaining = next._quantum;
 
 		return next;
 	}
@@ -155,13 +155,6 @@ public abstract final class Task : IStaticModule {
 			}
 		}
 
-	//	if (CurrentThread.Status == ThreadStatus.Active)
-			return CurrentThread;
-
-		asm {
-			"cli";
-			"hlt";
-		}
 		return null; //TODO: return idle task
 	}
 
