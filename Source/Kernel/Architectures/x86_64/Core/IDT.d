@@ -117,7 +117,7 @@ public abstract final class IDT : IStaticModule {
 		const char[] GenerateISR = `private static void isr` ~ num.stringof[0 .. $ - 2] ~ `(){asm{"pop RBP";` ~
 			(needDummyError ? `"pushq 0";` : ``) ~ `"pushq ` ~ num.stringof[0 .. $ - 2] ~ `";"jmp %0" : : "r"(&IsrCommon);}}`;
 	}
-	
+
 	private static template GenerateISRs(uint start, uint end, bool needDummyError = true) {
 		static if (start > end)
 			const char[] GenerateISRs = ``;
@@ -126,7 +126,6 @@ public abstract final class IDT : IStaticModule {
 			~ GenerateISRs!(start + 1, end, needDummyError);
 	}
 
-	pragma(msg, GenerateISR!0);
 	mixin(GenerateISR!0);
 	mixin(GenerateISR!1);
 	mixin(GenerateISR!2);
@@ -144,20 +143,8 @@ public abstract final class IDT : IStaticModule {
 	mixin(GenerateISR!(14, false));
 	mixin(GenerateISRs!(15, 49));
 	
-	private static void Dispatch(InterruptStack* stack) {
-	//	Port.SaveSSE(Task.CurrentThread.SavedState.SSE.Data);
-
-		Log.WriteJSON("irq", stack.IntNumber);
-		Log.WriteJSON("rip", stack.RIP);
-		Log.WriteJSON("rbp", stack.RBP);
-		Log.WriteJSON("rsp", stack.RSP);
-		/*Log.WriteJSON("cs", stack.CS);
-		Log.WriteJSON("ss", stack.SS);*/
-		
-		/*Log.WriteJSON("gs", stack.GS);
-		Log.WriteJSON("fs", stack.FS);
-		Log.WriteJSON("es", stack.ES);
-		Log.WriteJSON("ds", stack.DS);*/
+	public static extern(C) void Dispatch(InterruptStack* stack) {
+		Port.SaveSSE(Task.CurrentThread.SavedState.SSE.Data);
 
 		if (stack.IntNumber == 0xE)
 			Paging.PageFaultHandler(*stack);
@@ -186,18 +173,16 @@ public abstract final class IDT : IStaticModule {
 				Log.WriteJSON("addr0", *(cast(ulong *)stack.RSP));*/
 		}
 
-		//if (stack.IntNumber >= 32)
-		//	DeviceManager.EOI(cast(int)stack.IntNumber - 32);
+		DeviceManager.Handler(*stack);
 
-		asm {
-		//	"outb %%DX, %%AL" : : "d"(0x20), "a"(0x20);
-		}
+		// We must disable intterupts before sending ACK. Enable it with iretq
+		Port.Cli();
+		if (stack.IntNumber >= 32)
+			DeviceManager.EOI(cast(int)stack.IntNumber - 32);
 
-		//DeviceManager.Handler(*stack);
-		//Port.Cli();
-	//	Port.RestoreSSE(Task.CurrentThread.SavedState.SSE.Data);
+		Port.RestoreSSE(Task.CurrentThread.SavedState.SSE.Data);
 	}
-	
+
 	private static void IsrIgnore() {
 		asm {
 			"pop RBP"; //Naked

@@ -1,36 +1,14 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Kernel\Core\Main.d">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Kernel\Architectures\x86_64\Core\IDT.d">
     <Files>
-      <File FileName="Kernel\Core\Main.d" Line="31" Column="31" />
-      <File FileName="Kernel\TaskManager\Task.d" Line="1" Column="1" />
+      <File FileName="Kernel\Core\Main.d" Line="21" Column="21" />
+      <File FileName="Kernel\TaskManager\Task.d" Line="36" Column="36" />
       <File FileName="Kernel\TaskManager\Process.d" Line="1" Column="1" />
-      <File FileName="Kernel\TaskManager\Thread.d" Line="43" Column="43" />
+      <File FileName="Kernel\TaskManager\Thread.d" Line="28" Column="28" />
       <File FileName="Kernel\Library\LinkedList.d" Line="17" Column="17" />
-      <File FileName="Kernel\Architectures\x86_64\Core\IDT.d" Line="4" Column="4" />
-      <File FileName="Kernel\Architectures\x86_64\Architecture\Port.d" Line="4" Column="4" />
+      <File FileName="Kernel\Architectures\x86_64\Core\IDT.d" Line="3" Column="3" />
     </Files>
-    <Pads>
-      <Pad Id="ProjectPad">
-        <State expanded="True">
-          <Node name="Kernel" expanded="True">
-            <Node name="Architectures" expanded="True">
-              <Node name="x86_64" expanded="True">
-                <Node name="Architecture" expanded="True" />
-                <Node name="Core" expanded="True" />
-              </Node>
-            </Node>
-            <Node name="Core" expanded="True">
-              <Node name="Main.d" selected="True" />
-            </Node>
-            <Node name="Drivers" expanded="True" />
-            <Node name="Library" expanded="True" />
-            <Node name="ObjectManager" expanded="True" />
-            <Node name="TaskManager" expanded="True" />
-          </Node>
-        </State>
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
