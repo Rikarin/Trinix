@@ -133,7 +133,7 @@ extern(C) void KernelMain(uint magic, void* info) {
 	thr.Start(&testfce, null);
 	thr.AddActive();
 
-	//asm { sysenter; }
+	//asm { "sysenter"; }
 	Task.CurrentThread.WaitEvents(ThreadEvent.DeadChild);
 
 

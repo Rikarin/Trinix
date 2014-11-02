@@ -31,6 +31,22 @@ public class Semaphore {
 		delete _name;
 	}
 
+	@property package void LockInternal() {
+		_spinLock.WaitOne();
+	}
+
+	@property package void UnlockInternal() {
+		_spinLock.Release();
+	}
+
+	@property package LinkedList!Thread Waiting() {
+		return _waiting;
+	}
+
+	@property package LinkedList!Thread Signaling() {
+		return _signaling;
+	}
+
 	public int WaitOne() {
 		int taken;
 		_spinLock.WaitOne();

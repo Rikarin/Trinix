@@ -74,7 +74,7 @@ public final class Thread {
 
 	package int _quantum;
 	package int _remaining;
-	package int _curCPU; //TODO: add after multiCPU support
+	package int _curCPU; //TO DO: add after multiCPU support
 
 	private ulong _eventState;
 	private void* _waitPointer;
@@ -101,9 +101,9 @@ public final class Thread {
 		_messages      = new LinkedList!(IPCMessage *)();
 		_kernelStack   = new ulong[StackSize];
 		_syscallStack  = new ulong[StackSize];
-		_userStack     = new ulong[UserStackSize];//ParentProcess.AllocUserStack();
+		_userStack     = new ulong[UserStackSize];//TODO: ParentProcess.AllocUserStack();
 
-		_savedState.SSE.Header = cast(ulong)new byte[0x20F].ptr; //TODO: delete in destructor
+		_savedState.SSE.Header = cast(ulong)new byte[0x20F].ptr;
 		_savedState.SSE.Data   = (_savedState.SSE.Header + 0x0F) & ~0x0F;
 
 		_process.Threads.Add(this);
@@ -232,10 +232,6 @@ public final class Thread {
 		_savedState.RIP = cast(void *)&NewThread;
 
 		_kernelStack[0] = cast(ulong)entryPoint;
-
-		Log.WriteLine("RSP: ", cast(ulong)_savedState.RSP);
-		Log.WriteLine("RIP: ", cast(ulong)_savedState.RIP);
-		Log.WriteLine("_kernelStack[0]: ", cast(ulong)_kernelStack[0]);
 	}
 
 	private static void NewThread() {
@@ -243,7 +239,7 @@ public final class Thread {
 			ParentProcess.PageTable.Install();
 			//copy args to user stack
 			
-			//Run(0x202, 0, 0x1B, 0x23); //User
+			//TODO: Run(0x202, 0, 0x1B, 0x23); //User
 			DeviceManager.EOI(0);
 			Run(0x202, _kernelStack[0], 0x08, 0x10); //Kernel
 		}
@@ -292,7 +288,7 @@ public final class Thread {
 					ClearEvent(ThreadEvent.DeadChild);
 				_deadChildLock.Release();
 
-				assert(deadThread._status == ThreadStatus.Zombie); //TODO: check me
+				assert(deadThread._status == ThreadStatus.Zombie);
 				deadThread._status = ThreadStatus.Dead;
 
 				ulong ret = deadThread._id;
@@ -417,7 +413,13 @@ public final class Thread {
 				return true;
 
 			case ThreadStatus.SemaphoreSleep:
-				//TODO: now, we dont have semaphore...
+				Semaphore semaphore = cast(Semaphore)_waitPointer;
+				semaphore.LockInternal();
+				scope(exit) semaphore.UnlockInternal();
+
+				if (!semaphore.Waiting.Remove(this) && !semaphore.Signaling.Remove(this))
+					return false;
+					
 				_retStatus = 0;
 				AddActive();
 				return true;
