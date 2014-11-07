@@ -72,8 +72,8 @@ public final class Thread {
 	private int _pendingSignal;
 	private LinkedList!(IPCMessage *) _messages;
 
-	package int _quantum;
-	package int _remaining;
+	private int _quantum;
+	private int _remaining;
 	package int _curCPU; //TO DO: add after multiCPU support
 
 	private ulong _eventState;
@@ -177,28 +177,16 @@ public final class Thread {
 		return _waitPointer;
 	}
 
-	@property public void* FaultHandler() {
+	@property public ref void* FaultHandler() {
 		return _faultHandler;
 	}
 
-	@property public void FaultHandler(void* value) {
-		_faultHandler = value;
-	}
-
-	@property public ThreadStatus Status() {
+	@property public ref ThreadStatus Status() {
 		return _status;
 	}
 
-	@property public void Status(ThreadStatus value) {
-		_status = value;
-	}
-
-	@property public ulong RetStatus() {
+	@property public ref ulong RetStatus() {
 		return _retStatus;
-	}
-	
-	@property public void RetStatus(ulong value) {
-		_retStatus = value;
 	}
 
 	@property public ref TaskState SavedState() {
@@ -207,6 +195,14 @@ public final class Thread {
 
 	@property public int Priority() {
 		return _priority;
+	}
+
+	@property public ref int Quantum() {
+		return _quantum;
+	}
+
+	@property public ref int Remaining() {
+		return _remaining;
 	}
 
 	@property public void Priority(int priority) {
@@ -226,7 +222,7 @@ public final class Thread {
 			_priority = priority;
 	}
 
-	public void Start(void function() entryPoint, string[] args) {
+	public void Start(void function() entryPoint, string[] args) { //TODO: args...
 		//switch to new thread before run is called
 		_savedState.RSP = cast(void *)_kernelStack.ptr + StackSize;
 		_savedState.RIP = cast(void *)&NewThread;

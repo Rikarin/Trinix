@@ -30,6 +30,7 @@ public abstract final class Task : IStaticModule {
 	private __gshared LinkedList!Process _procs;
 	private __gshared LinkedList!Thread[] _threads;
 	private __gshared Thread _currentThread;
+	private __gshared Thread _idle;
 
 	@property package static SpinLock ThreadLock() {
 		return _spinLock;
@@ -68,6 +69,10 @@ public abstract final class Task : IStaticModule {
 		return _nextTID++;
 	}
 
+	@property package static ref Thread IdleTask() {
+		return _idle;
+	}
+
 	public static bool Initialize() {
 		_spinLock = new SpinLock();
 		_procs    = new LinkedList!Process();
@@ -86,7 +91,7 @@ public abstract final class Task : IStaticModule {
 		if (_spinLock.IsLocked)
 			return;
 	
-		if (CurrentThread._remaining--)
+		if (CurrentThread.Remaining--)
 			return;
 
 		void* rsp, rbp;
@@ -136,9 +141,7 @@ public abstract final class Task : IStaticModule {
 			Threads[CurrentThread.Priority].Add(CurrentThread);
 
 		Thread next = GetRunnable();
-		if (next) //TODO: remove this aftre adding idle task
-			next._remaining = next._quantum;
-
+		next.Remaining = next.Quantum;
 		return next;
 	}
 
@@ -155,7 +158,7 @@ public abstract final class Task : IStaticModule {
 			}
 		}
 
-		return null; //TODO: return idle task
+		return _idle;
 	}
 
 	private static void SwitchTasks(void* rsp, void* rbp, void* rip) {		
@@ -166,5 +169,10 @@ public abstract final class Task : IStaticModule {
 			"movq RAX, 0x12341234";
 			"jmp RDX";
 		}
+	}
+
+	package static void Idle() {
+		while (true)
+			Port.Halt();
 	}
 }

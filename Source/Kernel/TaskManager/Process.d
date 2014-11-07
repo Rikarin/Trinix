@@ -53,6 +53,15 @@ public final class Process {
 		t.Name          = "Init";
 		t.Status        = ThreadStatus.Active;
 		t.SetKernelStack();
+
+		//Idle task
+		Task.IdleTask = new Thread(t);
+		with (Task.IdleTask) {
+			Name     = "Idle Task";
+			Priority = MinPriority;
+			Quantum  = 1;
+			Start(&Task.Idle, null);
+		}
 	
 		return process;
 	}
