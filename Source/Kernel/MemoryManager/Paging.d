@@ -311,7 +311,6 @@ public final class Paging {
 
 		//TODO: testing purpose only...
 		import Core;
-		Log._lockable = false; //TODO
 		Log.WriteLine("Error!", `Paging sa dojebal -.-"`);
 		Log.WriteJSON("interrupt", "{");
 		Log.WriteJSON("irq", stack.IntNumber);
@@ -324,7 +323,7 @@ public final class Paging {
 		Log.WriteJSON("rsp", stack.RSP);
 		Log.WriteJSON("cs", stack.CS);
 		Log.WriteJSON("ss", stack.SS);
-		Log.WriteJSON("call track", *(cast(ulong *)stack.RBP + 16));
+		Log.WriteJSON("call track", *(cast(ulong *)stack.RBP + 8));
 		
 		ulong cr2;
 		asm {

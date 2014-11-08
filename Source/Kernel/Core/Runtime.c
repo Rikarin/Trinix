@@ -1,17 +1,7 @@
 extern void* malloc(long sz, int ba);
 
-void* _Unwind_Resume = 0;
-void* _Dmodule_ref = 0;
-void* __gdc_personality_v0 = 0;
-void* abort = 0;
-
-void *memcpy(void *dest, void *src, unsigned long num) {
-	unsigned long i = 0;
-	while (i < num) {
-		((char *)dest)[i] = ((char *)src)[i];
-		i++;
-	}
-
+void* memcpy(void* dest, void* src, unsigned long count) {
+	asm volatile("cld; rep movsb" : "+c" (count), "+S" (src), "+D" (dest) : : "memory");
 	return dest;
 }
 
@@ -26,9 +16,8 @@ int memcmp(const void *ptr1, const void *ptr2, unsigned long num) {
 	return ret;
 }
 
-void* memset(void* ptr, int value, unsigned long num) {
-	while (num--)
-		((unsigned char *)ptr)[num] = (unsigned char)value;
+void* memset(void* ptr, int value, unsigned long count) {
+	asm volatile ("cld; rep stosb" : "+c" (count), "+D" (ptr) : "a" (value) : "memory");
 	return ptr;
 }
 
@@ -49,34 +38,21 @@ void *calloc(long sz, int ba) {
 	return (void *)memset(ret, 0, sz);
 }
 
-int pthread_mutex_lock(void *mutex) { return 0; }
-int pthread_mutex_unlock(void *mutex) { return 0; }
-int pthread_mutex_init() { return 0; }
-int pthread_mutex_destroy() { return 0; }
-void _d_monitor_destroy() { }
+int pthread_mutex_lock(void *mutex) { asm ("cli; hlt"); }
+int pthread_mutex_unlock(void *mutex) { asm ("cli; hlt"); }
+int pthread_mutex_init() { asm ("cli; hlt"); }
+int pthread_mutex_destroy() { asm ("cli; hlt"); }
+void _d_monitor_destroy() { asm ("cli; hlt"); }
 
-void program_invocation_name() {}
-void stderr() {}
-void fprintf() {}
-void dl_iterate_phdr() {}
-void __tls_get_addr() {}
+void program_invocation_name() { asm ("cli; hlt"); }
+void stderr() { asm ("cli; hlt"); }
+void fprintf() { asm ("cli; hlt"); }
+void dl_iterate_phdr() { asm ("cli; hlt"); }
+void __tls_get_addr() { asm ("cli; hlt"); }
 
-void _memset128ii() {}
+void _memset128ii() { asm ("cli; hlt"); }
 
-/*void remap() {
-	unsigned long addr = 0;
-	unsigned long *pd = (unsigned long *)0x22000;
-	unsigned long *pt;
-	int i, j;
-	
-	while (i < 512) {
-		pt = (unsigned long *)0x23000 + i * 0x1000;
-		pd[i] = (unsigned long)pt | 3;
-		
-		j = 0;
-		while (j < 512) {
-			pt[i] = addr | 3;
-			addr += 0x1000;
-		}
-	}
-}*/
+void* _Unwind_Resume() { asm ("cli; hlt"); }
+void* _Dmodule_ref() { asm ("cli; hlt"); }
+void* __gdc_personality_v0() { asm ("cli; hlt"); }
+void* abort() { asm ("cli; hlt"); }

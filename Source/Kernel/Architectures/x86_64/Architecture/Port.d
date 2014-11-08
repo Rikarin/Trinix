@@ -68,6 +68,16 @@ public abstract final class Port {
 		}
 	}
 
+	public static bool GetIntFlag() {
+		ulong flags;
+		asm {
+			"pushfq";
+			"pop RAX" : "=a"(flags);
+		}
+
+		return (flags & 0x200) == 0x200;
+	}
+
 	public static void WriteMSR(ulong msr, ulong value) {
 		ulong hi, lo;
 		lo = value & 0xFFFFFFFF;

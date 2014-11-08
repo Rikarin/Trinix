@@ -46,7 +46,6 @@ public abstract final class ResourceManager : IStaticModule {
 		Log.WriteJSON("param4", param4);
 		Log.WriteJSON("param5", param5);
 
-
 		if (resource > _resources.Count || _resources[resource] is null) {
 			Log.WriteJSON("value", "Bad call");
 			return -1;

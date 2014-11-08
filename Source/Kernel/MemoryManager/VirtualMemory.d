@@ -58,5 +58,5 @@ extern(C) void* malloc(long size, int ba) {
 extern(C) void free(void* ptr) {
 	//Log.WriteJSON("MemoryFree", cast(ulong)ptr);
 
-	VirtualMemory._free(ptr);
+	//VirtualMemory._free(ptr);
 }

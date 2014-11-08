@@ -114,7 +114,7 @@ public abstract final class Task : IStaticModule {
 
 	private static void Reschedule() {
 		Thread next = GetNextToRun();
-	//	Log.WriteLine("Debug: rescheduled: ", next.ID, " priority: ", next.Priority);
+		Log.WriteLine("Debug: rescheduled: ", next.ID, " priority: ", next.Priority, " name: ", next.Name);
 
 		if (next is null || next == CurrentThread)
 			return;

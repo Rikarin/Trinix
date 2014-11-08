@@ -1,5 +1,6 @@
 ﻿module SyscallManager.SyscallHandler;
 
+import TaskManager;
 import Architecture;
 import ObjectManager;
 import SyscallManager;
@@ -29,17 +30,17 @@ public abstract final class SyscallHandler : IStaticModule {
 	public static bool Initialize() {
 		Port.WriteMSR(Registers.IA32_LSTAR, cast(ulong)&SyscallCommon);
 		Port.WriteMSR(Registers.IA32_STAR, Registers.STAR);
-		Port.WriteMSR(Registers.IA32_FMASK, 0x600);
+		Port.WriteMSR(Registers.IA32_FMASK, 0x200);
 		return true;
 	}
-	import TaskManager;
-	private static void SyscallDispatcher(SyscallStack* stack) {
-		Port.SaveSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
+
+	public static void SyscallDispatcher(SyscallStack* stack) {
+	//	Port.SaveSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
 
 		with (stack)
-			RAX = ResourceManager.CallResource(R9, R8, RDI, RSI, RDX, RBX, RAX);
+			ResourceManager.CallResource(R9, R8, RDI, RSI, RDX, RBX, RAX);
 
-		Port.RestoreSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
+	//	Port.RestoreSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
 	}
 
 	extern(C) private static void SyscallCommon() {
@@ -71,7 +72,7 @@ public abstract final class SyscallHandler : IStaticModule {
 			
 			// Run dispatcher
 			"mov RDI, RSP";
-		//	"call %0" : : "r"(&SyscallDispatcher);
+			"call %0" : : "r"(&SyscallDispatcher);
 			
 			// Restore context
 			"pop R15";

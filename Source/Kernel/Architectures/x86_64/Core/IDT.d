@@ -6,6 +6,7 @@ import TaskManager;
 import Architecture;
 import ObjectManager;
 import MemoryManager;
+import SyscallManager;
 import Architectures.x86_64.Core;
 
 
@@ -63,7 +64,6 @@ public abstract final class IDT : IStaticModule {
 			"sti";
 		}
 
-		Log._lockable = true; //TODO
 		return true;
 	}
 
@@ -115,7 +115,7 @@ public abstract final class IDT : IStaticModule {
 
 	private static template GenerateISR(ulong num, bool needDummyError = true) {
 		const char[] GenerateISR = `private static void isr` ~ num.stringof[0 .. $ - 2] ~ `(){asm{"pop RBP";` ~
-			(needDummyError ? `"pushq 0";` : ``) ~ `"pushq ` ~ num.stringof[0 .. $ - 2] ~ `";"jmp %0" : : "r"(&IsrCommon);}}`;
+			(needDummyError ? `"pushq 0";` : ``) ~ `"pushq ` ~ num.stringof[0 .. $ - 2] ~ `";"push RAX";"jmp %0" : : "a"(&IsrCommon);}}`;
 	}
 
 	private static template GenerateISRs(uint start, uint end, bool needDummyError = true) {
@@ -149,7 +149,6 @@ public abstract final class IDT : IStaticModule {
 		if (stack.IntNumber == 0xE)
 			Paging.PageFaultHandler(*stack);
 		else if (stack.IntNumber < 32) { //TODO: call user FaultHandler
-			Log._lockable = false; //TODO
 			Log.WriteJSON("interrupt", "{");
 			Log.WriteJSON("irq", stack.IntNumber);
 			Log.WriteJSON("rax", stack.RAX);
@@ -164,7 +163,31 @@ public abstract final class IDT : IStaticModule {
 			Log.WriteJSON("call track", *(cast(ulong *)stack.RBP + 16));
 			Log.WriteJSON("}");
 			Port.Halt();
-		}
+		}/* else if (stack.IntNumber == 86)/* {
+			Log.WriteJSON("r15", stack.R15);
+			Log.WriteJSON("r14", stack.R14);
+			Log.WriteJSON("r13", stack.R13);
+			Log.WriteJSON("r12", stack.R12);
+			Log.WriteJSON("r11", stack.R11);
+			Log.WriteJSON("r10", stack.R10);
+			Log.WriteJSON("r9", stack.R9);
+			Log.WriteJSON("r8", stack.R8);
+			Log.WriteJSON("rbp", stack.RBP);
+			Log.WriteJSON("rdi", stack.RDI);
+			Log.WriteJSON("rsi", stack.RSI);
+			Log.WriteJSON("rdx", stack.RDX);
+			Log.WriteJSON("rcx", stack.RCX);
+			Log.WriteJSON("rbx", stack.RBX);
+			Log.WriteJSON("rax", stack.RAX);
+			Log.WriteJSON("int", stack.IntNumber);
+			Log.WriteJSON("err", stack.ErrorCode);
+			Log.WriteJSON("rip", stack.RIP);
+			Log.WriteJSON("cs", stack.CS);
+			Log.WriteJSON("flags", stack.Flags);
+			Log.WriteJSON("rsp", stack.RSP);
+			Log.WriteJSON("ss", stack.SS);
+			Port.Halt();
+		}*/
 
 		DeviceManager.Handler(*stack);
 
@@ -192,7 +215,6 @@ public abstract final class IDT : IStaticModule {
 			"cli";
 
 			// Save context
-			"push RAX";
 			"push RBX";
 			"push RCX";
 			"push RDX";

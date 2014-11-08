@@ -11,7 +11,6 @@ public abstract final class Log : IStaticModule {
 	private __gshared int _iterator;
 	private __gshared int _padding;
 	private __gshared bool _installed;
-	public __gshared bool _lockable;
 
 	public static bool Initialize() {
 		//Set cursor
@@ -113,9 +112,6 @@ public abstract final class Log : IStaticModule {
 	}
 
 	public static void Write(T...)(T args) {
-		if (_lockable) //We must lock this...
-			Port.Cli();
-
 		foreach (x; args) {
 			alias A = typeof(x);
 
@@ -140,9 +136,6 @@ public abstract final class Log : IStaticModule {
 			} else
 				Write("Unknown Type: ", A.stringof);
 		}
-
-		if (_lockable)
-			Port.Sti();
 	}
 
 	private static void ParseBlock(T)(T args) {
@@ -166,15 +159,9 @@ public abstract final class Log : IStaticModule {
 
 	private static void Scroll() {
 		if (_iterator > 80 * 25) {
-			if (_lockable) //We must lock this...
-				Port.Cli();
-
 			_display[0 .. _iterator - 80] = _display[80 .. _iterator];
 			_display[_iterator - 80 .. _iterator] = cast(DisplayChar)0;
 			_iterator -= 80;
-
-			if (_lockable)
-				Port.Sti();
 		}
 	}
 
