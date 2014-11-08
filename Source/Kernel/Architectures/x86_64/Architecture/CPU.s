@@ -26,8 +26,8 @@ _CPU_refresh_iretq:
 		ret
 
 _CPU_syscall_handler:
+	o64 sysret
 	cli
-	hlt
 	swapgs
 	mov [GS:0], RSP
 	mov RSP, [GS:8]
@@ -76,3 +76,7 @@ _CPU_syscall_handler:
 	sti
 
 	o64 sysret
+
+[global _CPU_syscall]
+_CPU_syscall:
+	syscall

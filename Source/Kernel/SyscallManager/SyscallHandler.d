@@ -27,5 +27,7 @@ public abstract final class SyscallHandler : IStaticModule {
 }
 
 extern(C) void SyscallDispatcher(InterruptStack* stack) {
-	stack.RAX = ResourceManager.CallResource(stack.RAX, stack.RBX, stack.RCX, stack.RDX, stack.R8, stack.R9, stack.R10);
+	import Core;
+	Log.WriteLine("tessssssssssssssssssssssssssttttttttt");
+	//stack.RAX = ResourceManager.CallResource(stack.RAX, stack.RBX, stack.RCX, stack.RDX, stack.R8, stack.R9, stack.R10);
 }

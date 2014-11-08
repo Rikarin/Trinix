@@ -88,11 +88,17 @@ public final class Process {
 	}
 
 	~this() {
+		foreach (x; _resources) {
+			if (x.Value.DetachProcess(this))
+				delete x.Value;
+		}
+
 		foreach (x; _threads)
 			delete x;
 
 		delete _paging;
 		delete _threads;
+		delete _resources;
 		delete _descriptors;
 
 		// Clean up?

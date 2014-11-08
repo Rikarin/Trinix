@@ -1,7 +1,6 @@
 [bits 64]
 [global _Proc_SaveSSE]
 [global _Proc_Read_RIP]
-[global _Proc_Idle_Task]
 [global _Proc_EnableSSE]
 [global _Proc_RestoreSSE]
 [global _Proc_DisableSSE]
@@ -46,8 +45,3 @@ _Proc_RestoreSSE:
 _Proc_Read_RIP:
 	pop rax
 	jmp rax
-
-
-_Proc_Idle_Task:
-	hlt
-	jmp _Proc_Idle_Task

@@ -312,12 +312,8 @@ public final class LinkedListNode(T) {
 		return _prev is null || _prev is _list._head ? null : _prev;
 	}
 
-	@property public T Value() { 
+	@property public ref T Value() { 
 		return _item;
-	}
-
-	@property public void Value(T value) { 
-		_item = value;
 	}
 
 	private void Invalidate() {

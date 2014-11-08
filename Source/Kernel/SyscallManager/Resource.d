@@ -7,7 +7,7 @@ import SyscallManager;
 
 
 public abstract class Resource {
-	private SpinLock _spinLock; //TODO: mutex?
+	private Mutex _mutex;
 	private LinkedList!(CallTable *) _callTables;
 	private LinkedList!Process _processes;
 
@@ -33,8 +33,8 @@ public abstract class Resource {
 		if (!id)
 			return _type;
 
-		_spinLock.WaitOne();
-		scope(exit) _spinLock.Release();
+		_mutex.WaitOne();
+		scope(exit) _mutex.Release();
 
 		if (id == 0xFFFFFFFF_FFFFFFFF)
 			return StaticCallback(param1, param2, param3, param4, param5);
@@ -71,7 +71,7 @@ public abstract class Resource {
 	protected this(SyscallTypes type, const CallTable[] callTables) {
 		_callTables = new LinkedList!(CallTable *)();
 		_processes  = new LinkedList!Process();
-		_spinLock   = new SpinLock();
+		_mutex      = new Mutex();
 		_type       = type;
 		_id         = ResourceManager.Register(this);
 
@@ -79,21 +79,20 @@ public abstract class Resource {
 	}
 
 	protected ~this() {
-		delete _spinLock;
+		delete _mutex;
 		delete _callTables;
 
 		ResourceManager.Unregister(this);
 	}
 
-	protected void AttachProcess(Process process) {
+	public void AttachProcess(Process process) {
 		if (_processes.Contains(process) == -1)
 			return;
 
 		_processes.Add(process);
 	}
 
-	/// Return true if we can safety delete this object
-	protected bool DetachProcess(Process process) {
+	public bool DetachProcess(Process process) {
 		_processes.Remove(process);
 
 		if (!_processes.Count)

@@ -30,7 +30,7 @@ BlockNode, CharNode,
 /* MemoryMap:
 	0xFFFFFFFFE0000000 - mapovane regiony
 */
-
+extern(C) void _CPU_syscall();
 
 extern(C) void KernelMain(uint magic, void* info) {
 	Log.Initialize();
@@ -101,7 +101,7 @@ extern(C) void KernelMain(uint magic, void* info) {
 	Log.WriteJSON("{");
 	Log.WriteJSON("name", "Task");
 	Log.WriteJSON("type", "Initialize");
-	Log.WriteJSON("value", Task.Initialize());
+	//Log.WriteJSON("value", Task.Initialize());
 	Log.WriteJSON("}");
 	Log.WriteJSON("]");
 
@@ -116,25 +116,26 @@ extern(C) void KernelMain(uint magic, void* info) {
 	ATAController.Detect(); // for testing only
 	Ext2Filesystem.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), cast(Partition)VFS.Find("/System/Devices/hdb1"));
 
-	PIC.Initialize();
-	PIC.Install();
+	//PIC.Initialize();
+	//PIC.Install();
 	
-	PIT.Initialize();
-	PIT.Install();
+//	PIT.Initialize();
+//	PIT.Install();
 
 	Log.WriteJSON("}");
 	VFS.PrintTree(VFS.Root);
 
 
+	//asm { "syscall"; }
+
+	_CPU_syscall();
 
 
+	//Thread thr = new Thread(Task.CurrentThread);
+	//thr.Start(&testfce, null);
+	//thr.AddActive();
 
-	Thread thr = new Thread(Task.CurrentThread);
-	thr.Start(&testfce, null);
-	thr.AddActive();
-
-	//asm { "sysenter"; }
-	Task.CurrentThread.WaitEvents(ThreadEvent.DeadChild);
+	//Task.CurrentThread.WaitEvents(ThreadEvent.DeadChild);
 
 
 	//Log.WriteLine("Running.....", PIT.Uptime);

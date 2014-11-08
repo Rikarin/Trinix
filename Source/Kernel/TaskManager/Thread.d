@@ -236,6 +236,7 @@ public final class Thread {
 			//copy args to user stack
 			
 			//TODO: Run(0x202, 0, 0x1B, 0x23); //User
+			Port.Cli();
 			DeviceManager.EOI(0);
 			Run(0x202, _kernelStack[0], 0x08, 0x10); //Kernel
 		}
