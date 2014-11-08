@@ -104,8 +104,11 @@ public final class Thread {
 
 		_syscallStack[1] = cast(ulong)_kernelStack.ptr + StackSize / 2;
 
-		_savedState.SSE.Header = cast(ulong)new byte[0x20F].ptr;
-		_savedState.SSE.Data   = (_savedState.SSE.Header + 0x0F) & ~0x0F;
+		_savedState.SSEInt.Header = cast(ulong)new byte[0x20F].ptr;
+		_savedState.SSEInt.Data   = (_savedState.SSEInt.Header + 0x0F) & ~0x0F;
+
+		_savedState.SSESyscall.Header = cast(ulong)new byte[0x20F].ptr;
+		_savedState.SSESyscall.Data   = (_savedState.SSESyscall.Header + 0x0F) & ~0x0F;
 
 		_process.Threads.Add(this);
 	}
@@ -144,7 +147,10 @@ public final class Thread {
 		delete _messages;
 		delete _kernelStack;
 
-		ulong* sse = cast(ulong *)_savedState.SSE.Header;
+		ulong* sse = cast(ulong *)_savedState.SSEInt.Header;
+		delete sse;
+
+		sse = cast(ulong *)_savedState.SSESyscall.Header;
 		delete sse;
 	}
 

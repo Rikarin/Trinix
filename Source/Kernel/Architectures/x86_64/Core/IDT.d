@@ -144,7 +144,7 @@ public abstract final class IDT : IStaticModule {
 	mixin(GenerateISRs!(15, 49));
 	
 	private static void Dispatch(InterruptStack* stack) {
-		Port.SaveSSE(Task.CurrentThread.SavedState.SSE.Data);
+		Port.SaveSSE(Task.CurrentThread.SavedState.SSEInt.Data);
 
 		if (stack.IntNumber == 0xE)
 			Paging.PageFaultHandler(*stack);
@@ -161,6 +161,7 @@ public abstract final class IDT : IStaticModule {
 			Log.WriteJSON("rsp", stack.RSP);
 			Log.WriteJSON("cs", stack.CS);
 			Log.WriteJSON("ss", stack.SS);
+			Log.WriteJSON("call track", *(cast(ulong *)stack.RBP + 16));
 			Log.WriteJSON("}");
 			Port.Halt();
 		}
@@ -172,7 +173,7 @@ public abstract final class IDT : IStaticModule {
 		if (stack.IntNumber >= 32)
 			DeviceManager.EOI(cast(int)stack.IntNumber - 32);
 
-		Port.RestoreSSE(Task.CurrentThread.SavedState.SSE.Data);
+		Port.RestoreSSE(Task.CurrentThread.SavedState.SSEInt.Data);
 	}
 
 	private static void IsrIgnore() {
@@ -210,11 +211,6 @@ public abstract final class IDT : IStaticModule {
 			// Run dispatcher
 			"mov RDI, RSP";
 			"call %0" : : "r"(&Dispatch);
-
-			"push RAX";
-			"mov RAX, 0x20";
-			"outb 0x20, AL";
-			"pop RAX";
 			
 			// Restore context
 			"pop R15";

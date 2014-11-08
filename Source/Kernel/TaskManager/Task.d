@@ -17,7 +17,8 @@ public struct SSEState {
 
 public struct TaskState {
 	void* RIP, RSP, RBP;
-	SSEState SSE;
+	SSEState SSEInt;
+	SSEState SSESyscall;
 	bool IsSSEModified;
 }
 
@@ -113,7 +114,7 @@ public abstract final class Task : IStaticModule {
 
 	private static void Reschedule() {
 		Thread next = GetNextToRun();
-		Log.WriteLine("Debug: rescheduled: ", next.ID, " priority: ", next.Priority);
+	//	Log.WriteLine("Debug: rescheduled: ", next.ID, " priority: ", next.Priority);
 
 		if (next is null || next == CurrentThread)
 			return;

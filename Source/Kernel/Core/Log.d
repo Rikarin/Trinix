@@ -113,7 +113,7 @@ public abstract final class Log : IStaticModule {
 	}
 
 	public static void Write(T...)(T args) {
-		if (_lockable) //FIXME
+		if (_lockable) //We must lock this...
 			Port.Cli();
 
 		foreach (x; args) {
@@ -166,9 +166,15 @@ public abstract final class Log : IStaticModule {
 
 	private static void Scroll() {
 		if (_iterator > 80 * 25) {
+			if (_lockable) //We must lock this...
+				Port.Cli();
+
 			_display[0 .. _iterator - 80] = _display[80 .. _iterator];
 			_display[_iterator - 80 .. _iterator] = cast(DisplayChar)0;
 			_iterator -= 80;
+
+			if (_lockable)
+				Port.Sti();
 		}
 	}
 

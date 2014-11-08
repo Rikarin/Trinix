@@ -7,7 +7,8 @@ import SyscallManager;
 
 public struct SyscallStack {
 align(1):
-	ulong R9, R8, RDI, RSI, RDX;
+	ulong R15, R14, R13, R12, R11, R10, R9, R8;
+	ulong RBP, RDI, RSI, RDX;
 	private ulong _RCX;
 	ulong RBX, RAX;
 }
@@ -31,10 +32,14 @@ public abstract final class SyscallHandler : IStaticModule {
 		Port.WriteMSR(Registers.IA32_FMASK, 0x600);
 		return true;
 	}
-
+	import TaskManager;
 	private static void SyscallDispatcher(SyscallStack* stack) {
+		Port.SaveSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
+
 		with (stack)
 			RAX = ResourceManager.CallResource(R9, R8, RDI, RSI, RDX, RBX, RAX);
+
+		Port.RestoreSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
 	}
 
 	extern(C) private static void SyscallCommon() {
@@ -54,21 +59,30 @@ public abstract final class SyscallHandler : IStaticModule {
 			"push RDX";
 			"push RSI";
 			"push RDI";
+			"push RBP";
 			"push R8";
 			"push R9";
+			"push R10";
+			"push R11";
+			"push R12";
+			"push R13";
+			"push R14";
+			"push R15";
 			
 			// Run dispatcher
 			"mov RDI, RSP";
-			"call %0" : : "r"(&SyscallDispatcher);
-			
-			"push RAX";
-			"mov RAX, 0x20";
-			"outb 0x20, AL";
-			"pop RAX";
+		//	"call %0" : : "r"(&SyscallDispatcher);
 			
 			// Restore context
+			"pop R15";
+			"pop R14";
+			"pop R13";
+			"pop R12";
+			"pop R11";
+			"pop R10";
 			"pop R9";
 			"pop R8";
+			"pop RBP";
 			"pop RDI";
 			"pop RSI";
 			"pop RDX";

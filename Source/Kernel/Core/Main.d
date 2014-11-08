@@ -156,7 +156,8 @@ extern(C) void KernelMain(uint magic, void* info) {
 }
 
 void testfce() {
-	for (int i = 0; i < 0x100; i++) {
+	//for (int i = 0; i < 0x100; i++) {
+	while (true) {
 		asm {
 			"mov R8, 0x741";
 			"mov R9, 0x789";

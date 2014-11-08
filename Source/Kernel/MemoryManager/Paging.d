@@ -324,6 +324,7 @@ public final class Paging {
 		Log.WriteJSON("rsp", stack.RSP);
 		Log.WriteJSON("cs", stack.CS);
 		Log.WriteJSON("ss", stack.SS);
+		Log.WriteJSON("call track", *(cast(ulong *)stack.RBP + 16));
 		
 		ulong cr2;
 		asm {
