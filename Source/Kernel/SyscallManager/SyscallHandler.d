@@ -35,12 +35,9 @@ public abstract final class SyscallHandler : IStaticModule {
 	}
 
 	public static void SyscallDispatcher(SyscallStack* stack) {
-	//	Port.SaveSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
-
-		with (stack)
-			ResourceManager.CallResource(R9, R8, RDI, RSI, RDX, RBX, RAX);
-
-	//	Port.RestoreSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
+		Port.SaveSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
+		with (stack) ResourceManager.CallResource(R9, R8, RDI, RSI, RDX, RBX, RAX);
+		Port.RestoreSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
 	}
 
 	extern(C) private static void SyscallCommon() {
@@ -95,7 +92,6 @@ public abstract final class SyscallHandler : IStaticModule {
 			"swapgs";
 			"mov RSP, [GS:0]";
 			"swapgs";
-
 			"sysretq";
 		}
 	}

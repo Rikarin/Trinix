@@ -160,34 +160,9 @@ public abstract final class IDT : IStaticModule {
 			Log.WriteJSON("rsp", stack.RSP);
 			Log.WriteJSON("cs", stack.CS);
 			Log.WriteJSON("ss", stack.SS);
-			Log.WriteJSON("call track", *(cast(ulong *)stack.RBP + 16));
 			Log.WriteJSON("}");
 			Port.Halt();
-		}/* else if (stack.IntNumber == 86)/* {
-			Log.WriteJSON("r15", stack.R15);
-			Log.WriteJSON("r14", stack.R14);
-			Log.WriteJSON("r13", stack.R13);
-			Log.WriteJSON("r12", stack.R12);
-			Log.WriteJSON("r11", stack.R11);
-			Log.WriteJSON("r10", stack.R10);
-			Log.WriteJSON("r9", stack.R9);
-			Log.WriteJSON("r8", stack.R8);
-			Log.WriteJSON("rbp", stack.RBP);
-			Log.WriteJSON("rdi", stack.RDI);
-			Log.WriteJSON("rsi", stack.RSI);
-			Log.WriteJSON("rdx", stack.RDX);
-			Log.WriteJSON("rcx", stack.RCX);
-			Log.WriteJSON("rbx", stack.RBX);
-			Log.WriteJSON("rax", stack.RAX);
-			Log.WriteJSON("int", stack.IntNumber);
-			Log.WriteJSON("err", stack.ErrorCode);
-			Log.WriteJSON("rip", stack.RIP);
-			Log.WriteJSON("cs", stack.CS);
-			Log.WriteJSON("flags", stack.Flags);
-			Log.WriteJSON("rsp", stack.RSP);
-			Log.WriteJSON("ss", stack.SS);
-			Port.Halt();
-		}*/
+		}
 
 		DeviceManager.Handler(*stack);
 
@@ -256,3 +231,30 @@ public abstract final class IDT : IStaticModule {
 		}
 	}
 }
+
+
+/*
+	Log.WriteJSON("r15", stack.R15);
+	Log.WriteJSON("r14", stack.R14);
+	Log.WriteJSON("r13", stack.R13);
+	Log.WriteJSON("r12", stack.R12);
+	Log.WriteJSON("r11", stack.R11);
+	Log.WriteJSON("r10", stack.R10);
+	Log.WriteJSON("r9", stack.R9);
+	Log.WriteJSON("r8", stack.R8);
+	Log.WriteJSON("rbp", stack.RBP);
+	Log.WriteJSON("rdi", stack.RDI);
+	Log.WriteJSON("rsi", stack.RSI);
+	Log.WriteJSON("rdx", stack.RDX);
+	Log.WriteJSON("rcx", stack.RCX);
+	Log.WriteJSON("rbx", stack.RBX);
+	Log.WriteJSON("rax", stack.RAX);
+	Log.WriteJSON("int", stack.IntNumber);
+	Log.WriteJSON("err", stack.ErrorCode);
+	Log.WriteJSON("rip", stack.RIP);
+	Log.WriteJSON("cs", stack.CS);
+	Log.WriteJSON("flags", stack.Flags);
+	Log.WriteJSON("rsp", stack.RSP);
+	Log.WriteJSON("ss", stack.SS);
+	Port.Halt();
+ */

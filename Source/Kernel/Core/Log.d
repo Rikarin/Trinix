@@ -123,9 +123,9 @@ public abstract final class Log : IStaticModule {
 				Put(cast(string)(cast(char *)&x)[0 .. 1]);
 			else static if (is(A == long)  || is(A == ulong)  || is(A == int)  || is(A == uint) ||
 			                is(A == short) || is(A == ushort) || is(A == byte) || is(A == ubyte))
-				Put(ToString(x));
+				PrintNum(x);
 			else static if (is(A == enum))
-				Put(ToString(cast(ulong)x));
+				PrintNum(cast(ulong)x);
 			else static if (is(A == bool))
 				Put(x ? "True" : "False");
 			else static if (is(typeof({ foreach(elem; T.init) {} }))) {
@@ -172,45 +172,30 @@ public abstract final class Log : IStaticModule {
 		}
 	}
 
-	private static string ToString(T)(T number) {
-		char[256] tmp;
-		int i = 0;
-		bool isNegative = false;
-		
-		if (!number)
-			return "0";
+	private static void PrintNum(T)(T number) {
+		if (!number) {
+			Put("0");
+			return;
+		}
 		
 		if (number < 0) {
-			isNegative = true;
+			Put("-");
 			number = -number;
 		}
 
-		static const char[] digits = "0123456789ABCDEF";
-		while (number) {
-			tmp[i++] = digits[number % Base];
-			number = cast(T)(number / Base);
-		}
+		if (Base == 16)
+			Put("0x");
+		else if (Base == 8)
+			Put("0");
+		else if (Base == 2)
+			Put("0b");
 
-		if (Base == 16) {
-			tmp[i++] = 'x';
-			tmp[i++] = '0';
-		} else if (Base == 8) {
-			tmp[i++] = '0';
-		} else if (Base == 2) {
-			tmp[i++] = 'b';
-			tmp[i++] = '0';
-		}
+		char buf[32];
+		int i;
+		for(i = 30; number && i; --i, number /= Base)
+			buf[i] = "0123456789ABCDEF"[number % Base];
 
-		if (isNegative)
-			tmp[i++] = '-';
-		
-		for (int j = 0; j < i / 2; j++) {
-			char t = tmp[j];
-			tmp[j] = tmp[i - j - 1];
-			tmp[i - j - 1] = t;
-		}
-		
-		return cast(string)tmp[0 .. i];
+		Put(cast(immutable char[])buf[i + 1.. $ - 1]);
 	}
 
 	private union DisplayChar {

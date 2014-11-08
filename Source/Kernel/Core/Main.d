@@ -161,8 +161,9 @@ void testfce() {
 		asm {
 			"mov R8, 0x741";
 			"mov R9, 0x789";
-			"syscall" : : "a"(0x123), "b"(0x4562), "d"(0xABCD), "D"(0x852), "S"(0x963);
+			"syscall" : : "a"(123), "b"(0x4562), "d"(0xABCD), "D"(0x852), "S"(0x963);
 		}
+		//for (int j = 0; j < 0x100_000_00; j++) {}
 	}
 	//while (true) {}
 	//dorobit Exit thready

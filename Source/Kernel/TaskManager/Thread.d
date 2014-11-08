@@ -42,7 +42,7 @@ public struct IPCMessage {
 
 
 public final class Thread {
-	public enum StackSize       = 0x1000;
+	public enum StackSize       = 0x4000;
 	public enum UserStackSize   = 0x1000; //0
 	public enum MinPriority     = 10;
 	public enum DefaultPriority = 5;
