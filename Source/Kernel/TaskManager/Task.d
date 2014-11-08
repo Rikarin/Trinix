@@ -113,14 +113,11 @@ public abstract final class Task : IStaticModule {
 
 	private static void Reschedule() {
 		Thread next = GetNextToRun();
-		Log.WriteLine("Debug: rescheduled: ", next.ID);
+		Log.WriteLine("Debug: rescheduled: ", next.ID, " priority: ", next.Priority);
 
 		if (next is null || next == CurrentThread)
 			return;
-
-		/// Save SSE. I think this is shit... WE already had saved SSE in RBP - 0xFFF & ~0x0F
-		//TODO: need allocate some memory first....
-		//Port.SaveSSE((cast(ulong)cur._savedState.SSE + 0x0F) & ~0x0F);
+			
 		//CurrentThread.SavedState.IsSSEModified = false;
 		//Port.DisableSSE();
 

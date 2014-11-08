@@ -62,14 +62,14 @@ public final class Thread {
 	private Mutex _deadChildLock;
 
 	private ulong[] _kernelStack;
-	private ulong[] _syscallStack;
+	private ulong[2] _syscallStack;
 	private ulong[] _userStack;
 	private TaskState _savedState;
 
 	private int _curFailNum;
 	private void* _faultHandler;
 
-	private int _pendingSignal;
+	private SignalType _pendingSignal;
 	private LinkedList!(IPCMessage *) _messages;
 
 	private int _quantum;
@@ -100,8 +100,9 @@ public final class Thread {
 		_deadChildLock = new Mutex();
 		_messages      = new LinkedList!(IPCMessage *)();
 		_kernelStack   = new ulong[StackSize];
-		_syscallStack  = new ulong[StackSize];
 		_userStack     = new ulong[UserStackSize];//TODO: ParentProcess.AllocUserStack();
+
+		_syscallStack[1] = cast(ulong)_kernelStack.ptr + StackSize / 2;
 
 		_savedState.SSE.Header = cast(ulong)new byte[0x20F].ptr;
 		_savedState.SSE.Data   = (_savedState.SSE.Header + 0x0F) & ~0x0F;
@@ -142,17 +143,16 @@ public final class Thread {
 		delete _deadChildLock;
 		delete _messages;
 		delete _kernelStack;
-		delete _syscallStack;
 
-		ulong* aa = cast(ulong *)_savedState.SSE.Header;
-		delete aa;
+		ulong* sse = cast(ulong *)_savedState.SSE.Header;
+		delete sse;
 	}
 
 	package void SetKernelStack() {
 		CPU.TSSTable.RSP0 = _kernelStack.ptr + StackSize;
-		
+
 		Port.SwapGS();
-		Port.WriteMSR(SyscallHandler.Registers.IA32_GS_BASE, cast(ulong)_syscallStack.ptr + StackSize); //TODO: debug
+		Port.WriteMSR(SyscallHandler.Registers.IA32_GS_BASE, cast(ulong)_syscallStack.ptr);
 		Port.SwapGS();
 	}
 
@@ -234,11 +234,14 @@ public final class Thread {
 		with (Task.CurrentThread) {
 			ParentProcess.PageTable.Install();
 			//copy args to user stack
-			
-			//TODO: Run(0x202, 0, 0x1B, 0x23); //User
+
 			Port.Cli();
 			DeviceManager.EOI(0);
-			Run(0x202, _kernelStack[0], 0x08, 0x10); //Kernel
+
+			if (Task.CurrentThread.ParentProcess.IsKernel)
+				Run(0x202, _kernelStack[0], 0x08, 0x10);
+			else
+				Run(0x202, _kernelStack[0], 0x1B, 0x23);
 		}
 	}
 
@@ -477,8 +480,8 @@ public final class Thread {
 
 
 	//Signals
-	public void PostSignal(int signalNum) {
-		_pendingSignal = signalNum;
+	public void PostSignal(SignalType signal) {
+		_pendingSignal = signal;
 		PostEvent(ThreadEvent.signal);
 	}
 	//TODO

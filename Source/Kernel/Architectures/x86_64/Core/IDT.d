@@ -143,7 +143,7 @@ public abstract final class IDT : IStaticModule {
 	mixin(GenerateISR!(14, false));
 	mixin(GenerateISRs!(15, 49));
 	
-	public static extern(C) void Dispatch(InterruptStack* stack) {
+	private static void Dispatch(InterruptStack* stack) {
 		Port.SaveSSE(Task.CurrentThread.SavedState.SSE.Data);
 
 		if (stack.IntNumber == 0xE)
@@ -152,30 +152,22 @@ public abstract final class IDT : IStaticModule {
 			Log._lockable = false; //TODO
 			Log.WriteJSON("interrupt", "{");
 			Log.WriteJSON("irq", stack.IntNumber);
+			Log.WriteJSON("rax", stack.RAX);
+			Log.WriteJSON("rbx", stack.RBX);
+			Log.WriteJSON("rcx", stack.RCX);
+			Log.WriteJSON("rdx", stack.RDX);
 			Log.WriteJSON("rip", stack.RIP);
 			Log.WriteJSON("rbp", stack.RBP);
 			Log.WriteJSON("rsp", stack.RSP);
 			Log.WriteJSON("cs", stack.CS);
 			Log.WriteJSON("ss", stack.SS);
-
-			Log.WriteJSON("gs", stack.GS);
-			Log.WriteJSON("fs", stack.FS);
-			Log.WriteJSON("es", stack.ES);
-			Log.WriteJSON("ds", stack.DS);
 			Log.WriteJSON("}");
 			Port.Halt();
-
-			//if (stack.IntNumber != 0x0E)
-			/*	Log.WriteJSON("addr4", *(cast(ulong *)stack.RSP + 0x20));
-				Log.WriteJSON("addr3", *(cast(ulong *)stack.RSP + 0x18));
-				Log.WriteJSON("addr2", *(cast(ulong *)stack.RSP + 0x10));
-				Log.WriteJSON("addr1", *(cast(ulong *)stack.RSP + 0x08));
-				Log.WriteJSON("addr0", *(cast(ulong *)stack.RSP));*/
 		}
 
 		DeviceManager.Handler(*stack);
 
-		// We must disable intterupts before sending ACK. Enable it with iretq
+		// We must disable interrupts before sending ACK. Enable it with iretq
 		Port.Cli();
 		if (stack.IntNumber >= 32)
 			DeviceManager.EOI(cast(int)stack.IntNumber - 32);
@@ -214,21 +206,6 @@ public abstract final class IDT : IStaticModule {
 			"push R13";
 			"push R14";
 			"push R15";
-
-			// Save segments
-			"pushq GS";
-			"pushq FS";
-			"mov AX, ES";
-			"pushq AX";
-			"mov AX, DS";
-			"pushq AX";
-			
-			// Set registers
-			"mov AX, 0x10";
-			"mov DS, AX";
-			"mov ES, AX";
-			"mov FS, AX";
-			"mov GS, AX";
 			
 			// Run dispatcher
 			"mov RDI, RSP";
@@ -239,14 +216,6 @@ public abstract final class IDT : IStaticModule {
 			"outb 0x20, AL";
 			"pop RAX";
 			
-			// Restore segments
-			"popq RAX";
-			"mov DS, AX";
-			"popq RAX";
-			"mov ES, AX";
-			"popq FS";
-			"popq GS";
-			
 			// Restore context
 			"pop R15";
 			"pop R14";
@@ -256,7 +225,7 @@ public abstract final class IDT : IStaticModule {
 			"pop R10";
 			"pop R9";
 			"pop R8";
-			"pop RDI";
+			"pop RBP";
 			"pop RDI";
 			"pop RSI";
 			"pop RDX";

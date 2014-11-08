@@ -25,12 +25,13 @@ datetime neviem ci ma dobre asm
 
 Ext2:
 BlockNode, CharNode,
+
+V IDT je nejaky problem s RAX registrom...
 */
 
 /* MemoryMap:
 	0xFFFFFFFFE0000000 - mapovane regiony
 */
-extern(C) void _CPU_syscall();
 
 extern(C) void KernelMain(uint magic, void* info) {
 	Log.Initialize();
@@ -101,7 +102,7 @@ extern(C) void KernelMain(uint magic, void* info) {
 	Log.WriteJSON("{");
 	Log.WriteJSON("name", "Task");
 	Log.WriteJSON("type", "Initialize");
-	//Log.WriteJSON("value", Task.Initialize());
+	Log.WriteJSON("value", Task.Initialize());
 	Log.WriteJSON("}");
 	Log.WriteJSON("]");
 
@@ -116,26 +117,21 @@ extern(C) void KernelMain(uint magic, void* info) {
 	ATAController.Detect(); // for testing only
 	Ext2Filesystem.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), cast(Partition)VFS.Find("/System/Devices/hdb1"));
 
-	//PIC.Initialize();
-	//PIC.Install();
+	PIC.Initialize();
+	PIC.Install();
 	
-//	PIT.Initialize();
-//	PIT.Install();
+	PIT.Initialize();
+	PIT.Install();
 
 	Log.WriteJSON("}");
 	VFS.PrintTree(VFS.Root);
 
 
-	//asm { "syscall"; }
+	Thread thr = new Thread(Task.CurrentThread);
+	thr.Start(&testfce, null);
+	thr.AddActive();
 
-	_CPU_syscall();
-
-
-	//Thread thr = new Thread(Task.CurrentThread);
-	//thr.Start(&testfce, null);
-	//thr.AddActive();
-
-	//Task.CurrentThread.WaitEvents(ThreadEvent.DeadChild);
+	Task.CurrentThread.WaitEvents(ThreadEvent.DeadChild);
 
 
 	//Log.WriteLine("Running.....", PIT.Uptime);
@@ -162,7 +158,9 @@ extern(C) void KernelMain(uint magic, void* info) {
 void testfce() {
 	for (int i = 0; i < 0x100; i++) {
 		asm {
-			"hlt";
+			"mov R8, 0x741";
+			"mov R9, 0x789";
+			"syscall" : : "a"(0x123), "b"(0x4562), "d"(0xABCD), "D"(0x852), "S"(0x963);
 		}
 	}
 	//while (true) {}

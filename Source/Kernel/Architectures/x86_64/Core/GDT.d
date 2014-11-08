@@ -46,7 +46,7 @@ public abstract final class GDT : IStaticModule {
 		_tables[table].SetCodeSegment(4, true, 3, true);
 
 		//User 32
-		_tables[table].SetDataSegment(3, true, 3);
+		_tables[table].SetDataSegment(5, true, 3);
 	}
 	
 	private struct GDTBase {

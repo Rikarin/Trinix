@@ -305,8 +305,35 @@ public final class Paging {
 	}
 
 	static void PageFaultHandler(ref InterruptStack stack) {
-		if (stack.RIP == Thread.ThreadReturn) {
+		if (stack.RIP == Thread.ThreadReturn)
 			Task.CurrentThread.Exit(stack.RAX);
+
+
+		//TODO: testing purpose only...
+		import Core;
+		Log._lockable = false; //TODO
+		Log.WriteLine("Error!", `Paging sa dojebal -.-"`);
+		Log.WriteJSON("interrupt", "{");
+		Log.WriteJSON("irq", stack.IntNumber);
+		Log.WriteJSON("rax", stack.RAX);
+		Log.WriteJSON("rbx", stack.RBX);
+		Log.WriteJSON("rcx", stack.RCX);
+		Log.WriteJSON("rdx", stack.RDX);
+		Log.WriteJSON("rip", stack.RIP);
+		Log.WriteJSON("rbp", stack.RBP);
+		Log.WriteJSON("rsp", stack.RSP);
+		Log.WriteJSON("cs", stack.CS);
+		Log.WriteJSON("ss", stack.SS);
+		
+		ulong cr2;
+		asm {
+			"mov RAX, CR2" : "=a"(cr2);
+		}
+		
+		Log.WriteJSON("cr2", cr2);
+		asm {
+			"cli";
+			"hlt";
 		}
 	}
 }

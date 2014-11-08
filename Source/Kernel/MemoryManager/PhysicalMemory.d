@@ -19,11 +19,11 @@ public abstract final class PhysicalMemory {
 	}
 
 	public static bool Initialize() {
-		_frames = new BitArray(0x10_000, false); //Hack: treba zvetsit paging tabulky v Boot.s lebo sa kernel potom neviem premapovat pre nedostatok pamete :/
+		_frames = new BitArray(0x10_000, false); //Hack: treba zvetsit paging tabulky v Boot.s lebo sa kernel potom nevie premapovat pre nedostatok pamete :/
 
 		VirtualMemory.KernelPaging = new Paging();
 		for (ulong i = 0xFFFFFFFF80000000; i < 0xFFFFFFFF8A000000; i += 0x1000)
-			VirtualMemory.KernelPaging.AllocFrame(cast(void *)i, AccessMode.DefaultKernel);
+			VirtualMemory.KernelPaging.AllocFrame(cast(void *)i, AccessMode.DefaultUser); //TODO: testing
 
 		return true;
 	}

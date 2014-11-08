@@ -14,6 +14,7 @@ public final class Process {
 	private ulong _id;
 	private ulong _uid;
 	private ulong _gid;
+	private bool _isKernel;
 
 	private Process _parent;
 	package Paging _paging;
@@ -40,26 +41,31 @@ public final class Process {
 		return _paging;
 	}
 
+	@property public bool IsKernel() {
+		return _isKernel;
+	}
+
 
 	package static Process Initialize() {
 		if (Task.ThreadCount)
 			return null;
 
-		Process process = new Process();
-		process._paging = VirtualMemory.KernelPaging;
-		process._cwd    = VFS.Root;
+		Process process   = new Process();
+		process._paging   = VirtualMemory.KernelPaging;
+		process._cwd      = VFS.Root;
+		process._isKernel = true;
 
-		Thread t        = new Thread(process);
-		t.Name          = "Init";
-		t.Status        = ThreadStatus.Active;
+		Thread t          = new Thread(process);
+		t.Name            = "Init";
+		t.Status          = ThreadStatus.Active;
 		t.SetKernelStack();
 
 		//Idle task
-		Task.IdleTask = new Thread(t);
+		Task.IdleTask     = new Thread(t);
 		with (Task.IdleTask) {
-			Name     = "Idle Task";
-			Priority = MinPriority;
-			Quantum  = 1;
+			Name          = "Idle Task";
+			Priority      = MinPriority;
+			Quantum       = 1;
 			Start(&Task.Idle, null);
 		}
 	
@@ -79,6 +85,7 @@ public final class Process {
 		this();
 		_uid         = other.ParentProcess._uid;
 		_gid         = other.ParentProcess._gid;
+		_isKernel    = other.ParentProcess._isKernel;
 		_parent      = other.ParentProcess;
 		_paging      = new Paging(other.ParentProcess._paging);
 		_cwd         = other.ParentProcess._cwd;

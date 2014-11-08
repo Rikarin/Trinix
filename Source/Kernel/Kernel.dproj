@@ -152,5 +152,6 @@
     <Compile Include="TaskManager\Mutex.d" />
     <Compile Include="TaskManager\Semaphore.d" />
     <Compile Include="Architectures\x86_64\Architecture\Time.d" />
+    <Compile Include="TaskManager\SignalType.d" />
   </ItemGroup>
 </Project>
