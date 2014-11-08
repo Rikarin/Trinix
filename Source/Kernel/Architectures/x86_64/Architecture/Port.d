@@ -74,10 +74,7 @@ public abstract final class Port {
 		hi = value >> 32UL;
 		
 		asm {
-			"mov RDX, %0" : : "r"(hi);
-			"mov RAX, %0" : : "r"(lo);
-			"mov RCX, %0" : : "r"(msr);
-			"wrmsr";
+			"wrmsr" : : "d"(hi), "a"(lo), "c"(msr);
 		}
 	}
 
@@ -85,11 +82,7 @@ public abstract final class Port {
 		uint hi, lo;
 		
 		asm {
-			"mov ECX, %0" : : "r"(msr);
-			"rdmsr";
-			
-			"mov %0, EDX" : "=r"(hi);
-			"mov %0, EAX" : "=r"(lo);
+			"rdmsr" : "=d"(hi), "=a"(lo) : "c"(msr);
 		}
 		
 		ulong ret = hi;
