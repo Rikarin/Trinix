@@ -28,19 +28,24 @@ public abstract class Resource {
 		}
 	}
 
+	@property public long Handle() {
+		return _id;
+	}
+
+	@property public SyscallTypes ResourceType() {
+		return _type;
+	}
+
 	// Called from ResourceManager
 	package long Call(long id, long param1, long param2, long param3, long param4, long param5) {
 		if (!id)
-			return _type;
+			return _type; //TODO: return instance of type...
 
 		_mutex.WaitOne();
 		scope(exit) _mutex.Release();
-
-		if (id == 0xFFFFFFFF_FFFFFFFF)
-			return StaticCallback(param1, param2, param3, param4, param5);
 			
 		if (!_processes.Contains(Task.CurrentProcess)) {
-			Log.WriteLine("Process ", Task.CurrentProcess.ID, " tryied to use resource without attaching them first");
+			Log.WriteLine("Process ", Task.CurrentProcess.ID, " tried to use resource without attaching them first");
 			return -1;
 		}
 
@@ -106,7 +111,7 @@ public abstract class Resource {
 			_callTables.Add(cast(CallTable *)&x);
 	}
 
-	protected static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
+	public static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
 		return -1;
 	}
 }

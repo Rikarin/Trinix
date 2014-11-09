@@ -36,7 +36,9 @@ public abstract final class SyscallHandler : IStaticModule {
 
 	public static void SyscallDispatcher(SyscallStack* stack) {
 		Port.SaveSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
-		with (stack) ResourceManager.CallResource(R9, R8, RDI, RSI, RDX, RBX, RAX);
+		with (stack)
+			RAX = ResourceManager.CallResource(R9, R8, RDI, RSI, RDX, RBX, RAX);
+
 		Port.RestoreSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
 	}
 

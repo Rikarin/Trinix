@@ -158,15 +158,57 @@ extern(C) void KernelMain(uint magic, void* info) {
 void testfce() {
 	//for (int i = 0; i < 0x100; i++) {
 	while (true) {
-		asm {
-			"mov R8, 0x741";
-			"mov R9, 0x789";
-			"syscall" : : "a"(123), "b"(0x4562), "d"(0xABCD), "D"(0x852), "S"(0x963);
-		}
-		//for (int j = 0; j < 0x100_000_00; j++) {}
+		/*asm {
+			//"mov R8, 0x741";
+			"mov R9, 2";
+			"syscall";// : : "a"(123), "b"(0x4562), "d"(0xABCD), "D"(0x852), "S"(0x963);
+		}*/
+		Handle.StaticCall(1);
+		for (int j = 0; j < 0x100_000_00; j++) {}
 	}
 	//while (true) {}
 	//dorobit Exit thready
+}
+
+
+
+public final class Handle {
+	private long _id;
+	private long _type;
+
+	private this(long id) {
+		_id = id;
+	}
+
+	@property public long Type() { //TODO: use enum against long
+		if (!_type)
+			_type = Call(0);
+
+		return _type;
+	}
+
+	public long Call(long id, long param1 = 0, long param2 = 0, long param3 = 0, long param4 = 0, long param5 = 0) {
+		return _Call(_id, id, param1, param2, param3, param4, param5);
+	}
+
+	public static Handle StaticCall(long id, long param1 = 0, long param2 = 0, long param3 = 0, long param4 = 0, long param5 = 0) {
+		long handle = _Call(0xFFFFFFFF_FFFFFFFF, id, param1, param2, param3, param4, param5);
+
+		if (handle)
+			return new Handle(handle);
+
+		return null;
+	}
+
+	private static ulong _Call(long resource, long id, long param1, long param2, long param3, long param4, long param5) {
+		asm {
+			"mov R9, %0" : : "r"(resource);
+			"mov R8, %0" : : "r"(id);
+			"syscall" : "=a"(resource) : "D"(param1), "S"(param2), "d"(param3), "b"(param4), "a"(param5) : "r8", "r9";
+		}
+
+		return resource;
+	}
 }
 
 

@@ -5,9 +5,16 @@ import Library;
 import ObjectManager;
 import SyscallManager;
 
+import VFSManager;
+
 
 public abstract final class ResourceManager : IStaticModule {
 	private __gshared List!Resource _resources;
+
+	private __gshared const long function(long, long, long, long, long)[] _staticCalls = [
+		null,
+		&FSNode.StaticCallback
+	];
 
 	package static long Register(Resource resource) {
 		if (_resources.IndexOf(resource) != -1)
@@ -46,11 +53,12 @@ public abstract final class ResourceManager : IStaticModule {
 		Log.WriteJSON("param4", param4);
 		Log.WriteJSON("param5", param5);
 
-		if (resource > _resources.Count || _resources[resource] is null) {
-			Log.WriteJSON("value", "Bad call");
-			return -1;
-		}
+		if (resource == 0xFFFFFFFF_FFFFFFFF && id > 0 && id < _staticCalls.length)
+			return _staticCalls[id](param1, param2, param3, param4, param5);
+		else if (resource > 0 && resource < _resources.Count && _resources[resource] !is null)
+			return _resources[resource].Call(id, param1, param2, param3, param4, param5);
 
-		return _resources[resource].Call(id, param1, param2, param3, param4, param5);
+		Log.WriteJSON("value", "Bad call");
+		return -1;
 	}
 }
