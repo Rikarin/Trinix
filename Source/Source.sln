@@ -11,6 +11,10 @@ Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "ATA", "Modules\Storage\ATA\
 EndProject
 Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "Runtime", "Runtime\Runtime.dproj", "{97D14203-57EC-4E79-9B90-8B1B863526F8}"
 EndProject
+Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "Framework", "Framework\Framework.dproj", "{06DD3358-17BF-467C-A8BB-6004939AE46D}"
+EndProject
+Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "Test", "Test\Test.dproj", "{58448E19-8B89-4A54-8959-F8EA4C08B0F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,6 +22,18 @@ Global
 		Unittest|Any CPU = Unittest|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{06DD3358-17BF-467C-A8BB-6004939AE46D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06DD3358-17BF-467C-A8BB-6004939AE46D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06DD3358-17BF-467C-A8BB-6004939AE46D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06DD3358-17BF-467C-A8BB-6004939AE46D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06DD3358-17BF-467C-A8BB-6004939AE46D}.Unittest|Any CPU.ActiveCfg = Unittest|Any CPU
+		{06DD3358-17BF-467C-A8BB-6004939AE46D}.Unittest|Any CPU.Build.0 = Unittest|Any CPU
+		{58448E19-8B89-4A54-8959-F8EA4C08B0F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58448E19-8B89-4A54-8959-F8EA4C08B0F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58448E19-8B89-4A54-8959-F8EA4C08B0F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58448E19-8B89-4A54-8959-F8EA4C08B0F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58448E19-8B89-4A54-8959-F8EA4C08B0F5}.Unittest|Any CPU.ActiveCfg = Unittest|Any CPU
+		{58448E19-8B89-4A54-8959-F8EA4C08B0F5}.Unittest|Any CPU.Build.0 = Unittest|Any CPU
 		{5E388702-A5EB-4DFF-9A9C-D59DAE72A604}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5E388702-A5EB-4DFF-9A9C-D59DAE72A604}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E388702-A5EB-4DFF-9A9C-D59DAE72A604}.Release|Any CPU.ActiveCfg = Release|Any CPU

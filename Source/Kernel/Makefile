@@ -2,11 +2,10 @@
 #   Flags   #
 #############
 DFLAGS = -c -Wall -m64 -frelease -finline-functions -I../druntime/src -I../Kernel -I./Architectures/x86_64 -mcmodel=kernel -masm=intel -fversion=LogUserFriendly
-CFLAGS = -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -c -mcmodel=kernel
+CFLAGS = -m64 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -c -fPIC
 LDFLAGS = -T Architectures/x86_64/Linker.ld -Map Linker.map
 ASFLAGS = -f elf64
 
-GDC = /opt/gdc/bin/gdc
 SRC += $(shell find -name "*.d")
 SRC_SC += $(shell find -name "*.c")
 SRC_SC += $(shell find -name "*.s")
@@ -36,7 +35,7 @@ clean:
 obj/Kernel.o: $(SRC)
 	@echo "[ D ] Compiling kernel..."
 	@mkdir -p $(@D)
-	@$(GDC) $(SRC) -o $@ $(DFLAGS)
+	@gdc $(SRC) -o $@ $(DFLAGS)
 	
 obj/%.s.o: ./%.s
 	@echo "[ASM]   " $< " ---> " $@

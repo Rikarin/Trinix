@@ -56,7 +56,7 @@ public final class Thread {
 	private SpinLock _spinLock;
 
 	private Process _process;
-	private Thread _parent; //Parent thread under same process
+	private Thread _parent; //Parent thread under the same process
 
 	private LinkedList!Thread _lastDeadChild;
 	private Mutex _deadChildLock;
@@ -66,7 +66,7 @@ public final class Thread {
 	private ulong[] _userStack;
 	private TaskState _savedState;
 
-	private int _curFailNum;
+	private long _curFaultNum;
 	private void* _faultHandler;
 
 	private SignalType _pendingSignal;
@@ -209,6 +209,10 @@ public final class Thread {
 
 	@property public ref int Remaining() {
 		return _remaining;
+	}
+
+	@property public long CurrentFaultNum() {
+		return _curFaultNum;
 	}
 
 	@property public void Priority(int priority) {
@@ -458,23 +462,26 @@ public final class Thread {
 		Task.ThreadLock.Release();
 	}
 
-	public void Fault(int number) {
+	public void Fault(long number) {
 		if (_faultHandler is null) { // Panic
 			Kill(-1);
+
 			Port.Sti();
 			Port.Halt();
+			return;
 		}
 
-		if (_curFailNum) { // Double fail
-			Kill(-1);
+		if (_curFaultNum) { // Double fault
 			Log.WriteLine("Threads", "Fault: Double fault...");
+			Kill(-1);
 
 			Port.Sti();
 			Port.Halt();
+			return;
 		}
 
-		_curFailNum = number;
-		//TODO: Task.CallFaultHandler(this) ???
+		_curFaultNum = number;
+		Task.CallFaultHandler(this);
 	}
 
 	public void SegFault(void* address) {

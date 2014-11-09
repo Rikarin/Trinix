@@ -148,7 +148,7 @@ public abstract final class IDT : IStaticModule {
 
 		if (stack.IntNumber == 0xE)
 			Paging.PageFaultHandler(*stack);
-		else if (stack.IntNumber < 32) { //TODO: call user FaultHandler
+		else if (stack.IntNumber == 0xD) {
 			Log.WriteJSON("interrupt", "{");
 			Log.WriteJSON("irq", stack.IntNumber);
 			Log.WriteJSON("rax", stack.RAX);
@@ -162,9 +162,10 @@ public abstract final class IDT : IStaticModule {
 			Log.WriteJSON("ss", stack.SS);
 			Log.WriteJSON("}");
 			Port.Halt();
-		}
-
-		DeviceManager.Handler(*stack);
+		} else if (stack.IntNumber < 32)
+			Task.CurrentThread.Fault(stack.IntNumber);
+		else
+			DeviceManager.Handler(*stack);
 
 		// We must disable interrupts before sending ACK. Enable it with iretq
 		Port.Cli();

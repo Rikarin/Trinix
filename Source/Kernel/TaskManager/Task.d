@@ -169,7 +169,16 @@ public abstract final class Task : IStaticModule {
 		}
 	}
 
-	package static void Idle() {
+	package static void CallFaultHandler(Thread thread) {
+		Log.WriteLine("Threads", "Fault: ", thread.CurrentFaultNum);
+		thread.Kill(-1);
+		
+		Port.Sti();
+		Port.Halt();
+		return;
+	}
+
+	package static void Idle() { //This is idle task
 		while (true)
 			Port.Halt();
 	}

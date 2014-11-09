@@ -1,2 +1,2 @@
 module Core.BuildInfo;
-enum BuildNumber = 3122;
+enum BuildNumber = 3132;
