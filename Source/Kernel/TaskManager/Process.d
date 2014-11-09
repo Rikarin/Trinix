@@ -20,11 +20,10 @@ public final class Process {
 	package Paging _paging;
 	private LinkedList!Thread _threads;
 	private DirectoryNode _cwd;
-	private LinkedList!FSNode _descriptors;
 
 	/// Use this against _descriptors for holding every used resource for thread eg. mutex, semaphore, fsnode, etc.
 	/// And when process crash/exit we can easily delete objects created by this process.
-	private LinkedList!Resource _resources;
+	private List!Resource _resources;
 
 
 	//TODO: Signal handlers?
@@ -75,7 +74,7 @@ public final class Process {
 	private this() {
 		_id          = Task.NextPID;
 		_threads     = new LinkedList!Thread();
-		_descriptors = new LinkedList!FSNode();
+		_resources   = new List!Resource();
 
 		Task.Processes.Add(this);
 	}
@@ -89,15 +88,19 @@ public final class Process {
 		_parent      = other.ParentProcess;
 		_paging      = new Paging(other.ParentProcess._paging);
 		_cwd         = other.ParentProcess._cwd;
-		_descriptors = other.ParentProcess._descriptors; //TODO: deprecated + clone every resource...
+
+		foreach (x; other.ParentProcess._resources) {
+			_resources.Add(x);
+			x.AttachProcess(this);
+		}
 
 		new Thread(this, other);
 	}
 
 	~this() {
 		foreach (x; _resources) {
-			if (x.Value.DetachProcess(this))
-				delete x.Value;
+			if (x.DetachProcess(this))
+				delete x;
 		}
 
 		foreach (x; _threads)
@@ -106,7 +109,7 @@ public final class Process {
 		delete _paging;
 		delete _threads;
 		delete _resources;
-		delete _descriptors;
+		delete _resources;
 
 		// Clean up?
 	}

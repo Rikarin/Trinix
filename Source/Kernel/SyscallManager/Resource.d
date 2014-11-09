@@ -39,7 +39,7 @@ public abstract class Resource {
 	// Called from ResourceManager
 	package long Call(long id, long param1, long param2, long param3, long param4, long param5) {
 		if (!id)
-			return _type; //TODO: return instance of type...
+			return _type;
 
 		_mutex.WaitOne();
 		scope(exit) _mutex.Release();
