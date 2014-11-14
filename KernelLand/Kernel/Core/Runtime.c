@@ -38,10 +38,10 @@ void *calloc(long sz, int ba) {
 	return (void *)memset(ret, 0, sz);
 }
 
-int pthread_mutex_lock(void *mutex) { asm ("cli; hlt"); }
-int pthread_mutex_unlock(void *mutex) { asm ("cli; hlt"); }
-int pthread_mutex_init() { asm ("cli; hlt"); }
-int pthread_mutex_destroy() { asm ("cli; hlt"); }
+void pthread_mutex_lock() { asm ("cli; hlt"); }
+void pthread_mutex_unlock() { asm ("cli; hlt"); }
+void pthread_mutex_init() { asm ("cli; hlt"); }
+void pthread_mutex_destroy() { asm ("cli; hlt"); }
 void _d_monitor_destroy() { asm ("cli; hlt"); }
 
 void program_invocation_name() { asm ("cli; hlt"); }
@@ -52,7 +52,7 @@ void __tls_get_addr() { asm ("cli; hlt"); }
 
 void _memset128ii() { asm ("cli; hlt"); }
 
-void* _Unwind_Resume() { asm ("cli; hlt"); }
-void* _Dmodule_ref() { asm ("cli; hlt"); }
-void* __gdc_personality_v0() { asm ("cli; hlt"); }
-void* abort() { asm ("cli; hlt"); }
+void _Unwind_Resume() { asm ("cli; hlt"); }
+void _Dmodule_ref() { asm ("cli; hlt"); }
+void __gdc_personality_v0() { asm ("cli; hlt"); }
+void abort() { asm ("cli; hlt"); }

@@ -1,4 +1,4 @@
-# Trinix #
+# Trinix (REWRITE ME PLS)#
 Trinix is a hobby operating system written from scratch. OS is written in D (http://www.dlang.org/) and asm (NASM). It means OS is fully OOP. For now only 64-bit is supported. Development began one beautiful day in January and continues to this day. We have a framework based on .NET-like classes, interfaces and other .NET things.
 
 (Sorry for bad english)

@@ -15,14 +15,14 @@ public abstract final class DateTime {
 		ubyte year;
 
 		asm {
-		"LOOP:";
+		//FIXME: "LOOP:";
 			// Get RTC register A
 			"mov AL, 10";
 			"out 0x70, AL";
 			"in AL, 0x71";
 			"test AL, 0x80";
 			// Loop until it is not busy updating
-			"jne LOOP";
+			//"jne LOOP";
 			
 			// Get Day of Month (1 to 31)
 			"mov AL, 0x07";

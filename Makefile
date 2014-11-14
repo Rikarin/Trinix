@@ -12,10 +12,10 @@ SYSBINS := cock007
 
 
 define targetclasses
-	AI_$1 := $$(addprefix allinstall-,$$($1))
-	ALL_$1 := $$(addprefix all-,$$($1))
-	CLEAN_$1 := $$(addprefix clean-,$$($1))
-	INSTALL_$1 := $$(addprefix install-,$$($1))
+	AI_$1		:= $$(addprefix allinstall-,$$($1))
+	ALL_$1		:= $$(addprefix all-,$$($1))
+	CLEAN_$1	:= $$(addprefix clean-,$$($1))
+	INSTALL_$1	:= $$(addprefix install-,$$($1))
 endef
 
 $(eval $(call targetclasses,DYNMODS))

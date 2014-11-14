@@ -41,7 +41,7 @@ extern(C) void KernelMain(uint magic, void* info) {
 	Log.WriteJSON("name", "Trinix");
 	Log.WriteJSON("version", "0.0.1 Beta");
 	Log.Base = 10;
-	Log.WriteJSON("build", BuildNumber);
+	Log.WriteJSON("build", "0.5"); /* TODO: BuildNumber, problem with double */
 	Log.Base = 16;
 
 	Log.WriteJSON("architecture", "[");
@@ -172,7 +172,17 @@ void testfce() {
 
 
 
+/***********************************
+ * foo does this.
+ * Params:
+ *	x =	is for this
+ *		and not for that
+ *	y =	is for that
+ */
 
+void foo(int x, int y)
+{
+}
 
 
 
