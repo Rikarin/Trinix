@@ -1,6 +1,8 @@
 /VMware
-/Tools/Debugger/Debugger/bin/Debug/Logs/*.log
-/Source/Kernel/obj/TaskManager/*.o
-/Source/Kernel/Linker.map
 /Root/System/Kernel
+/Root/Test
 *.o
+*.map
+*.log
+*.userprefs
+*.so
