@@ -1,19 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "Kernel", "Kernel\Kernel.dproj", "{5E388702-A5EB-4DFF-9A9C-D59DAE72A604}"
+Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "Kernel", "KernelLand\Kernel\Kernel.dproj", "{5E388702-A5EB-4DFF-9A9C-D59DAE72A604}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{B93E1E9D-35AB-408C-918D-9D583C5D7A7A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Storage", "Storage", "{F82CB059-D924-4CDE-ADB7-96BBEED22194}"
 EndProject
-Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "ATA", "Modules\Storage\ATA\ATA.dproj", "{D5971826-B19E-411A-ABA6-1DD95D52F65B}"
+Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "ATA", "KernelLand\Modules\Storage\ATA\ATA.dproj", "{D5971826-B19E-411A-ABA6-1DD95D52F65B}"
 EndProject
-Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "Runtime", "Runtime\Runtime.dproj", "{97D14203-57EC-4E79-9B90-8B1B863526F8}"
+Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "Runtime", "UserSpace\tmp\Runtime\Runtime.dproj", "{97D14203-57EC-4E79-9B90-8B1B863526F8}"
 EndProject
-Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "Framework", "Framework\Framework.dproj", "{06DD3358-17BF-467C-A8BB-6004939AE46D}"
+Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "Framework", "UserSpace\Libraries\Framework.so_src\Framework.dproj", "{06DD3358-17BF-467C-A8BB-6004939AE46D}"
 EndProject
-Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "Test", "Test\Test.dproj", "{58448E19-8B89-4A54-8959-F8EA4C08B0F5}"
+Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "Test", "UserSpace\tmp\Test\Test.dproj", "{58448E19-8B89-4A54-8959-F8EA4C08B0F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
