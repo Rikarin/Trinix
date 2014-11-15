@@ -1,0 +1,10 @@
+--- binutils-2.24/ld/configure.tgt	2013-11-26 12:37:33.000000000 +0100
++++ configure.tgt	2014-11-15 18:53:00.046631300 +0100
+@@ -732,6 +732,7 @@
+ 			targ_extra_emuls="elf64tilegx elf32tilegx elf32tilegx_be"
+ 			targ_extra_libpath=$targ_extra_emuls ;;
+ tilepro-*-*)		targ_emul=elf32tilepro ;;
++x86_64-*-trinix*) targ_emul=elf_x86_64_trinix ;;
+ v850*-*-*)		targ_emul=v850_rh850
+ 			targ_extra_emuls=v850
+ 			;;
