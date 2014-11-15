@@ -22,7 +22,6 @@ DFLAGS		+= -D ARCH=$(ARCH) -D ARCHDIR=$(ARCHDIR) -D PLATFORM=\"$(PLATFORM)\" -D 
 CFLAGS		+= -g -fno-stack-protector
 LDFLAGS		+= -T Architectures/$(ARCHDIR)/Linker.ld
 DRUNTIME	:= $(TRXDIR)/Userspace/tmp/druntime/lib/libdruntime-linux64.a
-#CPPFLAGS	+= -I../../Usermode/Libraries/ld-xxxxx.so_src/include_exp/ # Syscalls
 
 ifeq ($(PLATFORM),default)
 	OBJDIR	:= obj-$(ARCH)/
@@ -40,16 +39,17 @@ ifeq ($(DEBUG_BUILD),yes)
 	CFLAGS 	+= -g
 endif
 
-BUILDINFO_OBJ := $(OBJDIR)buildinfo.o
+BUILDINFO_OBJ := $(OBJDIR)buildinfo.c.o
 BUILDINFO_SRC := $(OBJDIR)buildinfo.c
 
 OBJ := $(A_OBJ)
 OBJ	+= $(addsuffix .o,$(shell find * -name "*.[d|c|s]" -not -path "*Architectures*"))
+OBJ := $(filter-out $(BUILDINFO_OBJ), $(OBJ))
 OBJ := $(addprefix $(OBJDIR), $(OBJ))
 OBJ += $(BUILDINFO_OBJ)
 
 DEPFILES := $(OBJ:%=%.dep)
-#MODS += $(addprefix ../Modules/, $(addsuffix .kext.$(ARCH),$(MODULES)))
+MODS += $(addprefix ../Modules/, $(addsuffix .kext.$(ARCH),$(MODULES)))
 
 IMPORTDIR	:= ../Import/
 IMPORT		:= $(addsuffix i,$(shell find * -name "*.d" -not -path "*Architectures*"))
@@ -61,16 +61,17 @@ DOC		:= $(addprefix $(DOCDIR), $(DOC))
 
 .PHONY: all clean install import apidoc
 
+
 all:	$(BIN)
 import: $(IMPORT)
 apidoc: $(DOC)
 
 clean:
 	@$(RM) $(BIN) $(GZBIN) $(OBJDIR) $(BIN).dsm ../Linker.$(ARCH).map
-	@$(RM) $(DOCDIR) $(IMPORTDIR)
+	@$(RM) $(DOCDIR) $(IMPORTDIR) $(DISTROOT)/System/Trinix.gz
 	
 install: $(BIN)
-	@cp $(GZBIN) $(DISTROOT)
+	@cp $(GZBIN) $(DISTROOT)/System/Trinix.gz
 	
 $(IMPORTDIR)%.di: %.d
 	@echo --- Generating import $@
@@ -83,16 +84,13 @@ $(DOCDIR)%.html: %.d
 	@$(MKDIR) $(dir $@)
 	@$(DD) $(DFLAGS) -c -fdoc -fdoc-file=$@ $< -o /dev/null
 	
-	
-$(BIN): $(OBJ) $(MODS) $(DRUNTIME) Architectures/$(ARCHDIR)/Linker.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg
-# ../../BuildConf/$(ARCH)/$(PLATFORM).mk
+$(BIN): $(OBJ) $(MODS) $(DRUNTIME) Architectures/$(ARCHDIR)/Linker.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
 	@echo --- LD -o $(BIN)
-	$(LD) $(LDFLAGS) -r -o $(BIN) --start-group $(OBJ) --end-group $(MODS) $(DRUNTIME) --defsym __buildnum=$$(( $(BUILD_NUM) + 1 )) -Map ../Linker.$(ARCH).map
+	@$(LD) $(LDFLAGS) -r -o $(BIN) --start-group $(OBJ) --end-group $(MODS) $(DRUNTIME) --defsym __buildnum=$$(( $(BUILD_NUM) + 1 )) -Map ../Linker.$(ARCH).map
 	@$(OBJDUMP) -d -S $(BIN) > $(BIN).dsm
 	@echo BUILD_NUM = $$(( $(BUILD_NUM) + 1 )) > Makefile.BuildNum.$(ARCH)
 	@$(STRIP) $(BIN)
 	@gzip -c $(BIN) > $(GZBIN)
-
 	
 $(OBJDIR)%.d.o: %.d
 	@echo --- DD -o $@
@@ -112,7 +110,7 @@ $(OBJDIR)%.c.o: %.c
 	@$(CC) $(CFLAGS) -M -MT $@ -MP -o $@.o.dep $<
 	
 %.kext.$(ARCH):
-	@BUILDTYPE=static make -C $* all
+	@make -C $* all BUILDTYPE=static
 	
 # Build-time information (git hash and build number)
 $(BUILDINFO_SRC): $(filter-out $(BUILDINFO_OBJ), $(OBJ)) $(MODS)
@@ -127,20 +125,6 @@ $(BUILDINFO_SRC): $(filter-out $(BUILDINFO_OBJ), $(OBJ)) $(MODS)
 $(BUILDINFO_OBJ): $(BUILDINFO_SRC)
 	@echo --- CC -o $@
 	@$(CC) $(CFLAGS) -o $@ -c $<
-	@$(RM) $(BUILDINFO_SRC)
-
-
-
-	
 	
 	
 -include $(DEPFILES)
-	
-	
-	
-	
-	
-	
-	
-	
-	

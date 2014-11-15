@@ -6,7 +6,9 @@ else
 	FULLNAME := $(NAME)
 endif
 
-all: install
+all: 
+	@echo TODO
+#install
 	
 $(FULLNAME).kext: $(FULLNAME).o
 	@ld --allow-shlib-undefined -shared -nostdlib --oformat elf64-x86-64 -o $@ $(LDFLAGS) $+

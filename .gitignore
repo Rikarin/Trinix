@@ -1,9 +1,10 @@
 /VMware
-/Root/System/Kernel
-/Root/Test
+/KernelLand/Kernel/obj-x86_64/buildinfo.c
 *.o
 *.map
 *.log
 *.userprefs
 *.so
 *.dsm
+*.gz
+*.dep

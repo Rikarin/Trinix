@@ -1,4 +1,4 @@
-﻿module Main; //Modules.Storage.ATA.Main;
+﻿module Modules.Storage.ATA.Main;
 
 import ObjectManager;
 

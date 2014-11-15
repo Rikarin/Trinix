@@ -51,7 +51,7 @@ $(CC):
 	@echo ---
 	make -C Externals/CrossCompiler/
 	
-$(D):
+$(DD):
 	@echo ---
 	@echo $(D) does not exist, recompiling
 	@echo ---
