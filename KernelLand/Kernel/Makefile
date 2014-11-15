@@ -15,11 +15,11 @@ KERNEL_VERSION = $(TRINIX_VERSION)
 
 
 ASFLAGS		+= -D ARCHDIR_IS_$(ARCHDIR)=1 -D PLATFORM_is_$(PLATFORM)=1
-DFLAGS		+= -Wall -frelease -fversion=LogUserFriendly -D_MODULE_NAME_=\"Kernel\" -femit-templates
+DFLAGS		+= -g -fversion=LogUserFriendly -D_MODULE_NAME_=\"Kernel\" -femit-templates
 DFLAGS		+= -I$(TRXDIR)/Userspace/tmp/druntime/src #DRuntime
 DFLAGS		+= -IArchitectures/$(ARCHDIR) -D KERNEL_VERSION=$(KERNEL_VERSION)
 DFLAGS		+= -D ARCH=$(ARCH) -D ARCHDIR=$(ARCHDIR) -D PLATFORM=\"$(PLATFORM)\" -D ARCHDIR_IS_$(ARCHDIR)=1 -D PLATFORM_is_$(PLATFORM)=1
-CFLAGS		+= -Wall -fno-stack-protector
+CFLAGS		+= -g -fno-stack-protector
 LDFLAGS		+= -T Architectures/$(ARCHDIR)/Linker.ld
 DRUNTIME	:= $(TRXDIR)/Userspace/tmp/druntime/lib/libdruntime-linux64.a
 #CPPFLAGS	+= -I../../Usermode/Libraries/ld-xxxxx.so_src/include_exp/ # Syscalls
@@ -46,11 +46,10 @@ BUILDINFO_SRC := $(OBJDIR)buildinfo.c
 OBJ := $(A_OBJ)
 OBJ	+= $(addsuffix .o,$(shell find * -name "*.[d|c|s]" -not -path "*Architectures*"))
 OBJ := $(addprefix $(OBJDIR), $(OBJ))
-#OBJ += $(BUILDINFO_OBJ)
+OBJ += $(BUILDINFO_OBJ)
 
 DEPFILES := $(OBJ:%=%.dep)
-
-#MODS += $(addprefix ../Modules/, $(addsuffix .xo.$(ARCH),$(MODULES)))
+#MODS += $(addprefix ../Modules/, $(addsuffix .kext.$(ARCH),$(MODULES)))
 
 IMPORTDIR	:= ../Import/
 IMPORT		:= $(addsuffix i,$(shell find * -name "*.d" -not -path "*Architectures*"))
@@ -67,14 +66,11 @@ import: $(IMPORT)
 apidoc: $(DOC)
 
 clean:
-	@$(RM) $(BIN) $(GZBIN) $(OBJDIR)
+	@$(RM) $(BIN) $(GZBIN) $(OBJDIR) $(BIN).dsm ../Linker.$(ARCH).map
 	@$(RM) $(DOCDIR) $(IMPORTDIR)
 	
 install: $(BIN)
 	@cp $(GZBIN) $(DISTROOT)
-
-test: $(BUILDINFO_OBJ)
-	@echo $(OBJDIR) $(BIN) $(GZBIN)
 	
 $(IMPORTDIR)%.di: %.d
 	@echo --- Generating import $@
@@ -91,14 +87,11 @@ $(DOCDIR)%.html: %.d
 $(BIN): $(OBJ) $(MODS) $(DRUNTIME) Architectures/$(ARCHDIR)/Linker.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg
 # ../../BuildConf/$(ARCH)/$(PLATFORM).mk
 	@echo --- LD -o $(BIN)
-	$(LD) $(LDFLAGS) -o $(BIN) $(OBJ) $(MODS) $(DRUNTIME) --defsym __buildnum=$$(( $(BUILD_NUM) + 1 )) -Map ../Map.$(ARCH).txt
-#@$(DISASM) -S $(BIN) > $(BIN).dsm
-#@echo BUILD_NUM = $$(( $(BUILD_NUM) + 1 )) > Makefile.BuildNum.$(ARCH)
-#$(POSTBUILD)
-#@cp $(BIN) $(BIN)_
-#@$(STRIP) $(BIN)_ || true
-#@gzip -c $(BIN)_ > $(GZBIN)
-#@$(RM) $(BIN)_
+	$(LD) $(LDFLAGS) -r -o $(BIN) --start-group $(OBJ) --end-group $(MODS) $(DRUNTIME) --defsym __buildnum=$$(( $(BUILD_NUM) + 1 )) -Map ../Linker.$(ARCH).map
+	@$(OBJDUMP) -d -S $(BIN) > $(BIN).dsm
+	@echo BUILD_NUM = $$(( $(BUILD_NUM) + 1 )) > Makefile.BuildNum.$(ARCH)
+	@$(STRIP) $(BIN)
+	@gzip -c $(BIN) > $(GZBIN)
 
 	
 $(OBJDIR)%.d.o: %.d
@@ -118,8 +111,11 @@ $(OBJDIR)%.c.o: %.c
 	@$(CC) $(CFLAGS) -o $@ -c $<
 	@$(CC) $(CFLAGS) -M -MT $@ -MP -o $@.o.dep $<
 	
+%.kext.$(ARCH):
+	@BUILDTYPE=static make -C $* all
+	
 # Build-time information (git hash and build number)
-$(BUILDINFO_SRC): $(filter-out $(BUILDINFO_OBJ), $(OBJ)) $(MODS) Architectures/$(ARCHDIR)/Linker.ld
+$(BUILDINFO_SRC): $(filter-out $(BUILDINFO_OBJ), $(OBJ)) $(MODS)
 	$(eval _GITHASH=$(shell git log -n 1 | head -n 1 | awk '{print $$2}'))
 	$(eval _GITCHANGED=$(shell git status --porcelain | grep -c '^ M '))
 	@echo "const char gsGitHash[] = \"$(_GITHASH)\";" > $@
@@ -131,6 +127,7 @@ $(BUILDINFO_SRC): $(filter-out $(BUILDINFO_OBJ), $(OBJ)) $(MODS) Architectures/$
 $(BUILDINFO_OBJ): $(BUILDINFO_SRC)
 	@echo --- CC -o $@
 	@$(CC) $(CFLAGS) -o $@ -c $<
+	@$(RM) $(BUILDINFO_SRC)
 
 
 
