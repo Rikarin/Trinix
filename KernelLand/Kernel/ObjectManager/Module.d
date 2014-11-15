@@ -11,6 +11,7 @@ public enum ModuleResult {
 }
 
 public struct ModuleDef {
+align(1):
 	uint Magic;
 	ubyte Flags;
 	ushort Version;

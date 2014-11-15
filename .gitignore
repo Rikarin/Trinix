@@ -8,3 +8,5 @@
 *.dsm
 *.gz
 *.dep
+*.kext.*
+*.xo.*

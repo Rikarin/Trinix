@@ -71,7 +71,6 @@
     <None Include="Architectures\x86_64\Boot\Boot.s" />
     <None Include="Architectures\x86_64\Boot\Load.s" />
     <None Include="Architectures\x86_64\Architecture\CPU.s" />
-    <None Include="Linker.map" />
     <None Include="Library\LibraryLoader.dx" />
     <None Include="Library\Elf.dx" />
     <None Include="TaskManager\Process.s" />

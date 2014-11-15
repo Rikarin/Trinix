@@ -15,7 +15,7 @@ KERNEL_VERSION = $(TRINIX_VERSION)
 
 
 ASFLAGS		+= -D ARCHDIR_IS_$(ARCHDIR)=1 -D PLATFORM_is_$(PLATFORM)=1
-DFLAGS		+= -g -fversion=LogUserFriendly -D_MODULE_NAME_=\"Kernel\" -femit-templates
+DFLAGS		+= -g -fversion=LogUserFriendly -D _MODULE_NAME_=\"Kernel\" -femit-templates
 DFLAGS		+= -I$(TRXDIR)/Userspace/tmp/druntime/src #DRuntime
 DFLAGS		+= -IArchitectures/$(ARCHDIR) -D KERNEL_VERSION=$(KERNEL_VERSION)
 DFLAGS		+= -D ARCH=$(ARCH) -D ARCHDIR=$(ARCHDIR) -D PLATFORM=\"$(PLATFORM)\" -D ARCHDIR_IS_$(ARCHDIR)=1 -D PLATFORM_is_$(PLATFORM)=1
@@ -52,11 +52,11 @@ DEPFILES := $(OBJ:%=%.dep)
 MODS += $(addprefix ../Modules/, $(addsuffix .kext.$(ARCH),$(MODULES)))
 
 IMPORTDIR	:= ../Import/
-IMPORT		:= $(addsuffix i,$(shell find * -name "*.d" -not -path "*Architectures*"))
+IMPORT		:= $(shell find * -name "*.d")
 IMPORT		:= $(addprefix $(IMPORTDIR), $(IMPORT))
 
 DOCDIR	:= ../APIdoc/
-DOC		:= $(patsubst %d,%html,$(shell find * -name "*.d" -not -path "*Architectures*"))
+DOC		:= $(patsubst %d,%html,$(shell find * -name "*.d"))
 DOC		:= $(addprefix $(DOCDIR), $(DOC))
 
 .PHONY: all clean install import apidoc
@@ -71,9 +71,10 @@ clean:
 	@$(RM) $(DOCDIR) $(IMPORTDIR) $(DISTROOT)/System/Trinix.gz
 	
 install: $(BIN)
+	@echo --- Kernel was installed to System/Trinix.gz
 	@cp $(GZBIN) $(DISTROOT)/System/Trinix.gz
 	
-$(IMPORTDIR)%.di: %.d
+$(IMPORTDIR)%.d: %.d
 	@echo --- Generating import $@
 	@$(MKDIR) $(dir $@)
 	@$(DD) $(DFLAGS) -c -fintfc -fintfc-file=$@ $< -o /dev/null
@@ -110,6 +111,7 @@ $(OBJDIR)%.c.o: %.c
 	@$(CC) $(CFLAGS) -M -MT $@ -MP -o $@.o.dep $<
 	
 %.kext.$(ARCH):
+	echo test: $*
 	@make -C $* all BUILDTYPE=static
 	
 # Build-time information (git hash and build number)

@@ -3,7 +3,8 @@
 import ObjectManager;
 
 
-extern(C) __gshared static ModuleDef driverInfo = {
+/*__attribute__ ((section ("KMODULES"),unused))*/
+extern(C) __gshared static ModuleDef _DriverInfo_Storage_ATA = {
 	Magic: ModuleMagic,
 	Flags: 0,
 	Version: 8,

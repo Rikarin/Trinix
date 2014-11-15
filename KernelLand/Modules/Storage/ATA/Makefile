@@ -1,4 +1,4 @@
 NAME = ATA
-SRC += $(shell find -name *.d)
+OBJ += $(addsuffix .o,$(shell find * -name "*.d"))
 
 -include ../Makefile.tpl
