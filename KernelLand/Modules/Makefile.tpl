@@ -27,7 +27,7 @@ ifneq ($(BUILDTYPE),static)
 	DFLAGS	+= $(DYNMOD_DFLAGS)
 else
 	_SUFFIX := st-$(ARCH)
-	BIN := ../$(FULLNAME).xo.$(ARCH)
+	BIN := ../$(NAME).xo.$(ARCH)
 	DFLAGS += $(KERNEL_DFLAGS)
 endif
 
@@ -40,7 +40,7 @@ DEPFILES := $(OBJ:%=%.dep)
 all: $(BIN)
 
 clean:
-	@$(RM) $(BIN) $(BIN).dsm obj_st-* obj_dyn-* ../$(FULLNAME).*
+	@$(RM) $(BIN) $(BIN).dsm obj_st-* obj_dyn-* ../$(FULLNAME).* ../$(NAME).*
 	@$(RM) $(DISTROOT)/System/Modules/$(FULLNAME).kext.gz
 
 install: $(BIN)

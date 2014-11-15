@@ -49,7 +49,7 @@ OBJ := $(addprefix $(OBJDIR), $(OBJ))
 OBJ += $(BUILDINFO_OBJ)
 
 DEPFILES := $(OBJ:%=%.dep)
-MODS += $(addprefix ../Modules/, $(addsuffix .kext.$(ARCH),$(MODULES)))
+MODS += $(addprefix ../Modules/, $(addsuffix .xo.$(ARCH),$(MODULES)))
 
 IMPORTDIR	:= ../Import/
 IMPORT		:= $(shell find * -name "*.d")
@@ -110,8 +110,7 @@ $(OBJDIR)%.c.o: %.c
 	@$(CC) $(CFLAGS) -o $@ -c $<
 	@$(CC) $(CFLAGS) -M -MT $@ -MP -o $@.o.dep $<
 	
-%.kext.$(ARCH):
-	echo test: $*
+%.xo.$(ARCH):
 	@make -C $* all BUILDTYPE=static
 	
 # Build-time information (git hash and build number)
