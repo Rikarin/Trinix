@@ -1,6 +1,5 @@
 /VMware
-/Externals/CrossCompiler/binutils-2.24
-/Externals/CrossCompiler/gcc-4.9.2
+/Externals/Output
 /KernelLand/Kernel/obj-x86_64/buildinfo.c
 *.o
 *.map
@@ -12,3 +11,8 @@
 *.dep
 *.kext.*
 *.xo.*
+*.bz2
+
+/Externals/CrossCompiler/*build-*
+/Externals/CrossCompiler/binutils-2.24
+/Externals/CrossCompiler/gcc-4.9.2
