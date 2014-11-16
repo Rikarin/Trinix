@@ -15,5 +15,7 @@ endif
 OUTDIR	= $(TRXDIR)/Externals/Output/$(ARCHDIR)
 SYSROOT = $(TRXDIR)/Externals/Output/sysroot-$(BFD)
 
-HOST	= $(BFD)-unknown-trinix
-PATH	:= $(OUTDIR)-BUILD/bin:$(PATH)
+HOST	:= $(BFD)-unknown-trinix
+#PATH	:= $(OUTDIR)-BUILD/bin:$(PATH)
+
+PARLEVEL = 4
