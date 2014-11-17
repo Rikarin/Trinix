@@ -1,0 +1,16 @@
+--- gcc-4.9.2/libstdc++-v3/crossconfig.m4	2014-03-20 19:57:07.000000000 +0100
++++ crossconfig.m4	2014-11-17 11:19:20.009149407 +0100
+@@ -46,6 +46,13 @@
+     AM_ICONV
+     ;;
+ 
++  *-trinix*)
++    GLIBCXX_CHECK_COMPILER_FEATURES
++    GLIBCXX_CHECK_LINKER_FEATURES
++    GLIBCXX_CHECK_MATH_SUPPORT
++    GLIBCXX_CHECK_STDLIB_SUPPORT
++    ;;
++	
+   *-darwin*)
+     # Darwin versions vary, but the linker should work in a cross environment,
+     # so we just check for all the features here.

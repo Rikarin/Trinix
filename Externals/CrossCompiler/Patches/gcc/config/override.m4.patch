@@ -1,0 +1,15 @@
+--- gcc-4.9.2/config/override.m4	2011-03-05 08:32:50.000000000 +0100
++++ override.m4	2014-11-17 12:33:29.964793300 +0100
+@@ -39,9 +39,9 @@
+ dnl without rewriting this file.
+ dnl Or for updating the whole tree at once with the definition above.
+ AC_DEFUN([_GCC_AUTOCONF_VERSION_CHECK],
+-[m4_if(m4_defn([_GCC_AUTOCONF_VERSION]),
+-  m4_defn([m4_PACKAGE_VERSION]), [],
+-  [m4_fatal([Please use exactly Autoconf ]_GCC_AUTOCONF_VERSION[ instead of ]m4_defn([m4_PACKAGE_VERSION])[.])])
++[dnl m4_if(m4_defn([_GCC_AUTOCONF_VERSION]),
++  dnl m4_defn([m4_PACKAGE_VERSION]), [],
++  dnl [m4_fatal([Please use exactly Autoconf ]_GCC_AUTOCONF_VERSION[ instead of ]m4_defn([m4_PACKAGE_VERSION])[.])])
+ ])
+ m4_define([AC_INIT], m4_defn([AC_INIT])[
+ _GCC_AUTOCONF_VERSION_CHECK

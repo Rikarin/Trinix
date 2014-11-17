@@ -12,6 +12,7 @@
 *.kext.*
 *.xo.*
 *.bz2
+*.DS_Store
 
 /Externals/CrossCompiler/*build-*
 /Externals/CrossCompiler/binutils-2.24
