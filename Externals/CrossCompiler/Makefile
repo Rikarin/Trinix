@@ -7,6 +7,9 @@
 # BDIR    - Configuration directory
 #
 # @TODO: treba spravit patche aj na GMP, MPFR a MPC | -trinix* \
+# @TODO: Pridat HOST
+# cross-compiler:  HOST=linux,  target=trinix
+# hosted-compiler: HOST=trinix, target=trinix
 #
 
 -include ../config.mk
@@ -18,16 +21,18 @@ GCC			:= gcc-4.9.2
 BINUTILS	:= binutils-2.24
 
 BINUTILS_CHANGES := config.sub bfd/config.bfd gas/configure.tgt ld/configure.tgt ld/emulparams/elf_x86_64_trinix.sh ld/Makefile.in
-GCC_CHANGES		 := config.sub gcc/config.gcc gcc/config/trinix.h libgcc/config.host libstdc++-v3/crossconfig.m4 config/override.m4 fixincludes/mkfixinc.sh
-
-TARGET 			:= $(HOST)
-PREFIX 			:= $(OUTDIR)-BUILD
+GCC_CHANGES		 := config.sub gcc/config.gcc gcc/config/trinix.h libgcc/config.host config/override.m4 fixincludes/mkfixinc.sh
+#libstdc++-v3/crossconfig.m4
 
 BDIR_GMP		:= build-$(ARCH)/gmp
 BDIR_MPFR		:= build-$(ARCH)/mpfr
 BDIR_MPC		:= build-$(ARCH)/mpc
 BDIR_GCC		:= build-$(ARCH)/gcc
 BDIR_BINUTILS 	:= build-$(ARCH)/binutils
+
+GCC_TARGETS	:= gcc target-libgcc
+SYSROOT		:= $(OUTDIR)
+PREFIX		:= $(SYSROOT)/usr
 
 .PHONY: all install clean include gmp mpfr mpc binutils gcc smbhack
 
@@ -46,15 +51,14 @@ smbhack:
 include:
 	@echo --- Creating include files
 	@$(MKDIR) $(PREFIX)
-	@$(MKDIR) $(SYSROOT)/usr
 	
 clean:
 	@$(RM) build-* ../Output $(BINUTILS) $(GMP) $(MPFR) $(MPC) $(GCC)
 	
 	
-gmp: $(SYSROOT)/usr/lib/libgmp.so
-mpfr: $(SYSROOT)/usr/lib/libmpfr.so
-mpc: $(SYSROOT)/usr/lib/libmpc.so
+gmp: $(PREFIX)/lib/libgmp.so
+mpfr: $(PREFIX)/lib/libmpfr.so
+mpc: $(PREFIX)/lib/libmpc.so
 gcc: $(PREFIX)/bin/$(TARGET)-gcc
 binutils: $(BINUTILS) $(PREFIX)/bin/$(TARGET)-ld
 	
@@ -108,38 +112,39 @@ $(GCC)/libstdc++-v3/configure: $(GCC)/libstdc++-v3/crossconfig.m4
 	
 $(BDIR_GMP)/Makefile: $(GMP)
 	@mkdir -p $(BDIR_GMP)
-	@cd $(BDIR_GMP) && ../../$(GMP)/configure --prefix=$(SYSROOT)/usr "--with-sysroot=$(SYSROOT)" --without-docdir
+	@cd $(BDIR_GMP) && ../../$(GMP)/configure --prefix=$(PREFIX) "--with-sysroot=$(SYSROOT)" --without-docdir
 	
-$(BDIR_MPFR)/Makefile: $(MPFR) $(SYSROOT)/usr/lib/libgmp.so
+$(BDIR_MPFR)/Makefile: $(MPFR) $(PREFIX)/lib/libgmp.so
 	@mkdir -p $(BDIR_MPFR)
-	@cd $(BDIR_MPFR) && ../../$(MPFR)/configure --prefix=$(SYSROOT)/usr "--with-sysroot=$(SYSROOT)" --without-docdir
+	@cd $(BDIR_MPFR) && ../../$(MPFR)/configure --prefix=$(PREFIX) "--with-sysroot=$(SYSROOT)" --without-docdir
 	
-$(BDIR_MPC)/Makefile: $(MPC) $(SYSROOT)/usr/lib/libmpfr.so
+$(BDIR_MPC)/Makefile: $(MPC) $(PREFIX)/lib/libmpfr.so
 	@mkdir -p $(BDIR_MPC)
-	@cd $(BDIR_MPC) && ../../$(MPC)/configure --prefix=$(SYSROOT)/usr "--with-sysroot=$(SYSROOT)" --without-docdir	
+	@cd $(BDIR_MPC) && ../../$(MPC)/configure --prefix=$(PREFIX) "--with-sysroot=$(SYSROOT)" --without-docdir	
 	
 $(BDIR_BINUTILS)/Makefile: $(BINUTILS) $(addprefix $(BINUTILS)/,$(BINUTILS_CHANGES))
 	@mkdir -p $(BDIR_BINUTILS)
 	@cd $(BDIR_BINUTILS) && ../../$(BINUTILS)/configure --target=$(TARGET) --prefix=$(PREFIX) --disable-nls "--with-sysroot=$(SYSROOT)" --without-docdir
 	
-$(BDIR_GCC)/Makefile: $(SYSROOT)/usr/lib/libmpc.so $(GCC) $(addprefix $(GCC)/,$(GCC_CHANGES)) $(GCC)/libstdc++-v3/configure
+$(BDIR_GCC)/Makefile: $(PREFIX)/lib/libmpc.so $(GCC) $(addprefix $(GCC)/,$(GCC_CHANGES)) $(GCC)/libstdc++-v3/configure
 	@mkdir -p $(BDIR_GCC)
-	@cd $(BDIR_GCC) && PATH=$(PREFIX)/bin:$$PATH ../../$(GCC)/configure --prefix=$(PREFIX) --disable-nls --enable-langs=c,c++ \
+	@cd $(BDIR_GCC) && ../../$(GCC)/configure --target=$(TARGET) --prefix=$(PREFIX) --disable-nls --enable-langs=c,c++ \
 	--without-docdir --without-headers \
-	--disable-multilib --with-gmp=$(SYSROOT)/usr --with-mpfr=$(SYSROOT)/usr --with-mpc=$(SYSROOT)/usr
+	--disable-multilib --with-gmp=$(PREFIX) --with-mpfr=$(PREFIX) --with-mpc=$(PREFIX)
+# @TODO: user sysroot against with-gmp...
 	@echo "MAKEINFO = :" >> $(BDIR_GCC)/Makefile
 #"--with-sysroot=$(SYSROOT)" \
 
 	
-$(SYSROOT)/usr/lib/libgmp.so: $(BDIR_GMP)/Makefile
+$(PREFIX)/lib/libgmp.so: $(BDIR_GMP)/Makefile
 	@make -C $(BDIR_GMP) all -j $(PARLEVEL)
 	@make -C $(BDIR_GMP) install
 	
-$(SYSROOT)/usr/lib/libmpfr.so: $(BDIR_MPFR)/Makefile
+$(PREFIX)/lib/libmpfr.so: $(BDIR_MPFR)/Makefile
 	@make -C $(BDIR_MPFR) all -j $(PARLEVEL)
 	@make -C $(BDIR_MPFR) install
 	
-$(SYSROOT)/usr/lib/libmpc.so: $(BDIR_MPC)/Makefile
+$(PREFIX)/lib/libmpc.so: $(BDIR_MPC)/Makefile
 	@make -C $(BDIR_MPC) all -j $(PARLEVEL)
 	@make -C $(BDIR_MPC) install
 	
@@ -148,5 +153,5 @@ $(PREFIX)/bin/$(TARGET)-ld: $(BDIR_BINUTILS)/Makefile
 	@make -C $(BDIR_BINUTILS) install
 	
 $(PREFIX)/bin/$(TARGET)-gcc: $(BDIR_GCC)/Makefile
-	@PATH=$(PREFIX)/bin:$$PATH make -C $(BDIR_GCC) all -j $(PARLEVEL)
-	@PATH=$(PREFIX)/bin:$$PATH make -C $(BDIR_GCC) install
+	@make -C $(BDIR_GCC) $(GCC_TARGETS:%=all-%) -j $(PARLEVEL)
+	@make -C $(BDIR_GCC) $(GCC_TARGETS:%=install-%)

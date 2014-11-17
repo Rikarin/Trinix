@@ -21,5 +21,5 @@
 #undef LINK_SPEC
 #define LINK_SPEC "%{shared:-shared} %{!shared: %{!static: %{rdynamic:-export-dynamic} %{!dynamic-linker:-dynamic-linker /System/Libraries/ld-trinix.so}}}"
 
-#undef TARGET_VERSION
-#define TARGET_VERSION fprintf(stderr, " (i386 trinix)");
+#undef STANDARD_INCLUDE_DIR
+#define STANDARD_INCLUDE_DIR "/inkludy"
