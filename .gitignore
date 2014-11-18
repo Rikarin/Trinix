@@ -15,5 +15,9 @@
 *.DS_Store
 
 /Externals/CrossCompiler/*build-*
-/Externals/CrossCompiler/binutils-2.24
-/Externals/CrossCompiler/gcc-4.9.2
+/Externals/CrossCompiler/binutils-*
+/Externals/CrossCompiler/gcc-*
+/Externals/CrossCompiler/GDC-*
+/Externals/CrossCompiler/gmp-*
+/Externals/CrossCompiler/mpfr-*
+/Externals/CrossCompiler/mpc-*

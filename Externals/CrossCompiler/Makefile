@@ -8,8 +8,8 @@
 #
 # @TODO: treba spravit patche aj na GMP, MPFR a MPC | -trinix* \
 # @TODO: Pridat HOST
-# cross-compiler:  HOST=linux,  target=trinix
-# hosted-compiler: HOST=trinix, target=trinix
+# cross-compiler:  HOST=linux,  TARGET=trinix
+# hosted-compiler: HOST=trinix, TARGET=trinix
 #
 
 -include ../config.mk
@@ -18,11 +18,11 @@ GMP			:= gmp-6.0.0
 MPFR		:= mpfr-3.1.2
 MPC			:= mpc-1.0.2
 GCC			:= gcc-4.9.2
+GDC			:= GDC-2.064.2_gcc4.9
 BINUTILS	:= binutils-2.24
 
 BINUTILS_CHANGES := config.sub bfd/config.bfd gas/configure.tgt ld/configure.tgt ld/emulparams/elf_x86_64_trinix.sh ld/Makefile.in
 GCC_CHANGES		 := config.sub gcc/config.gcc gcc/config/trinix.h libgcc/config.host config/override.m4 fixincludes/mkfixinc.sh
-#libstdc++-v3/crossconfig.m4
 
 BDIR_GMP		:= build-$(ARCH)/gmp
 BDIR_MPFR		:= build-$(ARCH)/mpfr
@@ -67,6 +67,10 @@ $(GCC).tar.bz2:
 	@echo --- Downloading GCC
 	@wget http://gcc.fyxm.net/releases/$(GCC)/$(GCC).tar.bz2
 	
+$(GDC).tar.bz2:
+	@echo --- Downloading GDC
+	@wget https://github.com/D-Programming-GDC/GDC/archive/v2.064.2_gcc4.9.tar.gz -O $(GDC).tar.bz2
+	
 $(BINUTILS).tar.bz2:
 	@echo --- Downloading Binutils
 	@wget http://ftp.gnu.org/gnu/binutils/$(BINUTILS).tar.bz2
@@ -81,12 +85,10 @@ $(MPFR).tar.bz2:
 	
 $(MPC).tar.bz2:
 	@echo --- Downloading MPC
-	@wget ftp://ftp.gnu.org/gnu/mpc/$(MPC).tar.gz
-	@mv $(MPC).tar.gz $(MPC).tar.bz2
+	@wget ftp://ftp.gnu.org/gnu/mpc/$(MPC).tar.gz -O $(MPC).tar.bz2
 
 
-#%/configure: %.tar.bz2
-$(GCC) $(BINUTILS) $(GMP) $(MPFR) $(MPC): %: %.tar.bz2
+$(GCC) $(BINUTILS) $(GMP) $(MPFR) $(MPC) $(GDC): %: %.tar.bz2
 	@echo --- Unpacking $<
 	@tar -xvf $<
 	
@@ -126,14 +128,14 @@ $(BDIR_BINUTILS)/Makefile: $(BINUTILS) $(addprefix $(BINUTILS)/,$(BINUTILS_CHANG
 	@mkdir -p $(BDIR_BINUTILS)
 	@cd $(BDIR_BINUTILS) && ../../$(BINUTILS)/configure --target=$(TARGET) --prefix=$(PREFIX) --disable-nls "--with-sysroot=$(SYSROOT)" --without-docdir
 	
-$(BDIR_GCC)/Makefile: $(PREFIX)/lib/libmpc.so $(GCC) $(addprefix $(GCC)/,$(GCC_CHANGES)) $(GCC)/libstdc++-v3/configure
+$(BDIR_GCC)/Makefile: $(PREFIX)/lib/libmpc.so $(GCC) $(GDC) $(addprefix $(GCC)/,$(GCC_CHANGES)) $(GCC)/libstdc++-v3/configure
 	@mkdir -p $(BDIR_GCC)
-	@cd $(BDIR_GCC) && ../../$(GCC)/configure --target=$(TARGET) --prefix=$(PREFIX) --disable-nls --enable-langs=c,c++ \
-	--without-docdir --without-headers \
-	--disable-multilib --with-gmp=$(PREFIX) --with-mpfr=$(PREFIX) --with-mpc=$(PREFIX)
-# @TODO: user sysroot against with-gmp...
+	@cd $(GDC) && ./setup-gcc.sh ../$(GCC)
+	@cd $(BDIR_GCC) && ../../$(GCC)/configure --target=$(TARGET) --prefix=$(PREFIX) --disable-nls --enable-languages=c,c++,d \
+	--without-docdir --without-headers --disable-libssp --disable-multilib --disable-libphobos \
+	--with-gmp=$(PREFIX) --with-mpfr=$(PREFIX) --with-mpc=$(PREFIX)
 	@echo "MAKEINFO = :" >> $(BDIR_GCC)/Makefile
-#"--with-sysroot=$(SYSROOT)" \
+#"--with-sysroot=$(SYSROOT)" \ --exec-prefix= --with-build-sysroot=$(PREFIX) --with-native-system-header-dir=$(PREFIX)
 
 	
 $(PREFIX)/lib/libgmp.so: $(BDIR_GMP)/Makefile
