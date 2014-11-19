@@ -1,0 +1,10 @@
+--- binutils-2.24/config.sub	2013-11-26 12:37:33.000000000 +0100
++++ config.sub	2014-11-15 18:33:55.787443800 +0100
+@@ -1356,6 +1356,7 @@
+ 	      | -hpux* | -unos* | -osf* | -luna* | -dgux* | -auroraux* | -solaris* \
+ 	      | -sym* | -kopensolaris* | -plan9* \
+ 	      | -amigaos* | -amigados* | -msdos* | -newsos* | -unicos* | -aof* \
++		  | -trinix* \
+ 	      | -aos* | -aros* \
+ 	      | -nindy* | -vxsim* | -vxworks* | -ebmon* | -hms* | -mvs* \
+ 	      | -clix* | -riscos* | -uniplus* | -iris* | -rtu* | -xenix* \
