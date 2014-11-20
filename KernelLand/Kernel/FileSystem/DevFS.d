@@ -41,7 +41,20 @@ public final class DevFS : IFileSystem {
 	}
 
 	public bool Remove(FSNode node) {
-		return true;
+		switch (node.Attributes.Type) {
+			case FileType.Directory:
+				if (!(cast(DirectoryNode)node).Childrens.Count) {
+					delete node;
+					return true;
+				}
+				break;
+
+			default:
+				delete node;
+				return true;
+		}
+
+		return false;
 	}
 
 	public static DevFS Mount(DirectoryNode mountpoint) {
@@ -58,5 +71,9 @@ public final class DevFS : IFileSystem {
 		}
 
 		return ret;
+	}
+
+	public bool AddDevice(FSNode dev) {
+		return false;
 	}
 }
