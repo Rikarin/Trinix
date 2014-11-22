@@ -12,6 +12,9 @@ else
 endif
 
 
-OUTDIR	= $(TRXDIR)/Externals/Output/$(ARCHDIR)
+SYSROOT	:= $(TRXDIR)/Externals/Output/$(ARCHDIR)/CrossCompiler
 TARGET	:= $(BFD)-unknown-trinix
+OUTPFX	:= --libdir=$(SYSROOT)/System/Library --bindir=$(SYSROOT)/System/Binary --libexecdir=$(SYSROOT)/System/Libexec \
+			--includedir=$(SYSROOT)/System/Include --oldincludedir=$(SYSROOT)/System/Include --datarootdir=$(SYSROOT)/System/Share \
+			--mandir=$(SYSROOT)/System/Share/Manual
 PARLEVEL = 4

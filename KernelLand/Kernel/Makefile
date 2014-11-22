@@ -20,7 +20,7 @@ DFLAGS		+= -I$(TRXDIR)/Userspace/tmp/druntime/src #DRuntime
 DFLAGS		+= -IArchitectures/$(ARCHDIR) -D KERNEL_VERSION=$(KERNEL_VERSION)
 DFLAGS		+= -D ARCH=$(ARCH) -D ARCHDIR=$(ARCHDIR) -D PLATFORM=\"$(PLATFORM)\" -D ARCHDIR_IS_$(ARCHDIR)=1 -D PLATFORM_is_$(PLATFORM)=1
 CFLAGS		+= -g -fno-stack-protector
-LDFLAGS		+= -T Architectures/$(ARCHDIR)/Linker.ld
+LDFLAGS		+= -Wl,-T -Wl,Architectures/$(ARCHDIR)/Linker.ld
 DRUNTIME	:= $(TRXDIR)/Userspace/tmp/druntime/lib/libdruntime-linux64.a
 
 ifeq ($(PLATFORM),default)
@@ -87,7 +87,7 @@ $(DOCDIR)%.html: %.d
 	
 $(BIN): $(OBJ) $(MODS) $(DRUNTIME) Architectures/$(ARCHDIR)/Linker.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
 	@echo --- LD -o $(BIN)
-	@$(LD) $(LDFLAGS) -r -o $(BIN) --start-group $(OBJ) --end-group $(MODS) $(DRUNTIME) --defsym __buildnum=$$(( $(BUILD_NUM) + 1 )) -Map ../Linker.$(ARCH).map
+	$(DD) $(LDFLAGS) -o $(BIN) -Wl,--start-group -Wl,$(OBJ) -Wl,--end-group -Wl,--defsym -Wl,__buildnum=$$(( $(BUILD_NUM) + 1 )) -Wl,-Map -Wl,../Linker.$(ARCH).map $(MODS) $(DRUNTIME)
 	@$(OBJDUMP) -d -S $(BIN) > $(BIN).dsm
 	@echo BUILD_NUM = $$(( $(BUILD_NUM) + 1 )) > Makefile.BuildNum.$(ARCH)
 	@$(STRIP) $(BIN)

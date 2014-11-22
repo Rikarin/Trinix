@@ -13,4 +13,4 @@ NO_SMALL_DATA=yes
 SEPARATE_GOTPLT="SIZEOF (.got.plt) >= 24 ? 24 : 0"
 NOP=0x90909090
 
-ELF_INTERPRETER_NAME=\"/System/Library/ld-trinix.so\"
+ELF_INTERPRETER_NAME=\"/System/Library/ld.so\"
