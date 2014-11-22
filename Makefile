@@ -33,6 +33,11 @@ $(call targetvars,EXTLIBS) \
 $(call targetvars,USRAPPS)
 
 
+gimmeiso:
+	@make -C KernelLand/Kernel install
+	grub2-mkrescue -o Trinix.img Root
+
+
 test: $(ALL_SYSLIBsS) $(CC)
 	@echo $(ARCH) $(ARCHDIR) $(TRIPLET)
 	@echo aa
