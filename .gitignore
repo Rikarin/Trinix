@@ -13,6 +13,8 @@
 *.xo.*
 *.bz2
 *.DS_Store
+*.bin
+*.img
 
 /Externals/CrossCompiler/*build-*
 /Externals/CrossCompiler/binutils-*

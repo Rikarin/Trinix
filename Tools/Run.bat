@@ -1,10 +1,4 @@
 @echo off
 
-:: Copy files
-Tools\VMware\VDDK\VMware-mount Z: VMware\Disk.vmdk
-xcopy /E /Y Root\* Z:\
-Tools\VMware\VDDK\VMware-mount /d /f Z:
-
-:: Run VMware
-Tools\VMware\vmrun -T player start "VMware\Trinix.vmx"
+call "C:\Program Files\qemu\qemu-system-x86_64.exe" -hda \\192.168.0.106\zlozka\Trinix.img -m 1024 -boot c
 pause
