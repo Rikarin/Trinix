@@ -38,7 +38,7 @@ extern(C) void KernelMain(uint magic, void* info) {
 	Log.Install();
 
 	Log.WriteJSON("{");
-	Log.WriteJSON("name", "Trinix007");
+	Log.WriteJSON("name", "Trinix");
 	Log.WriteJSON("version", "0.0.1 Beta");
 	Log.Base = 10;
 	Log.WriteJSON("build", "0.5"); /* TODO: BuildNumber, problem with double */
@@ -134,7 +134,7 @@ extern(C) void KernelMain(uint magic, void* info) {
 	Task.CurrentThread.WaitEvents(ThreadEvent.DeadChild);
 
 
-	//Log.WriteLine("Running.....", PIT.Uptime);
+	Log.WriteLine("Running.....", PIT.Uptime);
 
 	while (true) {
 		Log.WriteLine("Running.....", PIT.Uptime);
@@ -169,21 +169,6 @@ void testfce() {
 	//while (true) {}
 	//dorobit Exit thready
 }
-
-
-
-/***********************************
- * foo does this.
- * Params:
- *	x =	is for this
- *		and not for that
- *	y =	is for that
- */
-
-void foo(int x, int y)
-{
-}
-
 
 
 

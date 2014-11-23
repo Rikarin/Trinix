@@ -15,8 +15,7 @@ KERNEL_VERSION = $(TRINIX_VERSION)
 
 
 ASFLAGS		+= -D ARCHDIR_IS_$(ARCHDIR)=1 -D PLATFORM_is_$(PLATFORM)=1
-DFLAGS		+= -g -fversion=LogUserFriendly -D _MODULE_NAME_=\"Kernel\" -femit-templates
-DFLAGS		+= -femit-templates
+DFLAGS		+= -g -fversion=LogUserFriendly -D _MODULE_NAME_=\"Kernel\"
 DFLAGS		+= -IArchitectures/$(ARCHDIR) -D KERNEL_VERSION=$(KERNEL_VERSION)
 DFLAGS		+= -D ARCH=$(ARCH) -D ARCHDIR=$(ARCHDIR) -D PLATFORM=\"$(PLATFORM)\" -D ARCHDIR_IS_$(ARCHDIR)=1 -D PLATFORM_is_$(PLATFORM)=1
 CFLAGS		+= -g -fno-stack-protector
@@ -86,10 +85,10 @@ $(DOCDIR)%.html: %.d
 	@$(MKDIR) $(dir $@)
 	@$(DD) $(DFLAGS) -c -fdoc -fdoc-file=$@ $< -o /dev/null
 	
-$(BIN): $(OBJ) $(MODS) $(DRUNTIME) Architectures/$(ARCHDIR)/Linker.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
+$(BIN): $(OBJ) $(MODS) $(DRUNTIME) $(shell find * -name "*.d" -not -path "*Architectures*") Architectures/$(ARCHDIR)/Linker.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
 	@echo --- LD -o $(BIN)
 #$(DD) $(LDFLAGS) -o $(BIN) -Wl,--defsym -Wl,__buildnum=$$(( $(BUILD_NUM) + 1 )) -Wl,-Map -Wl,../Linker.$(ARCH).map $(OBJ) $(MODS) $(DRUNTIME)
-	@$(DD) $(DFLAGS) $(LDFLAGS) -o $(BIN) -nostdlib -lgcc -femit-templates $(shell find * -name "*.d" -not -path "*Architectures*") $(OBJ) $(DRUNTIME)
+	@$(DD) $(DFLAGS) $(LDFLAGS) -o $(BIN) $(shell find * -name "*.d" -not -path "*Architectures*") $(OBJ) $(DRUNTIME)
 	@$(OBJDUMP) -d -S $(BIN) > $(BIN).dsm
 	@echo BUILD_NUM = $$(( $(BUILD_NUM) + 1 )) > Makefile.BuildNum.$(ARCH)
 	@$(STRIP) $(BIN)

@@ -23,7 +23,7 @@
       <CustomCommands>
         <Command type="Execute" command="../../Tools/Run.bat" externalConsole="True" />
         <Command type="Build" command="D:\Instalacky\plink.exe -ssh -l root -i G:/private2.ppk 192.168.0.106 cd /zlozka/;make" />
-        <Command type="Clean" command="D:\Instalacky\plink.exe -ssh -l root -i G:/private2.ppk 192.168.0.109 cd /os/Source/Kernel/;make clean" />
+        <Command type="Clean" command="D:\Instalacky\plink.exe -ssh -l root -i G:/private2.ppk 192.168.0.106 cd /zlozka/;make clean" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>

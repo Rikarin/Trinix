@@ -22,7 +22,7 @@ namespace Debugger
             Parser parser = null;
             while (true)
             {
-                NamedPipeServerStream pipeServer = new NamedPipeServerStream("system");
+                NamedPipeServerStream pipeServer = new NamedPipeServerStream("trinix");
                 pipeServer.WaitForConnection();
 
                 if (parser != null)
