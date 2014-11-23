@@ -89,7 +89,7 @@ $(DOCDIR)%.html: %.d
 $(BIN): $(OBJ) $(MODS) $(DRUNTIME) Architectures/$(ARCHDIR)/Linker.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
 	@echo --- LD -o $(BIN)
 #$(DD) $(LDFLAGS) -o $(BIN) -Wl,--defsym -Wl,__buildnum=$$(( $(BUILD_NUM) + 1 )) -Wl,-Map -Wl,../Linker.$(ARCH).map $(OBJ) $(MODS) $(DRUNTIME)
-	$(DD) $(DFLAGS) $(LDFLAGS) -o $(BIN) -nostdlib -lgcc -femit-templates $(shell find * -name "*.d" -not -path "*Architectures*") $(OBJ) $(DRUNTIME)
+	@$(DD) $(DFLAGS) $(LDFLAGS) -o $(BIN) -nostdlib -lgcc -femit-templates $(shell find * -name "*.d" -not -path "*Architectures*") $(OBJ) $(DRUNTIME)
 	@$(OBJDUMP) -d -S $(BIN) > $(BIN).dsm
 	@echo BUILD_NUM = $$(( $(BUILD_NUM) + 1 )) > Makefile.BuildNum.$(ARCH)
 	@$(STRIP) $(BIN)

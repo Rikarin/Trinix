@@ -36,6 +36,7 @@ IMG := Trinix.img
 
 
 copy:
+	@make -C KernelLand/Kernel install
 	@kpartx -a $(IMG)
 	@sleep 1
 	
@@ -66,7 +67,8 @@ makeimg:
 	@kpartx -d $(IMG)
 
 	
-
+clean:
+	@make -C KernelLand/Kernel clean
 
 test: $(ALL_SYSLIBsS) $(CC)
 	@echo $(ARCH) $(ARCHDIR) $(TRIPLET)

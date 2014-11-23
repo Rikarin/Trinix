@@ -38,7 +38,7 @@ extern(C) void KernelMain(uint magic, void* info) {
 	Log.Install();
 
 	Log.WriteJSON("{");
-	Log.WriteJSON("name", "Trinix");
+	Log.WriteJSON("name", "Trinix007");
 	Log.WriteJSON("version", "0.0.1 Beta");
 	Log.Base = 10;
 	Log.WriteJSON("build", "0.5"); /* TODO: BuildNumber, problem with double */
