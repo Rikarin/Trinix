@@ -14,20 +14,20 @@
 
 -include ../config.mk
 
-GMP			:= gmp-6.0.0
+GMP		:= gmp-6.0.0
 MPFR		:= mpfr-3.1.2
-MPC			:= mpc-1.0.2
-GCC			:= gcc-4.9.2
-GDC			:= GDC-2.064.2_gcc4.9
+MPC		:= mpc-1.0.2
+GCC		:= gcc-4.9.2
+GDC		:= GDC-2.064.2_gcc4.9
 BINUTILS	:= binutils-2.24
 
 BINUTILS_CHANGES := config.sub bfd/config.bfd gas/configure.tgt ld/configure.tgt ld/emulparams/elf_x86_64_trinix.sh ld/Makefile.in
-GCC_CHANGES		 := config.sub gcc/config.gcc gcc/config/trinix.h libgcc/config.host config/override.m4 fixincludes/mkfixinc.sh
+GCC_CHANGES	 := config.sub gcc/config.gcc gcc/config/trinix.h libgcc/config.host config/override.m4 fixincludes/mkfixinc.sh
 
-BDIR_GMP		:= build-$(ARCH)/gmp
-BDIR_MPFR		:= build-$(ARCH)/mpfr
-BDIR_MPC		:= build-$(ARCH)/mpc
-BDIR_GCC		:= build-$(ARCH)/gcc
+BDIR_GMP	:= build-$(ARCH)/gmp
+BDIR_MPFR	:= build-$(ARCH)/mpfr
+BDIR_MPC	:= build-$(ARCH)/mpc
+BDIR_GCC	:= build-$(ARCH)/gcc
 BDIR_BINUTILS 	:= build-$(ARCH)/binutils
 
 GCC_TARGETS	:= gcc target-libgcc
@@ -59,36 +59,36 @@ clean:
 	@$(RM) build-* ../Output $(BINUTILS) $(GMP) $(MPFR) $(MPC) $(GCC)
 	
 	
-gmp: $(PREFIX)/Library/libgmp.so
-mpfr: $(PREFIX)/Library/libmpfr.so
-mpc: $(PREFIX)/Library/libmpc.so
+gmp: $(PREFIX)/Library/libgmp.a
+mpfr: $(PREFIX)/Library/libmpfr.a
+mpc: $(PREFIX)/Library/libmpc.a
 gcc: $(PREFIX)/Binary/$(TARGET)-gcc
 binutils: $(BINUTILS) $(PREFIX)/Binary/$(TARGET)-ld
 	
 	
 $(GCC).tar.bz2:
 	@echo --- Downloading GCC
-	@wget http://gcc.fyxm.net/releases/$(GCC)/$(GCC).tar.bz2
+	@curl -O http://gcc.fyxm.net/releases/$(GCC)/$(GCC).tar.bz2
 	
 $(GDC).tar.bz2:
 	@echo --- Downloading GDC
-	@wget https://github.com/D-Programming-GDC/GDC/archive/v2.064.2_gcc4.9.tar.gz -O $(GDC).tar.bz2
+	@curl --location -o $(GDC).tar.bz2 https://github.com/D-Programming-GDC/GDC/archive/v2.064.2_gcc4.9.tar.gz
 	
 $(BINUTILS).tar.bz2:
 	@echo --- Downloading Binutils
-	@wget http://ftp.gnu.org/gnu/binutils/$(BINUTILS).tar.bz2
+	@curl -O http://ftp.gnu.org/gnu/binutils/$(BINUTILS).tar.bz2
 	
 $(GMP).tar.bz2:
 	@echo --- Downloading GMP
-	@wget https://gmplib.org/download/gmp/$(GMP).tar.bz2
+	@curl -O https://gmplib.org/download/gmp/$(GMP).tar.bz2
 	
 $(MPFR).tar.bz2:
 	@echo --- Downloading MPFR
-	@wget http://www.mpfr.org/mpfr-current/$(MPFR).tar.bz2
+	@curl -O http://www.mpfr.org/mpfr-current/$(MPFR).tar.bz2
 	
 $(MPC).tar.bz2:
 	@echo --- Downloading MPC
-	@wget ftp://ftp.gnu.org/gnu/mpc/$(MPC).tar.gz -O $(MPC).tar.bz2
+	@curl -o $(MPC).tar.bz2 ftp://ftp.gnu.org/gnu/mpc/$(MPC).tar.gz
 
 
 $(GCC) $(BINUTILS) $(GMP) $(MPFR) $(MPC) $(GDC): %: %.tar.bz2
@@ -117,39 +117,44 @@ $(GCC)/libstdc++-v3/configure: $(GCC)/libstdc++-v3/crossconfig.m4
 	
 $(BDIR_GMP)/Makefile: $(GMP)
 	@mkdir -p $(BDIR_GMP)
-	@cd $(BDIR_GMP) && ../../$(GMP)/configure --prefix=$(PREFIX) $(OUTPFX) "--with-sysroot=$(SYSROOT)" --without-docdir
+	@cd $(BDIR_GMP) && ../../$(GMP)/configure --prefix=$(PREFIX) $(OUTPFX) "--with-sysroot=$(SYSROOT)"
 	
-$(BDIR_MPFR)/Makefile: $(MPFR) $(PREFIX)/Library/libgmp.so
+$(BDIR_MPFR)/Makefile: $(MPFR) $(PREFIX)/Library/libgmp.a
 	@mkdir -p $(BDIR_MPFR)
-	@cd $(BDIR_MPFR) && ../../$(MPFR)/configure --prefix=$(PREFIX) $(OUTPFX) "--with-sysroot=$(SYSROOT)" --without-docdir
+	@cd $(BDIR_MPFR) && ../../$(MPFR)/configure --prefix=$(PREFIX) $(OUTPFX) --with-gmp-include=$(PREFIX)/include \
+	--with-gmp-lib=$(PREFIX)/Library
 	
-$(BDIR_MPC)/Makefile: $(MPC) $(PREFIX)/Library/libmpfr.so
+$(BDIR_MPC)/Makefile: $(MPC) $(PREFIX)/Library/libmpfr.a
 	@mkdir -p $(BDIR_MPC)
-	@cd $(BDIR_MPC) && ../../$(MPC)/configure --prefix=$(PREFIX) $(OUTPFX) "--with-sysroot=$(SYSROOT)" --without-docdir	
+	@cd $(BDIR_MPC) && ../../$(MPC)/configure --prefix=$(PREFIX) $(OUTPFX) "--with-sysroot=$(SYSROOT)" --with-gmp-include=$(PREFIX)/include \
+	--with-gmp-lib=$(PREFIX)/Library --with-mpfr-include=$(PREFIX)/include --with-mpfr-lib=$(PREFIX)/Library
 	
 $(BDIR_BINUTILS)/Makefile: $(BINUTILS) $(addprefix $(BINUTILS)/,$(BINUTILS_CHANGES))
 	@mkdir -p $(BDIR_BINUTILS)
-	@cd $(BDIR_BINUTILS) && ../../$(BINUTILS)/configure --target=$(TARGET) --prefix=$(PREFIX) $(OUTPFX) --disable-nls "--with-sysroot=$(SYSROOT)" --without-docdir
+	@cd $(BDIR_BINUTILS) && ../../$(BINUTILS)/configure --target=$(TARGET) --prefix=$(PREFIX) $(OUTPFX) --disable-nls "--with-sysroot=$(SYSROOT)" \
+	--without-docdir --disable-werror
 	
-$(BDIR_GCC)/Makefile: $(PREFIX)/Library/libmpc.so $(GCC) $(GDC) $(addprefix $(GCC)/,$(GCC_CHANGES)) $(GCC)/libstdc++-v3/configure
+$(BDIR_GCC)/Makefile: $(PREFIX)/Library/libmpc.a $(GCC) $(GDC) $(addprefix $(GCC)/,$(GCC_CHANGES)) $(GCC)/libstdc++-v3/configure
 	@mkdir -p $(BDIR_GCC)
 	@cd $(GDC) && ./setup-gcc.sh ../$(GCC)
 	@cd $(BDIR_GCC) && ../../$(GCC)/configure --target=$(TARGET) --prefix=$(PREFIX) $(OUTPFX) --disable-nls --enable-languages=c,c++,d \
 	--without-docdir --without-headers --disable-libssp --disable-multilib --disable-libphobos --with-gnu-as --with-gnu-ld \
-	--with-gmp=$(PREFIX) --with-mpfr=$(PREFIX) --with-mpc=$(PREFIX) --with-build-sysroot=$(SYSROOT)
+	--with-gmp=$(PREFIX) --with-mpfr=$(PREFIX) --with-mpc=$(PREFIX) --with-build-sysroot=$(SYSROOT) \
+	--with-gmp-lib=$(PREFIX)/Library --with-mpfr-lib=$(PREFIX)/Library --with-mpc-lib=$(PREFIX)/Library
+	
 	@echo "MAKEINFO = :" >> $(BDIR_GCC)/Makefile
 #"--with-sysroot=$(SYSROOT)" \
 
 	
-$(PREFIX)/Library/libgmp.so: $(BDIR_GMP)/Makefile
+$(PREFIX)/Library/libgmp.a: $(BDIR_GMP)/Makefile
 	@make -C $(BDIR_GMP) all -j $(PARLEVEL)
 	@make -C $(BDIR_GMP) install
 	
-$(PREFIX)/Library/libmpfr.so: $(BDIR_MPFR)/Makefile
+$(PREFIX)/Library/libmpfr.a: $(BDIR_MPFR)/Makefile
 	@make -C $(BDIR_MPFR) all -j $(PARLEVEL)
 	@make -C $(BDIR_MPFR) install
 	
-$(PREFIX)/Library/libmpc.so: $(BDIR_MPC)/Makefile
+$(PREFIX)/Library/libmpc.a: $(BDIR_MPC)/Makefile
 	@make -C $(BDIR_MPC) all -j $(PARLEVEL)
 	@make -C $(BDIR_MPC) install
 	

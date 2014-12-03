@@ -166,6 +166,7 @@ void testfce() {
 		//Handle.StaticCall(1);
 		for (int j = 0; j < 0x100_000_00; j++) {}
 	}
+
 	//while (true) {}
 	//dorobit Exit thready
 }

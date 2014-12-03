@@ -41,7 +41,7 @@ copy:
 	@sleep 1
 	
 	@$(MKDIR) mount-tmp
-	@mount /dev/mapper/loop3p1 mount-tmp
+	@mount /dev/mapper/loop0p1 mount-tmp
 	
 	@cp -Rf Root/* mount-tmp
 
@@ -50,7 +50,7 @@ copy:
 	@kpartx -d $(IMG)
 
 makeimg:
-	@dd if=/dev/zero of=$(IMG) seek=50M bs=1 count=0
+	@dd if=/dev/zero of=$(IMG) seek=50000000 bs=1 count=0
 	@parted --script $(IMG) mklabel msdos mkpart p ext2 1 40 set 1 boot on
 	@kpartx -a $(IMG)
 	@sleep 1
