@@ -1,10 +1,10 @@
-﻿module Drivers.ATA.ATAController;
+﻿module Modules.Storage.ATA.ATAController;
 
 static import Architecture;
 
-import Drivers.ATA;
 import Library;
 import VFSManager;
+import Modules.Storage.ATA.ATADrive;
 
 
 public class ATAController {

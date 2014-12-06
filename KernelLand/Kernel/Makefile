@@ -11,15 +11,10 @@ ifeq ($(BUILD_NUM),)
 	BUILD_NUM = 0
 endif
 
-KERNEL_VERSION = $(TRINIX_VERSION)
-
-
-ASFLAGS		+= -D ARCHDIR_IS_$(ARCHDIR)=1 -D PLATFORM_is_$(PLATFORM)=1
 DFLAGS		+= -g -fversion=LogUserFriendly -D _MODULE_NAME_=\"Kernel\"
-DFLAGS		+= -IArchitectures/$(ARCHDIR) -D KERNEL_VERSION=$(KERNEL_VERSION)
-DFLAGS		+= -D ARCH=$(ARCH) -D ARCHDIR=$(ARCHDIR) -D PLATFORM=\"$(PLATFORM)\" -D ARCHDIR_IS_$(ARCHDIR)=1 -D PLATFORM_is_$(PLATFORM)=1
+DFLAGS		+= -IArchitectures/$(ARCHDIR)
 CFLAGS		+= -g -fno-stack-protector
-LDFLAGS		+= -Wl,-T -Wl,Architectures/$(ARCHDIR)/Linker.ld
+LDFLAGS		:= -Wl,-T -Wl,Architectures/$(ARCHDIR)/Linker.ld -Wl,-Map -Wl,../Linker.$(ARCH).map
 DRUNTIME	:= $(TRXDIR)/Userspace/tmp/druntime/lib/libdruntime-linux64.a
 
 ifeq ($(PLATFORM),default)
@@ -87,8 +82,12 @@ $(DOCDIR)%.html: %.d
 	
 $(BIN): $(OBJ) $(MODS) $(DRUNTIME) $(shell find * -name "*.d" -not -path "*Architectures*") Architectures/$(ARCHDIR)/Linker.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
 	@echo --- LD -o $(BIN)
-#$(DD) $(LDFLAGS) -o $(BIN) -Wl,--defsym -Wl,__buildnum=$$(( $(BUILD_NUM) + 1 )) -Wl,-Map -Wl,../Linker.$(ARCH).map $(OBJ) $(MODS) $(DRUNTIME)
-	@$(DD) $(DFLAGS) $(LDFLAGS) -o $(BIN) $(shell find * -name "*.d" -not -path "*Architectures*") $(OBJ) $(DRUNTIME)
+#	@$(DD) $(DFLAGS) -c -o $(OBJDIR)kernel.d.o $(shell find * -name "*.d" -not -path "*Architectures*")
+#	@$(LD) $(LDFLAGS) -o $(BIN) --defsym __buildnum=$$(( $(BUILD_NUM) + 1 )) -Map ../Linker.$(ARCH).map $(OBJDIR)kernel.d.o $(OBJ) $(DRUNTIME)
+	
+#$(DD) $(LDFLAGS) -o $(BIN) -femit-templates -Wl,--defsym -Wl,__buildnum=$$(( $(BUILD_NUM) + 1 )) -Wl,-Map -Wl,../Linker.$(ARCH).map $(OBJ) $(MODS)  $(DRUNTIME)
+
+	@$(DD) $(DFLAGS) $(LDFLAGS) -o $(BIN) $(shell find * -name "*.d" -not -path "*Architectures*") $(OBJ) $(MODS) $(DRUNTIME)
 	@$(OBJDUMP) -d -S $(BIN) > $(BIN).dsm
 	@echo BUILD_NUM = $$(( $(BUILD_NUM) + 1 )) > Makefile.BuildNum.$(ARCH)
 	@$(STRIP) $(BIN)
@@ -120,7 +119,7 @@ $(BUILDINFO_SRC): $(filter-out $(BUILDINFO_OBJ), $(OBJ)) $(MODS)
 	$(eval _GITCHANGED=$(shell git status --porcelain | grep -c '^ M '))
 	@echo "const char gsGitHash[] = \"$(_GITHASH)\";" > $@
 	@echo "const int giBuildNumber = $(BUILD_NUM);" >> $@
-	@echo "const char gsBuildInfo[] = \"Trinix v$(KERNEL_VERSION) $(ARCH)-$(PLATFORM)\\\\r\\\\n\"" >> $@
+	@echo "const char gsBuildInfo[] = \"Trinix v$(TRINIX_VERSION) $(ARCH)-$(PLATFORM)\\\\r\\\\n\"" >> $@
 	@echo " \"Build $(shell hostname --fqdn):$(BUILD_NUM) Git $(_GITHASH) - $(_GITCHANGED) modified\";" >> $@
 	
 # Compile rule for buildinfo (needs a special one because it's not a general source file)

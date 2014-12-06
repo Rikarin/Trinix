@@ -5,6 +5,7 @@ import VFSManager;
 import TaskManager;
 import Architecture;
 import MemoryManager;
+import ObjectManager;
 import SyscallManager;
 
 //Log dorobit... problem je v tom ze ak si vymknem log v processe tak pocas interruptu ho nemozem pouzit...
@@ -106,16 +107,12 @@ extern(C) void KernelMain(uint magic, void* info) {
 	Log.WriteJSON("}");
 	Log.WriteJSON("]");
 
-
-
 	//tu by asi mali byt drivery
-	import Drivers.ATA;
 	import Drivers.PIT;
 	import Drivers.PIC;
 	import FileSystem.Ext2;
 
-	ATAController.Detect(); // for testing only
-	Ext2Filesystem.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), cast(Partition)VFS.Find("/System/Devices/hdb1"));
+	//Ext2Filesystem.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), cast(Partition)VFS.Find("/System/Devices/hdb1"));
 
 	PIC.Initialize();
 	PIC.Install();
@@ -124,6 +121,14 @@ extern(C) void KernelMain(uint magic, void* info) {
 	PIT.Install();
 
 	Log.WriteJSON("}");
+
+
+	ModuleManager.Initialize();
+	ModuleManager.LoadBuiltins();
+
+
+
+
 	VFS.PrintTree(VFS.Root);
 
 

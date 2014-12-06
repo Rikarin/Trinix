@@ -10,7 +10,7 @@
     <Compiler>DMD2</Compiler>
     <Includes>
       <Includes>
-        <Path>C:/Users/Satoshi/Desktop/Trinix/Source/Kernel</Path>
+        <Path>C:\Users\Satoshi\Desktop\Trinix\Source\Kernel</Path>
       </Includes>
     </Includes>
   </PropertyGroup>
@@ -54,5 +54,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Main.d" />
+    <Compile Include="DriverInfo.d" />
+    <Compile Include="ATAController.d" />
+    <Compile Include="ATADrive.d" />
   </ItemGroup>
 </Project>

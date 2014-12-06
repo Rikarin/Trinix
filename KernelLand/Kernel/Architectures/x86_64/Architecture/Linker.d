@@ -1,13 +1,15 @@
 ﻿module Architecture.Linker;
 
+import ObjectManager;
 
 private extern(C) __gshared {
 	ubyte iKernelBase;
 	ubyte iKernelEnd;
-	ubyte iKernelModules;
-	ubyte iKernelModulesEnd;
 	ubyte iKernelSymbols;
 	ubyte iKernelSymbolsEnd;
+
+	ubyte iKernelModules;
+	ubyte iKernelModulesEnd;
 }
 
 
@@ -20,21 +22,21 @@ public abstract final class LinkerScript {
 		public static void* KernelEnd() {
 			return &iKernelEnd;
 		}
-		
-		public static void* KernelModules() {
-			return &iKernelModulesEnd;
-		}
-		
-		public static void* KernelModulesEnd() {
-			return &iKernelModulesEnd;
-		}
-		
+	
 		public static void* KernelSymbols() {
 			return &iKernelSymbols;
 		}
 		
 		public static void* KernelSymbolsEnd() {
 			return &iKernelSymbolsEnd;
+		}
+
+		public static void* KernelModules() {
+			return &iKernelModules;
+		}
+
+		public static void* KernelModulesEnd() {
+			return &iKernelModulesEnd;
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿module Library;
 
 public import Library.List;
+public import Library.Array;
 public import Library.String;
 public import Library.Bitfield;
 public import Library.BitArray;

@@ -1,28 +1,21 @@
 ﻿module Modules.Storage.ATA.Main;
 
+import Core;
 import ObjectManager;
-
-
-extern(C) __gshared static ModuleDef _DriverInfo_Storage_ATA = {
-	Magic: ModuleMagic,
-	Flags: 0,
-	Version: 8,
-	Name: "ATA modul testik",
-	Initialize: &ATA.Initialize,
-	Finalize: &ATA.Finalize,
-	Dependencies: ["test", "niec ine"]
-};
+import Modules.Storage.ATA.ATAController;
 
 
 public class ATA {
 	public static ModuleResult Initialize(string[] args) {
-		import Core;
-		Log.Write("test from ATA module");
+		ATAController.Detect();
 
+		Log.Write("ATA module was initialized");
 		return ModuleResult.Sucessful;
 	}
 
 	public static ModuleResult Finalize() {
-		return ModuleResult.Sucessful;
+
+		Log.Write("ATA module was finalized");
+		return ModuleResult.Error;
 	}
 }

@@ -76,7 +76,6 @@
     <None Include="TaskManager\Process.s" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Main.d" />
     <Compile Include="ObjectManager\package.d" />
     <Compile Include="ObjectManager\IStaticModule.d" />
     <Compile Include="Core\Log.d" />
@@ -122,7 +121,6 @@
     <Compile Include="FileSystem\package.d" />
     <Compile Include="FileSystem\TmpFS.d" />
     <Compile Include="Library\String.d" />
-    <Compile Include="ObjectManager\Module.d" />
     <Compile Include="VFSManager\MemoryNode.d" />
     <Compile Include="FileSystem\Ext2\Ext2FileSystem.d" />
     <Compile Include="FileSystem\Ext2\package.d" />
@@ -137,9 +135,6 @@
     <Compile Include="FileSystem\ZeroDev.d" />
     <Compile Include="Core\DateTime.d" />
     <Compile Include="FileSystem\RandomDev.d" />
-    <Compile Include="Drivers\ATA\ATAController.d" />
-    <Compile Include="Drivers\ATA\ATADrive.d" />
-    <Compile Include="Drivers\ATA\package.d" />
     <Compile Include="Drivers\PIT.d" />
     <Compile Include="Drivers\PIC.d" />
     <Compile Include="Library\SpinLock.d" />
@@ -152,5 +147,8 @@
     <Compile Include="TaskManager\Semaphore.d" />
     <Compile Include="Architectures\x86_64\Architecture\Time.d" />
     <Compile Include="TaskManager\SignalType.d" />
+    <Compile Include="Core\Main.d" />
+    <Compile Include="ObjectManager\ModuleManager.d" />
+    <Compile Include="Library\Array.d" />
   </ItemGroup>
 </Project>

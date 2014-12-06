@@ -7,10 +7,7 @@ _DFLAGS := $(DFLAGS)
 -include $(dir $(lastword $(MAKEFILE_LIST)))../Makefile.cfg
 
 
-DFLAGS := -I$(TRXDIR)/KernelLand/Kernel -I$(TRXDIR)/KernelLand/Kernel/Architectures/$(ARCHDIR) -I$(TRXDIR)/KernelLand/Modules
-DFLAGS += -D ARCH=$(ARCH) -D ARCHDIR=$(ARCHDIR) -D PLATFORM=\"$(PLATFORM)\" -D ARCHDIR_IS_$(ARCHDIR)=1 -D PLATFORM_is_$(PLATFORM)=1
-DFLAGS += $(_DFLAGS)
-DFLAGS += -g 
+DFLAGS := -I$(TRXDIR)/KernelLand/Kernel -I$(TRXDIR)/KernelLand/Kernel/Architectures/$(ARCHDIR) -I$(TRXDIR)/KernelLand
 
 ifneq ($(CATEGORY),)
 	FULLNAME := $(CATEGORY)_$(NAME)
@@ -58,12 +55,12 @@ endif
 ifneq ($(BUILDTYPE),static)
 $(BIN): $(OBJ)
 	@echo --- $(LD) -o $@
-	@$(LD) --allow-shlib-undefined -shared -nostdlib -o $@ $(OBJ) -defsym=DriverInfo=_DriverInfo_$(FULLNAME) $(LDFLAGS)
+	@$(LD) --allow-shlib-undefined -shared -o $@ $(OBJ) -defsym=DriverInfo=_DriverInfo_$(FULLNAME) $(LDFLAGS)
 	@$(OBJDUMP) -d -S $(BIN) > $(BIN).dsm
 else
 $(BIN): %.xo.$(ARCH): $(OBJ)
 	@echo --- LD -o $@
-	@$(LD) -r -o $@ $(OBJ) $(LDFLAGS)
+	@$(LD) -T $(TRXDIR)/KernelLand/Modules/link.ld -r -o $@ $(OBJ)
 endif
 	
 obj_$(_SUFFIX)/%.d.o: %.d

@@ -1,7 +1,7 @@
-﻿module Drivers.ATA.ATADrive;
+﻿module Modules.Storage.ATA.ATADrive;
 
-import Drivers.ATA;
 import ObjectManager;
+import Modules.Storage.ATA.ATAController;
 
 
 public class ATADrive : IBlockDevice {

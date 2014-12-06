@@ -136,19 +136,11 @@ public class LinkedList(T) {
 		LinkedListNode!T node = _head;
 
 		if (node) {
-			if (value) {
-				do {
-					if (value is node._item)
-						return node;
-					node = node._next;
-				} while (node !is _head);
-			} else {
-				do {
-					if (!node._item)
-						return node;
-					node = node._next;
-				} while (node !is _head);
-			}
+			do {
+				if (value is node._item)
+					return node;
+				node = node._next;
+			} while (node !is _head);
 		}
 
 		return null;
@@ -162,19 +154,11 @@ public class LinkedList(T) {
 		LinkedListNode!T node = last;
 		
 		if (node) {
-			if (value) {
-				do {
-					if (value is node._item)
-						return node;
-					node = node._prev;
-				} while (node !is last);
-			} else {
-				do {
-					if (!node._item)
-						return node;
-					node = node._prev;
-				} while (node !is last);
-			}
+			do {
+				if (value is node._item)
+					return node;
+				node = node._prev;
+			} while (node !is last);
 		}
 		
 		return null;

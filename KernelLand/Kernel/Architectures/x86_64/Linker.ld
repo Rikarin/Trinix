@@ -35,16 +35,14 @@ SECTIONS {
     .deh_eh ALIGN(0x1000) : AT(ADDR(.deh_eh) - _kernel_base) {
         *(.deh_eh)
     }
-
-    .minfo ALIGN(0x1000) : AT(ADDR(.minfo) - _kernel_base) {
-        *(.minfo)
-    }
-
+	
     .dtors.d_dso_dtor ALIGN(0x1000) : AT(ADDR(.dtors.d_dso_dtor) - _kernel_base) {
+		*(.dtors .dtors.*)
         *(.dtors.d_dso_dtor)
     }
 
     .ctors.d_dso_ctor ALIGN(0x1000) : AT(ADDR(.ctors.d_dso_ctor) - _kernel_base) {
+		*(.ctors .ctors.*)
         *(.ctors.d_dso_ctor)
     }
 
@@ -55,6 +53,14 @@ SECTIONS {
     .data ALIGN(0x1000) : AT(ADDR(.data) - _kernel_base) {
         *(.padata)
         *(.data .data.*)
+		
+		iKernelModules = .;
+		*(.KMODULES)
+		iKernelModulesEnd = .;
+    }
+	
+	.tdata ALIGN(0x1000) : AT(ADDR(.tdata) - _kernel_base) {
+		*(.tdata .tdata.*)
     }
 
     .got ALIGN(0x1000) : AT(ADDR(.got) - _kernel_base) {
