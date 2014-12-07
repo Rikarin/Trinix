@@ -133,9 +133,7 @@
     <Compile Include="FileSystem\Ext2\Ext2PipeNode.d" />
     <Compile Include="FileSystem\NullDev.d" />
     <Compile Include="FileSystem\ZeroDev.d" />
-    <Compile Include="Core\DateTime.d" />
     <Compile Include="FileSystem\RandomDev.d" />
-    <Compile Include="Drivers\PIT.d" />
     <Compile Include="Drivers\PIC.d" />
     <Compile Include="Library\SpinLock.d" />
     <Compile Include="SyscallManager\SyscallHandler.d" />

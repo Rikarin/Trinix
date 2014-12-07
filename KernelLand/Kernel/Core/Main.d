@@ -107,8 +107,7 @@ extern(C) void KernelMain(uint magic, void* info) {
 	Log.WriteJSON("]");
 
 	//tu by asi mali byt drivery
-	//TODO: mode this shit to Modules...
-	import Drivers.PIT;
+	//TODO: move this shit to Modules...
 	import Drivers.PIC;
 	import FileSystem.Ext2;
 
@@ -116,9 +115,9 @@ extern(C) void KernelMain(uint magic, void* info) {
 
 	PIC.Initialize();
 	PIC.Install();
-	
-	PIT.Initialize();
-	PIT.Install();
+
+	Time.Initialize();
+	Time.Install();
 
 	Log.WriteJSON("}");
 
@@ -133,16 +132,16 @@ extern(C) void KernelMain(uint magic, void* info) {
 
 
 	Thread thr = new Thread(Task.CurrentThread);
-	thr.Start(&testfce, null);
-	thr.AddActive();
+	//thr.Start(&testfce, null);
+	//thr.AddActive();
 
-	Task.CurrentThread.WaitEvents(ThreadEvent.DeadChild);
+	//Task.CurrentThread.WaitEvents(ThreadEvent.DeadChild);
 
 
-	Log.WriteLine("Running.....", PIT.Uptime);
+	Log.WriteLine("Running.....", Time.Uptime);
 
 	while (true) {
-		Log.WriteLine("Running.....", PIT.Uptime);
+	//	Log.WriteLine("Running.....", Time.Now);
 	}
 
 /+	foreach (tmp; Multiboot.Modules[0 .. Multiboot.ModulesCount]) {

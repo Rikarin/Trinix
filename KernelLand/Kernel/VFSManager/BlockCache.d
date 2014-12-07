@@ -1,6 +1,6 @@
 ﻿module VFSManager.BlockCache;
 
-import Core;
+import Architecture;
 import ObjectManager;
 
 
@@ -22,7 +22,7 @@ public final class BlockCache {
 	private ulong GetCache(long offset, byte[] data) {
 		foreach (x; _cache) {
 			if (x.ID == offset && x.LastUse) {
-				x.LastUse = DateTime.Now;
+				x.LastUse = Time.Now;
 				data[] = x.Data[0 .. data.length];
 
 				return data.length;
@@ -48,7 +48,7 @@ public final class BlockCache {
 			ret = _device.Write(best.ID, best.Data);
 
 		best.ID = offset;
-		best.LastUse = DateTime.Now;
+		best.LastUse = Time.Now;
 		best.Dirty = dirty;
 		best.Data[] = data;
 

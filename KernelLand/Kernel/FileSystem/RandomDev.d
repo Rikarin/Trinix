@@ -1,7 +1,7 @@
 ﻿module FileSystem.RandomDev;
 
-import Core;
 import VFSManager;
+import Architecture;
 
 
 public final class RandomDev : CharNode {
@@ -15,7 +15,7 @@ public final class RandomDev : CharNode {
 	
 	public override ulong Read(long offset, byte[] data) {
 		foreach (ref x; data) {
-			_number = (Rand() - Rand2() + Rand3()) * DateTime.Now;
+			_number = (Rand() - Rand2() + Rand3()) * Time.Now;
 			x = cast(byte)(_number & 0xFF);
 		}
 
