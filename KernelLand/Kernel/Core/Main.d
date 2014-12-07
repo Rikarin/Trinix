@@ -20,7 +20,6 @@ Dokoncit write/create/remove - spravit Ext2 driver!!!!
 Multitasking a synchronizacne prvky
 eventy
 syscally
-a az teraz robit moduly....
 Timery....
 datetime neviem ci ma dobre asm
 
@@ -108,6 +107,7 @@ extern(C) void KernelMain(uint magic, void* info) {
 	Log.WriteJSON("]");
 
 	//tu by asi mali byt drivery
+	//TODO: mode this shit to Modules...
 	import Drivers.PIT;
 	import Drivers.PIC;
 	import FileSystem.Ext2;

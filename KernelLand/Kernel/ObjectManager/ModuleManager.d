@@ -79,10 +79,12 @@ public abstract final class ModuleManager {
 				Log.WriteJSON("version", mod.Version);
 				Log.WriteJSON("flags", mod.Flags);
 
-				Log.WriteJSON("dependencies", "[");
-				foreach (x; mod.Dependencies)
-					Log.WriteJSON(x.Name, x.Args);
-				Log.WriteJSON("]");
+				if (mod.Dependencies) {
+					Log.WriteJSON("dependencies", "[");
+					foreach (x; mod.Dependencies)
+						Log.WriteJSON(x.Name, x.Args);
+					Log.WriteJSON("]");
+				}
 				Log.WriteJSON("}");
 
 				_builtinModules.Add(*mod);
@@ -153,6 +155,7 @@ public abstract final class ModuleManager {
 		return ModuleResult.Sucessful;
 	}
 
+	/* This is garbage...
 	public static bool LoadMemory(void* buffer, long length, string args) {
 		scope MemoryNode node = new MemoryNode(buffer, length, null, FSNode.NewAttributes("mem"));
 		return LoadFile(node, args);
@@ -160,5 +163,5 @@ public abstract final class ModuleManager {
 
 	public static bool LoadFile(FSNode file, string args) {
 		return false;
-	}
+	}*/
 }

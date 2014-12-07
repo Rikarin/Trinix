@@ -54,7 +54,7 @@ endif
 
 ifneq ($(BUILDTYPE),static)
 $(BIN): $(OBJ)
-	@echo --- $(LD) -o $@
+	@echo --- LD -o $@
 	@$(LD) --allow-shlib-undefined -shared -o $@ $(OBJ) -defsym=DriverInfo=_DriverInfo_$(FULLNAME) $(LDFLAGS)
 	@$(OBJDUMP) -d -S $(BIN) > $(BIN).dsm
 else

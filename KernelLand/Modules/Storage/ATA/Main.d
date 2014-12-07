@@ -9,13 +9,12 @@ public class ATA {
 	public static ModuleResult Initialize(string[] args) {
 		ATAController.Detect();
 
-		Log.Write("ATA module was initialized");
+		Log.WriteLine("ATA module was initialized");
 		return ModuleResult.Sucessful;
 	}
 
 	public static ModuleResult Finalize() {
-
-		Log.Write("ATA module was finalized");
+		Log.WriteLine("ATA module was finalized");
 		return ModuleResult.Error;
 	}
 }
