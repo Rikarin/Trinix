@@ -60,6 +60,12 @@ public class ATAController {
 		Identity(true);
 	}
 
+	public ~this() {
+		delete _drives[0];
+		delete _drives[1];
+		delete _spinLock;
+	}
+
 	private void Identity(bool isSlave) {
 		if (_drives[isSlave ? 1 : 0])
 			return;
@@ -88,7 +94,7 @@ public class ATAController {
 			delete data;
 	}
 
-	public static void Detect() {
+	public static ATAController[2] Detect() {
 		ATAController[2] c;
 		c[0] = new ATAController(Base.Bus1, 0);
 		c[1] = new ATAController(Base.Bus2, 1);
@@ -99,5 +105,7 @@ public class ATAController {
 					Partition.ReadTable(y);
 			}
 		}
+
+		return c;
 	}
 }

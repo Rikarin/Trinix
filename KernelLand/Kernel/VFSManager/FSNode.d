@@ -50,7 +50,7 @@ public abstract class FSNode : Resource {
 		return 0;
 	}
 
-	public ulong IOCtl(long ID, void* data) {
+	public ulong IOControl(long id, byte[] data) {
 		return 0;
 	}
 

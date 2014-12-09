@@ -1,5 +1,6 @@
 ﻿module Modules.Storage.ATA.ATADrive;
 
+import VFSManager;
 import ObjectManager;
 import Modules.Storage.ATA.ATAController;
 
@@ -26,6 +27,12 @@ public class ATADrive : IBlockDevice {
 	}
 
 	public ~this() {
+		foreach (x; DeviceManager.DevFS.Childrens) {
+			Partition part = cast(Partition)x.Value;
+			if (part !is null && part.Device == this)
+				delete x.Value;
+		}
+
 		delete _data;
 	}
 

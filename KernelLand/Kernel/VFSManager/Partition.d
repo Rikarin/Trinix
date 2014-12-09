@@ -44,6 +44,10 @@ public final class Partition : BlockNode {
 		super(parent, attributes);
 	}
 
+	public ~this() {
+		delete _cache;
+	}
+
 	public override ulong Read(long offset, byte[] data) {
 		if (_index + offset + data.length > _index + _offset)
 			return 0;

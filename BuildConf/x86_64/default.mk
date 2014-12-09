@@ -1,6 +1,6 @@
 # Statically linked into Kernel
 MODULES += Storage/ATA
+MODULES += Input/PS2KeyboardMouse Input/Keyboard Input/Mouse
 
-
-# Shared Libs copyed to System/Module dir adn dynamically loaded while booting
+# Shared Libs copied to System/Module dir and dynamically loaded while booting
 DYNMODS +=
