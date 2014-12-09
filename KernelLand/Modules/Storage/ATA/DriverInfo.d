@@ -4,7 +4,7 @@ import ObjectManager;
 import Modules.Storage.ATA.Main;
 
 
-extern(C) static __gshared ModuleDef _DriverInfo_Storage_ATA = {
+extern(C) __gshared ModuleDef _DriverInfo_Storage_ATA = {
 	Magic: ModuleMagic,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,

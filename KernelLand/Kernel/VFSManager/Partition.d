@@ -6,6 +6,8 @@ import ObjectManager;
 
 
 public final class Partition : BlockNode {
+	private __gshared string _diskName = "disk0";
+
 	private BlockCache _cache;
 	private long _index;
 	private long _offset;
@@ -23,6 +25,13 @@ public final class Partition : BlockNode {
 
 		mixin(Bitfield!(_startSC, "StartSector", 6, "StartCylinder", 10));
 		mixin(Bitfield!(_endSC, "EndSector", 6, "EndCylinder", 10));
+	}
+
+	@property private static string NextDiskName() {
+		string ret = _diskName.dup;
+		(cast(char[])_diskName)[$ - 1]++;
+
+		return ret;
 	}
 
 	@property public IBlockDevice Device() {
@@ -65,7 +74,8 @@ public final class Partition : BlockNode {
 	}
 
 	public static void ReadTable(IBlockDevice device) {
-		new Partition(device, 0, device.Blocks, DeviceManager.DevFS, FSNode.NewAttributes("hd" ~ Letter));
+		string name = NextDiskName;
+		new Partition(device, 0, device.Blocks, DeviceManager.DevFS, FSNode.NewAttributes(name));
 
 		byte[512] mbr;
 		if (device.Read(0, mbr) != 512)
@@ -74,9 +84,7 @@ public final class Partition : BlockNode {
 		MBREntry* entry = cast(MBREntry *)(cast(ulong)mbr.ptr + 0x1BE);
 		foreach (i, x; entry[0 .. 4]) {
 			if ((x.Bootable == 0 || x.Bootable == 0x80) && x.ID && x.StartLBA < device.Blocks && x.Size < device.Blocks)
-				new Partition(device, x.StartLBA, x.Size, DeviceManager.DevFS, FSNode.NewAttributes("hd" ~ Letter ~ cast(char)('1' + i)));
+				new Partition(device, x.StartLBA, x.Size, DeviceManager.DevFS, FSNode.NewAttributes(name ~ "s" ~ cast(char)('1' + i)));
 		}
-
-		Letter++;
 	}
 }

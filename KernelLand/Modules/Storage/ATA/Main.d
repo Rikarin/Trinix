@@ -6,7 +6,7 @@ import Modules.Storage.ATA.ATAController;
 
 
 public class ATA { //TODO: IStaticModule
-	private static __gshared ATAController[2] _controllers;
+	private __gshared ATAController[2] _controllers;
 
 	public static ModuleResult Initialize(string[] args) {
 		_controllers = ATAController.Detect();

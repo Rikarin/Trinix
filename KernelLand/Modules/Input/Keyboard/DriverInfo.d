@@ -4,7 +4,7 @@ import ObjectManager;
 import Modules.Input.Keyboard.Main;
 
 
-extern(C) static __gshared ModuleDef _DriverInfo_Input_Keyboard = {
+extern(C) __gshared ModuleDef _DriverInfo_Input_Keyboard = {
 	Magic: ModuleMagic,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,

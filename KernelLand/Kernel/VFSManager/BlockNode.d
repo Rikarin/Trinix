@@ -4,8 +4,6 @@ import VFSManager;
 
 
 public abstract class BlockNode : FSNode {
-	public __gshared char Letter = 'a';
-
 	@property long Blocks();
 	@property long BlockSize();
 

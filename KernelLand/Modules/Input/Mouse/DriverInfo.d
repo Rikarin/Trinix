@@ -4,7 +4,7 @@ import ObjectManager;
 import Modules.Input.Mouse.Main;
 
 
-extern(C) static __gshared ModuleDef _DriverInfo_Input_Mouse = {
+extern(C) __gshared ModuleDef _DriverInfo_Input_Mouse = {
 	Magic: ModuleMagic,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,

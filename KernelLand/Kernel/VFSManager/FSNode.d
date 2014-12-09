@@ -28,6 +28,8 @@ public abstract class FSNode : Resource {
 
 			_parent.Childrens.Remove(this);
 		}
+
+		delete _attributes.Name;
 	}
 
 	@property public DirectoryNode Parent() {

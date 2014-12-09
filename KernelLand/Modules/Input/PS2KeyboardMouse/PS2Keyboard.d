@@ -4,8 +4,8 @@ import ObjectManager;
 
 
 public static class PS2Keyboard {
-	private static __gshared bool _up;
-	private static __gshared int _layer;
+	private __gshared bool _up;
+	private __gshared int _layer;
 
 
 	public static ModuleResult Initialize(string[] args) {

@@ -6,7 +6,7 @@ import Modules.Input.PS2KeyboardMouse.PS2Mouse;
 import Modules.Input.PS2KeyboardMouse.PS2Keyboard;
 
 
-extern(C) static __gshared ModuleDef _DriverInfo_Input_PS2KeyboardMouse = {
+extern(C) __gshared ModuleDef _DriverInfo_Input_PS2KeyboardMouse = {
 	Magic: ModuleMagic,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,
@@ -16,7 +16,7 @@ extern(C) static __gshared ModuleDef _DriverInfo_Input_PS2KeyboardMouse = {
 	Initialize: &PS2KeyboardMouse.Initialize
 };
 
-extern(C) static __gshared ModuleDef _DriverInfo_Input_PS2Keyboard = {
+extern(C) __gshared ModuleDef _DriverInfo_Input_PS2Keyboard = {
 	Magic: ModuleMagic,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,
@@ -30,7 +30,7 @@ extern(C) static __gshared ModuleDef _DriverInfo_Input_PS2Keyboard = {
 	]
 };
 
-extern(C) static __gshared ModuleDef _DriverInfo_Input_PS2Mouse = {
+extern(C) __gshared ModuleDef _DriverInfo_Input_PS2Mouse = {
 	Magic: ModuleMagic,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,

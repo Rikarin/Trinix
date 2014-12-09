@@ -5,10 +5,10 @@ import ObjectManager;
 
 public static class PS2Mouse {
 	private enum Sensitivity = 1;
-	package static __gshared void function() EnableMouse;
+	package __gshared void function() EnableMouse;
 
-	private static __gshared byte[4] _bytes;
-	private static __gshared int _cycle;
+	private __gshared byte[4] _bytes;
+	private __gshared int _cycle;
 
 	public static ModuleResult Initialize(string[] args) {
 		//TODO: in mouse module call function "create instance"

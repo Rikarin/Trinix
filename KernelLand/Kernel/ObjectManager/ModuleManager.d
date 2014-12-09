@@ -46,9 +46,9 @@ align(1):
 }
 
 public abstract final class ModuleManager {
-	private static __gshared LinkedList!ModuleDef _loadedModules;
-	private static __gshared LinkedList!ModuleDef _loadingModules;
-	private static __gshared LinkedList!ModuleDef _builtinModules;
+	private __gshared LinkedList!ModuleDef _loadedModules;
+	private __gshared LinkedList!ModuleDef _loadingModules;
+	private __gshared LinkedList!ModuleDef _builtinModules;
 
 	public static bool Initialize() {
 		_loadedModules = new LinkedList!ModuleDef();
