@@ -3,6 +3,7 @@
 import Core;
 import Library;
 import TaskManager;
+import ObjectManager;
 import SyscallManager;
 
 
@@ -11,11 +12,14 @@ public abstract class Resource {
 	private LinkedList!(CallTable *) _callTables;
 	private LinkedList!Process _processes;
 
-	private SyscallTypes _type;
+	private DeviceType _type;
+	private string _identifier;
+	private long _version;
 	private long _id;
 
 	protected struct CallTable {
 		long ID;
+		string Identifier;
 		long Params;
 
 		union {
@@ -32,14 +36,41 @@ public abstract class Resource {
 		return _id;
 	}
 
-	@property public SyscallTypes ResourceType() {
+	@property public DeviceType Type() {
 		return _type;
 	}
 
 	// Called from ResourceManager
 	package long Call(long id, long param1, long param2, long param3, long param4, long param5) {
-		if (!id)
-			return _type;
+		switch (id) {
+			case 0:
+				return _type;
+
+			case 1:
+				(cast(char *)param1)[0 .. _identifier.length] = _identifier[0 .. $];
+				return param1;
+
+			case 2:
+				return _version;
+
+			case 3:
+				long ret;
+				foreach_reverse (x; _callTables) {
+					if (ret == param2)
+						return ret;
+
+					(cast(char **)param1)[ret++][0 .. x.Value.Identifier.length] = x.Value.Identifier[0 .. $];
+				}
+				return ret;
+
+			case 4:
+				foreach_reverse (x; _callTables)
+					if ((cast(char *)param1)[0 .. param2] == x.Value.Identifier)
+						return x.Value.ID;
+				return -1;
+
+			default:
+		}
 
 		_mutex.WaitOne();
 		scope(exit) _mutex.Release();
@@ -73,11 +104,13 @@ public abstract class Resource {
 		return -1;
 	}
 
-	protected this(SyscallTypes type, const CallTable[] callTables) {
+	protected this(DeviceType type, string identifier, long ver, const CallTable[] callTables) {
 		_callTables = new LinkedList!(CallTable *)();
 		_processes  = new LinkedList!Process();
 		_mutex      = new Mutex();
 		_type       = type;
+		_identifier = identifier;
+		_version    = ver;
 		_id         = ResourceManager.Register(this);
 
 		AddCallTables(callTables);

@@ -100,7 +100,6 @@
     <Compile Include="MemoryManager\Paging.d" />
     <Compile Include="MemoryManager\Heap.d" />
     <Compile Include="SyscallManager\Resource.d" />
-    <Compile Include="SyscallManager\SyscallTypes.d" />
     <Compile Include="SyscallManager\package.d" />
     <Compile Include="Library\List.d" />
     <Compile Include="SyscallManager\ResourceManager.d" />

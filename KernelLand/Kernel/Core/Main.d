@@ -156,7 +156,7 @@ extern(C) void KernelMain(uint magic, void* info) {
 			elf.Relocate(null);*/
 	}+/
 
-	Log.WriteLine("Bye");
+//	Log.WriteLine("Bye");
 }
 
 void testfce() {

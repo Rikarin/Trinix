@@ -2,6 +2,7 @@
 
 import VFSManager;
 import Architecture;
+import ObjectManager;
 import SyscallManager;
 
 
@@ -10,7 +11,8 @@ public abstract class FSNode : Resource {
 	protected FileAttributes _attributes;
 
 	protected this(DirectoryNode parent) {
-		const CallTable[] callTable = [
+		static const CallTable[] callTable = [
+			{0, ".Attributes", 0, null}
 		];
 
 		if (parent !is null) {
@@ -18,7 +20,7 @@ public abstract class FSNode : Resource {
 			parent.Childrens.Add(this);
 		}
 
-		super(SyscallTypes.FSNode, callTable);
+		super(DeviceType.Disk, "com.trinix.VFSManager.FSNode", 0x1, callTable);
 	}
 
 	public ~this() {

@@ -12,6 +12,35 @@ align(1):
 	ulong RIP, CS, Flags, RSP, SS;
 }
 
+public enum DeviceType {
+	Null,
+	Misc,
+	Terminal,
+	Video,
+	Audio,
+	Disk,
+	Keyboard,
+	Mouse,
+	Network
+}
+
+public enum DeviceCommonCall {
+	// Return DeviceType
+	Type,
+
+	// Return unique identifier for each method
+	// eg. "com.trinix.VFSManager.FSNode"
+	Identifier,
+
+	// Return 8-digits (2 major, 2 minor, 4 patch) version 
+	Version,
+
+	// Return array of found lookups
+	Lookup,
+
+	// Translate unique identifier of each call to his ID
+	Translate
+}
 
 public abstract final class DeviceManager {
 	private __gshared void function(ref InterruptStack stack) _handlers[48];

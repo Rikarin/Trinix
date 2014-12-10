@@ -12,7 +12,6 @@ public abstract final class ResourceManager : IStaticModule {
 	private __gshared List!Resource _resources;
 
 	private __gshared const long function(long, long, long, long, long)[] _staticCalls = [
-		null,
 		&FSNode.StaticCallback
 	];
 
@@ -36,8 +35,6 @@ public abstract final class ResourceManager : IStaticModule {
 
 	public static bool Initialize() {
 		_resources = new List!Resource();
-		_resources.Add(null); //Mask zero index
-
 		return true;
 	}
 
@@ -53,9 +50,9 @@ public abstract final class ResourceManager : IStaticModule {
 		Log.WriteJSON("param4", param4);
 		Log.WriteJSON("param5", param5);
 
-		if (resource == 0xFFFFFFFF_FFFFFFFF && id > 0 && id < _staticCalls.length)
+		if (resource == 0xFFFFFFFF_FFFFFFFF && id < _staticCalls.length)
 			return _staticCalls[id](param1, param2, param3, param4, param5);
-		else if (resource > 0 && resource < _resources.Count && _resources[resource] !is null)
+		else if (resource < _resources.Count && _resources[resource] !is null)
 			return _resources[resource].Call(id, param1, param2, param3, param4, param5);
 
 		Log.WriteJSON("value", "Bad call");
