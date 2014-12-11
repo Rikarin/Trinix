@@ -174,56 +174,57 @@ public final class Ext2Filesystem : IFileSystem {
 		return true;
 	}
 
-	public override FSNode Find(DirectoryNode dir, ulong num) {
-		Ext2DirectoryNode edir = cast(Ext2DirectoryNode)dir;
+	public bool LoadContent(DirectoryNode node) {
+		Ext2DirectoryNode edir = cast(Ext2DirectoryNode)node;
 
 		if (edir is null)
-			return null;
+			return false;
 
 		byte[] data = new byte[edir._inode.SizeLow];
 		scope (exit) delete data;
 
 		ReadData(edir._inode, data);
-		dir.IsLoaded = true;
+		node.IsLoaded = true;
 
-		FSNode ret;
 		DirInfo* dirinfo = cast(DirInfo *)data.ptr;
-		while (num-- && cast(ulong)dirinfo < (cast(ulong)data.ptr + edir._inode.SizeLow)) {
-			Log.WriteLine("Loading content 4of ", dir.Attributes.Name);
-			dirinfo = cast(DirInfo *)(cast(ulong)dirinfo + dirinfo.RecordLength);
-		}
+		while (cast(ulong)dirinfo < (cast(ulong)data.ptr + edir._inode.SizeLow)) {
+			if (!dirinfo.RecordLength)
+				return false;
 
-		if(cast(ulong)dirinfo >= cast(ulong)data.ptr + edir._inode.SizeLow)
-			return null;
+			if(cast(ulong)dirinfo >= cast(ulong)data.ptr + edir._inode.SizeLow)
+				continue;
 
-		switch (dirinfo.FileType) {
-			case DirFileType.File:
-				ret = new Ext2FileNode(dirinfo.Inode, dir, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
-				break;
-				
-			case DirFileType.Directory:
-				if (dirinfo.Name.ptr[0 .. dirinfo.NameLength] == "." || dirinfo.Name.ptr[0 .. dirinfo.NameLength] == "..")
+			switch (dirinfo.FileType) {
+				case DirFileType.File:
+					new Ext2FileNode(dirinfo.Inode, node, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
 					break;
-				
-				ret = new Ext2DirectoryNode(dirinfo.Inode, dir, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
-				break;
-				
-				/*	case DirFileType.BlockDevice:
-					auto node = new Ext2BlockNode(dirinfo.Inode, dir, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
+					
+				case DirFileType.Directory:
+					if (dirinfo.Name.ptr[0 .. dirinfo.NameLength] == "." || dirinfo.Name.ptr[0 .. dirinfo.NameLength] == "..")
+						break;
+					
+					new Ext2DirectoryNode(dirinfo.Inode, node, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
+					break;
+					
+				case DirFileType.BlockDevice:
+					new Ext2BlockNode(dirinfo.Inode, node, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
 					break;
 
 				case DirFileType.CharDevice:
-					auto node = new Ext2CharNode(dirinfo.Inode, dir, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
+					new Ext2CharNode(dirinfo.Inode, node, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
 					break;
 
 				case DirFileType.FIFO:
-					auto node = new Ext2PipeNode(dirinfo.Inode, dir, FSNode.NewAttributes("" ~ cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength]));
+					new Ext2PipeNode(dirinfo.Inode, node, FSNode.NewAttributes("" ~ cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength]));
 					break;
-*/
-			default:
+
+				default:
+			}
+
+			dirinfo = cast(DirInfo *)(cast(ulong)dirinfo + dirinfo.RecordLength);
 		}
 
-		return ret;
+		return true;
 	}
 
 
@@ -326,29 +327,13 @@ public final class Ext2Filesystem : IFileSystem {
 
 	package FileAttributes GetAttributes(Inode inode) {
 		FileAttributes fa = {
-		Length: inode.SizeLow,
-				UID: inode.UID,
-				GID: inode.GID,
-				AccessTime: inode.ATime,
-				CreateTime: inode.CTime,
-				ModifyTime: inode.MTime
+			Length: inode.SizeLow,
+			UID: inode.UID,
+			GID: inode.GID,
+			AccessTime: inode.ATime,
+			CreateTime: inode.CTime,
+			ModifyTime: inode.MTime
 		};
-		
-		fa.Type = cast(FileType)0;
-		if ((inode.Type & InodeType.Directory) == InodeType.Directory)
-			fa.Type |= FileType.Directory;
-		if ((inode.Type & InodeType.CharDevice) == InodeType.CharDevice)
-			fa.Type |= FileType.CharDevice;
-		if ((inode.Type & InodeType.BlockDevice) == InodeType.BlockDevice)
-			fa.Type |= FileType.BlockDevice;
-		if ((inode.Type & InodeType.FIFO) == InodeType.FIFO)
-			fa.Type |= FileType.Pipe;
-		if ((inode.Type & InodeType.Socket) == InodeType.Socket)
-			fa.Type |= FileType.Socket;
-		if ((inode.Type & InodeType.SymLink) == InodeType.SymLink)
-			fa.Type |= FileType.SymLink;
-		if ((inode.Type & InodeType.File) == InodeType.File)
-			fa.Type |= FileType.File;
 		
 		if ((inode.Type & InodeType.UR) == InodeType.UR)
 			fa.Permissions |= FilePermissions.UserRead;

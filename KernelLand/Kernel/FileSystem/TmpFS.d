@@ -56,8 +56,8 @@ public final class TmpFS : IFileSystem {
 		return data.length;
 	}
 	
-	public FSNode Find(DirectoryNode node, ulong num) {
-		return null;
+	public bool LoadContent(DirectoryNode node) {
+		return true;
 	}
 	
 	public FSNode Create(DirectoryNode parent, FileAttributes attributes) {

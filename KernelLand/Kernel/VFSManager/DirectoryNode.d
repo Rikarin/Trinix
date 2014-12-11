@@ -132,12 +132,7 @@ public class DirectoryNode : FSNode {
 		if (IsLoaded || _fileSystem is null)
 			return true;
 
-		FSNode n;
-		int i = 1;
-		do
-			n = _fileSystem.Find(this, i++);
-		while (n);
-
+		_isLoaded = _fileSystem.LoadContent(this);
 		return _isLoaded;
 	}
 }

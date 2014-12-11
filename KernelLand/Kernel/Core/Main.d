@@ -129,6 +129,12 @@ extern(C) void KernelMain(uint magic, void* info) {
 
 	//tu by asi mali byt drivery
 	//TODO: move this shit to Modules...
+
+	if (VFS.Find("/System/Devices/disk0s1") is null)
+		Log.WriteLine("pica");
+	else
+		Log.WriteLine("kokot");
+
 	import FileSystem.Ext2;	
 	Ext2Filesystem.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), cast(Partition)VFS.Find("/System/Devices/disk0s1"));
 

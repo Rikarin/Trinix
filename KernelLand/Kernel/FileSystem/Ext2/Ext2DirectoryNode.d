@@ -17,9 +17,11 @@ public final class Ext2DirectoryNode : DirectoryNode {
 	
 	@property public override FileAttributes Attributes() {
 		if (!_loadedAttribs && FileSystem !is null) {
-			auto atribs = (cast(Ext2Filesystem)FileSystem).GetAttributes(_inode);
-			atribs.Name = _attributes.Name;
-			_attributes = atribs;
+			auto attribs = (cast(Ext2Filesystem)FileSystem).GetAttributes(_inode);
+			attribs.Name = _attributes.Name;
+			attribs.Type = _attributes.Type;
+
+			_attributes = attribs;
 			_loadedAttribs = true;
 		}
 		
