@@ -12,7 +12,7 @@ extern(C) __gshared ModuleDef _DriverInfo_Input_PS2KeyboardMouse = {
 	Flags: 0x00,
 	Version: 0x01,
 	Name: "PS2 Keyboard/Mouse Input Module",
-	Identifier: "com.trinix.Input.PS2KeyboardMouse",
+	Identifier: "com.modules.Input.PS2KeyboardMouse",
 	Initialize: &PS2KeyboardMouse.Initialize
 };
 
@@ -22,11 +22,11 @@ extern(C) __gshared ModuleDef _DriverInfo_Input_PS2Keyboard = {
 	Flags: 0x00,
 	Version: 0x01,
 	Name: "PS2 Keyboard Input Module",
-	Identifier: "com.trinix.Input.PS2Keyboard",
+	Identifier: "com.modules.Input.PS2Keyboard",
 	Initialize: &PS2Keyboard.Initialize,
 	Dependencies: [
-		{"com.trinix.Input.PS2KeyboardMouse", []},
-		{"com.trinix.Input.Keyboard", []}
+		{"com.modules.Input.PS2KeyboardMouse", []},
+		{"com.modules.Input.Keyboard", []}
 	]
 };
 
@@ -36,10 +36,10 @@ extern(C) __gshared ModuleDef _DriverInfo_Input_PS2Mouse = {
 	Flags: 0x00,
 	Version: 0x01,
 	Name: "PS2 Mouse Input Module",
-	Identifier: "com.trinix.Input.PS2Mouse",
+	Identifier: "com.modules.Input.PS2Mouse",
 	Initialize: &PS2Mouse.Initialize,
 	Dependencies: [
-		{"com.trinix.Input.PS2KeyboardMouse", []},
-		{"com.trinix.Input.Mouse", []}
+		{"com.modules.Input.PS2KeyboardMouse", []},
+		{"com.modules.Input.Mouse", []}
 	]
 };

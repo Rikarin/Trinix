@@ -62,7 +62,6 @@
     <Folder Include="FileSystem\" />
     <Folder Include="Linker\" />
     <Folder Include="FileSystem\Ext2\" />
-    <Folder Include="Drivers\" />
     <Folder Include="TaskManager\" />
   </ItemGroup>
   <ItemGroup>
@@ -133,7 +132,6 @@
     <Compile Include="FileSystem\NullDev.d" />
     <Compile Include="FileSystem\ZeroDev.d" />
     <Compile Include="FileSystem\RandomDev.d" />
-    <Compile Include="Drivers\PIC.d" />
     <Compile Include="Library\SpinLock.d" />
     <Compile Include="SyscallManager\SyscallHandler.d" />
     <Compile Include="TaskManager\Process.d" />

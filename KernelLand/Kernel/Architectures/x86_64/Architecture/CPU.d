@@ -76,7 +76,7 @@ public abstract final class CPU : IStaticModule {
 		Log.WriteJSON("type", "Install");
 		Log.WriteJSON("value", IDT.Install());
 		Log.WriteJSON("}");
-	
+
 		return true;
 	}
 

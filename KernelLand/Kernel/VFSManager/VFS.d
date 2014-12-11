@@ -46,9 +46,9 @@ public abstract final class VFS : IStaticModule {
 			if (x == "..")
 				node = node.Parent;
 			else if (x !is null && x != "." && x != "") {
-				if (node.Attributes.Type & (FileType.Directory | FileType.Mountpoint))
+				if (node.Attributes.Type & (FileType.Directory | FileType.Mountpoint)) {
 					node = (cast(DirectoryNode)node)[x];
-				else
+				}else
 					return null;
 			}
 		}
@@ -90,7 +90,7 @@ public abstract final class VFS : IStaticModule {
 				default:
 					Log.Write("(ERROR)");
 			}
-			
+
 			Log.NewLine();
 			
 			if (x.Value.Attributes.Type & (FileType.Directory | FileType.Mountpoint))

@@ -174,30 +174,41 @@ public final class Ext2Filesystem : IFileSystem {
 		return true;
 	}
 
-	public override bool LoadContent(DirectoryNode dir) {
+	public override FSNode Find(DirectoryNode dir, ulong num) {
 		Ext2DirectoryNode edir = cast(Ext2DirectoryNode)dir;
+
 		if (edir is null)
-			return false;
+			return null;
 
 		byte[] data = new byte[edir._inode.SizeLow];
+		scope (exit) delete data;
+
 		ReadData(edir._inode, data);
 		dir.IsLoaded = true;
 
+		FSNode ret;
 		DirInfo* dirinfo = cast(DirInfo *)data.ptr;
-		while (cast(ulong)dirinfo < (cast(ulong)data.ptr + edir._inode.SizeLow)) {
-			switch (dirinfo.FileType) {
-				case DirFileType.File:
-					auto node = new Ext2FileNode(dirinfo.Inode, dir, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
+		while (num-- && cast(ulong)dirinfo < (cast(ulong)data.ptr + edir._inode.SizeLow)) {
+			Log.WriteLine("Loading content 4of ", dir.Attributes.Name);
+			dirinfo = cast(DirInfo *)(cast(ulong)dirinfo + dirinfo.RecordLength);
+		}
+
+		if(cast(ulong)dirinfo >= cast(ulong)data.ptr + edir._inode.SizeLow)
+			return null;
+
+		switch (dirinfo.FileType) {
+			case DirFileType.File:
+				ret = new Ext2FileNode(dirinfo.Inode, dir, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
+				break;
+				
+			case DirFileType.Directory:
+				if (dirinfo.Name.ptr[0 .. dirinfo.NameLength] == "." || dirinfo.Name.ptr[0 .. dirinfo.NameLength] == "..")
 					break;
-
-				case DirFileType.Directory:
-					if (dirinfo.Name.ptr[0 .. dirinfo.NameLength] == "." || dirinfo.Name.ptr[0 .. dirinfo.NameLength] == "..")
-						break;
-
-					auto node = new Ext2DirectoryNode(dirinfo.Inode, dir, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
-					break;
-
-				case DirFileType.BlockDevice:
+				
+				ret = new Ext2DirectoryNode(dirinfo.Inode, dir, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
+				break;
+				
+				/*	case DirFileType.BlockDevice:
 					auto node = new Ext2BlockNode(dirinfo.Inode, dir, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
 					break;
 
@@ -208,15 +219,11 @@ public final class Ext2Filesystem : IFileSystem {
 				case DirFileType.FIFO:
 					auto node = new Ext2PipeNode(dirinfo.Inode, dir, FSNode.NewAttributes("" ~ cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength]));
 					break;
-
-				default:
-			}
-
-			dirinfo = cast(DirInfo *)(cast(ulong)dirinfo + dirinfo.RecordLength);
+*/
+			default:
 		}
 
-		delete data;
-		return true;
+		return ret;
 	}
 
 
@@ -285,10 +292,20 @@ public final class Ext2Filesystem : IFileSystem {
 
 	override FSNode Create(DirectoryNode parent, FileAttributes fileAttributes) { return null; }
 	override bool Remove(FSNode node) { return false; }
+
+
+	public static bool Detect(Partition partition) {
+		Superblock sb;
+		partition.Read(2, (cast(byte *)&sb)[0 .. Superblock.sizeof]);
+		return sb.Signature == 0xEF53;
+	}
 	
 	
 	public static Ext2Filesystem Mount(DirectoryNode mountpoint, Partition partition) {
 		if (partition is null || mountpoint is null || !mountpoint.IsMountpointable)
+			return null;
+
+		if (!Detect(partition))
 			return null;
 
 		auto ret = new Ext2Filesystem(partition);

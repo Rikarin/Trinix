@@ -4,12 +4,10 @@ import VFSManager;
 
 
 public class MemoryNode : FSNode {
-	private void* _buffer;
-	private long _length;
+	private byte[] _buffer;
 
-	public this(void* buffer, long length, DirectoryNode parent, FileAttributes fileAttributes) {
+	public this(byte[] buffer, DirectoryNode parent, FileAttributes fileAttributes) {
 		_buffer          = buffer;
-		_length          = length;
 		_attributes      = fileAttributes;
 		_attributes.Type = FileType.CharDevice;
 		
@@ -17,18 +15,22 @@ public class MemoryNode : FSNode {
 	}
 	
 	public override ulong Read(long offset, byte[] data) {
-		if (offset + data.length > cast(ulong)_buffer + _length)
+		if (offset > _buffer.length)
 			return 0;
 
-		data[] = (cast(byte *)_buffer)[offset .. data.length];
-		return data.length;
+		long len = offset + data.length > _buffer.length ? _buffer.length - offset : data.length;
+		data[] = (cast(byte *)_buffer)[offset .. len];
+
+		return len;
 	}
 	
 	public override ulong Write(long offset, byte[] data) {
-		if (offset + data.length > cast(ulong)_buffer + _length)
+		if (offset > _buffer.length)
 			return 0;
+		
+		long len = offset + data.length > _buffer.length ? _buffer.length - offset : data.length;
+		(cast(byte *)_buffer)[offset .. len] = data[];
 
-		(cast(byte *)_buffer)[offset .. data.length] = data[];
-		return data.length;
+		return len;
 	}
 }

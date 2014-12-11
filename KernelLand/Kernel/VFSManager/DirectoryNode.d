@@ -10,32 +10,18 @@ public class DirectoryNode : FSNode {
 	private DirectoryNode _mounted;
 	private bool _isLoaded;
 
-	@property public bool IsLoaded() {
+	@property public ref bool IsLoaded() {
 		if (_mounted)
 			return _mounted.IsLoaded;
 
 		return _isLoaded;
 	}
 
-	@property public void IsLoaded(bool value) {
-		if (_mounted)
-			_mounted.IsLoaded = value;
-		else
-			_isLoaded = value;
-	}
-
-	@property public IFileSystem FileSystem() {
+	@property public ref IFileSystem FileSystem() {
 		if (_mounted)
 			return _mounted.FileSystem;
 
 		return _fileSystem;
-	}
-
-	@property public void FileSystem(IFileSystem value) {
-		if (_mounted)
-			_mounted.FileSystem = value;
-		else
-			_fileSystem = value;
 	}
 
 	@property public override FileAttributes Attributes() {
@@ -146,7 +132,12 @@ public class DirectoryNode : FSNode {
 		if (IsLoaded || _fileSystem is null)
 			return true;
 
-		_isLoaded = _fileSystem.LoadContent(this);
+		FSNode n;
+		int i = 1;
+		do
+			n = _fileSystem.Find(this, i++);
+		while (n);
+
 		return _isLoaded;
 	}
 }

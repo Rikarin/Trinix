@@ -24,7 +24,6 @@ public enum ThreadStatus {
 	Buried
 }
 
-
 public enum ThreadEvent : ulong {
 	VFS       = 0x01,
 	IPCMesage = 0x02,
@@ -34,12 +33,10 @@ public enum ThreadEvent : ulong {
 	DeadChild = 0x20
 }
 
-
 public struct IPCMessage {
 	Thread Source;
 	byte[] Data;
 }
-
 
 public final class Thread {
 	public enum StackSize       = 0x4000;

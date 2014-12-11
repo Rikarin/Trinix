@@ -26,8 +26,8 @@ public final class DevFS : IFileSystem {
 		return true;
 	}
 	
-	public bool LoadContent(DirectoryNode node) {
-		return true;
+	public FSNode Find(DirectoryNode node, ulong num) {
+		return null;
 	}
 
 	public FSNode Create(DirectoryNode parent, FileAttributes attributes) {

@@ -10,7 +10,7 @@ public interface IFileSystem {
 
 	public bool Unmount();
 
-	public bool LoadContent(DirectoryNode node);
+	public FSNode Find(DirectoryNode node, ulong num);
 	public FSNode Create(DirectoryNode parent, FileAttributes attributes);
 	public bool Remove(FSNode node);
 }

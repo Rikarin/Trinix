@@ -11,9 +11,9 @@ ifeq ($(BUILD_NUM),)
 	BUILD_NUM = 0
 endif
 
-DFLAGS		+= -g -fversion=LogUserFriendly -D _MODULE_NAME_=\"Kernel\"
+DFLAGS		+= -fversion=LogUserFriendly -D _MODULE_NAME_=\"Kernel\"
 DFLAGS		+= -IArchitectures/$(ARCHDIR)
-CFLAGS		+= -g -fno-stack-protector
+CFLAGS		+= -fno-stack-protector
 LDFLAGS		:= -Wl,-T -Wl,Architectures/$(ARCHDIR)/Linker.ld -Wl,-Map -Wl,../Linker.$(ARCH).map
 DRUNTIME	:= $(TRXDIR)/Userspace/tmp/druntime/lib/libdruntime-linux64.a
 

@@ -25,8 +25,8 @@ public abstract class FSNode : Resource {
 
 	public ~this() {
 		if (_parent !is null) {
-			if (_parent._fileSystem !is null)
-				_parent._fileSystem.Remove(this);
+			//if (_parent._fileSystem !is null)
+			//	_parent._fileSystem.Remove(this); TODO
 
 			_parent.Childrens.Remove(this);
 		}

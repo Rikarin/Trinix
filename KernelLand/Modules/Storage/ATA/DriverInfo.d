@@ -10,7 +10,7 @@ extern(C) __gshared ModuleDef _DriverInfo_Storage_ATA = {
 	Flags: 0x00,
 	Version: 0x01,
 	Name: "ATA Storage Module",
-	Identifier: "com.trinix.Storage.ATA",
+	Identifier: "com.modules.Storage.ATA",
 	Initialize: &ATA.Initialize,
 	Finalize: &ATA.Finalize
 };

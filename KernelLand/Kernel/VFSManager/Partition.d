@@ -6,11 +6,11 @@ import ObjectManager;
 
 
 public final class Partition : BlockNode {
-	private __gshared string _diskName = "disk0";
+	private __gshared char[] _diskName = cast(char[])"disk0";
 
 	private BlockCache _cache;
-	private long _index;
 	private long _offset;
+	private long _length;
 
 	private struct MBREntry {
 	align(1):
@@ -28,10 +28,10 @@ public final class Partition : BlockNode {
 	}
 
 	@property private static string NextDiskName() {
-		string ret = _diskName.dup;
-		(cast(char[])_diskName)[$ - 1]++;
+		char[] ret = _diskName.dup;
+		_diskName[$ - 1]++;
 
-		return ret;
+		return cast(string)ret;
 	}
 
 	@property public IBlockDevice Device() {
@@ -39,16 +39,16 @@ public final class Partition : BlockNode {
 	}
 
 	@property public override long Blocks() {
-		return _offset;
+		return _length;
 	}
 	@property public override long BlockSize() {
 		return _cache.Device.BlockSize;
 	}
 
-	public this(IBlockDevice device, long index, long offset, DirectoryNode parent, FileAttributes attributes) {
+	public this(IBlockDevice device, long offset, long length, DirectoryNode parent, FileAttributes attributes) {
 		_cache  = new BlockCache(device, 0x1);
-		_index  = index;
 		_offset = offset;
+		_length = length;
 
 		super(parent, attributes);
 	}
@@ -58,19 +58,19 @@ public final class Partition : BlockNode {
 	}
 
 	public override ulong Read(long offset, byte[] data) {
-		if (_index + offset + data.length > _index + _offset)
+		if (offset > _length)
 			return 0;
-
-		//TODO: return _cache.Read(offset + _index, data);
-		return Device.Read(offset + _index, data);
+		
+		long len = offset + data.length > _length ? _length - offset : data.length;
+		return Device.Read(_offset + offset, data[0 .. len]); //TODO: cache
 	}
 
 	public override ulong Write(long offset, byte[] data) {
-		if (_index + offset + data.length > _index + _offset)
+		if (offset > _length)
 			return 0;
-
-		//TODO: return _cache.Write(offset + _index, data);
-		return Device.Write(offset + _index, data);
+		
+		long len = offset + data.length > _length ? _length - offset : data.length;
+		return Device.Write(_offset + offset, data[0 .. len]); //TODO: cache
 	}
 
 	public static void ReadTable(IBlockDevice device) {
@@ -84,7 +84,7 @@ public final class Partition : BlockNode {
 		MBREntry* entry = cast(MBREntry *)(cast(ulong)mbr.ptr + 0x1BE);
 		foreach (i, x; entry[0 .. 4]) {
 			if ((x.Bootable == 0 || x.Bootable == 0x80) && x.ID && x.StartLBA < device.Blocks && x.Size < device.Blocks)
-				new Partition(device, x.StartLBA, x.Size, DeviceManager.DevFS, FSNode.NewAttributes(name ~ "s" ~ cast(char)('1' + i)));
+				new Partition(device, x.StartLBA, x.Size, DeviceManager.DevFS, FSNode.NewAttributes(name ~ 's' ~ cast(char)('1' + i)));
 		}
 	}
 }

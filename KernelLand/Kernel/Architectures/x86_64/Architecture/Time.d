@@ -6,24 +6,12 @@ import ObjectManager;
 
 
 public abstract final class Time : IStaticModule {
-	private enum MsPerTickWhole = 1000 * (PIT.BaseD * PIT.Divisor) / PIT.BaseN;
-	private enum MsPerTickFract = ((0x80000000UL * 1000UL * PIT.BaseD * PIT.Divisor / PIT.BaseN) & 0x7FFFFFFF);
-
-	private enum PIT {
-		BaseN = 3579545,
-		BaseD = 3,
-		Divisor = 11931
-	}
-
 	private enum {
-		Frequency = 1193180,
-		Channel0  = 0x40,
-		Channel1  = 0x41,
-		Channel2  = 0x42,
-		Command   = 0x43
+		TimerRate = 14,
+		TimerFreq = 0x8000 >> TimerRate,
+		MsPerTickWhole = 1000 / TimerFreq,
+		MsPerTickFract = (0x80000000 * (1000 % TimerFreq)) / TimerFreq
 	}
-
-	private __gshared uint _divisor;
 
 	private __gshared ulong _tscAtLastTick;
 	private __gshared ulong _tscPerTick;
@@ -33,18 +21,36 @@ public abstract final class Time : IStaticModule {
 	private __gshared ulong _partMiliseconds;
 
 
-	static bool Initialize(ushort frequency = 100) {
-		_divisor = PIT.Divisor; //cast(uint)Frequency / cast(uint)frequency;
+	static bool Initialize() {
 		return true;
 	}
 	
 	static bool Install() {
-		//TODO: Use RTC against this shit LOL
-		Port.Write!byte(Command, 0x36);
-		Port.Write!byte(Channel0, _divisor & 0xFF);
-		Port.Write!byte(Channel0, _divisor >> 8);
-				
-	 	DeviceManager.RequestIRQ(&IRQHandler, 0);
+		// Disable NMI
+		Port.Write!byte(0x70, Port.Read!byte(0x70) & 0x7F);
+		Port.Cli();
+
+		// Set firing rate
+		Port.Write!byte(0x70, 0x0A);
+		byte val = Port.Read!byte(0x71);
+		val &= 0xF0;
+		val |= TimerRate + 1;
+		Port.Write!byte(0x70, 0x0A);
+		Port.Write!byte(0x71, val);
+
+		// Enable IRQ8
+		Port.Write!byte(0x70, 0x0B);
+		val = Port.Read!byte(0x71);
+		Port.Write!byte(0x70, 0x0B);
+		Port.Write!byte(0x71, val | 0x40);
+
+		Port.Sti();
+		Port.Write!byte(0x70, Port.Read!byte(0x70) | 0x80);
+
+		DeviceManager.RequestIRQ(&IRQHandler, 8);
+		Port.Write!byte(0x70, 0x0C);
+		Port.Read!byte(0x71);
+
 		return true;
 	}
 
@@ -94,5 +100,8 @@ public abstract final class Time : IStaticModule {
 		//TODO: call timers....
 
 		Task.Scheduler(); //TODO: This isnt good... Time.d is RTC not scheduler
+
+		Port.Write!byte(0x70, 0x0C);
+		Port.Read!byte(0x71);
 	}
 }

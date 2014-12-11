@@ -13,7 +13,8 @@ public static class Mouse { //TODO: IStaticModule
 	}
 
 	public static ModuleResult Finalize() {
-		delete DeviceManager.DevFS["mouse"];
+		auto del = DeviceManager.DevFS["mouse"];
+		delete del;
 
 		Log.WriteLine("Keyboard module was finalized");
 		return ModuleResult.Error;

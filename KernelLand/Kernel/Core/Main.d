@@ -21,17 +21,18 @@ Multitasking a synchronizacne prvky
 eventy
 syscally
 Timery....
-datetime neviem ci ma dobre asm
 
 Ext2:
 BlockNode, CharNode,
 
 V IDT je nejaky problem s RAX registrom...
+kontrolu parametrov pri syscalloch
 */
 
 /* MemoryMap:
 	0xFFFFFFFFE0000000 - mapovane regiony
 */
+extern(C) extern __gshared const int giBuildNumber;
 
 extern(C) void KernelMain(uint magic, void* info) {
 	Log.Initialize();
@@ -41,7 +42,7 @@ extern(C) void KernelMain(uint magic, void* info) {
 	Log.WriteJSON("name", "Trinix");
 	Log.WriteJSON("version", "0.0.1 Beta");
 	Log.Base = 10;
-	Log.WriteJSON("build", "0.5"); /* TODO: BuildNumber, problem with double */
+	Log.WriteJSON("build", cast(int)giBuildNumber);
 	Log.Base = 16;
 
 	Log.WriteJSON("architecture", "[");
@@ -106,39 +107,42 @@ extern(C) void KernelMain(uint magic, void* info) {
 	Log.WriteJSON("}");
 	Log.WriteJSON("]");
 
-	//tu by asi mali byt drivery
-	//TODO: move this shit to Modules...
-	import Drivers.PIC;
-	import FileSystem.Ext2;
+	// Remap PIC...
+	Port.Write!byte(0x20, 0x11);
+	Port.Write!byte(0xA0, 0x11);
+	Port.Write!byte(0x21, 0x20);
+	Port.Write!byte(0xA1, 0x28);
+	Port.Write!byte(0x21, 0x04);
+	Port.Write!byte(0xA1, 0x02);
+	Port.Write!byte(0x21, 0x01);
+	Port.Write!byte(0xA1, 0x01);
+	Port.Write!byte(0x21, 0x00);
+	Port.Write!byte(0xA1, 0x00);
 
-	//Ext2Filesystem.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), cast(Partition)VFS.Find("/System/Devices/hdb1"));
-
-	PIC.Initialize();
-	PIC.Install();
-
-	Time.Initialize();
-	Time.Install();
+	//Time.Initialize();
+	//Time.Install();
 
 	Log.WriteJSON("}");
-
 
 	ModuleManager.Initialize();
 	ModuleManager.LoadBuiltins();
 
-
-
+	//tu by asi mali byt drivery
+	//TODO: move this shit to Modules...
+	import FileSystem.Ext2;	
+	Ext2Filesystem.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), cast(Partition)VFS.Find("/System/Devices/disk0s1"));
 
 	VFS.PrintTree(VFS.Root);
 
 
-	Thread thr = new Thread(Task.CurrentThread);
+	//Thread thr = new Thread(Task.CurrentThread);
 	//thr.Start(&testfce, null);
 	//thr.AddActive();
 
 	//Task.CurrentThread.WaitEvents(ThreadEvent.DeadChild);
 
 
-	Log.WriteLine("Running.....", Time.Uptime);
+	Log.WriteLine("Running2.....", Time.Uptime);
 
 	while (true) {
 	//	Log.WriteLine("Running.....", Time.Now);
@@ -168,7 +172,8 @@ void testfce() {
 			"syscall";// : : "a"(123), "b"(0x4562), "d"(0xABCD), "D"(0x852), "S"(0x963);
 		}*/
 		//Handle.StaticCall(1);
-		for (int j = 0; j < 0x100_000_00; j++) {}
+		//Log.WriteLine("pica", Time.Now);
+		//for (int j = 0; j < 0x100_000_00; j++) {}
 	}
 
 	//while (true) {}
