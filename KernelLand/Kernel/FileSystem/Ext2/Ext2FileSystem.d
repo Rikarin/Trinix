@@ -3,6 +3,7 @@
 import Core;
 import Library;
 import VFSManager;
+import ObjectManager;
 import FileSystem.Ext2;
 
 
@@ -287,12 +288,27 @@ public final class Ext2Filesystem : IFileSystem {
 
 
 
+	public static ModuleResult Initialize(string[] args) {
+		static const VFSDriver info = {
+			Name: "ext2",
+				Detect: &Ext2Filesystem.Detect,
+				Mount: &Ext2Filesystem.Mount
+		};
+
+		VFS.AddDriver(info);
+		
+		Log.WriteLine("Ext2 module was initialized");
+		return ModuleResult.Sucessful;
+	}
+
 
 
 
 
 	override FSNode Create(DirectoryNode parent, FileAttributes fileAttributes) { return null; }
 	override bool Remove(FSNode node) { return false; }
+
+
 
 
 	public static bool Detect(Partition partition) {

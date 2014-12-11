@@ -10,7 +10,7 @@
     <Compiler>DMD2</Compiler>
     <Includes>
       <Includes>
-        <Path>C:/Users/Satoshi/Desktop/Trinix/Source/Kernel</Path>
+        <Path>C:\Users\Satoshi\Desktop\Trinix\Source\Kernel</Path>
       </Includes>
     </Includes>
   </PropertyGroup>

@@ -8,14 +8,24 @@ import ObjectManager;
 import FileSystem.Ext2;
 
 
+public struct VFSDriver {
+	string Name;
+	bool function(Partition partition) Detect;
+	Ext2Filesystem function(DirectoryNode mountpoint, Partition partition) Mount;
+}
+
+
 public abstract final class VFS : IStaticModule {
 	private __gshared DirectoryNode _root;
+	private __gshared LinkedList!VFSDriver _drivers;
 
 	@property public static DirectoryNode Root() {
 		return _root;
 	}
 
 	public static bool Initialize() {
+		_drivers = new LinkedList!VFSDriver(); //TODO finalize
+
 		_root = new DirectoryNode(null, FSNode.NewAttributes("/"));
 		DirectoryNode system = new DirectoryNode(_root, FSNode.NewAttributes("System"));
 
@@ -96,5 +106,16 @@ public abstract final class VFS : IStaticModule {
 			if (x.Value.Attributes.Type & (FileType.Directory | FileType.Mountpoint))
 				PrintTree(cast(DirectoryNode)x.Value, p + 1);
 		}
+	}
+
+	public static void AddDriver(VFSDriver driver) {
+		if (_drivers.Contains(driver))
+			return;
+
+		_drivers.Add(driver);
+	}
+
+	public static void RemoveDriver(string name) {
+		_drivers.Remove(Array.Find(_drivers, (LinkedListNode!VFSDriver o) => o.Value.Name == name));
 	}
 }

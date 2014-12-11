@@ -148,7 +148,7 @@ extern(C) void KernelMain(uint magic, void* info) {
 	//Task.CurrentThread.WaitEvents(ThreadEvent.DeadChild);
 
 
-	Log.WriteLine("Running2.....", Time.Uptime);
+	Log.WriteLine("Running.....", Time.Uptime);
 
 	while (true) {
 	//	Log.WriteLine("Running.....", Time.Now);

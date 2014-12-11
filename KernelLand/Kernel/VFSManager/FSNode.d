@@ -24,12 +24,8 @@ public abstract class FSNode : Resource {
 	}
 
 	public ~this() {
-		if (_parent !is null) {
-			//if (_parent._fileSystem !is null)
-			//	_parent._fileSystem.Remove(this); TODO
-
+		if (_parent !is null)
 			_parent.Childrens.Remove(this);
-		}
 
 		delete _attributes.Name;
 	}
@@ -56,6 +52,16 @@ public abstract class FSNode : Resource {
 
 	public ulong IOControl(long id, byte[] data) {
 		return 0;
+	}
+
+	public bool Remove() {
+		if (_parent is null || _parent.FileSystem is null)
+			return false;
+
+		if (_attributes.Type == (FileType.Directory | FileType.Mountpoint) && (cast(DirectoryNode)this).Childrens.Count)
+			return false;
+			
+		return _parent.FileSystem.Remove(this);
 	}
 
 	public static FileAttributes NewAttributes(string name, FileType type = FileType.Directory) {

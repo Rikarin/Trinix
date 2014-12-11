@@ -16,7 +16,7 @@ public abstract final class ResourceManager : IStaticModule {
 	];
 
 	package static long Register(Resource resource) {
-		if (_resources.IndexOf(resource) != -1)
+		if (_resources.Contains(resource))
 			return -1;
 
 		_resources.Add(resource);
