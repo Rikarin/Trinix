@@ -20,10 +20,14 @@ eventy, jake??
 
 syscally
 kontrolu parametrov pri syscalloch
+ACLka do syscallov?
 
 najprv skocit do arch zavislej casti kodu, tj. Arch/xxx/Main.d a az odtial potom preskocit sem...
 
 debugovat Heap... Obcas to pada na expande...
+
+spravit to iste jak je pre VFS.AddDriver ci co ale pre Node zariadenia.
+Aby sa z modulu dali pridat veci ako je pipe, pty, vty, atd...
 
 V IDT je nejaky problem s RAX registrom...
 */
@@ -88,6 +92,14 @@ extern(C) void KernelMain(uint magic, void* info) {
 	Log.WriteJSON("}");
 	Log.WriteJSON("]");
 
+	Log.WriteJSON("task_manager", "[");
+	Log.WriteJSON("{");
+	Log.WriteJSON("name", "Task");
+	Log.WriteJSON("type", "Initialize");
+	Log.WriteJSON("value", Task.Initialize());
+	Log.WriteJSON("}");
+	Log.WriteJSON("]");
+
 	Log.WriteJSON("vfs_manager", "[");
 	Log.WriteJSON("{");
 	Log.WriteJSON("name", "VFS");
@@ -95,14 +107,6 @@ extern(C) void KernelMain(uint magic, void* info) {
 	Log.WriteJSON("value", VFS.Initialize());
 	Log.WriteJSON("type", "Install");
 	Log.WriteJSON("value", VFS.Install());
-	Log.WriteJSON("}");
-	Log.WriteJSON("]");
-
-	Log.WriteJSON("task_manager", "[");
-	Log.WriteJSON("{");
-	Log.WriteJSON("name", "Task");
-	Log.WriteJSON("type", "Initialize");
-	Log.WriteJSON("value", Task.Initialize());
 	Log.WriteJSON("}");
 	Log.WriteJSON("]");
 
@@ -131,6 +135,8 @@ extern(C) void KernelMain(uint magic, void* info) {
 
 	VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), cast(Partition)VFS.Find("/System/Devices/disk0s1"), "ext2");
 	VFS.PrintTree(VFS.Root);
+
+	Log.WriteLine("test: ", VFS.Root.Identifier);
 
 
 	//Thread thr = new Thread(Task.CurrentThread);

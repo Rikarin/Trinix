@@ -69,6 +69,7 @@ class DirectoryNode : FSNode {
 			_fileSystem = parent._fileSystem;
 
 		super(parent);
+		Identifier = "com.trinix.VFSManager.DirectoryNode";
 	}
 
 	~this() {

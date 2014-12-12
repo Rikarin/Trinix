@@ -41,19 +41,16 @@ abstract final class VirtualMemory : IStaticModule {
 		return true;
 	}
 
-
 	private static void* TmpAlloc(long size) {
 		return PhysicalMemory.AllocPage(size / 0x1000);
 	}
 }
-
 
 extern(C) void* malloc(long size, int ba) {
 	void* ret = VirtualMemory._malloc(size);
 	//Log.WriteJSON("MemoryAlloc", "{", "size", size, "ba", ba, "address", cast(ulong)ret, "}");
 	return ret;
 }
-
 
 extern(C) void free(void* ptr) {
 	//Log.WriteJSON("MemoryFree", cast(ulong)ptr);

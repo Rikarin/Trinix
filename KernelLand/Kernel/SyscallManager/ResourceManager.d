@@ -8,12 +8,14 @@ import SyscallManager;
 import VFSManager;
 
 
-abstract final class ResourceManager : IStaticModule {
-	private __gshared List!Resource _resources;
+struct ResouceCallTable {
+	string Identifier;
+	long function(long, long, long, long, long) Callback;
+}
 
-	private __gshared const long function(long, long, long, long, long)[] _staticCalls = [
-		&FSNode.StaticCallback
-	];
+abstract final class ResourceManager : IStaticModule {
+	private __gshared LinkedList!ResouceCallTable _callTables;
+	private __gshared List!Resource _resources;
 
 	package static long Register(Resource resource) {
 		if (_resources.Contains(resource))
@@ -34,7 +36,9 @@ abstract final class ResourceManager : IStaticModule {
 	}
 
 	static bool Initialize() {
+		_callTables = new LinkedList!ResouceCallTable();
 		_resources = new List!Resource();
+
 		return true;
 	}
 
@@ -50,12 +54,25 @@ abstract final class ResourceManager : IStaticModule {
 		Log.WriteJSON("param4", param4);
 		Log.WriteJSON("param5", param5);
 
-		if (resource == 0xFFFFFFFF_FFFFFFFF && id < _staticCalls.length)
-			return _staticCalls[id](param1, param2, param3, param4, param5);
-		else if (resource < _resources.Count && _resources[resource] !is null)
+		if (resource == 0xFFFFFFFF_FFFFFFFF) {
+			ResouceCallTable table = GetCallTable(cast(string)((cast(char *)id)[0 .. param1]));
+			if (table is cast(ResouceCallTable)null)
+				return -1;
+
+			return table.Callback(param1, param2, param3, param4, param5);
+		} else if (resource < _resources.Count && _resources[resource] !is null)
 			return _resources[resource].Call(id, param1, param2, param3, param4, param5);
 
 		Log.WriteJSON("value", "Bad call");
 		return -1;
+	}
+
+	static void AddCallTables(const ResouceCallTable callTable) {
+		_callTables.Add(callTable);
+	}
+
+	static ResouceCallTable GetCallTable(string identifier) {
+		auto table = Array.Find(_callTables, (LinkedListNode!ResouceCallTable o) => o.Value.Identifier == identifier);
+		return table !is null ? table.Value : cast(ResouceCallTable)null;
 	}
 }

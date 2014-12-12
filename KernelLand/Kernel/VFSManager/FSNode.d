@@ -12,6 +12,7 @@ abstract class FSNode : Resource {
 	protected FileAttributes _attributes;
 
 	protected this(DirectoryNode parent) {
+		static const ResouceCallTable rcs = {"com.trinix.VFSManager.FSNode", &StaticCallback};
 		static const CallTable[] callTable = [
 			{0, ".Attributes", 0, null}
 		];
@@ -21,7 +22,8 @@ abstract class FSNode : Resource {
 			parent.Childrens.Add(this);
 		}
 
-		super(DeviceType.Disk, "com.trinix.VFSManager.FSNode", 0x1, callTable);
+		ResourceManager.AddCallTables(rcs);
+		super(DeviceType.Disk, "com.trinix.VFSManager.FSNode", 0x01, callTable);
 	}
 
 	~this() {
@@ -77,5 +79,9 @@ abstract class FSNode : Resource {
 		ret.CreateTime  = ret.AccessTime;
 
 		return ret;
+	}
+
+	static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
+		return -2;
 	}
 }

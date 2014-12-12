@@ -12,10 +12,10 @@ abstract class Resource {
 	private LinkedList!(CallTable *) _callTables;
 	private LinkedList!Process _processes;
 
-	private DeviceType _type;
-	private string _identifier;
-	private long _version;
 	private long _id;
+	private DeviceType _type;
+	private long _version;
+	private string _identifier;
 
 	protected struct CallTable {
 		long ID;
@@ -36,8 +36,16 @@ abstract class Resource {
 		return _id;
 	}
 
-	@property DeviceType Type() {
+	@property ref DeviceType Type() {
 		return _type;
+	}
+
+	@property ref long Version() {
+		return _version;
+	}
+
+	@property ref string Identifier() {
+		return _identifier;
 	}
 
 	// Called from ResourceManager
@@ -141,7 +149,8 @@ abstract class Resource {
 
 	protected void AddCallTables(const CallTable[] callTables) {
 		foreach (x; callTables)
-			_callTables.Add(cast(CallTable *)&x);
+			if (!_callTables.Contains(cast(CallTable *)&x))
+				_callTables.Add(cast(CallTable *)&x);
 	}
 
 	static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
