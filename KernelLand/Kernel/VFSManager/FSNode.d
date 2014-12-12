@@ -1,6 +1,7 @@
 ﻿module VFSManager.FSNode;
 
 import VFSManager;
+import TaskManager;
 import Architecture;
 import ObjectManager;
 import SyscallManager;
@@ -69,8 +70,8 @@ abstract class FSNode : Resource {
 		ret.Name        = name;
 		ret.Type        = type;
 		ret.Permissions = FilePermissions.UserRead | FilePermissions.UserWrite | FilePermissions.GroupRead | FilePermissions.OtherRead;
-		ret.UID         = 123; //TODO
-		ret.GID         = 456; //TODO
+		ret.UID         = Task.CurrentProcess.UID;
+		ret.GID         = Task.CurrentProcess.GID;
 		ret.AccessTime  = Time.Now;
 		ret.ModifyTime  = ret.AccessTime;
 		ret.CreateTime  = ret.AccessTime;

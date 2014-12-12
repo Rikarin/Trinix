@@ -37,7 +37,7 @@ class Queue(T) {
 	}
 
 	T Dequeue() {
-		while (!Count) { }
+		while (!Count) { } //TODO
 
 		T ret = _array[0];
 		_array[0 .. $ - 1] = _array[1 .. $];

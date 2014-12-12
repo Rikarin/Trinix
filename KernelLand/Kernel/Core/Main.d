@@ -10,22 +10,22 @@ import SyscallManager;
 
 //Log dorobit... problem je v tom ze ak si vymknem log v processe tak pocas interruptu ho nemozem pouzit...
 //v PhysicalMEmory by to chcelo nahrat regiony z multibootu a potom podla nich vytvorit bitmapu
-//vo FSNode.NewAttributes opravit UID, GID
-//Syscally v FSNode a DirectoryNode
 
-//LibraryLoader a ELF aprser mozu ist kludne potom aj do libky...
 /*
-dokoncit VFS.
+dokoncit VFS., co tam este chyba?...
 Dokoncit write/create/remove - spravit Ext2 driver!!!!
-Multitasking a synchronizacne prvky
-eventy
+
+Multitasking a synchronizacne prvky, asi rwlock ci jak
+eventy, jake??
+
 syscally
-Timery....
+kontrolu parametrov pri syscalloch
+
+najprv skocit do arch zavislej casti kodu, tj. Arch/xxx/Main.d a az odtial potom preskocit sem...
 
 debugovat Heap... Obcas to pada na expande...
 
 V IDT je nejaky problem s RAX registrom...
-kontrolu parametrov pri syscalloch
 */
 
 /* MemoryMap:

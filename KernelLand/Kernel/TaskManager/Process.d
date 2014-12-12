@@ -36,6 +36,14 @@ final class Process {
 		return _id;
 	}
 
+	@property ulong UID() {
+		return _uid;
+	}
+
+	@property ulong GID() {
+		return _gid;
+	}
+
 	@property Paging PageTable() {
 		return _paging;
 	}

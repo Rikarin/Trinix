@@ -13,7 +13,7 @@ enum ThreadStatus {
 	Active,
 	Sleeping,
 	MutexSleep,
-	RWLockSleep, //i dont know if ill implement RWLock
+	RWLockSleep,
 	SemaphoreSleep,
 	QueueSleep,
 	EventSleep,
