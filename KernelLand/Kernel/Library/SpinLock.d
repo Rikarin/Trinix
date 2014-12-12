@@ -3,7 +3,7 @@
 import TaskManager;
 
 
-public class SpinLock {
+class SpinLock {
 	private long _locked;
 
 	private long AtomicExchange(long* value) {
@@ -16,24 +16,24 @@ public class SpinLock {
 		return ret;
 	}
 
-	public this() {
+	this() {
 		_locked = false;
 	}
 
-	public this(bool initiallyOwned) {
+	this(bool initiallyOwned) {
 		_locked = initiallyOwned;
 	}
 
-	public bool WaitOne() {
+	bool WaitOne() {
 		while (AtomicExchange(&_locked)) {}
 		return true;
 	}
 
-	public void Release() {
+	void Release() {
 		_locked = false;
 	}
 
-	@property public bool IsLocked() {
+	@property bool IsLocked() {
 		return _locked != 0;
 	}
 }

@@ -3,7 +3,7 @@
 import Library;
 
 
-public abstract class LibraryLoader {
+abstract class LibraryLoader {
 	private __gshared LinkedList!LibraryLoader _libraries;
 
 	private string _name;
@@ -24,14 +24,14 @@ public abstract class LibraryLoader {
 
 
 
-	public static LibraryLoader Load(string name, string searchDir, string[] args) {
+	static LibraryLoader Load(string name, string searchDir, string[] args) {
 
 		//relocate...
 		//if ok _libra..Add...
 		return null;
 	}
 
-	public static LibraryLoader Find(string name) {
+	static LibraryLoader Find(string name) {
 		foreach (x; _libraries) {
 			if (x.Value._name == name)
 				return x.Value;
@@ -40,7 +40,7 @@ public abstract class LibraryLoader {
 		return null;
 	}
 
-	public static bool GetSymbol(string name, ref void* value, ref long size, void* ignoreBase) {
+	static bool GetSymbol(string name, ref void* value, ref long size, void* ignoreBase) {
 		//Local exports...
 
 		foreach(x; _libraries) {

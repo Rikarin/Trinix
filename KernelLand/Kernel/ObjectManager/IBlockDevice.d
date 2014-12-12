@@ -1,7 +1,7 @@
 ﻿module ObjectManager.IBlockDevice;
 
 
-public interface IBlockDevice {
+interface IBlockDevice {
 	@property long Blocks();
 	@property int BlockSize();
 

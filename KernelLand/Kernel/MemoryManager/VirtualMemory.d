@@ -5,14 +5,14 @@ import MemoryManager;
 import ObjectManager;
 
 
-public abstract final class VirtualMemory : IStaticModule {
+abstract final class VirtualMemory : IStaticModule {
 	private __gshared void* function(long size) _malloc = &TmpAlloc;
 	private __gshared void function(void* ptr) _free;
 
-	public __gshared Paging KernelPaging;
-	public __gshared Heap KernelHeap;
+	__gshared Paging KernelPaging;
+	__gshared Heap KernelHeap;
 
-	public static bool Initialize() {
+	static bool Initialize() {
 		Log.WriteJSON("module", "{");
 		Log.WriteJSON("name", "Heap");
 		Log.WriteJSON("type", "Initialize");
@@ -23,7 +23,7 @@ public abstract final class VirtualMemory : IStaticModule {
 		return true;
 	}
 
-	public static bool Install() {
+	static bool Install() {
 		Log.WriteJSON("module", "{");
 		Log.WriteJSON("name", "Heap");
 		Log.WriteJSON("type", "Install");
@@ -58,5 +58,5 @@ extern(C) void* malloc(long size, int ba) {
 extern(C) void free(void* ptr) {
 	//Log.WriteJSON("MemoryFree", cast(ulong)ptr);
 
-	//VirtualMemory._free(ptr);
+	VirtualMemory._free(ptr);
 }

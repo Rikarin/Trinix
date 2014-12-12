@@ -3,7 +3,7 @@
 import VFSManager;
 
 
-public final class DevFS : IFileSystem {
+final class DevFS : IFileSystem {
 	private DirectoryNode _rootNode;
 
 	private this() {
@@ -22,15 +22,15 @@ public final class DevFS : IFileSystem {
 		return _rootNode;
 	}
 	
-	public bool Unmount() {
+	bool Unmount() {
 		return true;
 	}
 	
-	public bool LoadContent(DirectoryNode node) {
+	bool LoadContent(DirectoryNode node) {
 		return true;
 	}
 
-	public FSNode Create(DirectoryNode parent, FileAttributes attributes) {
+	FSNode Create(DirectoryNode parent, FileAttributes attributes) {
 		switch (attributes.Type) {
 			case FileType.Directory:
 				return new DirectoryNode(parent, attributes);
@@ -40,7 +40,7 @@ public final class DevFS : IFileSystem {
 		}
 	}
 
-	public bool Remove(FSNode node) {
+	bool Remove(FSNode node) {
 		switch (node.Attributes.Type) {
 			case FileType.Directory:
 				if (!(cast(DirectoryNode)node).Childrens.Count) {
@@ -57,7 +57,7 @@ public final class DevFS : IFileSystem {
 		return false;
 	}
 
-	public static DevFS Mount(DirectoryNode mountpoint) {
+	static DevFS Mount(DirectoryNode mountpoint) {
 		if (mountpoint is null || !mountpoint.IsMountpointable)
 			return null;
 
@@ -73,7 +73,7 @@ public final class DevFS : IFileSystem {
 		return ret;
 	}
 
-	public bool AddDevice(FSNode dev) {
+	bool AddDevice(FSNode dev) {
 		return false;
 	}
 }

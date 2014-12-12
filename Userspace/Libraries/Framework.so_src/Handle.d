@@ -1,7 +1,7 @@
 ﻿module Handle;
 
 
-public final class Handle {
+final class Handle {
 	private long _id;
 	private long _type;
 	
@@ -9,9 +9,9 @@ public final class Handle {
 		_id = id;
 	}
 
-	public this() {} //testing...
+	this() {} //testing...
 	
-	@property public long Type() { //TODO: use enum against long
+	@property long Type() { //TODO: use enum against long
 		if (!_type)
 			_type = Call(0);
 
@@ -20,11 +20,11 @@ public final class Handle {
 		return _type;
 	}
 	
-	public long Call(long id, long param1 = 0, long param2 = 0, long param3 = 0, long param4 = 0, long param5 = 0) {
+	long Call(long id, long param1 = 0, long param2 = 0, long param3 = 0, long param4 = 0, long param5 = 0) {
 		return _Call(_id, id, param1, param2, param3, param4, param5);
 	}
 	
-	public static Handle StaticCall(long id, long param1 = 0, long param2 = 0, long param3 = 0, long param4 = 0, long param5 = 0) {
+	static Handle StaticCall(long id, long param1 = 0, long param2 = 0, long param3 = 0, long param4 = 0, long param5 = 0) {
 		long handle = _Call(0xFFFFFFFF_FFFFFFFF, id, param1, param2, param3, param4, param5);
 		
 		if (handle != -1 && handle)

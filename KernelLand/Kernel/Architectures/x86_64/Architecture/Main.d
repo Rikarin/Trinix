@@ -5,8 +5,8 @@ import Architecture;
 import ObjectManager;
 
 
-public abstract final class Arch {
-	public static void Main(uint magic, void* info) {
+abstract final class Arch {
+	static void Main(uint magic, void* info) {
 		Log.WriteJSON("{");
 		Log.WriteJSON("name", "multiboot2");
 		Log.WriteJSON("value", "{");

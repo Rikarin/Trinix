@@ -6,7 +6,7 @@ import ObjectManager;
 import SyscallManager;
 
 
-public struct SyscallStack {
+struct SyscallStack {
 align(1):
 	ulong R15, R14, R13, R12, R11, R10, R9, R8;
 	ulong RBP, RDI, RSI, RDX;
@@ -15,7 +15,7 @@ align(1):
 }
 
 
-public abstract final class SyscallHandler : IStaticModule {
+abstract final class SyscallHandler : IStaticModule {
 	private enum Registers : ulong {
 		IA32_STAR    = 0xC000_0081,
 		IA32_LSTAR   = 0xC000_0082,
@@ -27,14 +27,14 @@ public abstract final class SyscallHandler : IStaticModule {
 		STAR         = 0x0013_0008_0000_0000
 	}
 
-	public static bool Initialize() {
+	static bool Initialize() {
 		Port.WriteMSR(Registers.IA32_LSTAR, cast(ulong)&SyscallCommon);
 		Port.WriteMSR(Registers.IA32_STAR, Registers.STAR);
 		Port.WriteMSR(Registers.IA32_FMASK, 0x200);
 		return true;
 	}
 
-	public static void SyscallDispatcher(SyscallStack* stack) {
+	static void SyscallDispatcher(SyscallStack* stack) {
 		Port.SaveSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
 		with (stack)
 			RAX = ResourceManager.CallResource(R9, R8, RDI, RSI, RDX, RBX, RAX);

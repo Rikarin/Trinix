@@ -148,7 +148,8 @@ iInitialPD:	; Covers 1 GiB
 ;	dq	0 + 0x143	; 1 GiB Page from zero
 	dd	iInitialPT1 - KERNEL_BASE + 3, 0
 	dd	iInitialPT2 - KERNEL_BASE + 3, 0
-	times 510 dq 0
+	dd	iInitialPT3 - KERNEL_BASE + 3, 0
+	times 509 dq 0
 
 iStackPD:
 	dd	iKStackPT - KERNEL_BASE + 3, 0
@@ -171,6 +172,12 @@ iInitialPT1:	; 2 MiB
 	%endrep
 iInitialPT2:	; 2 MiB
 	%assign i 512
+	%rep 512
+	dq	i * 4096 + 0x103
+	%assign i i + 1
+	%endrep
+iInitialPT3:	; 2 MiB
+	%assign i 1024
 	%rep 512
 	dq	i * 4096 + 0x103
 	%assign i i + 1

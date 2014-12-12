@@ -7,7 +7,7 @@ import VFSManager;
 import Modules.Storage.ATA.ATADrive;
 
 
-public class ATAController {
+class ATAController {
 	private uint _base;
 	private ubyte _number;
 	private ATADrive[2] _drives;
@@ -60,7 +60,7 @@ public class ATAController {
 		Identity(true);
 	}
 
-	public ~this() {
+	~this() {
 		delete _drives[0];
 		delete _drives[1];
 		delete _spinLock;
@@ -94,7 +94,7 @@ public class ATAController {
 			delete data;
 	}
 
-	public static ATAController[2] Detect() {
+	static ATAController[2] Detect() {
 		ATAController[2] c;
 		c[0] = new ATAController(Base.Bus1, 0);
 		c[1] = new ATAController(Base.Bus2, 1);

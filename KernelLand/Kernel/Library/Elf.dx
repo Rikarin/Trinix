@@ -4,7 +4,7 @@ import Core;
 import Library;
 
 //ELF64 support only
-public class Elf : LibraryLoader {
+class Elf : LibraryLoader {
 	private struct EHeader {
 		ubyte[16] Identifier;
 		ushort Type;

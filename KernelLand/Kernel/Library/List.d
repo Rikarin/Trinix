@@ -5,34 +5,34 @@ class List(T) {
 	private T[] _array;
 	private long _count;
 
-	@property public long Capacity() {
+	@property long Capacity() {
 		return _array.length;
 	}
 
-	@property public long Count() {
+	@property long Count() {
 		return _count;
 	}
 
-	public void opIndexAssign(T value, long index) {
+	void opIndexAssign(T value, long index) {
 		_array[index] = value;
 	}
 
-	public T opIndex(long index) {
+	T opIndex(long index) {
 		return _array[index];
 	}
 
-	public T[] opSlice(long i, long j) {
+	T[] opSlice(long i, long j) {
 		return _array[i .. j];
 	}
 
-	public long opDollar() {
+	long opDollar() {
 		return _count;
 	}
 
-	public int opApply(int delegate(ref T) dg) {
+	int opApply(int delegate(ref T) dg) {
 		int result;
 		
-		for (long i = 0; i < _count; i++) {
+		foreach (i; 0 .. _count) {
 			result = dg(_array[i]);
 			if (result)
 				break;
@@ -41,7 +41,7 @@ class List(T) {
 		return result;
 	}
 	
-	public int opApplyReverse(int delegate(ref T) dg) {
+	int opApplyReverse(int delegate(ref T) dg) {
 		int result;
 		
 		for (long i = _count; i >= 0; i--) {
@@ -53,22 +53,22 @@ class List(T) {
 		return result;
 	}
 
-	public this(long capacity = 4) {
+	this(long capacity = 4) {
 		_array = new T[capacity];
 	}
 
-	public ~this() {
+	~this() {
 		delete _array;
 	}
 
-	public void Add(T item) {
+	void Add(T item) {
 		if (Count == Capacity)
 			Resize();
 		
 		_array[_count++] = item;
 	}
 
-	public void AddRange(List!T other) in {
+	void AddRange(List!T other) in {
 		if (other is null)
 			assert(false);
 	} body {

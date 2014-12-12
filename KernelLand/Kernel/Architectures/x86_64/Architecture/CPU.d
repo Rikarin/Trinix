@@ -7,19 +7,19 @@ import MemoryManager;
 import Architectures.x86_64.Core;
 
 
-public abstract final class CPU : IStaticModule {
+abstract final class CPU : IStaticModule {
 	private __gshared ubyte*[256] _stacks;
 	private __gshared ProcessorInfo[256] _processorInfo;
 
-	@property public static int Identifier() {
+	@property static int Identifier() {
 		return 0;
 	}
 
-	@property public static TaskStateSegment* TSSTable() {
+	@property static TaskStateSegment* TSSTable() {
 		return TSS.Table;
 	}
 
-	public static bool Initialize() {
+	static bool Initialize() {
 		Log.WriteJSON("{");
 		Log.WriteJSON("name", "SSE");
 		Log.WriteJSON("type", "Initialize");
@@ -58,7 +58,7 @@ public abstract final class CPU : IStaticModule {
 		return true;
 	}
 
-	public static bool Install() {
+	static bool Install() {
 		Log.WriteJSON("{");
 		Log.WriteJSON("name", "GDT");
 		Log.WriteJSON("type", "Install");
@@ -410,14 +410,14 @@ public abstract final class CPU : IStaticModule {
 		//endregion
 	}
 
-	public struct Cache {
+	struct Cache {
 		uint Associativity;
 		uint Length;
 		uint BlockSize;
 		uint LinesPerSector;
 	}
 	
-	public struct ProcessorInfo {
+	struct ProcessorInfo {
 		Cache L1ICache;
 		Cache L1DCache;
 		Cache L2Cache;

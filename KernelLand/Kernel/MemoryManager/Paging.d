@@ -10,7 +10,7 @@ import ObjectManager;
 alias PageTableEntry!"primary" PTE;
 
 
-public enum AccessMode : uint {
+enum AccessMode : uint {
 	Read            = 0,
 	AllocOnAccess   = 2,
 	Global          = 1,
@@ -34,7 +34,7 @@ public enum AccessMode : uint {
 }
 
 
-public struct PageTableEntry(string T) {
+struct PageTableEntry(string T) {
 align(1):
 	private ulong pml;
 
@@ -73,11 +73,11 @@ align(1):
 	} else
 		static assert(false);
 	
-	@property public void* Location() {
+	@property void* Location() {
 		return cast(void *)(Address << 12);
 	}
 	
-	@property public AccessMode Mode() {
+	@property AccessMode Mode() {
 		AccessMode mode;
 		
 		if (Present) {
@@ -93,7 +93,7 @@ align(1):
 		return mode;
 	}
 	
-	@property public void Mode(AccessMode mode) {
+	@property void Mode(AccessMode mode) {
 		Present = 1;
 		Available = mode & AccessMode.AvailableMask;
 		
@@ -120,7 +120,7 @@ align(1):
 }
 
 
-public struct PageLevel(ubyte L) {
+struct PageLevel(ubyte L) {
 align(1):
 	alias L Level;
 	
@@ -144,7 +144,7 @@ align(1):
 			Tables[index] = address;
 		}
 		
-		public PageLevel!(L - 1)* GetOrCreateTable(uint index) {
+		PageLevel!(L - 1)* GetOrCreateTable(uint index) {
 			PageLevel!(L - 1)* ret = Tables[index];
 			
 			if (!ret) {
@@ -164,17 +164,17 @@ align(1):
 }
 
 
-public final class Paging {
-	public enum PageSize = 0x1000;
+final class Paging {
+	enum PageSize = 0x1000;
 
 	private PageLevel!4* _root;
 	//private void* _regions = cast(void *)0xFFFFFFFFE0000000;
 
-	public this() {
+	this() {
 		_root = new PageLevel!4;
 	}
 	
-	public this(Paging other) {
+	this(Paging other) {
 		this();
 
 		foreach (i; 0 .. 512) { //PML4
@@ -201,7 +201,7 @@ public final class Paging {
 		}
 	}
 	
-	public ~this() {
+	~this() {
 		foreach (i; 0 .. 512) { //PML4
 			if (_root.Tables[i]) {
 				foreach (j; 0 .. 512) { //PDPT
@@ -219,7 +219,7 @@ public final class Paging {
 		delete _root;
 	}
 
-	public void Install() {
+	void Install() {
 		void* addr = GetPhysicalAddress(cast(void *)_root);
 
 		asm {
@@ -227,11 +227,11 @@ public final class Paging {
 		}
 	}
 	
-	public void AllocFrame(void* address, AccessMode mode) {
+	void AllocFrame(void* address, AccessMode mode) {
 		PhysicalMemory.AllocFrame(GetPage(address), mode);
 	}
 	
-	public void FreeFrame(void* address) {
+	void FreeFrame(void* address) {
 		PhysicalMemory.FreeFrame(GetPage(address));
 	}
 	
@@ -258,7 +258,7 @@ public final class Paging {
 		return (cast(ubyte *)vAdd)[diff .. diff + length];
 	}*/
 
-	public ref PTE GetPage(void* address) {
+	ref PTE GetPage(void* address) {
 		ulong add = cast(ulong)address;
 		
 		ushort[4] start;
@@ -274,7 +274,7 @@ public final class Paging {
 		return pt.Entries[start[0]];
 	}
 
-	public void* GetPhysicalAddress(void* address) {
+	void* GetPhysicalAddress(void* address) {
 		ulong add = cast(ulong)address;
 		
 		ushort[4] start;

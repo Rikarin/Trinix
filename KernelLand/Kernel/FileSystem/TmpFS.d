@@ -3,7 +3,7 @@
 import VFSManager;
 
 
-public final class TmpFS : IFileSystem {
+final class TmpFS : IFileSystem {
 	private DirectoryNode _rootNode;
 
 	private this() {
@@ -22,7 +22,7 @@ public final class TmpFS : IFileSystem {
 		return _rootNode;
 	}
 	
-	public bool Unmount() {
+	bool Unmount() {
 		return true;
 	}
 	
@@ -56,11 +56,11 @@ public final class TmpFS : IFileSystem {
 		return data.length;
 	}
 	
-	public bool LoadContent(DirectoryNode node) {
+	bool LoadContent(DirectoryNode node) {
 		return true;
 	}
 	
-	public FSNode Create(DirectoryNode parent, FileAttributes attributes) {
+	FSNode Create(DirectoryNode parent, FileAttributes attributes) {
 		switch (attributes.Type) {
 			case FileType.Directory:
 				return new DirectoryNode(parent, attributes);
@@ -73,7 +73,7 @@ public final class TmpFS : IFileSystem {
 		}
 	}
 	
-	public bool Remove(FSNode node) {
+	bool Remove(FSNode node) {
 		if (node.Attributes.Type == FileType.File) {
 			auto n = cast(TmpFileNode)node;
 			if (n._data !is null)
@@ -83,7 +83,7 @@ public final class TmpFS : IFileSystem {
 		return true;
 	}
 	
-	public static TmpFS Mount(DirectoryNode mountpoint) {
+	static TmpFS Mount(DirectoryNode mountpoint) {
 		if (mountpoint is null || !mountpoint.IsMountpointable)
 			return null;
 		
@@ -101,11 +101,11 @@ public final class TmpFS : IFileSystem {
 }
 
 
-public final class TmpFileNode : FileNode {
+final class TmpFileNode : FileNode {
 	private byte[] _data;
 	
 	
-	@property public override FileAttributes Attributes() {
+	@property override FileAttributes Attributes() {
 		_attributes.Length = _data.length;
 		return _attributes;
 	}
@@ -118,14 +118,14 @@ public final class TmpFileNode : FileNode {
 		delete _data;
 	}
 
-	public override ulong Read(long offset, byte[] data) {
+	override ulong Read(long offset, byte[] data) {
 		if (_parent is null || _parent.FileSystem is null)
 			return 0;
 		
 		return (cast(TmpFS)_parent.FileSystem).Read(this, offset, data);
 	}
 	
-	public override ulong Write(long offset, byte[] data) {
+	override ulong Write(long offset, byte[] data) {
 		if (_parent is null || _parent.FileSystem is null)
 			return 0;
 		

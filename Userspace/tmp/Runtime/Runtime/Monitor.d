@@ -1,7 +1,7 @@
 ﻿module Runtime.Monitor;
 
 
-public struct Monitor {
+struct Monitor {
 	IMonitor impl;
 	DEvent[] devt;
 	size_t   refs;

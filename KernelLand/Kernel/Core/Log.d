@@ -4,15 +4,15 @@ import Architecture;
 import ObjectManager;
 
 
-public abstract final class Log : IStaticModule {
-	public __gshared int Base = 16;
+abstract final class Log : IStaticModule {
+	__gshared int Base = 16;
 
 	private __gshared DisplayChar* _display = cast(DisplayChar *)0xFFFFFFFF800B8000;
 	private __gshared int _iterator;
 	private __gshared int _padding;
 	private __gshared bool _installed;
 
-	public static bool Initialize() {
+	static bool Initialize() {
 		//Set cursor
 		Port.Write!byte(0x3D4, 0x0F);
 		Port.Write!byte(0x3D5, 0);
@@ -27,24 +27,24 @@ public abstract final class Log : IStaticModule {
 		return true;
 	}
 
-	public static bool Install() {
+	static bool Install() {
 		_installed = true;
 		return true;
 	}
 
-	public static bool Uninstall() {
+	static bool Uninstall() {
 		_installed = false;
 
 		return true;
 	}
 
-	public static void NewLine() {
+	static void NewLine() {
 		Scroll();
 		_iterator += 80 - (_iterator % 80);
 		SerialPort.Write("\n");
 	}
 
-	public static void WriteJSON(T...)(T args) {
+	static void WriteJSON(T...)(T args) {
 		bool first;
 		foreach (x; args) {
 			alias A = typeof(x);
@@ -106,12 +106,12 @@ public abstract final class Log : IStaticModule {
 		}
 	}
 
-	public static void WriteLine(T...)(T args) {
+	static void WriteLine(T...)(T args) {
 		Write(args);
 		NewLine();
 	}
 
-	public static void Write(T...)(T args) {
+	static void Write(T...)(T args) {
 		foreach (x; args) {
 			alias A = typeof(x);
 
@@ -199,7 +199,7 @@ public abstract final class Log : IStaticModule {
 	}
 
 	private union DisplayChar {
-		public struct {
+		struct {
 			char Char;
 			byte Color;
 		}

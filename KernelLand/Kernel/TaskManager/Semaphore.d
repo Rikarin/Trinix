@@ -4,7 +4,7 @@ import Library;
 import TaskManager;
 
 
-public class Semaphore {
+class Semaphore {
 	private string _name;
 	private int _value;
 	private int _maxValue;
@@ -12,7 +12,7 @@ public class Semaphore {
 	private LinkedList!Thread _waiting;
 	private LinkedList!Thread _signaling;
 
-	public this(int initialCount, int maxCount, string name) in {
+	this(int initialCount, int maxCount, string name) in {
 		assert(initialCount > 0);
 		assert(maxCount > 0);
 	} body {
@@ -47,7 +47,7 @@ public class Semaphore {
 		return _signaling;
 	}
 
-	public int WaitOne() {
+	int WaitOne() {
 		int taken;
 		_spinLock.WaitOne();
 
@@ -76,7 +76,7 @@ public class Semaphore {
 		return -1;
 	}
 
-	public int Release(int releaseCount) in {
+	int Release(int releaseCount) in {
 		assert(releaseCount >= 0);
 	} body {
 		_spinLock.WaitOne();

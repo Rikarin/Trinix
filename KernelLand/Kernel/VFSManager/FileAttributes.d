@@ -1,7 +1,7 @@
 ﻿module VFSManager.FileAttributes;
 
 
-public enum FileType {
+enum FileType {
 	File        = 0x01,
 	Directory   = 0x02,
 	CharDevice  = 0x04,
@@ -13,7 +13,7 @@ public enum FileType {
 }
 
 
-public enum FilePermissions {
+enum FilePermissions {
 	OtherExecute = 1,
 	OtherWrite   = 2,
 	OtherRead    = 4,
@@ -26,7 +26,7 @@ public enum FilePermissions {
 }
 
 
-public struct FileAttributes {
+struct FileAttributes {
 	string Name;
 	FileType Type;
 	ulong Length;

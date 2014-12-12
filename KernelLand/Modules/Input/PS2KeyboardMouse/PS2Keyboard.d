@@ -3,12 +3,12 @@
 import ObjectManager;
 
 
-public static class PS2Keyboard {
+static class PS2Keyboard {
 	private __gshared bool _up;
 	private __gshared int _layer;
 
 
-	public static ModuleResult Initialize(string[] args) {
+	static ModuleResult Initialize(string[] args) {
 		//TODO: in keyboard module call function "create instance"
 		//gPS2Kb_Info = Keyboard_CreateInstance(KEYSYM_RIGHTGUI, "PS2Keyboard");
 		return ModuleResult.Sucessful;

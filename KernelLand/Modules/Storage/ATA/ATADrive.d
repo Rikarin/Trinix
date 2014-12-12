@@ -5,17 +5,17 @@ import ObjectManager;
 import Modules.Storage.ATA.ATAController;
 
 
-public class ATADrive : IBlockDevice {
+class ATADrive : IBlockDevice {
 	private ATAController _controller;
 	private bool _isSlave;
 	private uint _blockCount;
 	private short[] _data;
 
-	@property public long Blocks() {
+	@property long Blocks() {
 		return _blockCount;
 	}
 
-	@property public int BlockSize() {
+	@property int BlockSize() {
 		return 512;
 	}
 
@@ -26,7 +26,7 @@ public class ATADrive : IBlockDevice {
 		_data       = data;
 	}
 
-	public ~this() {
+	~this() {
 		foreach (x; DeviceManager.DevFS.Childrens) {
 			Partition part = cast(Partition)x.Value;
 			if (part !is null && part.Device == this)
@@ -36,7 +36,7 @@ public class ATADrive : IBlockDevice {
 		delete _data;
 	}
 
-	public ulong Read(long offset, byte[] data) {
+	ulong Read(long offset, byte[] data) {
 		ulong blockCount = data.length / BlockSize + ((data.length % BlockSize) != 0);
 
 		if (offset + blockCount >= Blocks)
@@ -61,7 +61,7 @@ public class ATADrive : IBlockDevice {
 		return data.length;
 	}
 
-	public ulong Write(long offset, byte[] data) {
+	ulong Write(long offset, byte[] data) {
 		ulong blockCount = data.length / BlockSize + ((data.length % BlockSize) != 0);
 
 		if (offset + blockCount > Blocks)

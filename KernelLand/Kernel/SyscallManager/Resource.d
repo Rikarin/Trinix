@@ -7,7 +7,7 @@ import ObjectManager;
 import SyscallManager;
 
 
-public abstract class Resource {
+abstract class Resource {
 	private Mutex _mutex;
 	private LinkedList!(CallTable *) _callTables;
 	private LinkedList!Process _processes;
@@ -32,11 +32,11 @@ public abstract class Resource {
 		}
 	}
 
-	@property public long Handle() {
+	@property long Handle() {
 		return _id;
 	}
 
-	@property public DeviceType Type() {
+	@property DeviceType Type() {
 		return _type;
 	}
 
@@ -123,14 +123,14 @@ public abstract class Resource {
 		ResourceManager.Unregister(this);
 	}
 
-	public void AttachProcess(Process process) {
+	void AttachProcess(Process process) {
 		if (_processes.Contains(process) == -1)
 			return;
 
 		_processes.Add(process);
 	}
 
-	public bool DetachProcess(Process process) {
+	bool DetachProcess(Process process) {
 		_processes.Remove(process);
 
 		if (!_processes.Count)
@@ -144,7 +144,7 @@ public abstract class Resource {
 			_callTables.Add(cast(CallTable *)&x);
 	}
 
-	public static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
+	static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
 		return -1;
 	}
 }

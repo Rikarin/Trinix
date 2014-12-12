@@ -5,26 +5,25 @@ import Library;
 import FileSystem;
 import VFSManager;
 import ObjectManager;
-import FileSystem.Ext2;
 
 
-public struct VFSDriver {
+struct FSDriver {
 	string Name;
 	bool function(Partition partition) Detect;
-	Ext2Filesystem function(DirectoryNode mountpoint, Partition partition) Mount;
+	IFileSystem function(DirectoryNode mountpoint, Partition partition) Mount;
 }
 
 
-public abstract final class VFS : IStaticModule {
+abstract final class VFS : IStaticModule {
 	private __gshared DirectoryNode _root;
-	private __gshared LinkedList!VFSDriver _drivers;
+	private __gshared LinkedList!FSDriver _drivers;
 
-	@property public static DirectoryNode Root() {
+	@property static DirectoryNode Root() {
 		return _root;
 	}
 
-	public static bool Initialize() {
-		_drivers = new LinkedList!VFSDriver(); //TODO finalize
+	static bool Initialize() {
+		_drivers = new LinkedList!FSDriver(); //TODO finalize
 
 		_root = new DirectoryNode(null, FSNode.NewAttributes("/"));
 		DirectoryNode system = new DirectoryNode(_root, FSNode.NewAttributes("System"));
@@ -40,12 +39,12 @@ public abstract final class VFS : IStaticModule {
 		return true;
 	}
 
-	public static bool Install() {
+	static bool Install() {
 		//TODO
 		return true;
 	}
 
-	public static FSNode Find(string path, DirectoryNode start = null) {
+	static FSNode Find(string path, DirectoryNode start = null) {
 		FSNode node = start is null ? _root : start;
 		scope List!string list = path.Split('/');
 
@@ -56,9 +55,9 @@ public abstract final class VFS : IStaticModule {
 			if (x == "..")
 				node = node.Parent;
 			else if (x !is null && x != "." && x != "") {
-				if (node.Attributes.Type & (FileType.Directory | FileType.Mountpoint)) {
+				if (node.Attributes.Type & (FileType.Directory | FileType.Mountpoint))
 					node = (cast(DirectoryNode)node)[x];
-				}else
+				else
 					return null;
 			}
 		}
@@ -67,7 +66,7 @@ public abstract final class VFS : IStaticModule {
 	}
 
 	// only for debug use
-	public static void PrintTree(DirectoryNode path, long p = 1) {
+	static void PrintTree(DirectoryNode path, long p = 1) {
 		foreach (x; path.Childrens) {
 			foreach (i; 0 .. p)
 				Log.Write(" ");
@@ -108,14 +107,30 @@ public abstract final class VFS : IStaticModule {
 		}
 	}
 
-	public static void AddDriver(VFSDriver driver) {
+	static void AddDriver(FSDriver driver) {
 		if (_drivers.Contains(driver))
 			return;
 
 		_drivers.Add(driver);
 	}
 
-	public static void RemoveDriver(string name) {
-		_drivers.Remove(Array.Find(_drivers, (LinkedListNode!VFSDriver o) => o.Value.Name == name));
+	static void RemoveDriver(string name) {
+		_drivers.Remove(Array.Find(_drivers, (LinkedListNode!FSDriver o) => o.Value.Name == name));
+	}
+
+	static FSDriver GetFSDriver(string name) {
+		auto drv = Array.Find(_drivers, (LinkedListNode!FSDriver o) => o.Value.Name == name);
+		return drv !is null ? drv.Value : cast(FSDriver)null;
+	}
+
+	static IFileSystem Mount(DirectoryNode mountpoint, Partition partition, string fsName) {
+		FSDriver drv = GetFSDriver(fsName);
+		if (drv == cast(FSDriver)null)
+			return null;
+
+		if (!drv.Detect(partition))
+			return null;
+
+		return drv.Mount(mountpoint, partition);
 	}
 }

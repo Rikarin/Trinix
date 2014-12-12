@@ -5,18 +5,18 @@ import Library;
 import MemoryManager;
 
 
-public final class Heap {
+final class Heap {
 	private enum Magic = 0xDEADC0DE;
-	public enum MinSize = 0x200000;
+	enum MinSize = 0x200000;
 
 	private ulong _start;
 	private ulong _end;
 	private ulong _free;
 
 	private Index _index;
-	private SpinLock _spinLock; //TODO: mutex?
+	private SpinLock _spinLock;
 
-	public this(ulong offset, long size, long indexSize) {
+	this(ulong offset, long size, long indexSize) {
 		_spinLock = new SpinLock();
 		_start    = offset + indexSize;
 		_end      = offset + size;
@@ -39,7 +39,7 @@ public final class Heap {
 		delete _spinLock;
 	}
 
-	public void* Alloc(long size, bool expandable = true) {
+	void* Alloc(long size, bool expandable = true) {
 		_spinLock.WaitOne();
 		scope(exit) _spinLock.Release();
 
@@ -81,7 +81,7 @@ public final class Heap {
 		return cast(void *)(cast(ulong)header + Header.sizeof);
 	}
 
-	public void Free(void* ptr) {
+	void Free(void* ptr) {
 		if (ptr is null)
 			return;
 
@@ -230,7 +230,7 @@ public final class Heap {
 		}
 	}
 
-	public static ulong CalculateIndexSize(ulong size) {
+	static ulong CalculateIndexSize(ulong size) {
 		return (size / 0x1000) * 64 + 0x1000;
 	}
 

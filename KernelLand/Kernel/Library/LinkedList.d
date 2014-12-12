@@ -1,50 +1,50 @@
 ﻿module Library.LinkedList;
 
 
-public class LinkedList(T) {
+class LinkedList(T) {
 	private LinkedListNode!T _head;
 	private long _count;
 	private long _version;
 
-	@property public long Count() {
+	@property long Count() {
 		return _count;
 	}
 
-	@property public LinkedListNode!T First() {
+	@property LinkedListNode!T First() {
 		return _head;
 	}
 
-	@property public LinkedListNode!T Last() {
+	@property LinkedListNode!T Last() {
 		return _head is null ? null : _head._prev;
 	}
 
-	public this() {
+	this() {
 
 	}
 
-	public ~this() {
+	~this() {
 		Clear();
 	}
 
-	public LinkedListNode!T Add(T value) {
+	LinkedListNode!T Add(T value) {
 		return AddLast(value);
 	}
 
-	public LinkedListNode!T AddAfter(LinkedListNode!T node, T value) {
+	LinkedListNode!T AddAfter(LinkedListNode!T node, T value) {
 		ValidateNode(node);
 		LinkedListNode!T result = new LinkedListNode!T(node._list, value);
 		InternalInsertNodeBefore(node._next, result);
 		return result;
 	}
 
-	public void AddAfter(LinkedListNode!T node, LinkedListNode!T newNode) {
+	void AddAfter(LinkedListNode!T node, LinkedListNode!T newNode) {
 		ValidateNode(node);
 		ValidateNewNode(newNode);
 		InternalInsertNodeBefore(node._next, newNode);
 		newNode._list = this;
 	}
 
-	public LinkedListNode!T AddBefore(LinkedListNode!T node, T value) {
+	LinkedListNode!T AddBefore(LinkedListNode!T node, T value) {
 		ValidateNode(node);
 		LinkedListNode!T result = new LinkedListNode!T(node._list, value);
 		InternalInsertNodeBefore(node, result);
@@ -55,7 +55,7 @@ public class LinkedList(T) {
 		return result;
 	}
 	
-	public void AddBefore(LinkedListNode!T node, LinkedListNode!T newNode) {
+	void AddBefore(LinkedListNode!T node, LinkedListNode!T newNode) {
 		ValidateNode(node);
 		ValidateNewNode(newNode);
 		InternalInsertNodeBefore(node, newNode);
@@ -65,7 +65,7 @@ public class LinkedList(T) {
 			_head = newNode;
 	}
 
-	public LinkedListNode!T AddFirst(T value) {
+	LinkedListNode!T AddFirst(T value) {
 		LinkedListNode!T result = new LinkedListNode!T(this, value);
 
 		if (_head is null)
@@ -78,7 +78,7 @@ public class LinkedList(T) {
 		return result;
 	}
 
-	public void AddFirst(LinkedListNode!T node) {
+	void AddFirst(LinkedListNode!T node) {
 		ValidateNewNode(node);
 		
 		if (_head is null)
@@ -91,7 +91,7 @@ public class LinkedList(T) {
 		node._list = this;
 	}
 
-	public LinkedListNode!T AddLast(T value) {
+	LinkedListNode!T AddLast(T value) {
 		LinkedListNode!T result = new LinkedListNode!T(this, value);
 		
 		if (_head is null)
@@ -102,7 +102,7 @@ public class LinkedList(T) {
 		return result;
 	}
 	
-	public void AddLast(LinkedListNode!T node) {
+	void AddLast(LinkedListNode!T node) {
 		ValidateNewNode(node);
 		
 		if (_head is null)
@@ -113,7 +113,7 @@ public class LinkedList(T) {
 		node._list = this;
 	}
 
-	public void Clear() {
+	void Clear() {
 		auto current = _head;
 
 		while (current !is null) {
@@ -128,11 +128,11 @@ public class LinkedList(T) {
 		_version++;
 	}
 
-	public bool Contains(T value) {
+	bool Contains(T value) {
 		return Find(value) !is null;
 	}
 
-	public LinkedListNode!T Find(T value) {
+	LinkedListNode!T Find(T value) {
 		LinkedListNode!T node = _head;
 
 		if (node) {
@@ -146,7 +146,7 @@ public class LinkedList(T) {
 		return null;
 	}
 
-	public LinkedListNode!T FindLast(T value) {
+	LinkedListNode!T FindLast(T value) {
 		if (_head is null)
 			return null;
 
@@ -164,7 +164,7 @@ public class LinkedList(T) {
 		return null;
 	}
 
-	public bool Remove(T value) {
+	bool Remove(T value) {
 		LinkedListNode!T node = Find(value);
 
 		if (node) {
@@ -175,26 +175,26 @@ public class LinkedList(T) {
 		return false;
 	}
 
-	public void Remove(LinkedListNode!T node) {
+	void Remove(LinkedListNode!T node) {
 		ValidateNode(node);
 		InternalRemoveNode(node);
 	}
 
-	public void RemoveFirst() in {
+	void RemoveFirst() in {
 		if (_head is null)
 			assert(0);
 	} body {
 		InternalRemoveNode(_head);
 	}
 
-	public void RemoveLast() in {
+	void RemoveLast() in {
 		if (_head is null)
 			assert(0);
 	} body {
 		InternalRemoveNode(_head._prev);
 	}
 
-	public int opApply(int delegate(ref LinkedListNode!T) dg) {
+	int opApply(int delegate(ref LinkedListNode!T) dg) {
 		int result;
 
 		for (auto x = _head; x !is null; x = x.Next) {
@@ -206,7 +206,7 @@ public class LinkedList(T) {
 		return result;
 	}
 
-	public int opApplyReverse(int delegate(ref LinkedListNode!T) dg) {
+	int opApplyReverse(int delegate(ref LinkedListNode!T) dg) {
 		int result;
 		
 		for (auto x = _head; x !is null; x = x.Prev) {
@@ -269,13 +269,13 @@ public class LinkedList(T) {
 }
 
 
-public final class LinkedListNode(T) {
+final class LinkedListNode(T) {
 	private LinkedList!T _list;
 	private LinkedListNode!T _next;
 	private LinkedListNode!T _prev;
 	private T _item;
 
-	public this(T value) {
+	this(T value) {
 		_item = value;
 	}
 
@@ -284,19 +284,19 @@ public final class LinkedListNode(T) {
 		_item = value;
 	}
 
-	@property public LinkedList!T List() {
+	@property LinkedList!T List() {
 		return _list;
 	}
 
-	@property public LinkedListNode!T Next() {
+	@property LinkedListNode!T Next() {
 		return _next is null || _next is _list._head ? null : _next;
 	}
 
-	@property public LinkedListNode!T Prev() {
+	@property LinkedListNode!T Prev() {
 		return _prev is null || _prev is _list._head ? null : _prev;
 	}
 
-	@property public ref T Value() { 
+	@property ref T Value() { 
 		return _item;
 	}
 

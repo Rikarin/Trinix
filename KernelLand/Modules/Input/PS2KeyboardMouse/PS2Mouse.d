@@ -3,14 +3,14 @@
 import ObjectManager;
 
 
-public static class PS2Mouse {
+static class PS2Mouse {
 	private enum Sensitivity = 1;
 	package __gshared void function() EnableMouse;
 
 	private __gshared byte[4] _bytes;
 	private __gshared int _cycle;
 
-	public static ModuleResult Initialize(string[] args) {
+	static ModuleResult Initialize(string[] args) {
 		//TODO: in mouse module call function "create instance"
 		//gpPS2Mouse_Handle = Mouse_Register("PS2Mouse", NUM_AXIES, NUM_BUTTONS);
 		EnableMouse();

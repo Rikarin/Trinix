@@ -5,14 +5,14 @@ import VFSManager;
 import ObjectManager;
 
 
-public static class Mouse { //TODO: IStaticModule
-	public static ModuleResult Initialize(string[] args) {
+static class Mouse { //TODO: IStaticModule
+	static ModuleResult Initialize(string[] args) {
 		DeviceManager.DevFS.Create(FSNode.NewAttributes("mouse"));
 		Log.WriteLine("Mouse module was initialized");
 		return ModuleResult.Sucessful;
 	}
 
-	public static ModuleResult Finalize() {
+	static ModuleResult Finalize() {
 		auto del = DeviceManager.DevFS["mouse"];
 		delete del;
 

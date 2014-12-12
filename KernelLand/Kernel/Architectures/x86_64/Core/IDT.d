@@ -10,7 +10,7 @@ import SyscallManager;
 import Architectures.x86_64.Core;
 
 
-public enum InterruptStackType : ushort {
+enum InterruptStackType : ushort {
 	RegisterStack,
 	StackFault,
 	DoubleFault,
@@ -19,7 +19,7 @@ public enum InterruptStackType : ushort {
 	MCE
 }
 
-public enum InterruptType : uint {
+enum InterruptType : uint {
 	DivisionByZero,
 	Debug,
 	NMI,
@@ -42,12 +42,12 @@ public enum InterruptType : uint {
 }
 
 
-public abstract final class IDT : IStaticModule {
+abstract final class IDT : IStaticModule {
 	private __gshared IDTBase _idtBase;
 	private __gshared InterruptGateDescriptor[256] _entries;
 	
 
-	public static bool Initialize() {
+	static bool Initialize() {
 		_idtBase.Limit = (InterruptGateDescriptor.sizeof * _entries.length) - 1;
 		_idtBase.Base = cast(ulong)_entries.ptr;
 		
@@ -58,7 +58,7 @@ public abstract final class IDT : IStaticModule {
 		return true;
 	}
 	
-	public static bool Install() {
+	static bool Install() {
 		asm {
 			"lidt [RAX]" : : "a"(&_idtBase);
 			"sti";
@@ -67,11 +67,11 @@ public abstract final class IDT : IStaticModule {
 		return true;
 	}
 
-	public static void SetInterruptGate(uint num, void* funcPtr, InterruptStackType ist = InterruptStackType.RegisterStack) {
+	static void SetInterruptGate(uint num, void* funcPtr, InterruptStackType ist = InterruptStackType.RegisterStack) {
 		SetGate(num, SystemSegmentType.InterruptGate, cast(ulong)funcPtr, 0, ist);
 	}
 	
-	public static void SetSystemGate(uint num, void* funcPtr, InterruptStackType ist = InterruptStackType.RegisterStack) {
+	static void SetSystemGate(uint num, void* funcPtr, InterruptStackType ist = InterruptStackType.RegisterStack) {
 		SetGate(num, SystemSegmentType.InterruptGate, cast(ulong)funcPtr, 3, ist);
 	}
 

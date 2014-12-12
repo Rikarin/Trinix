@@ -7,8 +7,8 @@ private extern(C) void _Proc_SaveSSE(ulong ptr);
 private extern(C) void _Proc_RestoreSSE(ulong ptr);
 
 
-public abstract final class Port {
-	public static T Read(T)(ushort port) {
+abstract final class Port {
+	static T Read(T)(ushort port) {
 		T ret;
 
 		static if (is(T == byte) || is(T == ubyte)) {
@@ -28,7 +28,7 @@ public abstract final class Port {
 		return ret;
 	}
 	
-	public static void Write(T)(ushort port, int data) {
+	static void Write(T)(ushort port, int data) {
 		static if (is(T == byte) || is(T == ubyte)) {
 			asm {
 				"outb %0, AL" : : "dN"(port), "a"(data);
@@ -44,31 +44,31 @@ public abstract final class Port {
 		}
 	}
 
-	public static void Cli() {
+	static void Cli() {
 		asm {
 			"cli";
 		}
 	}
 	
-	public static void Sti() {
+	static void Sti() {
 		asm {
 			"sti";
 		}
 	}
 
-	public static void Halt() {
+	static void Halt() {
 		asm {
 			"hlt";
 		}
 	}
 	
-	public static void SwapGS() {
+	static void SwapGS() {
 		asm {
 			"swapgs";
 		}
 	}
 
-	public static bool GetIntFlag() {
+	static bool GetIntFlag() {
 		ulong flags;
 		asm {
 			"pushfq";
@@ -78,7 +78,7 @@ public abstract final class Port {
 		return (flags & 0x200) == 0x200;
 	}
 
-	public static void WriteMSR(ulong msr, ulong value) {
+	static void WriteMSR(ulong msr, ulong value) {
 		ulong hi, lo;
 		lo = value & 0xFFFFFFFF;
 		hi = value >> 32UL;
@@ -88,7 +88,7 @@ public abstract final class Port {
 		}
 	}
 
-	public static ulong ReadMSR(uint msr) {
+	static ulong ReadMSR(uint msr) {
 		uint hi, lo;
 		
 		asm {
@@ -102,51 +102,51 @@ public abstract final class Port {
 		return ret;
 	}
 	
-	public static uint cpuidAX(uint func) {
+	static uint cpuidAX(uint func) {
 		asm {
 			"cpuid" : "+a"(func);
 		}
 		return func;
 	}
 	
-	public static uint cpuidBX(uint func) {
+	static uint cpuidBX(uint func) {
 		asm {
 			"cpuid" : "=b"(func) : "a"(func);
 		}
 		return func;
 	}
 	
-	public static uint cpuidCX(uint func) {
+	static uint cpuidCX(uint func) {
 		asm {
 			"cpuid" : "=c"(func) : "a"(func);
 		}
 		return func;
 	}
 	
-	public static uint cpuidDX(uint func) {
+	static uint cpuidDX(uint func) {
 		asm {
 			"cpuid" : "=d"(func) : "a"(func);
 		}
 		return func;
 	}
 
-	public static void EnableSSE() {
+	static void EnableSSE() {
 		_Proc_EnableSSE();
 	}
 
-	public static void DisableSSE() {
+	static void DisableSSE() {
 		_Proc_DisableSSE();
 	}
 
-	public static void InitializeSSE() {
+	static void InitializeSSE() {
 		_Proc_InitialiseSSE();
 	}
 
-	public static void SaveSSE(ulong ptr) {
+	static void SaveSSE(ulong ptr) {
 		_Proc_SaveSSE(ptr);
 	}
 
-	public static void RestoreSSE(ulong ptr) {
+	static void RestoreSSE(ulong ptr) {
 		_Proc_RestoreSSE(ptr);
 	}
 }

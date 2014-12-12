@@ -5,20 +5,20 @@ import Architecture;
 import MemoryManager;
 
 
-public abstract final class PhysicalMemory {
+abstract final class PhysicalMemory {
 	private __gshared ulong _startMemory;
 	private __gshared BitArray _frames;
 
 	// Used in Multiboot info for shifting addr to the end of the modules
-	@property public static ulong MemoryStart() {
+	@property static ulong MemoryStart() {
 		return _startMemory;
 	}
 
-	@property public static void MemoryStart(ulong addr) {
+	@property static void MemoryStart(ulong addr) {
 		_startMemory = addr;
 	}
 
-	public static bool Initialize() {
+	static bool Initialize() {
 		_frames = new BitArray(0x10_000, false); //Hack: treba zvetsit paging tabulky v Boot.s lebo sa kernel potom nevie premapovat pre nedostatok pamete :/
 
 		VirtualMemory.KernelPaging = new Paging();
@@ -28,7 +28,7 @@ public abstract final class PhysicalMemory {
 		return true;
 	}
 
-	public static bool Install() {
+	static bool Install() {
 		VirtualMemory.KernelPaging.Install();
 		return true;
 	}
@@ -53,7 +53,7 @@ public abstract final class PhysicalMemory {
 		page.Present = false;
 	}
 
-	public static void* AllocPage(long count = 1) {
+	static void* AllocPage(long count = 1) {
 		if (count < 1)
 			count = 1;
 			

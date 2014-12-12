@@ -4,48 +4,48 @@ import Library;
 import VFSManager;
 
 
-public class DirectoryNode : FSNode {
+class DirectoryNode : FSNode {
 	package IFileSystem _fileSystem;
 	private LinkedList!FSNode _childrens;
 	private DirectoryNode _mounted;
 	private bool _isLoaded;
 
-	@property public ref bool IsLoaded() {
+	@property ref bool IsLoaded() {
 		if (_mounted)
 			return _mounted.IsLoaded;
 
 		return _isLoaded;
 	}
 
-	@property public ref IFileSystem FileSystem() {
+	@property ref IFileSystem FileSystem() {
 		if (_mounted)
 			return _mounted.FileSystem;
 
 		return _fileSystem;
 	}
 
-	@property public override FileAttributes Attributes() {
+	@property override FileAttributes Attributes() {
 		if (_attributes.Name == "/" && _parent)
 			return _parent.Attributes;
 
 		return _attributes;
 	}
 
-	@property public override void Attributes(FileAttributes value) {
+	@property override void Attributes(FileAttributes value) {
 		if (_attributes.Name == "/" && _parent)
 			return _parent.Attributes = value;
 		else
 			_attributes = value;
 	}
 
-	@property public override DirectoryNode Parent() {
+	@property override DirectoryNode Parent() {
 		if (_attributes.Name == "/" && _parent)
 			return _parent.Parent;
 		
 		return _parent;
 	}
 
-	@property public LinkedList!FSNode Childrens() {
+	@property LinkedList!FSNode Childrens() {
 		if (_mounted)
 			return _mounted.Childrens;
 
@@ -53,14 +53,14 @@ public class DirectoryNode : FSNode {
 		return _childrens;
 	}
 
-	@property public bool IsMountpointable() {
+	@property bool IsMountpointable() {
 		if (!LoadContent())
 			return false;
 
 		return !_childrens.Count;
 	}
 
-	public this(DirectoryNode parent, FileAttributes fileAttributes) {
+	this(DirectoryNode parent, FileAttributes fileAttributes) {
 		_childrens  = new LinkedList!FSNode();
 		_attributes = fileAttributes;
 		_attributes.Type = FileType.Directory;
@@ -71,7 +71,7 @@ public class DirectoryNode : FSNode {
 		super(parent);
 	}
 
-	public ~this() {
+	~this() {
 		if (_attributes.Name == "/" && _parent)
 			(cast(DirectoryNode)_parent).Unmount();
 
@@ -81,7 +81,7 @@ public class DirectoryNode : FSNode {
 		delete _childrens;
 	}
 
-	public void Unmount() {
+	void Unmount() {
 		_attributes.Type = FileType.Directory;
 		_mounted._parent = null;
 
@@ -89,7 +89,7 @@ public class DirectoryNode : FSNode {
 		_mounted = null;
 	}
 
-	public bool Mount(DirectoryNode childRoot) {
+	bool Mount(DirectoryNode childRoot) {
 		if (IsMountpointable && childRoot._parent is null) {
 			_mounted = childRoot;
 			_attributes.Type = FileType.Mountpoint;
@@ -101,7 +101,7 @@ public class DirectoryNode : FSNode {
 		return false;
 	}
 
-	public FSNode opIndex(string name) {
+	FSNode opIndex(string name) {
 		if (_mounted)
 			return _mounted[name];
 
@@ -115,7 +115,7 @@ public class DirectoryNode : FSNode {
 		return null;
 	}
 
-	public FSNode Create(FileAttributes attributes) {
+	FSNode Create(FileAttributes attributes) {
 		if (_mounted)
 			return _mounted.Create(attributes);
 

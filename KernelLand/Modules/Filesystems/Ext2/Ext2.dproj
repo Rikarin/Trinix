@@ -42,4 +42,14 @@
     <Target>Executable</Target>
     <OutputName>Ext2</OutputName>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Ext2BlockNode.d" />
+    <Compile Include="Ext2CharNode.d" />
+    <Compile Include="Ext2DirectoryNode.d" />
+    <Compile Include="Ext2FileNode.d" />
+    <Compile Include="Ext2PipeNode.d" />
+    <Compile Include="Main.d" />
+    <Compile Include="DriverInfo.d" />
+    <Compile Include="Ext2Filesystem.d" />
+  </ItemGroup>
 </Project>

@@ -4,12 +4,12 @@ import Library;
 import TaskManager;
 
 
-public class Mutex {
+class Mutex {
 	private SpinLock _spinLock;
 	private LinkedList!Thread _waiting;
 	private Thread _owner;
 
-	public this() {
+	this() {
 		_spinLock = new SpinLock();
 		_waiting = new LinkedList!Thread();
 	}
@@ -19,7 +19,7 @@ public class Mutex {
 		delete _waiting;
 	}
 
-	public bool WaitOne() {
+	bool WaitOne() {
 		_spinLock.WaitOne();
 
 		if (_owner) {
@@ -33,7 +33,7 @@ public class Mutex {
 		return true;
 	}
 
-	public void Release() {
+	void Release() {
 		_spinLock.WaitOne();
 
 		if (_waiting.Count) {
@@ -48,7 +48,7 @@ public class Mutex {
 		_spinLock.Release();
 	}
 
-	public bool IsLocked() {
+	bool IsLocked() {
 		return _owner !is null;
 	}
 }

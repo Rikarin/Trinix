@@ -8,7 +8,7 @@ import ObjectManager;
 import SyscallManager;
 
 
-public enum ThreadStatus {
+enum ThreadStatus {
 	Null,
 	Active,
 	Sleeping,
@@ -24,7 +24,7 @@ public enum ThreadStatus {
 	Buried
 }
 
-public enum ThreadEvent : ulong {
+enum ThreadEvent : ulong {
 	VFS       = 0x01,
 	IPCMesage = 0x02,
 	signal    = 0x04,
@@ -33,17 +33,17 @@ public enum ThreadEvent : ulong {
 	DeadChild = 0x20
 }
 
-public struct IPCMessage {
+struct IPCMessage {
 	Thread Source;
 	byte[] Data;
 }
 
-public final class Thread {
-	public enum StackSize       = 0x4000;
-	public enum UserStackSize   = 0x1000; //0
-	public enum MinPriority     = 10;
-	public enum DefaultPriority = 5;
-	public enum DefaultQuantum  = 5;
+final class Thread {
+	enum StackSize       = 0x4000;
+	enum UserStackSize   = 0x1000; //0
+	enum MinPriority     = 10;
+	enum DefaultPriority = 5;
+	enum DefaultQuantum  = 5;
 	private enum ThreadReturn   = 0xDEADC0DE;
 
 	private ulong _id;
@@ -111,7 +111,7 @@ public final class Thread {
 	}
 
 	// Clone thread from other under same process
-	public this(Thread other) {
+	this(Thread other) {
 		this(other._process, other);
 	}
 
@@ -159,60 +159,60 @@ public final class Thread {
 		Port.SwapGS();
 	}
 
-	@property public ulong ID() {
+	@property ulong ID() {
 		return _id;
 	}
 
-	@property public void Name(string value) {
+	@property void Name(string value) {
 		delete _name;
 		_name = value;
 	}
 
-	@property public string Name() {
+	@property string Name() {
 		return _name;
 	}
 
-	@property public Process ParentProcess() {
+	@property Process ParentProcess() {
 		return _process;
 	}
 
-	@property public void* WaitPointer() {
+	@property void* WaitPointer() {
 		return _waitPointer;
 	}
 
-	@property public ref void* FaultHandler() {
+	@property ref void* FaultHandler() {
 		return _faultHandler;
 	}
 
-	@property public ref ThreadStatus Status() {
+	@property ref ThreadStatus Status() {
 		return _status;
 	}
 
-	@property public ref ulong RetStatus() {
+	@property ref ulong RetStatus() {
 		return _retStatus;
 	}
 
-	@property public ref TaskState SavedState() {
+	@property ref TaskState SavedState() {
 		return _savedState;
 	}
 
-	@property public int Priority() {
+	@property int Priority() {
 		return _priority;
 	}
 
-	@property public ref int Quantum() {
+	@property ref int Quantum() {
 		return _quantum;
 	}
 
-	@property public ref int Remaining() {
+	@property ref int Remaining() {
 		return _remaining;
 	}
 
-	@property public long CurrentFaultNum() {
+	@property long CurrentFaultNum() {
 		return _curFaultNum;
 	}
 
-	@property public void Priority(int priority) {
+	@property void Priority(int priority) {
 		if (priority < 0 || priority > MinPriority)
 			priority = MinPriority;
 
@@ -229,7 +229,7 @@ public final class Thread {
 			_priority = priority;
 	}
 
-	public void Start(void function() entryPoint, string[] args) { //TODO: args...
+	void Start(void function() entryPoint, string[] args) { //TODO: args...
 		//switch to new thread before run is called
 		_savedState.RSP = cast(void *)_kernelStack.ptr + StackSize;
 		_savedState.RIP = cast(void *)&NewThread;
@@ -281,7 +281,7 @@ public final class Thread {
 		}
 	}
 
-	public ulong WaitTID(ulong tid, ref ThreadStatus status) {
+	ulong WaitTID(ulong tid, ref ThreadStatus status) {
 		if (tid == -1) {
 			ulong events = WaitEvents(ThreadEvent.DeadChild);
 			if (events & ThreadEvent.DeadChild) {
@@ -320,14 +320,14 @@ public final class Thread {
 		return -1;
 	}
 
-	public void Exit(ulong status) {
+	void Exit(ulong status) {
 		Kill(status && 0xFF);
 
 		while(true)
 			Port.Halt();
 	}
 
-	public void Kill(ulong status) {
+	void Kill(ulong status) {
 		bool isCurrentThread = this == Task.CurrentThread;
 
 		_spinLock.WaitOne();
@@ -375,11 +375,11 @@ public final class Thread {
 				Yield();
 	}
 
-	public void Yield() {
+	void Yield() {
 		Task.Scheduler();
 	}
 
-	public void WaitForStatusEnd(ThreadStatus status) {
+	void WaitForStatusEnd(ThreadStatus status) {
 		assert(status != ThreadStatus.Active);
 		assert(status != ThreadStatus.Dead);
 
@@ -387,7 +387,7 @@ public final class Thread {
 			Yield();
 	}
 
-	public ulong Sleep(ThreadStatus status, void* ptr, ulong num, SpinLock lock) {
+	ulong Sleep(ThreadStatus status, void* ptr, ulong num, SpinLock lock) {
 		RemoveActive();
 		_status = status;
 		_waitPointer = ptr;
@@ -401,7 +401,7 @@ public final class Thread {
 		return _retStatus;
 	}
 
-	public void Sleep() {
+	void Sleep() {
 		if (_messages.Count)
 			return;
 
@@ -410,7 +410,7 @@ public final class Thread {
 		WaitForStatusEnd(ThreadStatus.Sleeping);
 	}
 
-	public bool Wake() {
+	bool Wake() {
 		switch (_status) {
 			case ThreadStatus.Active:
 				return false;
@@ -442,13 +442,13 @@ public final class Thread {
 		}
 	}
 
-	public void RemoveActive() {
+	void RemoveActive() {
 		Task.ThreadLock.WaitOne();
 		Task.Threads[_priority].Remove(this);
 		Task.ThreadLock.Release();
 	}
 
-	public void AddActive() {
+	void AddActive() {
 		if (_status == ThreadStatus.Active || !_savedState.RIP)
 			return;
 		_status = ThreadStatus.Active;
@@ -459,7 +459,7 @@ public final class Thread {
 		Task.ThreadLock.Release();
 	}
 
-	public void Fault(long number) {
+	void Fault(long number) {
 		if (_faultHandler is null) { // Panic
 			Kill(-1);
 
@@ -481,7 +481,7 @@ public final class Thread {
 		Task.CallFaultHandler(this);
 	}
 
-	public void SegFault(void* address) {
+	void SegFault(void* address) {
 		Log.WriteLine("Threads", "Fault: segment fault...");
 		Fault(1);
 	}
@@ -490,7 +490,7 @@ public final class Thread {
 
 
 	//Signals
-	public void PostSignal(SignalType signal) {
+	void PostSignal(SignalType signal) {
 		_pendingSignal = signal;
 		PostEvent(ThreadEvent.signal);
 	}
@@ -500,7 +500,7 @@ public final class Thread {
 
 
 	//Events
-	public void PostEvent(ulong eventMask) {
+	void PostEvent(ulong eventMask) {
 		_spinLock.WaitOne();
 		scope(exit) _spinLock.Release();
 
@@ -521,11 +521,11 @@ public final class Thread {
 		}
 	}
 
-	public void ClearEvent(ulong eventMask) {
+	void ClearEvent(ulong eventMask) {
 		_eventState &= ~eventMask;
 	}
 
-	public ulong WaitEvents(ulong eventMask) {
+	ulong WaitEvents(ulong eventMask) {
 		if (!eventMask)
 			return 0;
 
@@ -545,7 +545,7 @@ public final class Thread {
 
 
 	//Messages
-	public bool SendMessage(byte[] data) {
+	bool SendMessage(byte[] data) {
 		_spinLock.WaitOne();
 		scope(exit) _spinLock.Release();
 
@@ -561,7 +561,7 @@ public final class Thread {
 		return true;
 	}
 
-	public bool GetMessage(ref Thread source, ref byte[] data) {
+	bool GetMessage(ref Thread source, ref byte[] data) {
 		if (!_messages.Count)
 			return false;
 

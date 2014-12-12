@@ -1,13 +1,18 @@
-﻿module FileSystem.Ext2.Ext2FileSystem;
+﻿module Modules.Filesystems.Ext2.Ext2Filesystem;
 
 import Core;
 import Library;
 import VFSManager;
 import ObjectManager;
-import FileSystem.Ext2;
+
+import Modules.Filesystems.Ext2.Ext2CharNode;
+import Modules.Filesystems.Ext2.Ext2FileNode;
+import Modules.Filesystems.Ext2.Ext2PipeNode;
+import Modules.Filesystems.Ext2.Ext2BlockNode;
+import Modules.Filesystems.Ext2.Ext2DirectoryNode;
 
 
-public final class Ext2Filesystem : IFileSystem {
+final class Ext2Filesystem : IFileSystem {
 	private Ext2DirectoryNode _rootNode;
 	private Partition _partition;
 	private Superblock _superblock;
@@ -139,15 +144,15 @@ public final class Ext2Filesystem : IFileSystem {
 		Socket      = 0xC000
 	}
 
-	@property public uint BlockSize() {
+	@property uint BlockSize() {
 		return 1024 << _superblock.BlockSize;
 	}
 
-	@property public uint NumGroups() {
+	@property uint NumGroups() {
 		return (_superblock.NumInodes / _superblock.InodesPerGroup) + (_superblock.NumInodes % _superblock.InodesPerGroup != 0);
 	}
 
-	@property public override Partition GetPartition() {
+	@property override Partition GetPartition() {
 		return _partition;
 	}
 
@@ -175,7 +180,7 @@ public final class Ext2Filesystem : IFileSystem {
 		return true;
 	}
 
-	public bool LoadContent(DirectoryNode node) {
+	bool LoadContent(DirectoryNode node) {
 		Ext2DirectoryNode edir = cast(Ext2DirectoryNode)node;
 
 		if (edir is null)
@@ -288,21 +293,6 @@ public final class Ext2Filesystem : IFileSystem {
 
 
 
-	public static ModuleResult Initialize(string[] args) {
-		static const VFSDriver info = {
-			Name: "ext2",
-				Detect: &Ext2Filesystem.Detect,
-				Mount: &Ext2Filesystem.Mount
-		};
-
-		VFS.AddDriver(info);
-		
-		Log.WriteLine("Ext2 module was initialized");
-		return ModuleResult.Sucessful;
-	}
-
-
-
 
 
 	override FSNode Create(DirectoryNode parent, FileAttributes fileAttributes) { return null; }
@@ -311,14 +301,14 @@ public final class Ext2Filesystem : IFileSystem {
 
 
 
-	public static bool Detect(Partition partition) {
+	static bool Detect(Partition partition) {
 		Superblock sb;
 		partition.Read(2, (cast(byte *)&sb)[0 .. Superblock.sizeof]);
 		return sb.Signature == 0xEF53;
 	}
 	
 	
-	public static Ext2Filesystem Mount(DirectoryNode mountpoint, Partition partition) {
+	static Ext2Filesystem Mount(DirectoryNode mountpoint, Partition partition) {
 		if (partition is null || mountpoint is null || !mountpoint.IsMountpointable)
 			return null;
 

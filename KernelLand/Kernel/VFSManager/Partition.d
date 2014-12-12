@@ -5,7 +5,7 @@ import VFSManager;
 import ObjectManager;
 
 
-public final class Partition : BlockNode {
+final class Partition : BlockNode {
 	private __gshared char[] _diskName = cast(char[])"disk0";
 
 	private BlockCache _cache;
@@ -34,18 +34,18 @@ public final class Partition : BlockNode {
 		return cast(string)ret;
 	}
 
-	@property public IBlockDevice Device() {
+	@property IBlockDevice Device() {
 		return _cache.Device;
 	}
 
-	@property public override long Blocks() {
+	@property override long Blocks() {
 		return _length;
 	}
-	@property public override long BlockSize() {
+	@property override long BlockSize() {
 		return _cache.Device.BlockSize;
 	}
 
-	public this(IBlockDevice device, long offset, long length, DirectoryNode parent, FileAttributes attributes) {
+	this(IBlockDevice device, long offset, long length, DirectoryNode parent, FileAttributes attributes) {
 		_cache  = new BlockCache(device, 0x1);
 		_offset = offset;
 		_length = length;
@@ -53,11 +53,11 @@ public final class Partition : BlockNode {
 		super(parent, attributes);
 	}
 
-	public ~this() {
+	~this() {
 		delete _cache;
 	}
 
-	public override ulong Read(long offset, byte[] data) {
+	override ulong Read(long offset, byte[] data) {
 		if (offset > _length)
 			return 0;
 		
@@ -65,7 +65,7 @@ public final class Partition : BlockNode {
 		return Device.Read(_offset + offset, data[0 .. len]); //TODO: cache
 	}
 
-	public override ulong Write(long offset, byte[] data) {
+	override ulong Write(long offset, byte[] data) {
 		if (offset > _length)
 			return 0;
 		
@@ -73,7 +73,7 @@ public final class Partition : BlockNode {
 		return Device.Write(_offset + offset, data[0 .. len]); //TODO: cache
 	}
 
-	public static void ReadTable(IBlockDevice device) {
+	static void ReadTable(IBlockDevice device) {
 		string name = NextDiskName;
 		new Partition(device, 0, device.Blocks, DeviceManager.DevFS, FSNode.NewAttributes(name));
 

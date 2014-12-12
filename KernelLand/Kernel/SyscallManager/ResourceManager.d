@@ -8,7 +8,7 @@ import SyscallManager;
 import VFSManager;
 
 
-public abstract final class ResourceManager : IStaticModule {
+abstract final class ResourceManager : IStaticModule {
 	private __gshared List!Resource _resources;
 
 	private __gshared const long function(long, long, long, long, long)[] _staticCalls = [
@@ -33,7 +33,7 @@ public abstract final class ResourceManager : IStaticModule {
 		return index;
 	}
 
-	public static bool Initialize() {
+	static bool Initialize() {
 		_resources = new List!Resource();
 		return true;
 	}

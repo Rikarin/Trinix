@@ -8,7 +8,7 @@ import MemoryManager;
 import SyscallManager;
 
 
-public final class Process {
+final class Process {
 	private void* _userStack = cast(void *)0xFFFFFFFF80000000;
 
 	private ulong _id;
@@ -32,15 +32,15 @@ public final class Process {
 		return _threads;
 	}
 
-	@property public ulong ID() {
+	@property ulong ID() {
 		return _id;
 	}
 
-	@property public Paging PageTable() {
+	@property Paging PageTable() {
 		return _paging;
 	}
 
-	@property public bool IsKernel() {
+	@property bool IsKernel() {
 		return _isKernel;
 	}
 
@@ -80,7 +80,7 @@ public final class Process {
 	}
 
 	// Clone other._process to this process and thread other to this process
-	public this(Thread other) {
+	this(Thread other) {
 		this();
 		_uid         = other.ParentProcess._uid;
 		_gid         = other.ParentProcess._gid;

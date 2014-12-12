@@ -6,7 +6,7 @@ import ObjectManager;
 import SyscallManager;
 
 
-public abstract class FSNode : Resource {
+abstract class FSNode : Resource {
 	package DirectoryNode _parent;
 	protected FileAttributes _attributes;
 
@@ -23,38 +23,38 @@ public abstract class FSNode : Resource {
 		super(DeviceType.Disk, "com.trinix.VFSManager.FSNode", 0x1, callTable);
 	}
 
-	public ~this() {
+	~this() {
 		if (_parent !is null)
 			_parent.Childrens.Remove(this);
 
 		delete _attributes.Name;
 	}
 
-	@property public DirectoryNode Parent() {
+	@property DirectoryNode Parent() {
 		return _parent;
 	}
 
-	@property public FileAttributes Attributes() {
+	@property FileAttributes Attributes() {
 		return _attributes;
 	}
 
-	@property public void Attributes(FileAttributes value) {
+	@property void Attributes(FileAttributes value) {
 		_attributes = value;
 	}
 
-	public ulong Read(long offset, byte[] data) {
+	ulong Read(long offset, byte[] data) {
 		return 0;
 	}
 	
-	public ulong Write(long offset, byte[] data) {
+	ulong Write(long offset, byte[] data) {
 		return 0;
 	}
 
-	public ulong IOControl(long id, byte[] data) {
+	ulong IOControl(long id, byte[] data) {
 		return 0;
 	}
 
-	public bool Remove() {
+	bool Remove() {
 		if (_parent is null || _parent.FileSystem is null)
 			return false;
 
@@ -64,7 +64,7 @@ public abstract class FSNode : Resource {
 		return _parent.FileSystem.Remove(this);
 	}
 
-	public static FileAttributes NewAttributes(string name, FileType type = FileType.Directory) {
+	static FileAttributes NewAttributes(string name, FileType type = FileType.Directory) {
 		FileAttributes ret;
 		ret.Name        = name;
 		ret.Type        = type;

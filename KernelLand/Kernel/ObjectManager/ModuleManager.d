@@ -6,9 +6,9 @@ import VFSManager;
 import Architecture;
 
 
-public enum ModuleMagic = 0xDEADC0DE;
+enum ModuleMagic = 0xDEADC0DE;
 
-public enum ModuleResult {
+enum ModuleResult {
 	Error,
 	Sucessful,
 
@@ -16,22 +16,22 @@ public enum ModuleResult {
 	BadModule
 }
 
-public enum ModuleArch {
+enum ModuleArch {
 	Null,
 	x86_64
 }
 
-public enum ModuleFlags {
+enum ModuleFlags {
 	Null,
 	LoadError = 1
 }
 
-public struct ModuleDependencies {
+struct ModuleDependencies {
 	string Name;
 	string[] Args;
 }
 
-public struct ModuleDef {
+struct ModuleDef {
 align(1):
 	uint Magic;
 	ModuleArch Architecture;
@@ -45,12 +45,12 @@ align(1):
 	ModuleDependencies[] Dependencies;
 }
 
-public abstract final class ModuleManager {
+abstract final class ModuleManager {
 	private __gshared LinkedList!ModuleDef _loadedModules;
 	private __gshared LinkedList!ModuleDef _loadingModules;
 	private __gshared LinkedList!ModuleDef _builtinModules;
 
-	public static bool Initialize() {
+	static bool Initialize() {
 		_loadedModules = new LinkedList!ModuleDef();
 		_loadingModules = new LinkedList!ModuleDef();
 		_builtinModules = new LinkedList!ModuleDef();
@@ -58,7 +58,7 @@ public abstract final class ModuleManager {
 		return true;
 	}
 
-	public static bool Finalize() {
+	static bool Finalize() {
 		delete _loadedModules;
 		delete _loadingModules;
 		delete _builtinModules;
@@ -66,7 +66,7 @@ public abstract final class ModuleManager {
 		return true;
 	}
 
-	public static void LoadBuiltins() {
+	static void LoadBuiltins() {
 		Log.WriteJSON("modules", "[");
 
 		for (ulong i = cast(ulong)LinkerScript.KernelModules; i < cast(ulong)LinkerScript.KernelModulesEnd;) {
@@ -98,7 +98,7 @@ public abstract final class ModuleManager {
 			InitModule(x.Value, []);
 	}
 
-	public static ModuleResult InitModule(ModuleDef mod, string[] args) {
+	static ModuleResult InitModule(ModuleDef mod, string[] args) {
 		if (mod.Magic != ModuleMagic) {
 			Log.WriteJSON("error", "Wrong module");
 			return ModuleResult.BadModule;
@@ -156,12 +156,12 @@ public abstract final class ModuleManager {
 	}
 
 	/* This is garbage...
-	public static bool LoadMemory(void* buffer, long length, string args) {
+	static bool LoadMemory(void* buffer, long length, string args) {
 		scope MemoryNode node = new MemoryNode(buffer, length, null, FSNode.NewAttributes("mem"));
 		return LoadFile(node, args);
 	}
 
-	public static bool LoadFile(FSNode file, string args) {
+	static bool LoadFile(FSNode file, string args) {
 		return false;
 	}*/
 }

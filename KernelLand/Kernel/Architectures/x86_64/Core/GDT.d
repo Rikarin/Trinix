@@ -9,20 +9,20 @@ import Architectures.x86_64.Core;
 private extern(C) void _CPU_refresh_iretq();
 
 
-public abstract final class GDT : IStaticModule {
+abstract final class GDT : IStaticModule {
 	private __gshared GlobalDescriptorTable*[256] _tables;
 
-	@property public static GlobalDescriptorTable* Table() {
+	@property static GlobalDescriptorTable* Table() {
 		return _tables[CPU.Identifier];
 	}
 
-	public static bool Initialize() {
+	static bool Initialize() {
 		_tables[CPU.Identifier] = new GlobalDescriptorTable;
 		InitTable(CPU.Identifier);
 		return true;
 	}
 	
-	public static bool Install() {
+	static bool Install() {
 		asm {
 			"lgdt [RAX]" : : "a"(&_tables[CPU.Identifier].Base);
 			"call _CPU_refresh_iretq";

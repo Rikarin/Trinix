@@ -6,7 +6,7 @@ import Modules.Input.PS2KeyboardMouse.PS2Mouse;
 import Modules.Input.PS2KeyboardMouse.PS2Keyboard;
 
 
-public static class KBC8042 {
+static class KBC8042 {
 	package static void Initialize() {
 		DeviceManager.RequestIRQ(&KeyboardHandler, 1);
 		DeviceManager.RequestIRQ(&MouseHandler, 12);

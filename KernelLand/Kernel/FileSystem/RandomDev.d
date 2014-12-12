@@ -4,16 +4,16 @@ import VFSManager;
 import Architecture;
 
 
-public final class RandomDev : CharNode {
+final class RandomDev : CharNode {
 	private __gshared ulong _number;
 
-	public this(DirectoryNode parent, string name) {
+	this(DirectoryNode parent, string name) {
 		super(parent, NewAttributes(name));
 
 		_attributes.Length = 1024;
 	}
 	
-	public override ulong Read(long offset, byte[] data) {
+	override ulong Read(long offset, byte[] data) {
 		foreach (ref x; data) {
 			_number = (Rand() - Rand2() + Rand3()) * Time.Now;
 			x = cast(byte)(_number & 0xFF);
@@ -22,7 +22,7 @@ public final class RandomDev : CharNode {
 		return data.length;
 	}
 	
-	public override ulong Write(long offset, byte[] data) {
+	override ulong Write(long offset, byte[] data) {
 		return 0;
 	}
 

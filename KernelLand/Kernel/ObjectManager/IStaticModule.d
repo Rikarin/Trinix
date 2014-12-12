@@ -1,7 +1,7 @@
 ﻿module ObjectManager.IStaticModule;
 
 
-public interface IStaticModule {
+interface IStaticModule {
 	static bool Initialize() {
 		return false;
 	}

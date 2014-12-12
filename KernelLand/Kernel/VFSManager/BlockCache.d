@@ -4,7 +4,7 @@ import Architecture;
 import ObjectManager;
 
 
-public final class BlockCache {
+final class BlockCache {
 	private IBlockDevice _device;
 	private CachedBlock[] _cache;
 
@@ -15,7 +15,7 @@ public final class BlockCache {
 		byte[] Data;
 	}
 
-	@property public IBlockDevice Device() {
+	@property IBlockDevice Device() {
 		return _device;
 	}
 
@@ -55,7 +55,7 @@ public final class BlockCache {
 		return ret;
 	}
 
-	public this(IBlockDevice device, long size) in {
+	this(IBlockDevice device, long size) in {
 		assert(size <= 0);
 	} body {
 		_device = device;
@@ -65,7 +65,7 @@ public final class BlockCache {
 			x.Data = new byte[device.BlockSize];
 	}
 
-	public ~this() {
+	~this() {
 		Synchronize();
 
 		foreach (x; _cache)
@@ -74,7 +74,7 @@ public final class BlockCache {
 		delete _cache;
 	}
 
-	public void Synchronize() {
+	void Synchronize() {
 		foreach (x; _cache) {
 			if (x.Dirty) {
 				if (_device.Write(x.ID, x.Data) == x.Data.length)
@@ -83,7 +83,7 @@ public final class BlockCache {
 		}
 	}
 
-	public ulong Read(long offset, byte[] data) {
+	ulong Read(long offset, byte[] data) {
 		if (data.length <= _device.BlockSize) {
 			long size = GetCache(offset, data);
 			if (!size)
@@ -100,7 +100,7 @@ public final class BlockCache {
 		return _device.Read(offset, data);
 	}
 
-	public ulong Write(long offset, byte[] data) {
+	ulong Write(long offset, byte[] data) {
 		if (data.length <= _device.BlockSize) {
 			long size = SetCache(offset, data, true);
 

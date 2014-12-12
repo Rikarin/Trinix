@@ -13,29 +13,29 @@ private extern(C) __gshared {
 }
 
 
-public abstract final class LinkerScript {
+abstract final class LinkerScript {
 	@property {
-		public static void* KernelBase() {
+		static void* KernelBase() {
 			return &iKernelBase;
 		}
 		
-		public static void* KernelEnd() {
+		static void* KernelEnd() {
 			return &iKernelEnd;
 		}
 	
-		public static void* KernelSymbols() {
+		static void* KernelSymbols() {
 			return &iKernelSymbols;
 		}
 		
-		public static void* KernelSymbolsEnd() {
+		static void* KernelSymbolsEnd() {
 			return &iKernelSymbolsEnd;
 		}
 
-		public static void* KernelModules() {
+		static void* KernelModules() {
 			return &iKernelModules;
 		}
 
-		public static void* KernelModulesEnd() {
+		static void* KernelModulesEnd() {
 			return &iKernelModulesEnd;
 		}
 	}

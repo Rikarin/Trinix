@@ -9,13 +9,13 @@ import ObjectManager;
 extern(C) private void* _Proc_Read_RIP();
 
 
-public struct SSEState {
+struct SSEState {
 	ulong Header;
 	ulong Data;
 }
 
 
-public struct TaskState {
+struct TaskState {
 	void* RIP, RSP, RBP;
 	SSEState SSEInt;
 	SSEState SSESyscall;
@@ -23,7 +23,7 @@ public struct TaskState {
 }
 
 
-public abstract final class Task : IStaticModule {
+abstract final class Task : IStaticModule {
 	private __gshared ulong _nextPID = 1;
 	private __gshared ulong _nextTID = 1;
 
@@ -54,11 +54,11 @@ public abstract final class Task : IStaticModule {
 		return count;
 	}
 
-	@property public static Thread CurrentThread() {
+	@property static Thread CurrentThread() {
 		return _currentThread;
 	}
 
-	@property public static Process CurrentProcess() {
+	@property static Process CurrentProcess() {
 		return CurrentThread.ParentProcess;
 	}
 
@@ -74,7 +74,7 @@ public abstract final class Task : IStaticModule {
 		return _idle;
 	}
 
-	public static bool Initialize() {
+	static bool Initialize() {
 		_spinLock = new SpinLock();
 		_procs    = new LinkedList!Process();
 		_threads  = new LinkedList!Thread[Thread.MinPriority + 1];
@@ -88,7 +88,7 @@ public abstract final class Task : IStaticModule {
 		return true;
 	}
 
-	public static void Scheduler() {
+	static void Scheduler() {
 		if (_spinLock.IsLocked)
 			return;
 	

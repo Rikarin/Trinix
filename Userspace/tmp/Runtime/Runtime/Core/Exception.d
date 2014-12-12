@@ -16,86 +16,86 @@ private __gshared AssertHandler _assertHandler = null;
 
 
 
-public class RangeError : Error {
-	public @safe pure nothrow this(string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
+class RangeError : Error {
+	@safe pure nothrow this(string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
 		super("Range violation", file, line, next);
 	}
 }
 
 
-public class AssertError : Error {
-	public @safe pure nothrow this(string file, size_t line) {
+class AssertError : Error {
+	@safe pure nothrow this(string file, size_t line) {
 		this(cast(Throwable)null, file, line);
 	}
 	
-	public @safe pure nothrow this(Throwable next, string file = __FILE__, size_t line = __LINE__) {
+	@safe pure nothrow this(Throwable next, string file = __FILE__, size_t line = __LINE__) {
 		this("Assertion failure", file, line, next);
 	}
 	
-	public @safe pure nothrow this(string message, string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
+	@safe pure nothrow this(string message, string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
 		super(message, file, line, next);
 	}
 }
 
 
-public class FinalizeError : Error {
+class FinalizeError : Error {
 	private ClassInfo _info;
 	
-	public @safe pure nothrow this(ClassInfo ci, Throwable next, string file = __FILE__, size_t line = __LINE__) {
+	@safe pure nothrow this(ClassInfo ci, Throwable next, string file = __FILE__, size_t line = __LINE__) {
 		this(ci, file, line, next);
 	}
 	
-	public @safe pure nothrow this(ClassInfo ci, string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
+	@safe pure nothrow this(ClassInfo ci, string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
 		super("Assertion failure", file, line, next);
 		_info = ci;
 	}
 
-	public @safe override const string ToString() {
+	@safe override const string ToString() {
 		return "An exception was thrown while finalizing an instance of class " ~ _info.Name;
 	}
 }
 
 
-public class HiddenFuncError : Error {
-	public @safe pure nothrow this(ClassInfo ci) {
+class HiddenFuncError : Error {
+	@safe pure nothrow this(ClassInfo ci) {
 		super("Hidden method called for " ~ ci.Name);
 	}
 }
 
 
-public class OutOfMemoryError : Error {
-	public @safe pure nothrow this(string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
+class OutOfMemoryError : Error {
+	@safe pure nothrow this(string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
 		super("Memory allocation failed", file, line, next);
 	}
 	
-	public @trusted override const string ToString() {
+	@trusted override const string ToString() {
 		return _message.ptr ? (cast()super).ToString() : "Memory allocation failed";
 	}
 }
 
 
-public class InvalidMemoryOperationError : Error {
-	public @safe pure nothrow this(string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
+class InvalidMemoryOperationError : Error {
+	@safe pure nothrow this(string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
 		super("Invalid memory operation", file, line, next);
 	}
 	
-	public @trusted override const string ToString() {
+	@trusted override const string ToString() {
 		return _message.ptr ? (cast()super).ToString() : "Invalid memory operation";
 	}
 }
 
 
-public class SwitchError : Error {
-	public @safe pure nothrow this(string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
+class SwitchError : Error {
+	@safe pure nothrow this(string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
 		super("No appropriate switch clause found", file, line, next);
 	}
 }
 
 
-public class UnicodeException : Exception {
+class UnicodeException : Exception {
 	private size_t _idx;
 	
-	public this(string msg, size_t idx, string file = __FILE__, size_t line = __LINE__, Throwable next = null) @safe pure nothrow {
+	this(string msg, size_t idx, string file = __FILE__, size_t line = __LINE__, Throwable next = null) @safe pure nothrow {
 		super(msg, file, line, next);
 		_idx = idx;
 	}

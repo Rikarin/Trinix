@@ -61,7 +61,6 @@
     <Folder Include="VFSManager\" />
     <Folder Include="FileSystem\" />
     <Folder Include="Linker\" />
-    <Folder Include="FileSystem\Ext2\" />
     <Folder Include="TaskManager\" />
   </ItemGroup>
   <ItemGroup>
@@ -120,15 +119,8 @@
     <Compile Include="FileSystem\TmpFS.d" />
     <Compile Include="Library\String.d" />
     <Compile Include="VFSManager\MemoryNode.d" />
-    <Compile Include="FileSystem\Ext2\Ext2FileSystem.d" />
-    <Compile Include="FileSystem\Ext2\package.d" />
-    <Compile Include="FileSystem\Ext2\Ext2FileNode.d" />
-    <Compile Include="FileSystem\Ext2\Ext2DirectoryNode.d" />
-    <Compile Include="FileSystem\Ext2\Ext2BlockNode.d" />
-    <Compile Include="FileSystem\Ext2\Ext2CharNode.d" />
     <Compile Include="VFSManager\CharNode.d" />
     <Compile Include="VFSManager\PipeNode.d" />
-    <Compile Include="FileSystem\Ext2\Ext2PipeNode.d" />
     <Compile Include="FileSystem\NullDev.d" />
     <Compile Include="FileSystem\ZeroDev.d" />
     <Compile Include="FileSystem\RandomDev.d" />
@@ -145,5 +137,6 @@
     <Compile Include="Core\Main.d" />
     <Compile Include="ObjectManager\ModuleManager.d" />
     <Compile Include="Library\Array.d" />
+    <Compile Include="Library\Queue.d" />
   </ItemGroup>
 </Project>

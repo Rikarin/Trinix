@@ -3,14 +3,14 @@
 import VFSManager;
 
 
-public interface IFileSystem {
+interface IFileSystem {
 	@property Partition GetPartition(); 
 	@property bool IsWritable();
 	@property DirectoryNode RootNode();
 
-	public bool Unmount();
+	bool Unmount();
 
-	public bool LoadContent(DirectoryNode node);
-	public FSNode Create(DirectoryNode parent, FileAttributes attributes);
-	public bool Remove(FSNode node);
+	bool LoadContent(DirectoryNode node);
+	FSNode Create(DirectoryNode parent, FileAttributes attributes);
+	bool Remove(FSNode node);
 }

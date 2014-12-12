@@ -1,6 +1,6 @@
 ﻿module Library.BitArray;
 
-public final class BitArray {
+final class BitArray {
 	private ulong[] _bits;
 	private long _minimal;
 	
@@ -11,15 +11,15 @@ public final class BitArray {
 	private long IndexFromInt(long i) { return i / 2; }
 	private long OffsetFromInt(long i) { return i % 2; }
 
-	@property public long Count() {
+	@property long Count() {
 		return _bits.length * 64;
 	}
 	
-	public void opIndexAssign(bool value, long index) {
+	void opIndexAssign(bool value, long index) {
 		Set(index, value);
 	}
 	
-	public bool opIndex(long index) {
+	bool opIndex(long index) {
 		return Get(index);
 	}
 

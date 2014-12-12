@@ -22,8 +22,7 @@ eventy
 syscally
 Timery....
 
-Ext2:
-BlockNode, CharNode,
+debugovat Heap... Obcas to pada na expande...
 
 V IDT je nejaky problem s RAX registrom...
 kontrolu parametrov pri syscalloch
@@ -119,25 +118,18 @@ extern(C) void KernelMain(uint magic, void* info) {
 	Port.Write!byte(0x21, 0x00);
 	Port.Write!byte(0xA1, 0x00);
 
-	//Time.Initialize();
-	//Time.Install();
+	Time.Initialize();
+	Time.Install();
 
 	Log.WriteJSON("}");
 
 	ModuleManager.Initialize();
 	ModuleManager.LoadBuiltins();
 
-	//tu by asi mali byt drivery
-	//TODO: move this shit to Modules...
+	//mixin(import("../../../Makefile"));
 
-	if (VFS.Find("/System/Devices/disk0s1") is null)
-		Log.WriteLine("pica");
-	else
-		Log.WriteLine("kokot");
 
-	import FileSystem.Ext2;	
-	Ext2Filesystem.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), cast(Partition)VFS.Find("/System/Devices/disk0s1"));
-
+	VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), cast(Partition)VFS.Find("/System/Devices/disk0s1"), "ext2");
 	VFS.PrintTree(VFS.Root);
 
 
@@ -151,7 +143,7 @@ extern(C) void KernelMain(uint magic, void* info) {
 	Log.WriteLine("Running.....", Time.Uptime);
 
 	while (true) {
-	//	Log.WriteLine("Running.....", Time.Now);
+		//Log.WriteLine("Running.....", Time.Uptime);
 	}
 
 /+	foreach (tmp; Multiboot.Modules[0 .. Multiboot.ModulesCount]) {

@@ -4,13 +4,13 @@ import Core;
 import ObjectManager;
 
 
-public class Keyboard {
-	public static ModuleResult Initialize(string[] args) {
+class Keyboard {
+	static ModuleResult Initialize(string[] args) {
 		Log.WriteLine("Keyboard module was initialized");
 		return ModuleResult.Sucessful;
 	}
 	
-	public static ModuleResult Finalize() {
+	static ModuleResult Finalize() {
 		Log.WriteLine("Keyboard module was finalized");
 		return ModuleResult.Error;
 	}

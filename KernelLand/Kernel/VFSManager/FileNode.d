@@ -3,8 +3,8 @@
 import VFSManager;
 
 
-public abstract class FileNode : FSNode {
-	public this(DirectoryNode parent, FileAttributes fileAttributes) {
+abstract class FileNode : FSNode {
+	this(DirectoryNode parent, FileAttributes fileAttributes) {
 		_attributes      = fileAttributes;
 		_attributes.Type = FileType.File;
 

@@ -5,7 +5,7 @@ import Architecture;
 import ObjectManager;
 
 
-public abstract final class Time : IStaticModule {
+abstract final class Time : IStaticModule {
 	private enum {
 		TimerRate = 14,
 		TimerFreq = 0x8000 >> TimerRate,
@@ -54,11 +54,11 @@ public abstract final class Time : IStaticModule {
 		return true;
 	}
 
-	@property public static long Uptime() {
+	@property static long Uptime() {
 		return _timestamp;
 	}
 
-	@property public static long Now() {
+	@property static long Now() {
 		ulong tsc = ReadTSC();
 		tsc -= _tscAtLastTick;
 		tsc *= MsPerTickWhole;

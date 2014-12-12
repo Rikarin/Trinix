@@ -5,7 +5,7 @@ import Architecture;
 import MemoryManager;
 
 
-public enum MultibootTagType {
+enum MultibootTagType {
 	Align = 8,
 	End = 0,
 	CmdLine,
@@ -28,13 +28,13 @@ public enum MultibootTagType {
 	EFIBS
 }
 
-public enum MultibootFramebufferType {
+enum MultibootFramebufferType {
 	Indexed,
 	RGB,
 	EGAText
 }
 
-public enum MultibootMemoryType {
+enum MultibootMemoryType {
 	Avaiable = 1,
 	Reserved,
 	ACPIReclaimable,
@@ -42,13 +42,13 @@ public enum MultibootMemoryType {
 	BadRAM
 }
 
-public struct MultibootColor {
+struct MultibootColor {
 	ubyte Red;
 	ubyte Green;
 	ubyte Blue;
 }
 
-public struct MultibootMemoryMap {
+struct MultibootMemoryMap {
 align(1):
 	ulong Address;
 	ulong Length;
@@ -56,18 +56,18 @@ align(1):
 	private uint _zero;
 }
 
-public struct MultibootTag {
+struct MultibootTag {
 	uint Type;
 	uint Size;
 }
 
-public struct MultibootTagString {
+struct MultibootTagString {
 	uint Type;
 	uint Size;
 	char String;
 }
 
-public struct MultibootTagModule {
+struct MultibootTagModule {
 	uint Type;
 	uint Size;
 	uint ModStart;
@@ -75,14 +75,14 @@ public struct MultibootTagModule {
 	char String;
 }
 
-public struct MultibootTagBasicMemInfo {
+struct MultibootTagBasicMemInfo {
 	uint Type;
 	uint Size;
 	uint Lower;
 	uint Upper;
 }
 
-public struct MultibootTagBootDev {
+struct MultibootTagBootDev {
 	uint Type;
 	uint Size;
 	uint BiosDev;
@@ -90,7 +90,7 @@ public struct MultibootTagBootDev {
 	uint Part;
 }
 
-public struct MultibootTagMemoryMap {
+struct MultibootTagMemoryMap {
 	uint Type;
 	uint Size;
 	uint EntrySize;
@@ -98,7 +98,7 @@ public struct MultibootTagMemoryMap {
 	MultibootMemoryMap Entry;
 }
 
-public struct MultibootTagFramebufferCommon {
+struct MultibootTagFramebufferCommon {
 	uint Type;
 	uint Size;
 
@@ -111,16 +111,16 @@ public struct MultibootTagFramebufferCommon {
 	private ushort _reserved;
 }
 
-public struct MultibootTagFramebuffer {
+struct MultibootTagFramebuffer {
 	MultibootTagFramebufferCommon Common;
 
-	public union {
-		public struct {
+	union {
+		struct {
 			ushort PaletteNumColors;
 			MultibootColor Palette;
 		}
 
-		public struct {
+		struct {
 			ubyte RedFieldPos;
 			ubyte RedMaskSize;
 			ubyte GreenFieldPos;
@@ -132,16 +132,16 @@ public struct MultibootTagFramebuffer {
 }
 
 
-public abstract final class Multiboot {
-	public __gshared MultibootTagModule*[256] Modules;
-	public __gshared int ModulesCount;
+abstract final class Multiboot {
+	__gshared MultibootTagModule*[256] Modules;
+	__gshared int ModulesCount;
 
 	private enum {
 		HeaderMagic = 0xE85250D6,
 		BootloaderMagic = 0x36D76289
 	}
 
-	public static void ParseHeader(uint magic, void* info) {
+	static void ParseHeader(uint magic, void* info) {
 		if (magic != Multiboot.BootloaderMagic) {
 			Log.WriteJSON("error", "Bad multiboot2 magic");
 			Log.WriteJSON("value", magic);
