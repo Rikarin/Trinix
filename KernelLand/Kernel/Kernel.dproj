@@ -138,5 +138,6 @@
     <Compile Include="ObjectManager\ModuleManager.d" />
     <Compile Include="Library\Array.d" />
     <Compile Include="Library\Queue.d" />
+    <Compile Include="Library\Termios.d" />
   </ItemGroup>
 </Project>

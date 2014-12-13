@@ -1,6 +1,5 @@
 ﻿module Modules.Input.PS2KeyboardMouse.Main;
 
-import Core;
 import ObjectManager;
 import Modules.Input.PS2KeyboardMouse.KBC8042;
 import Modules.Input.PS2KeyboardMouse.PS2Mouse;

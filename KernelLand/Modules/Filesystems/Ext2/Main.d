@@ -1,6 +1,5 @@
 ﻿module Modules.Filesystems.Ext2.Main;
 
-import Core;
 import VFSManager;
 import ObjectManager;
 

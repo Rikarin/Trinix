@@ -6,7 +6,7 @@ class Queue(T) {
 	private long _count;
 
 	@property long Count() {
-		return count;
+		return _count;
 	}
 
 	int opApply(int delegate(ref T) dg) {
@@ -22,7 +22,7 @@ class Queue(T) {
 	}
 
 	this() {
-		array = new T[4];
+		_array = new T[4];
 	}
 
 	~this() {
@@ -33,15 +33,15 @@ class Queue(T) {
 		if (Count == _array.length)
 			Resize();
 
-		_array[count++] = item;
+		_array[_count++] = item;
 	}
 
 	T Dequeue() {
-		while (!Count) { } //TODO
+		while (!_count) { } //TODO
 
 		T ret = _array[0];
 		_array[0 .. $ - 1] = _array[1 .. $];
-		count--;
+		_count--;
 		return ret;
 	}
 

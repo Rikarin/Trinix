@@ -1,6 +1,5 @@
 ﻿module Modules.Storage.ATA.Main;
 
-import Core;
 import ObjectManager;
 import Modules.Storage.ATA.ATAController;
 

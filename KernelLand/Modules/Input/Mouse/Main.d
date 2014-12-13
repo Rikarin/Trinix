@@ -1,6 +1,5 @@
 ﻿module Modules.Input.Mouse.Main;
 
-import Core;
 import VFSManager;
 import ObjectManager;
 

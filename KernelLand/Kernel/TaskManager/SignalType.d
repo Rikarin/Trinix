@@ -33,5 +33,5 @@ enum SignalType {
 	SIGVTALRM, /* Virtual timer has expired */
 	SIGPROF, /* Profiling timer expired */
 	SIGXCPU, /* CPU time limit exceeded */
-	SIGXFSZ, /* File size limit exceeded */
+	SIGXFSZ /* File size limit exceeded */
 }
