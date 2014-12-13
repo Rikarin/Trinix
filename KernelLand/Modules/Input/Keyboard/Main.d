@@ -6,12 +6,12 @@ import ObjectManager;
 
 class Keyboard {
 	static ModuleResult Initialize(string[] args) {
-		Log.WriteLine("Keyboard module was initialized");
+		Log.WriteLine("TODO");
 		return ModuleResult.Sucessful;
 	}
 	
 	static ModuleResult Finalize() {
-		Log.WriteLine("Keyboard module was finalized");
+		Log.WriteLine("TODO");
 		return ModuleResult.Error;
 	}
 }

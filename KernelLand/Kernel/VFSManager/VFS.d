@@ -123,7 +123,7 @@ abstract final class VFS : IStaticModule {
 		return drv !is null ? drv.Value : cast(FSDriver)null;
 	}
 
-	static IFileSystem Mount(DirectoryNode mountpoint, Partition partition, string fsName) {
+	static IFileSystem Mount(lazy DirectoryNode mountpoint, Partition partition, string fsName) {
 		FSDriver drv = GetFSDriver(fsName);
 		if (drv == cast(FSDriver)null)
 			return null;

@@ -1,6 +1,6 @@
 SECTIONS {
   .KMODULES : {
-    */DriverInfo.d.o (.data)
+    */DriverInfo.d.o (.rodata)
   }
 }
 INSERT AFTER .data;

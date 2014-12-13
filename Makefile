@@ -30,7 +30,8 @@ targetvars := $$(AI_$1) $$(ALL_$1) $$(CLEAN_$1) $$(INSTALL_$1)
 $(call targetvars,MODULES) \
 $(call targetvars,USRLIBS) \
 $(call targetvars,EXTLIBS) \
-$(call targetvars,USRAPPS)
+$(call targetvars,USRAPPS) \
+$(addprefix clean.KernelLand/Modules/, $(MODULES))
 
 IMG := Trinix.img
 
@@ -67,8 +68,12 @@ makeimg:
 	@kpartx -d $(IMG)
 
 	
-clean:
+clean: $(addprefix clean.KernelLand/Modules/, $(MODULES))
 	@make -C KernelLand/Kernel clean
+	
+$(addprefix clean.KernelLand/Modules/, $(MODULES)): clean.%:
+	@make -C $* clean
+	
 
 test: $(ALL_SYSLIBsS) $(CC)
 	@echo $(ARCH) $(ARCHDIR) $(TRIPLET)

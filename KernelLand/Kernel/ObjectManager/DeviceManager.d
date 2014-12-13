@@ -19,9 +19,9 @@ enum DeviceType {
 	Video,
 	Audio,
 	Disk,
-	Keyboard,
-	Mouse,
-	Network
+	Input,
+	Network,
+	Filesystem
 }
 
 enum DeviceCommonCall {
@@ -46,12 +46,12 @@ abstract final class DeviceManager {
 	private __gshared void function(ref InterruptStack stack) _handlers[48];
 	__gshared DirectoryNode DevFS;
 
-	static void RequestIRQ(void function(ref InterruptStack) handle, int intNumber) { //TODO: pass instance of class against func ref
+	static void RequestIRQ(void function(ref InterruptStack) handle, int intNumber) {
 		if (intNumber < 16)
 			_handlers[intNumber + 32] = handle;
 	}
 
-	static void RequestISR(void function(ref InterruptStack) handle, int intNumber) { //TODO: pass instance of class against func ref
+	static void RequestISR(void function(ref InterruptStack) handle, int intNumber) {
 		if (intNumber < 32)
 			_handlers[intNumber] = handle;
 	}

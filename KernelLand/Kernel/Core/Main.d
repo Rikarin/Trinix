@@ -12,7 +12,7 @@ import SyscallManager;
 //v PhysicalMEmory by to chcelo nahrat regiony z multibootu a potom podla nich vytvorit bitmapu
 
 /*
-dokoncit VFS., co tam este chyba?...
+dokoncit VFS., co tam este chyba?... file..., syscally, static cally, acl,...
 Dokoncit write/create/remove - spravit Ext2 driver!!!!
 
 Multitasking a synchronizacne prvky, asi rwlock ci jak
@@ -30,12 +30,14 @@ spravit to iste jak je pre VFS.AddDriver ci co ale pre Node zariadenia.
 Aby sa z modulu dali pridat veci ako je pipe, pty, vty, atd...
 
 V IDT je nejaky problem s RAX registrom...
+
+documentation, documentation, documentation, ...
 */
 
 /* MemoryMap:
 	0xFFFFFFFFE0000000 - mapovane regiony
 */
-extern(C) extern __gshared const int giBuildNumber;
+extern(C) extern const int giBuildNumber;
 
 extern(C) void KernelMain(uint magic, void* info) {
 	Log.Initialize();
@@ -183,25 +185,3 @@ void testfce() {
 	//while (true) {}
 	//dorobit Exit thready
 }
-
-
-
-/*auto dir2 = new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext-2"));
-	Ext2Filesystem.Mount(dir2, cast(Partition)VFS.Find("/System/Devices/hdb2"));
-
-	auto file = VFS.Find("/ext-1/daka zlozka/daky plyn");
-
-	byte[] data = new byte[file.Attributes.Length];
-	ulong red = file.Read(0, data);
-
-	Log.WriteLine(file.Attributes);
-	Log.WriteLine(data[0 .. red]);*/
-
-
-/*auto file = VFS.Find("/ext2/dokument");
-
-	byte[256] buffer;
-	ulong l = file.Read(0, buffer);
-
-	Log.WriteLine(cast(string)buffer[0 .. l]);
-	file.Write(0, cast(byte[])"cau amigo");*/

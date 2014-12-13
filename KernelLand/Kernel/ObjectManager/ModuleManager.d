@@ -4,6 +4,7 @@ import Core;
 import Library;
 import VFSManager;
 import Architecture;
+import ObjectManager;
 
 
 enum ModuleMagic = 0xDEADC0DE;
@@ -34,6 +35,7 @@ struct ModuleDependencies {
 struct ModuleDef {
 align(1):
 	uint Magic;
+	DeviceType Type;
 	ModuleArch Architecture;
 	ubyte Flags;
 	ushort Version;

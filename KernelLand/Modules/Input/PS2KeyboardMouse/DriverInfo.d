@@ -6,8 +6,9 @@ import Modules.Input.PS2KeyboardMouse.PS2Mouse;
 import Modules.Input.PS2KeyboardMouse.PS2Keyboard;
 
 
-extern(C) __gshared ModuleDef _DriverInfo_Input_PS2KeyboardMouse = {
+extern(C) const ModuleDef _DriverInfo_Input_PS2KeyboardMouse = {
 	Magic: ModuleMagic,
+	Type: DeviceType.Input,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,
 	Version: 0x01,
@@ -16,8 +17,9 @@ extern(C) __gshared ModuleDef _DriverInfo_Input_PS2KeyboardMouse = {
 	Initialize: &PS2KeyboardMouse.Initialize
 };
 
-extern(C) __gshared ModuleDef _DriverInfo_Input_PS2Keyboard = {
+extern(C) const ModuleDef _DriverInfo_Input_PS2Keyboard = {
 	Magic: ModuleMagic,
+	Type: DeviceType.Input,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,
 	Version: 0x01,
@@ -30,8 +32,9 @@ extern(C) __gshared ModuleDef _DriverInfo_Input_PS2Keyboard = {
 	]
 };
 
-extern(C) __gshared ModuleDef _DriverInfo_Input_PS2Mouse = {
+extern(C) const ModuleDef _DriverInfo_Input_PS2Mouse = {
 	Magic: ModuleMagic,
+	Type: DeviceType.Input,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,
 	Version: 0x01,

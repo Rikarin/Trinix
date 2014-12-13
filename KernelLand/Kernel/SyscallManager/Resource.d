@@ -124,6 +124,18 @@ abstract class Resource {
 		AddCallTables(callTables);
 	}
 
+	protected this(const ModuleDef info, const CallTable[] callTables) {
+		_callTables = new LinkedList!(CallTable *)();
+		_processes  = new LinkedList!Process();
+		_mutex      = new Mutex();
+		_type       = info.Type;
+		_identifier = info.Identifier;
+		_version    = info.Version;
+		_id         = ResourceManager.Register(this);
+		
+		AddCallTables(callTables);
+	}
+
 	protected ~this() {
 		delete _mutex;
 		delete _callTables;
@@ -151,9 +163,5 @@ abstract class Resource {
 		foreach (x; callTables)
 			if (!_callTables.Contains(cast(CallTable *)&x))
 				_callTables.Add(cast(CallTable *)&x);
-	}
-
-	static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
-		return -1;
 	}
 }

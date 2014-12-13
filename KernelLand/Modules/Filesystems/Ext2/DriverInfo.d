@@ -4,8 +4,9 @@ import ObjectManager;
 import Modules.Filesystems.Ext2.Main;
 
 
-extern(C) __gshared ModuleDef _DriverInfo_Filesystems_Ext2 = {
+extern(C) const ModuleDef _DriverInfo_Filesystems_Ext2 = {
 	Magic: ModuleMagic,
+	Type: DeviceType.Filesystem,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,
 	Version: 0x01,

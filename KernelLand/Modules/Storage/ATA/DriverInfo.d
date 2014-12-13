@@ -4,8 +4,9 @@ import ObjectManager;
 import Modules.Storage.ATA.Main;
 
 
-extern(C) __gshared ModuleDef _DriverInfo_Storage_ATA = {
+extern(C) const ModuleDef _DriverInfo_Storage_ATA = {
 	Magic: ModuleMagic,
+	Type: DeviceType.Input,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,
 	Version: 0x01,
