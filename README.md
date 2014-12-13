@@ -15,36 +15,37 @@ Or via mail satoshi@gshost.eu
 * Build cross-compiler `make -C Externals/CrossCompiler all`
 * Build druntime. TODO
 * Build OS. TODO
-* Have a fun! TODO LOL
+* Have a fun!
 
 
 # Features #
 * GRUB Multiboot 2 bootloader
 * GDT, IDT, TSS tables for 64-bit mode
-* ACPI driver -NOPE
-* LocalAPIC, IOAPIC drivers with multiprocessor configuration -NOPE
 * Cache info from CPU
-* Basic timer based on APIC -NOPE
-* PML4 Paging where every process has its own page table (needs to be fixed up)
-* Memory manager for physical address & HEAP
-* Dynamic syscalls database with syscall/sysret handler -Object Manager/Handles
-* VFS manager with `proc`, `dev`, `tmp` filesystems for kernel operations. Basic `dev` devices like null, zero, ttyS, random and pipes
-* Asynchronous singls where signals are processed only by first thread of every process
-* Multitasking where `Process` is only a group of `Threads` with the same things as are paging directory, file descriptors, signal handlers, etc.
-* Basic syscalls for reading, writing, etc. calls for FSNode, creating process/thread, ...
-
-
-# When we need to update druntime #
-pff, I never heard about patchfiles LOL TODO
-druntime:
-	add to files src/gc/gc.d & src/gcstub/gc.d:
-		extern(C) void* malloc(size_t sz, uint ba = 0);
-		extern(C) void* calloc(size_t sz, uint ba = 0);
-		extern(C) void* realloc(void* p, size_t sz, uint ba = 0);
-		extern(C) void free(void* p);
-	and modify gc_... functions for using our own calls
+* PIC, PIT, RTC timers
+* PML4 Paging, Virtual/Physical Memory Manager, Heap
+* Statically compiled Module loader
+* Resource/Syscall Manager using to manage syscall dynamically
+* VFS Manager with `Ext2` readonly filesystem. Basic `dev` devices like null, zero, ...
+* Synchonization primitives Spinlocks, Mutexex, Semapthores, Signals, Events, Messages, Shared Memnory, ...
+* Multitasking with Thread -> Process implementation
 	
 	
 # Licence #
-THIS IS SHIT LOL TODO...
-Still working on it but this OS is now opensource for non-commercial use. Please don't redistribute modified source code of this OS. You can modify it only for personal or development use.
+Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ 
+This file is part of Trinix Operating System and is released under Trinix 
+Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
+except in compliance with the License. The rights granted to you under the
+License may not be used to create, or enable the creation or redistribution
+of, unlawful or unlicensed copies of an Trinix operating system, or to
+circumvent, violate, or enable the circumvention or violation of, any terms
+of an Trinix operating system software license agreement.
+ 
+You may obtain a copy of the License at
+http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ 
+The Original Code and all software distributed under the License are
+distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.

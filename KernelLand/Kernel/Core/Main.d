@@ -19,8 +19,7 @@
  * 
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
- */
-/**
+ * 
  * TODO:
  *      o Log dorobit... problem je v tom ze ak si vymknem log v processe tak pocas interruptu ho nemozem pouzit...
  *      o v PhysicalMEmory by to chcelo nahrat regiony z multibootu a potom podla nich vytvorit bitmapu

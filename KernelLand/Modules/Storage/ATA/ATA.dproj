@@ -8,11 +8,6 @@
     <IncrementalLinking>true</IncrementalLinking>
     <PreferOneStepBuild>true</PreferOneStepBuild>
     <Compiler>DMD2</Compiler>
-    <Includes>
-      <Includes>
-        <Path>C:\Users\Satoshi\Desktop\Trinix\Source\Kernel</Path>
-      </Includes>
-    </Includes>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
