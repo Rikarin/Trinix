@@ -87,7 +87,7 @@ If the comments consists of multiple lines, place the `/* */` on a new line:
 
 When using multiple line comments, always align the `*` signs, as in the above example.  
 For documentation use the `/** */` notations.  
-Between paragraphs let the one empty line
+Between paragraphs let the one empty line.
 
 ```D
     /**
