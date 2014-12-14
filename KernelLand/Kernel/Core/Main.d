@@ -21,21 +21,27 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  * 
  * TODO:
- *      o Log dorobit... problem je v tom ze ak si vymknem log v processe tak pocas interruptu ho nemozem pouzit...
- *      o v PhysicalMEmory by to chcelo nahrat regiony z multibootu a potom podla nich vytvorit bitmapu
- *      o dokoncit VFS., co tam este chyba?... file..., syscally, static cally, acl,...
+ *      o Log dorobit... problem je v tom ze ak si vymknem log v processe tak
+ *        pocas interruptu ho nemozem pouzit...
+ *      o v PhysicalMEmory by to chcelo nahrat regiony z multibootu a potom
+ *        podla nich vytvorit bitmapu
+ *      o dokoncit VFS., co tam este chyba?... file..., syscally, static cally,
+ *        acl,...
  *      o Dokoncit write/create/remove - spravit Ext2 driver!!!!
  *      o Multitasking a synchronizacne prvky, asi rwlock ci jak
  *      o eventy, syscally
  *      o kontrolu parametrov pri syscalloch
  *      o ACLka do syscallov?
- *      o najprv skocit do arch zavislej casti kodu, tj. Arch/xxx/Main.d a az odtial potom preskocit sem...
+ *      o najprv skocit do arch zavislej casti kodu, tj. Arch/xxx/Main.d a az
+ *        odtial potom preskocit sem...
  *      o debugovat Heap... Obcas to pada na expande...
  *      o spravit to iste jak je pre VFS.AddDriver ci co ale pre Node zariadenia.
  *      o Aby sa z modulu dali pridat veci ako je pipe, pty, vty, atd...
  *      o V IDT je nejaky problem s RAX registrom...
  *      o documentation, documentation, documentation, ...
  *      o Pridat licenciu a header do kazdeho sourcecode suboru...
+ *      o IMPORTANT: interfacovat syscally na konretne volania. tj. kazdy syscall
+ *        moze mat uplne ine parametre
  */
 
 module Core.Main;
@@ -56,78 +62,29 @@ eXtensible Operating System
 */
 extern(C) extern const int giBuildNumber;
 
-extern(C) void KernelMain(uint magic, void* info) {
-	Log.Initialize();
-	Log.Install();
-
-	Log.WriteJSON("{");
-	Log.WriteJSON("name", "Trinix");
-	Log.WriteJSON("version", "0.0.1 Beta");
+extern(C) void KernelMain() {
 	Log.Base = 10;
-	Log.WriteJSON("build", cast(int)giBuildNumber);
+	Log.WriteLine(cast(int)giBuildNumber);
 	Log.Base = 16;
 
-	Log.WriteJSON("architecture", "[");
-	Arch.Main(magic, info);
-	Log.WriteJSON("]");
+    Log.WriteLine("Physical Memory");
+    PhysicalMemory.Initialize();
 
-	Log.WriteJSON("memory_manager", "[");
-	Log.WriteJSON("{");
-	Log.WriteJSON("name", "PhysicalMemory");
-	Log.WriteJSON("type", "Initialize");
-	Log.WriteJSON("value", PhysicalMemory.Initialize());
-	Log.WriteJSON("}");
+    Log.WriteLine("Virtual Memory");
+    VirtualMemory.Initialize();
 
-	Log.WriteJSON("{");
-	Log.WriteJSON("name", "PhysicalMemory");
-	Log.WriteJSON("type", "Install");
-	Log.WriteJSON("value", PhysicalMemory.Install());
-	Log.WriteJSON("}");
+    Log.WriteLine("Resource Manager");
+    ResourceManager.Initialize();
 
-	Log.WriteJSON("{");
-	Log.WriteJSON("name", "VirtualMemory");
-	Log.WriteJSON("type", "Initialize");
-	Log.WriteJSON("value", VirtualMemory.Initialize());
-	Log.WriteJSON("}");
+    Log.WriteLine("Syscall Handler");
+    SyscallHandler();
 
-	Log.WriteJSON("{");
-	Log.WriteJSON("name", "VirtualMemory");
-	Log.WriteJSON("type", "Install");
-	Log.WriteJSON("value", VirtualMemory.Install());
-	Log.WriteJSON("}");
-	Log.WriteJSON("]");
+    Log.WriteLine("Task Manager");
+    Task.Initialize();
 
-	Log.WriteJSON("syscall_manager", "[");
-	Log.WriteJSON("{");
-	Log.WriteJSON("name", "ResourceManager");
-	Log.WriteJSON("type", "Initialize");
-	Log.WriteJSON("value", ResourceManager.Initialize());
-	Log.WriteJSON("}");
+    Log.WriteLine("VFS Manager");
+    VFS.Initialize();
 
-	Log.WriteJSON("{");
-	Log.WriteJSON("name", "SyscallHandler");
-	Log.WriteJSON("type", "Initialize");
-	Log.WriteJSON("value", SyscallHandler.Initialize());
-	Log.WriteJSON("}");
-	Log.WriteJSON("]");
-
-	Log.WriteJSON("task_manager", "[");
-	Log.WriteJSON("{");
-	Log.WriteJSON("name", "Task");
-	Log.WriteJSON("type", "Initialize");
-	Log.WriteJSON("value", Task.Initialize());
-	Log.WriteJSON("}");
-	Log.WriteJSON("]");
-
-	Log.WriteJSON("vfs_manager", "[");
-	Log.WriteJSON("{");
-	Log.WriteJSON("name", "VFS");
-	Log.WriteJSON("type", "Initialize");
-	Log.WriteJSON("value", VFS.Initialize());
-	Log.WriteJSON("type", "Install");
-	Log.WriteJSON("value", VFS.Install());
-	Log.WriteJSON("}");
-	Log.WriteJSON("]");
 
 	// Remap PIC...
 	Port.Write!byte(0x20, 0x11);
@@ -141,10 +98,8 @@ extern(C) void KernelMain(uint magic, void* info) {
 	Port.Write!byte(0x21, 0x00);
 	Port.Write!byte(0xA1, 0x00);
 
+    Log.WriteLine("Timer Manager");
 	Time.Initialize();
-	Time.Install();
-
-	Log.WriteJSON("}");
 
 	ModuleManager.Initialize();
 	ModuleManager.LoadBuiltins();
@@ -158,6 +113,7 @@ extern(C) void KernelMain(uint magic, void* info) {
 
 	Log.WriteLine("test: ", VFS.Root.Identifier);
 
+   
 
 	//Thread thr = new Thread(Task.CurrentThread);
 	//thr.Start(&testfce, null);
@@ -203,3 +159,20 @@ void testfce() {
 	//while (true) {}
 	//dorobit Exit thready
 }
+
+
+/*
+    void function123(int a, char b, string c) {
+        Log.WriteLine("int a = ", a);
+        Log.WriteLine("char b = ", b);
+        Log.WriteLine("string c = ", c);
+    }
+
+    partial!(function123, 5, 'x');
+
+template partial(alias func, args1...) {
+    auto partial(T...)(T args2) {
+        return func(args1, args2);
+    }
+}
+*/

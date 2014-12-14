@@ -36,7 +36,7 @@ struct ResouceCallTable {
 	long function(long, long, long, long, long) Callback;
 }
 
-abstract final class ResourceManager : IStaticModule {
+abstract final class ResourceManager {
 	private __gshared LinkedList!ResouceCallTable _callTables;
 	private __gshared List!Resource _resources;
 

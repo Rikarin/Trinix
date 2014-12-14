@@ -32,7 +32,7 @@ import Architectures.x86_64.Core;
 private extern(C) void _CPU_refresh_iretq();
 
 
-abstract final class GDT : IStaticModule {
+abstract final class GDT {
 	private __gshared GlobalDescriptorTable*[256] _tables;
 
 	@property static GlobalDescriptorTable* Table() {
@@ -42,17 +42,15 @@ abstract final class GDT : IStaticModule {
 	static bool Initialize() {
 		_tables[CPU.Identifier] = new GlobalDescriptorTable;
 		InitTable(CPU.Identifier);
+
+        asm {
+            "lgdt [RAX]" : : "a"(&_tables[CPU.Identifier].Base);
+            "call _CPU_refresh_iretq";
+        }
+
 		return true;
 	}
 	
-	static bool Install() {
-		asm {
-			"lgdt [RAX]" : : "a"(&_tables[CPU.Identifier].Base);
-			"call _CPU_refresh_iretq";
-		}
-		return true;
-	}
-
 	private static void InitTable(uint table) {
 		_tables[table].Base.Limit = (SegmentDescriptor.sizeof * _tables[table].Entries.length) - 1;
 		_tables[table].Base.Base	= cast(ulong)_tables[table].Entries.ptr;

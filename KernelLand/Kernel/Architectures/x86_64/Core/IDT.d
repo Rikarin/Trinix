@@ -65,7 +65,7 @@ enum InterruptType : uint {
 }
 
 
-abstract final class IDT : IStaticModule {
+abstract final class IDT {
 	private __gshared IDTBase _idtBase;
 	private __gshared InterruptGateDescriptor[256] _entries;
 	
@@ -78,15 +78,11 @@ abstract final class IDT : IStaticModule {
 		
 		SetSystemGate(3, &isr3, InterruptStackType.Debug);
 		SetInterruptGate(8, &IsrIgnore);
-		return true;
-	}
-	
-	static bool Install() {
-		asm {
-			"lidt [RAX]" : : "a"(&_idtBase);
-			"sti";
-		}
 
+        asm {
+            "lidt [RAX]" : : "a"(&_idtBase);
+            "sti";
+        }
 		return true;
 	}
 

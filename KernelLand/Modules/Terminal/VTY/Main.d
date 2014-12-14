@@ -23,6 +23,9 @@
  * TODO:
  * 		o Check if server or clinet doesnt EOF...
  * 		o Check for flags...
+ *      o To Read/Write methods add timeout, checkout for is server connected
+ *      o Let user to define his own Termios and pass them to constructor
+ *      o Protect syscall inputs
  */
 
 module Modules.Terminal.VTY.Main;
@@ -45,12 +48,22 @@ class VTY : Resource {
 
 	private Mutex _lockIn;
 	private Termios _termios;
+    private WindowSize _window;
+
+    private long _canonBufferLength;
+    private char[512] _canonBuffer;
+
+    //private Process _controllProcess;
+    private Thread _fgThread;
 
 	this() {
-		static const ResouceCallTable rcs = {_DriverInfo_Terminal_VTY.Identifier, &StaticCallback};
+		static const ResouceCallTable rcs = {
+            _DriverInfo_Terminal_VTY.Identifier,
+            &StaticCallback
+        };
+
 		static const CallTable[] callTable = [
-			//{0, ".Attributes", 0, null}
-		];
+        ];
 
 		_lockIn = new Mutex();
 
@@ -60,6 +73,26 @@ class VTY : Resource {
 		_master = new PTYDev(this, DeviceManager.DevFS, FSNode.NewAttributes("pty0"));
 		_slave  = new TTYDev(this, DeviceManager.DevFS, FSNode.NewAttributes("tty0"));
 
+        _window.Row = 25;
+        _window.Col = 80;
+
+        _termios.InputFlags   = InputModes.ICRNL  | InputModes.BRKINT;
+        _termios.OutputFlags  = OutputModes.ONLCR | OutputModes.OPOST;
+        _termios.LocalFlags   = LocalModes.ECHO   | LocalModes.ECHOE | LocalModes.ECHOK | LocalModes.ICANON
+                              | LocalModes.ISIG   | LocalModes.IEXTEN;
+        _termios.ControlFlags = ControlModes.CREAD;
+
+        _termios.ControlChars[Commands.VEOF]   = 4; /* ^D */
+        _termios.ControlChars[Commands.VEOL]   = 0; /* Not set */
+        _termios.ControlChars[Commands.VERASE] = '\b';
+        _termios.ControlChars[Commands.VINTR]  = 3; /* ^C */
+        _termios.ControlChars[Commands.VKILL]  = 21; /* ^U */
+        _termios.ControlChars[Commands.VMIN]   = 1;
+        _termios.ControlChars[Commands.VQUIT]  = 28; /* ^\ */
+        _termios.ControlChars[Commands.VSTART] = 17; /* ^Q */
+        _termios.ControlChars[Commands.VSTOP]  = 19; /* ^S */
+        _termios.ControlChars[Commands.VSUSP]  = 26; /* ^Z */
+        _termios.ControlChars[Commands.VTIME]  = 0;
 		
 		ResourceManager.AddCallTables(rcs);
 		super(_DriverInfo_Terminal_VTY, callTable);
@@ -91,11 +124,98 @@ class VTY : Resource {
 	}
 
 	void Input(char c) {
+        if (_termios.LocalFlags & LocalModes.ICANON) {
+            if (c == _termios.ControlChars[Commands.VKILL]) {
+                while (_canonBufferLength > 0) {
+                    _canonBuffer[_canonBufferLength--] = '\0';
+                    if (_termios.LocalFlags & LocalModes.ECHO) {
+                        Output('\010');
+                        Output(' ');
+                        Output('\010');
+                    }
+                }
+                return;
+            }
 
-	}
+            if (c == _termios.ControlChars[Commands.VERASE]) {
+                if (_canonBufferLength) {
+                    _canonBuffer[_canonBufferLength--] = '\0';
+                    if (_termios.LocalFlags & LocalModes.ECHO) {
+                        Output('\010');
+                        Output(' ');
+                        Output('\010');
+                    }
+                }
+                return;
+            }
+
+            if (c == _termios.ControlChars[Commands.VINTR]) {
+                if (_termios.LocalFlags & LocalModes.ECHO) {
+                    Output('^');
+                    Output(cast(char)('@' + c));
+                    Output('\n');
+                }
+
+                _canonBufferLength = 0;
+                _canonBuffer[0]    = '\0';
+
+                if (_fgThread !is null)
+                    _fgThread.PostSignal(SignalType.SIGINT);
+
+                return;
+            }
+
+            if (c == _termios.ControlChars[Commands.VQUIT]) {
+                if (_termios.LocalFlags & LocalModes.ECHO) {
+                    Output('^');
+                    Output(cast(char)('@' + c));
+                    Output('\n');
+                }
+
+                _canonBufferLength = 0;
+                _canonBuffer[0]    = '\0';
+
+                if (_fgThread !is null)
+                    _fgThread.PostSignal(SignalType.SIGQUIT);
+
+                return;
+            }
+
+            _canonBuffer[_canonBufferLength] = c;
+
+            if (_termios.LocalFlags & LocalModes.ECHO)
+                Output(c);
+
+            if (_canonBuffer[_canonBufferLength] == '\n') {
+                _canonBufferLength++;
+
+                foreach (x; _canonBuffer[0 .. _canonBufferLength])
+                    _in.Enqueue(x);
+
+                _canonBufferLength = 0;
+                return;
+            }
+
+            if (_canonBufferLength == 512) {
+                foreach (x; _canonBuffer[0 .. _canonBufferLength])
+                    _in.Enqueue(x);
+
+                _canonBufferLength = 0;
+                return;
+            }
+
+            _canonBufferLength++;
+            return;
+        } else if (_termios.LocalFlags & LocalModes.ECHO)
+            Output(c);
+        _in.Enqueue(c);
+  	}
 
 	void Output(char c) {
+        if (c == '\n' && (_termios.OutputFlags & OutputModes.ONLCR))
+            _out.Enqueue('\r');
 
+        _out.Enqueue('\n');
 	}
 
 	static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
@@ -103,7 +223,7 @@ class VTY : Resource {
 	}
 }
 
-class TTYDev : CharNode { //client, slave
+class TTYDev : CharNode {
 	private VTY _vty;
 
 	this(VTY vty, DirectoryNode parent, FileAttributes attributes) {
@@ -115,7 +235,6 @@ class TTYDev : CharNode { //client, slave
 	}
 
 	ulong Read(long offset, byte[] data) {
-		//TODO timeout, server disconnected,...
 		_vty._lockIn.WaitOne();
 		scope(exit) _vty._lockIn.Release();
 
@@ -147,7 +266,7 @@ class TTYDev : CharNode { //client, slave
 	}
 }
 
-class PTYDev : CharNode { //server, master
+class PTYDev : CharNode {
 	private VTY _vty;
 	private Mutex _mutex;
 

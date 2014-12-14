@@ -28,7 +28,7 @@ import Architecture;
 import ObjectManager;
 
 
-abstract final class Time : IStaticModule {
+abstract final class Time {
 	private enum {
 		TimerRate = 14,
 		TimerFreq = 0x8000 >> TimerRate,
@@ -42,13 +42,8 @@ abstract final class Time : IStaticModule {
 	private __gshared long _timestamp;
 	private __gshared ulong _ticks;
 	private __gshared ulong _partMiliseconds;
-
-
-	static bool Initialize() {
-		return true;
-	}
-	
-	static bool Install() {
+   
+    static bool Initialize() {
 		// Disable NMI
 		Port.Write!byte(0x70, Port.Read!byte(0x70) & 0x7F);
 		Port.Cli();

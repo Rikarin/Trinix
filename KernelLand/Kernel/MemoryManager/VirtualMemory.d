@@ -28,7 +28,7 @@ import MemoryManager;
 import ObjectManager;
 
 
-abstract final class VirtualMemory : IStaticModule {
+abstract final class VirtualMemory {
 	private __gshared void* function(long size) _malloc = &TmpAlloc;
 	private __gshared void function(void* ptr) _free;
 
@@ -36,31 +36,16 @@ abstract final class VirtualMemory : IStaticModule {
 	__gshared Heap KernelHeap;
 
 	static bool Initialize() {
-		Log.WriteJSON("module", "{");
-		Log.WriteJSON("name", "Heap");
-		Log.WriteJSON("type", "Initialize");
 		KernelHeap = new Heap(cast(ulong)PhysicalMemory.AllocPage(), Heap.MinSize, Heap.CalculateIndexSize(Heap.MinSize));
-		Log.WriteJSON("value", "True");
-		Log.WriteJSON("}");
 
-		return true;
-	}
+        _malloc = function(long size) {
+            return KernelHeap.Alloc(size);
+        };
+        
+        _free = function(void* ptr) {
+            KernelHeap.Free(ptr);
+        };
 
-	static bool Install() {
-		Log.WriteJSON("module", "{");
-		Log.WriteJSON("name", "Heap");
-		Log.WriteJSON("type", "Install");
-
-		_malloc = function(long size) {
-			return KernelHeap.Alloc(size);
-		};
-
-		_free = function(void* ptr) {
-			KernelHeap.Free(ptr);
-		};
-
-		Log.WriteJSON("value", "True");
-		Log.WriteJSON("}");
 		return true;
 	}
 

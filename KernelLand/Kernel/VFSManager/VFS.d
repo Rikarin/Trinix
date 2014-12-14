@@ -37,7 +37,7 @@ struct FSDriver {
 }
 
 
-abstract final class VFS : IStaticModule {
+abstract final class VFS {
 	private __gshared DirectoryNode _root;
 	private __gshared LinkedList!FSDriver _drivers;
 
@@ -59,11 +59,6 @@ abstract final class VFS : IStaticModule {
 		new ZeroDev(DeviceManager.DevFS, "zero");
 		new RandomDev(DeviceManager.DevFS, "random");
 
-		return true;
-	}
-
-	static bool Install() {
-		//TODO
 		return true;
 	}
 

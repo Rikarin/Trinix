@@ -46,7 +46,7 @@ struct TaskState {
 }
 
 
-abstract final class Task : IStaticModule {
+abstract final class Task {
 	private __gshared ulong _nextPID = 1;
 	private __gshared ulong _nextTID = 1;
 

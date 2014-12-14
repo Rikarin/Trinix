@@ -35,7 +35,11 @@ abstract class FSNode : Resource {
 	protected FileAttributes _attributes;
 
 	protected this(DirectoryNode parent) {
-		static const ResouceCallTable rcs = {"com.trinix.VFSManager.FSNode", &StaticCallback};
+		static const ResouceCallTable rcs = {
+            "com.trinix.VFSManager.FSNode",
+            &StaticCallback
+        };
+
 		static const CallTable[] callTable = [
 			{0, ".Attributes", 0, null}
 		];
@@ -76,9 +80,13 @@ abstract class FSNode : Resource {
 		return 0;
 	}
 
-	ulong IOControl(long id, byte[] data) {
+    /**
+     * Deprecated:
+     *      o Use syscall instead...
+     */
+	/*ulong IOControl(long id, byte[] data) {
 		return 0;
-	}
+	}*/
 
 	bool Remove() {
 		if (_parent is null || _parent.FileSystem is null)

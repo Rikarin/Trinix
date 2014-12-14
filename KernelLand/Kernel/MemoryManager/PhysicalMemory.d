@@ -48,11 +48,7 @@ abstract final class PhysicalMemory {
 		for (ulong i = 0xFFFFFFFF80000000; i < 0xFFFFFFFF8A000000; i += 0x1000)
 			VirtualMemory.KernelPaging.AllocFrame(cast(void *)i, AccessMode.DefaultUser); //TODO: testing
 
-		return true;
-	}
-
-	static bool Install() {
-		VirtualMemory.KernelPaging.Install();
+        VirtualMemory.KernelPaging.Install();
 		return true;
 	}
 

@@ -19,6 +19,10 @@
  * 
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
+ * 
+ * TODO:
+ *      o Implement Identifier and add multiCPU support
+ *      o In PrintCacheInfo we can use automatic serialization
  */
 
 module Architecture.CPU;
@@ -30,7 +34,7 @@ import MemoryManager;
 import Architectures.x86_64.Core;
 
 
-abstract final class CPU : IStaticModule {
+abstract final class CPU {
 	private __gshared ubyte*[256] _stacks;
 	private __gshared ProcessorInfo[256] _processorInfo;
 
@@ -43,62 +47,22 @@ abstract final class CPU : IStaticModule {
 	}
 
 	static bool Initialize() {
-		Log.WriteJSON("{");
-		Log.WriteJSON("name", "SSE");
-		Log.WriteJSON("type", "Initialize");
+        Log.Write("SSE, ");
 		Port.InitializeSSE();
 		Port.EnableSSE();
-		Log.WriteJSON("value", true);
-		Log.WriteJSON("}");
 
-		Log.WriteJSON("{");
-		Log.WriteJSON("name", "GDT");
-		Log.WriteJSON("type", "Initialize");
-		Log.WriteJSON("value", GDT.Initialize());
-		Log.WriteJSON("}");
+        Log.Write("GDT, ");
+        GDT.Initialize();
 
-		Log.WriteJSON("{");
-		Log.WriteJSON("name", "TSS");
-		Log.WriteJSON("type", "Initialize");
-		Log.WriteJSON("value", TSS.Initialize());
-		Log.WriteJSON("}");
+        Log.Write("TSS, ");
+        TSS.Initialize();
 
-		Log.WriteJSON("{");
-		Log.WriteJSON("name", "IDT");
-		Log.WriteJSON("type", "Initialize");
-		Log.WriteJSON("value", IDT.Initialize());
-		Log.WriteJSON("}");
+        Log.WriteLine("IDT");
+        IDT.Initialize();
 
-		Log.WriteJSON("{");
-		Log.WriteJSON("name", "CacheInfo");
-		Log.WriteJSON("processor", Identifier);
-		Log.WriteJSON("value", "[");
+        Log.WriteLine("CacheInfo of processor #", Identifier);;
 		GetCacheInfo();
 		PrintCacheInfo(Identifier);
-		Log.WriteJSON("]");
-		Log.WriteJSON("}");
-
-		return true;
-	}
-
-	static bool Install() {
-		Log.WriteJSON("{");
-		Log.WriteJSON("name", "GDT");
-		Log.WriteJSON("type", "Install");
-		Log.WriteJSON("value", GDT.Install());
-		Log.WriteJSON("}");
-
-		Log.WriteJSON("{");
-		Log.WriteJSON("name", "TSS");
-		Log.WriteJSON("type", "Install");
-		Log.WriteJSON("value", TSS.Install());
-		Log.WriteJSON("}");
-
-		Log.WriteJSON("{");
-		Log.WriteJSON("name", "IDT");
-		Log.WriteJSON("type", "Install");
-		Log.WriteJSON("value", IDT.Install());
-		Log.WriteJSON("}");
 
 		return true;
 	}
@@ -364,10 +328,7 @@ abstract final class CPU : IStaticModule {
 					break;
 
 				case 0xFF:
-					Log.WriteJSON("{");
-					Log.WriteJSON("name", "CacheParser");
-					Log.WriteJSON("value", "Not supported cache info for CPUID.EAX=0x02");
-					Log.WriteJSON("}");
+                    Log.WriteLine("Not supported cache info for CPUID.EAX=0x02");
 					return;
 
 				default:

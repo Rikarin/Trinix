@@ -38,7 +38,7 @@ align(1):
 }
 
 
-abstract final class SyscallHandler : IStaticModule {
+abstract final class SyscallHandler {
 	private enum Registers : ulong {
 		IA32_STAR    = 0xC000_0081,
 		IA32_LSTAR   = 0xC000_0082,
@@ -54,6 +54,7 @@ abstract final class SyscallHandler : IStaticModule {
 		Port.WriteMSR(Registers.IA32_LSTAR, cast(ulong)&SyscallCommon);
 		Port.WriteMSR(Registers.IA32_STAR, Registers.STAR);
 		Port.WriteMSR(Registers.IA32_FMASK, 0x200);
+
 		return true;
 	}
 

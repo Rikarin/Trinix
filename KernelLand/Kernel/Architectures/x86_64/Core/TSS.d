@@ -64,7 +64,7 @@ align(1):
 }
 
 
-abstract final class TSS : IStaticModule {
+abstract final class TSS {
 	private enum TSSBase = 0x28;
 	private __gshared TaskStateSegment*[256] _segments;
 
@@ -73,16 +73,13 @@ abstract final class TSS : IStaticModule {
 	}
 
 	static bool Initialize() {
-		_segments[CPU.Identifier] = new TaskStateSegment;
-		return true;
-	}
+		_segments[CPU.Identifier] = new TaskStateSegment();
+        GDT.Table.SetSystemSegment((TSSBase >> 3), TaskStateSegment.sizeof, cast(ulong)_segments[CPU.Identifier], SystemSegmentType.AvailableTSS, 0, true, false, false);
+        
+        asm {
+            "ltr AX" : : "a"(TSSBase);
+        }
 
-	static bool Install() {
-		GDT.Table.SetSystemSegment((TSSBase >> 3), TaskStateSegment.sizeof, cast(ulong)_segments[CPU.Identifier], SystemSegmentType.AvailableTSS, 0, true, false, false);
-
-		asm {
-			"ltr AX" : : "a"(TSSBase);
-		}
 		return true;
 	}
 }

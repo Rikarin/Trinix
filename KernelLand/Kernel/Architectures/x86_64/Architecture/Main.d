@@ -28,21 +28,15 @@ import Architecture;
 import ObjectManager;
 
 
-abstract final class Arch {
-	static void Main(uint magic, void* info) {
-		Log.WriteJSON("{");
-		Log.WriteJSON("name", "multiboot2");
-		Log.WriteJSON("value", "{");
-		Multiboot.ParseHeader(magic, info);
-		Log.WriteJSON("}");
-		Log.WriteJSON("}");
+extern(C) void ArchMain(uint magic, void* info) {
+    Log.Initialize();
+    Log.Install();
 
-		Log.WriteJSON("{");
-		Log.WriteJSON("name", "CPU");
-		Log.WriteJSON("value", "[");
-		CPU.Initialize();
-		CPU.Install();
-		Log.WriteJSON("]");
-		Log.WriteJSON("}");
-	}
+    Log.WriteLine("multiboot2");
+	Multiboot.ParseHeader(magic, info);
+   
+	CPU.Initialize();
+
+    Log.WriteLine("Jumping to KernelMain");
+    KernelMain();
 }
