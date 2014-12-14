@@ -60,7 +60,7 @@ abstract final class CPU {
         Log.WriteLine("IDT");
         IDT.Initialize();
 
-        Log.WriteLine("CacheInfo of processor #", Identifier);;
+        Log.WriteLine("CacheInfo of processor #", Identifier);
 		GetCacheInfo();
 		PrintCacheInfo(Identifier);
 

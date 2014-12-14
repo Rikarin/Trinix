@@ -117,10 +117,10 @@ Between paragraphs let the one empty line.
      *      o Make more todos
      *      o too much todo
      *
-     * Parameters:
-     *      x           is for this, use 3 'TABS' (4 spaces against TAB)
+     * Params:
+     *      x =         is for this, use 3 'TABS' (4 spaces against TAB)
      *                  you can use multiple lines
-     *      y           is for that
+     *      y =         is for that
      *
      * Returns:
      *      0           Success

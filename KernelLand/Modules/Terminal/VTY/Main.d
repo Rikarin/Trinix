@@ -25,6 +25,7 @@
  * 		o Check for flags...
  *      o To Read/Write methods add timeout, checkout for is server connected
  *      o Let user to define his own Termios and pass them to constructor
+ *      o Implement static calls
  *      o Protect syscall inputs
  */
 

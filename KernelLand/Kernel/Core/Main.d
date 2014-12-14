@@ -77,7 +77,7 @@ extern(C) void KernelMain() {
     ResourceManager.Initialize();
 
     Log.WriteLine("Syscall Handler");
-    SyscallHandler();
+    SyscallHandler.Initialize();
 
     Log.WriteLine("Task Manager");
     Task.Initialize();
@@ -85,8 +85,7 @@ extern(C) void KernelMain() {
     Log.WriteLine("VFS Manager");
     VFS.Initialize();
 
-
-	// Remap PIC...
+    Log.WriteLine("Remaping PIC");
 	Port.Write!byte(0x20, 0x11);
 	Port.Write!byte(0xA0, 0x11);
 	Port.Write!byte(0x21, 0x20);
@@ -98,9 +97,10 @@ extern(C) void KernelMain() {
 	Port.Write!byte(0x21, 0x00);
 	Port.Write!byte(0xA1, 0x00);
 
-    Log.WriteLine("Timer Manager");
+    Log.WriteLine("Timer");
 	Time.Initialize();
 
+    Log.WriteLine("Module Manager");
 	ModuleManager.Initialize();
 	ModuleManager.LoadBuiltins();
 
