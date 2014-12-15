@@ -31,13 +31,13 @@ static class Mouse {
 	static ModuleResult Initialize(string[] args) {
 		DeviceManager.DevFS.Create(FSNode.NewAttributes("mouse"));
 
-		return ModuleResult.Sucessful;
+		return ModuleResult.Successful;
 	}
 
 	static ModuleResult Finalize() {
 		auto del = DeviceManager.DevFS["mouse"];
 		delete del;
 
-		return ModuleResult.Error;
+		return ModuleResult.Successful;
 	}
 }

@@ -33,6 +33,6 @@ static class PS2KeyboardMouse {
 		KBC8042.Initialize();
 		PS2Mouse.EnableMouse = &KBC8042.EnableMouse;
 
-		return ModuleResult.Sucessful;
+		return ModuleResult.Successful;
 	}
 }

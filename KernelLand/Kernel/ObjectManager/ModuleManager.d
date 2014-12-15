@@ -34,7 +34,7 @@ enum ModuleMagic = 0xDEADC0DE;
 
 enum ModuleResult {
 	Error,
-	Sucessful,
+	Successful,
 
 	Misc,
 	BadModule
@@ -140,7 +140,7 @@ abstract final class ModuleManager {
 		}
 
 		if (_loadedModules.Contains(mod))
-			return ModuleResult.Sucessful;
+			return ModuleResult.Successful;
 
 		_loadingModules.Add(mod);
 		foreach (x; mod.Dependencies) {
@@ -162,7 +162,7 @@ abstract final class ModuleManager {
 		ModuleResult ret = mod.Initialize(args);
 		_loadingModules.Remove(mod);
 
-		if (ret != ModuleResult.Sucessful) {
+		if (ret != ModuleResult.Successful) {
 			switch (ret) {
 				case ModuleResult.Misc:
 					Log.WriteJSON("error", "something went wrong");
@@ -177,7 +177,7 @@ abstract final class ModuleManager {
 		}
 
 		_loadedModules.Add(mod);
-		return ModuleResult.Sucessful;
+		return ModuleResult.Successful;
 	}
 
 	/* This is garbage...

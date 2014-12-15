@@ -33,13 +33,13 @@ class ATA {
 	static ModuleResult Initialize(string[] args) {
 		_controllers = ATAController.Detect();
 
-		return ModuleResult.Sucessful;
+		return ModuleResult.Successful;
 	}
 
 	static ModuleResult Finalize() {
 		delete _controllers[0];
 		delete _controllers[1];
 
-		return ModuleResult.Error;
+		return ModuleResult.Successful;
 	}
 }

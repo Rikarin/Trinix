@@ -140,8 +140,20 @@ abstract final class ResourceManager {
 		return -1;
 	}
 
-	static void AddCallTables(const ResouceCallTable callTable) {
+	static bool AddCallTable(const ResouceCallTable callTable) {
+		if (_callTables.Contains(callTable))
+			return false;
+
 		_callTables.Add(callTable);
+		return true;
+	}
+
+	static bool RemoveCallTable(const ResouceCallTable callTable) {
+		if (!_callTables.Contains(callTable))
+			return false;
+
+		_callTables.Remove(callTable);
+		return true;
 	}
 
 	static ResouceCallTable GetCallTable(string identifier) {

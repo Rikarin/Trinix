@@ -34,7 +34,7 @@ static class PS2Keyboard {
 	static ModuleResult Initialize(string[] args) {
 		//TODO: in keyboard module call function "create instance"
 		//gPS2Kb_Info = Keyboard_CreateInstance(KEYSYM_RIGHTGUI, "PS2Keyboard");
-		return ModuleResult.Sucessful;
+		return ModuleResult.Successful;
 	}
 
 	package static void Handler(byte code) {

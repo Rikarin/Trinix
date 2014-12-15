@@ -29,7 +29,7 @@ import ObjectManager;
 class Keyboard {
 	static ModuleResult Initialize(string[] args) {
 		Log.WriteLine("TODO");
-		return ModuleResult.Sucessful;
+		return ModuleResult.Error;
 	}
 	
 	static ModuleResult Finalize() {

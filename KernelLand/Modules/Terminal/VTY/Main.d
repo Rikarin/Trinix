@@ -41,6 +41,11 @@ import Modules.Terminal.VTY.DriverInfo;
 
 
 class VTY : Resource {
+	private static const ResouceCallTable _rcs = {
+		_DriverInfo_Terminal_VTY.Identifier,
+		&StaticCallback
+	};
+
 	private PTYDev _master;
 	private TTYDev _slave;
 
@@ -58,11 +63,6 @@ class VTY : Resource {
     private Thread _fgThread;
 
 	this() {
-		static const ResouceCallTable rcs = {
-            _DriverInfo_Terminal_VTY.Identifier,
-            &StaticCallback
-        };
-
 		static const CallTable[] callTable = [
         ];
 
@@ -83,10 +83,10 @@ class VTY : Resource {
                               | LocalModes.ISIG   | LocalModes.IEXTEN;
         _termios.ControlFlags = ControlModes.CREAD;
 
-        _termios.ControlChars[Commands.VEOF]   = 4; /* ^D */
-        _termios.ControlChars[Commands.VEOL]   = 0; /* Not set */
+        _termios.ControlChars[Commands.VEOF]   = 4;  /* ^D */
+        _termios.ControlChars[Commands.VEOL]   = 0;  /* Not set */
         _termios.ControlChars[Commands.VERASE] = '\b';
-        _termios.ControlChars[Commands.VINTR]  = 3; /* ^C */
+        _termios.ControlChars[Commands.VINTR]  = 3;  /* ^C */
         _termios.ControlChars[Commands.VKILL]  = 21; /* ^U */
         _termios.ControlChars[Commands.VMIN]   = 1;
         _termios.ControlChars[Commands.VQUIT]  = 28; /* ^\ */
@@ -94,8 +94,7 @@ class VTY : Resource {
         _termios.ControlChars[Commands.VSTOP]  = 19; /* ^S */
         _termios.ControlChars[Commands.VSUSP]  = 26; /* ^Z */
         _termios.ControlChars[Commands.VTIME]  = 0;
-		
-		ResourceManager.AddCallTables(rcs);
+
 		super(_DriverInfo_Terminal_VTY, callTable);
 	}
 
@@ -115,13 +114,15 @@ class VTY : Resource {
 	}
 
 	static ModuleResult Initialize(string[] args) {
-		new VTY();
-		Log.WriteLine("test");
-		return ModuleResult.Sucessful;
+		ResourceManager.AddCallTable(_rcs);
+
+		return ModuleResult.Successful;
 	}
 	
 	static ModuleResult Finalize() {
-		return ModuleResult.Error;
+		ResourceManager.RemoveCallTable(_rcs);
+
+		return ModuleResult.Successful;
 	}
 
 	void Input(char c) {
@@ -220,7 +221,17 @@ class VTY : Resource {
 	}
 
 	static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
-		return -2;
+		switch (param1) {
+			case 1:
+				FSNode master, slave;
+				new VTY(master, slave);
+
+				param2 = master.Handle;
+				param3 = slave.Handle;
+				return 0;
+		}
+
+		return -1;
 	}
 }
 

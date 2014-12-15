@@ -38,7 +38,7 @@ static class PS2Mouse {
 		//gpPS2Mouse_Handle = Mouse_Register("PS2Mouse", NUM_AXIES, NUM_BUTTONS);
 		EnableMouse();
 
-		return ModuleResult.Sucessful;
+		return ModuleResult.Successful;
 	}
 
 	package static void Handler(byte code) {

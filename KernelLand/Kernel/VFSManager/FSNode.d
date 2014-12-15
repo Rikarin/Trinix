@@ -60,7 +60,7 @@ abstract class FSNode : Resource {
 			parent.Childrens.Add(this);
 		}
 
-		ResourceManager.AddCallTables(rcs);
+		ResourceManager.AddCallTable(rcs); //TODO move this to VFS.Initialize()
 		super(DeviceType.Disk, "com.trinix.VFSManager.FSNode", 0x01, callTable);
 	}
 

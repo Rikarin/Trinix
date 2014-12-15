@@ -39,12 +39,12 @@ class Ext2 {
 	static ModuleResult Initialize(string[] args) {		
 		VFS.AddDriver(info);
 
-		return ModuleResult.Sucessful;
+		return ModuleResult.Successful;
 	}
 
 	static ModuleResult Finalize() {
 		VFS.RemoveDriver("ext2");
 
-		return ModuleResult.Error;
+		return ModuleResult.Successful;
 	}
 }
