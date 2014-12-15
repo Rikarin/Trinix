@@ -30,7 +30,6 @@ import ObjectManager;
 
 extern(C) void ArchMain(uint magic, void* info) {
     Log.Initialize();
-    Log.Install();
 
     Log.WriteLine("multiboot2");
 	Multiboot.ParseHeader(magic, info);

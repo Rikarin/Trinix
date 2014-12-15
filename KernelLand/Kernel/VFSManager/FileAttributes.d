@@ -24,6 +24,11 @@
 module VFSManager.FileAttributes;
 
 
+/**
+ * Type of node.
+ * Used in FileAttributes.
+ * 
+ */
 enum FileType {
 	File        = 0x01,
 	Directory   = 0x02,
@@ -36,6 +41,11 @@ enum FileType {
 }
 
 
+/**
+ * Permissions of node.
+ * Used in FileAttributes.
+ * 
+ */
 enum FilePermissions {
 	OtherExecute = 1,
 	OtherWrite   = 2,
@@ -49,6 +59,10 @@ enum FilePermissions {
 }
 
 
+/**
+ * Attributes of each node in filesystem.
+ * 
+ */
 struct FileAttributes {
 	string Name;
 	FileType Type;

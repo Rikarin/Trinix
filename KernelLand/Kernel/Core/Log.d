@@ -27,13 +27,12 @@ import Architecture;
 import ObjectManager;
 
 
-abstract final class Log : IStaticModule {
+abstract final class Log {
 	__gshared int Base = 16;
 
 	private __gshared DisplayChar* _display = cast(DisplayChar *)0xFFFFFFFF800B8000;
 	private __gshared int _iterator;
 	private __gshared int _padding;
-	private __gshared bool _installed;
 
 	static bool Initialize() {
 		//Set cursor
@@ -47,17 +46,6 @@ abstract final class Log : IStaticModule {
 			_display[i].Address = 0;
 
 		SerialPort.Open();
-		return true;
-	}
-
-	static bool Install() {
-		_installed = true;
-		return true;
-	}
-
-	static bool Uninstall() {
-		_installed = false;
-
 		return true;
 	}
 
@@ -171,9 +159,6 @@ abstract final class Log : IStaticModule {
 	}
 
 	private static void Put(string str) {
-		if (!_installed)
-			return;
-
 		Scroll();
 		Print(str, 0, _iterator);
 		SerialPort.Write(str);

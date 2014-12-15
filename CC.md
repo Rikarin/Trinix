@@ -118,9 +118,11 @@ Between paragraphs let the one empty line.
      *      o too much todo
      *
      * Params:
-     *      x =         is for this, use 3 'TABS' (4 spaces against TAB)
+     *      x   =       is for this, use 3 'TABS' (4 spaces against TAB)
      *                  you can use multiple lines
-     *      y =         is for that
+     *      y   =       is for that
+     *
+     *      value<TAB>=<TAB><TAB>description
      *
      * Returns:
      *      0           Success

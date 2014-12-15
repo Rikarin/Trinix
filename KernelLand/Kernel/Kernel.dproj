@@ -75,7 +75,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ObjectManager\package.d" />
-    <Compile Include="ObjectManager\IStaticModule.d" />
     <Compile Include="Core\Log.d" />
     <Compile Include="Core\package.d" />
     <Compile Include="Core\Multiboot.d" />

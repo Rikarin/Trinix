@@ -31,15 +31,41 @@ import SyscallManager;
 import VFSManager;
 
 
+/**
+ * Definition of static call table
+ * 
+ * Identifier is a unique string where is defined full path to
+ * registred class like com.trinix.VFSManager.FSNode where com is predefined
+ * constant, trinix/modules defines if class is part of kernel or module,
+ * VFSManager is part of package's name and FSNode is name of class
+ * 
+ * Callback is a callback defined in each class providing statc syscall
+ */
 struct ResouceCallTable {
 	string Identifier;
 	long function(long, long, long, long, long) Callback;
 }
 
+/**
+ * This static class is a manager for every instance of Resource class.
+ * ResourceManager is called by SyscallManager or by internal library.
+ * 
+ */
 abstract final class ResourceManager {
 	private __gshared LinkedList!ResouceCallTable _callTables;
 	private __gshared List!Resource _resources;
 
+	/**
+	 * Register a instance of Resource class to ResourceManager.
+	 * This method should be called only from Rescource constructor!
+	 * 
+	 * Params:
+	 * 		resource	=		instance of resource
+	 * 
+	 * Returns:
+	 * 		-1					when duplication was found
+	 * 		unique id for every register Resource
+	 */
 	package static long Register(Resource resource) {
 		if (_resources.Contains(resource))
 			return -1;
@@ -48,16 +74,31 @@ abstract final class ResourceManager {
 		return _resources.IndexOf(resource);
 	}
 
-	package static long Unregister(Resource resource) {
+	/**
+	 * Remove a registred Resource object from ResourceManager
+	 * 
+	 * Params:
+	 * 		resource	=		instance of resource
+	 * 
+	 * Returns:
+	 * 		true when object was removed successfuly
+	 */
+	package static bool Unregister(Resource resource) {
 		long index = _resources.IndexOf(resource);
 
 		if (index == -1)
-			return -1;
+			return false;
 
 		_resources[index] = null;
-		return index;
+		return true;
 	}
 
+	/**
+	 * This is a 'static constructor' called by Main in initialization state
+	 * 
+	 * Returns:
+	 * 		true when initialization was successful
+	 */
 	static bool Initialize() {
 		_callTables = new LinkedList!ResouceCallTable();
 		_resources = new List!Resource();
@@ -65,6 +106,15 @@ abstract final class ResourceManager {
 		return true;
 	}
 
+	/**
+	 * This is called only by SyscallManager or by internal library
+	 * 
+	 * Params:
+	 * 		resource	=		id of resource or ~0UL when is called static
+	 * 							call table
+	 * 		id			=		param of resource or id of static call entry
+	 * TODO
+	 */
 	package static long CallResource(long resource, long id, long param1, long param2, long param3, long param4, long param5) {
 		scope(exit) Log.WriteJSON("}");
 
