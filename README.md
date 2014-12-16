@@ -1,4 +1,4 @@
-# Trinix (REWRITE ME PLS)#
+# Trinix #
 Trinix is a hobby operating system written from scratch. OS is written in D language.
 Based on OOP standards cuz POSIX is shit. Only 64-bit CPU is, was and will be supported.
 Development began one beautiful day in January 3 years ago.
@@ -8,10 +8,11 @@ We had (we dont have it now lol) a framework based on .NET-like conventions but 
 # Community #
 You can join us. Just fork, innovate and pull back.
 
-If you have any questions or feedback, contact me on IRC: `#Trinix` on `Freenode`.
-Or via mail satoshi@gshost.eu
+Wiki: http://trinix.wikia.com/
+IRC: `#Trinix` on `Freenode`
+E-Mail: `satoshi@gshost.eu`
 
-Please use recommended [Coding Conventions](https://github.com/Bloodmanovski/Trinix/blob/master/CC.md).
+Please use our [Coding Conventions](https://github.com/Bloodmanovski/Trinix/blob/master/CC.md).
 
 
 # How to build #

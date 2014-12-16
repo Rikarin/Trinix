@@ -7,8 +7,12 @@
     <UseDefaultCompiler>true</UseDefaultCompiler>
     <IncrementalLinking>true</IncrementalLinking>
     <PreferOneStepBuild>true</PreferOneStepBuild>
-    <BaseDirectory>.</BaseDirectory>
     <Compiler>DMD2</Compiler>
+    <Includes>
+      <Includes>
+        <Path>../../../Kernel</Path>
+      </Includes>
+    </Includes>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

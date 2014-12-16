@@ -1,18 +1,16 @@
+-include $(dir $(lastword $(MAKEFILE_LIST)))../../Makefile.cfg
 
-NAME = ../../Root/Test.elf
+NAME = Test.elf
 SRC += $(shell find -name "*.d")
 
-DFLAGS = -c -Wall -m64 -frelease -finline-functions -I../druntime/src -I../Framework -masm=intel
-LDFLAGS = -nostdlib -L/os/Root/Library -l :Framework.so -e _d_run_main
+DFLAGS =  -I../druntime/src -I$(TRXROOT)/Library/Kappa.framework/Import/
+DFLAGS += -L $(TRXROOT)/Library/Kappa.framework/ -lgcc -l:Kappa.so.0.1.0
+#LDFLAGS = -nostdlib -L/os/Root/Library -l :Framework.so -e _d_run_main
 
 
 $(NAME):
 	@echo "[ D ] Compiling test..."
-	@gdc $(SRC) -o obj.o $(DFLAGS)
-	
-	@ld -o $@ $(LDFLAGS) obj.o $+
-	@rm -rf obj.o
-	
+	$(DD) $(SRC) -o $(NAME) $(DFLAGS)	
 
 clean:
 	@echo "Cleaning..."

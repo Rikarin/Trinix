@@ -42,6 +42,13 @@
  *      o Pridat licenciu a header do kazdeho sourcecode suboru...
  *      o IMPORTANT: interfacovat syscally na konretne volania. tj. kazdy syscall
  *        moze mat uplne ine parametre
+ *      o pridat package.d do modulov
+ *      o do logu pridat take to klasicke printf z Ccka
+ *      o dokoncit keyboard a mouse driver.
+ *      o spravit driver na PCI a pipedev...
+ *      o shared memory a serial
+ *      o parse command line
+ *      o framework bundle automatic creator
  */
 
 module Core.Main;
@@ -104,16 +111,18 @@ extern(C) void KernelMain() {
 	ModuleManager.Initialize();
 	ModuleManager.LoadBuiltins();
 
-	//mixin(import("../../../Makefile"));
+	mixin(import("Userspace/Library/Linker.so_src/Elf.d"));
 
 
 	VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
 	          cast(Partition)VFS.Find("/System/Devices/disk0s1"), "ext2");
-	VFS.PrintTree(VFS.Root);
 
-	Log.WriteLine("test: ", VFS.Root.Identifier);
 
-   
+    import Modules.Terminal.VTY.Main;
+   // new VTY();
+
+    VFS.PrintTree(VFS.Root);
+
 
 	//Thread thr = new Thread(Task.CurrentThread);
 	//thr.Start(&testfce, null);

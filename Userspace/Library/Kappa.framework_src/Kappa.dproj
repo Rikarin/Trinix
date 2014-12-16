@@ -18,11 +18,11 @@
     <UnittestMode>false</UnittestMode>
     <Externalconsole>true</Externalconsole>
     <Target>Executable</Target>
-    <OutputName>Framework</OutputName>
+    <OutputName>Kappa</OutputName>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Build" command="../../../Tools/Win.bat make -C Userspace/Libraries/Framework.so_src" />
-        <Command type="Clean" command="../../../Tools/Win.bat make clean -C Userspace/Libraries/Framework.so_src" />
+        <Command type="Build" command="../../../Tools/Win.bat make -C Userspace/Libraries/Kappa.framework_src" />
+        <Command type="Clean" command="../../../Tools/Win.bat make clean -C Userspace/Libraries/Kappa.framework_src" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -34,7 +34,7 @@
     <UnittestMode>false</UnittestMode>
     <Externalconsole>true</Externalconsole>
     <Target>Executable</Target>
-    <OutputName>Framework</OutputName>
+    <OutputName>Kappa</OutputName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Unittest|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,7 +45,7 @@
     <UnittestMode>true</UnittestMode>
     <Externalconsole>true</Externalconsole>
     <Target>Executable</Target>
-    <OutputName>Framework</OutputName>
+    <OutputName>Kappa</OutputName>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Handle.d" />
