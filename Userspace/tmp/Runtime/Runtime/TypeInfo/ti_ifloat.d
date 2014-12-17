@@ -1,7 +1,7 @@
 ﻿/**
  * Copyright (c) 2014 Trinix Foundation. All rights reserved.
  * 
- * This file is part of Trinix Operating System and is released under Trinix 
+ * This file is part of Trinix Operating System and is released under Trinix
  * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
  * except in compliance with the License. The rights granted to you under the
  * License may not be used to create, or enable the creation or redistribution
@@ -13,31 +13,24 @@
  * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
- * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+ * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  * 
  * Contributors:
- *      Matsumoto Satoshi <satoshi@gshost.eu>
+ * Matsumoto Satoshi <satoshi@gshost.eu>
  */
+module Runtime.TypeInfo.ti_ifloat;
 
-module main;
-
-
-extern (C) int _d_run_main(int argc, char **argv, void* mainFunc) {
-	return 0;
-}
-
-//                                                         .                                                           .
-//======================================================================================================================
-//                                               ====== Monitor ======
-//======================================================================================================================
+import Runtime.TypeInfo.ti_float;
 
 
-void testicek() {
-
-    int a;
-    double b;
-    cdouble c;
-    idouble id;
+class TypeInfo_o : TypeInfo_f {
+@trusted:
+const:
+pure:
+nothrow:
+    override string ToString() const pure nothrow @safe {
+        return "ifloat";
+    }
 }

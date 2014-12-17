@@ -23,6 +23,8 @@
 
 module object;
 
+import Runtime.Monitor;
+
 alias ulong size_t;
 alias TypeInfo_Class ClassInfo;
 
@@ -116,6 +118,8 @@ struct OffsetTypeInfo {
 
 
 class TypeInfo {
+    private alias getHash = GetHash;
+
 	override string ToString() const {
 		return (cast()super).ToString();
 	}
@@ -1407,26 +1411,9 @@ struct ModuleInfo {
 //======================================================================================================================
 //                                               ====== Monitor ======
 //======================================================================================================================
-alias Object.Monitor        IMonitor;
-alias void delegate(Object) DEvent;
-
-//TODO: import
-extern (C) void _d_monitor_create(Object) nothrow;
-extern (C) void _d_monitor_destroy(Object) nothrow;
-extern (C) void _d_monitor_lock(Object) nothrow;
-extern (C) int  _d_monitor_unlock(Object) nothrow;
-
-
-struct Monitor {
-	private IMonitor _impl;
-	private DEvent[] _devt;
-	private size_t _refs;
-}
-
 Monitor* GetMonitor(Object obj) pure nothrow {
 	return cast(Monitor *) obj.__monitor;
 }
-
 
 void SetMonitor(Object obj, Monitor* monitor) pure nothrow {
 	obj.__monitor = monitor;
@@ -1459,7 +1446,7 @@ extern (C) void _d_monitordelete(Object obj, bool det) {
 	Monitor* m = GetMonitor(obj);
 	
 	if (m !is null) {
-		IMonitor i = m._impl;
+		IMonitor i = m.impl;
 		if (i is null) {
 			auto s = cast(shared(Monitor)*) m;
 
@@ -1484,7 +1471,7 @@ extern (C) void _d_monitorenter(Object h) {
 		m = GetMonitor(h);
 	}
 	
-	IMonitor i = m._impl;
+	IMonitor i = m.impl;
 	if (i is null) {
 		_d_monitor_lock(h);
 		return;
@@ -1494,7 +1481,7 @@ extern (C) void _d_monitorenter(Object h) {
 
 extern (C) void _d_monitorexit(Object h) {
 	Monitor* m = GetMonitor(h);
-	IMonitor i = m._impl;
+	IMonitor i = m.impl;
 	
 	if (i is null) {
 		_d_monitor_unlock(h);
@@ -1504,12 +1491,12 @@ extern (C) void _d_monitorexit(Object h) {
 }
 
 extern (C) void _d_monitor_devt(Monitor* m, Object h) {
-	if (m._devt.Length) {
+	if (m.devt.Length) {
 		DEvent[] devt;
 		
 		synchronized (h) {
-			devt = m._devt;
-			m._devt = null;
+			devt = m.devt;
+			m.devt = null;
 		}
 
 		foreach (v; devt) {
@@ -1524,35 +1511,35 @@ extern (C) void _d_monitor_devt(Monitor* m, Object h) {
 extern (C) void rt_attachDisposeEvent(Object h, DEvent e) {
 	synchronized (h) {
 		Monitor* m = GetMonitor(h);
-		assert(m._impl is null);
+		assert(m.impl is null);
 		
-		foreach (ref v; m._devt) {
+		foreach (ref v; m.devt) {
 			if (v is null || v == e) {
 				v = e;
 				return;
 			}
 		}
 		
-		auto len = m._devt.Length + 4;
-		auto pos = m._devt.Length;
+		auto len = m.devt.Length + 4;
+		auto pos = m.devt.Length;
 		auto p = cast(void *)null;//TODO: realloc(m.devt.ptr, DEvent.sizeof * len);
-		m._devt = (cast(DEvent *)p)[0 .. len];
-		m._devt[pos + 1 .. len] = null;
-		m._devt[pos] = e;
+		m.devt = (cast(DEvent *)p)[0 .. len];
+		m.devt[pos + 1 .. len] = null;
+		m.devt[pos] = e;
 	}
 }
 
 extern (C) void rt_detachDisposeEvent(Object h, DEvent e) {
 	synchronized (h) {
 		Monitor* m = GetMonitor(h);
-		assert(m._impl is null);
+		assert(m.impl is null);
 		
-		foreach (p, v; m._devt) {
+		foreach (p, v; m.devt) {
 			if (v == e) {
 				/*memmove(&m.devt[p], TODO
 				&m.devt[p+1],
 				(m.devt.length - p - 1) * DEvent.sizeof);*/
-				m._devt[$ - 1] = null;
+				m.devt[$ - 1] = null;
 				return;
 			}
 		}

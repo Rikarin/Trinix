@@ -20,24 +20,9 @@
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
-
-module main;
-
-
-extern (C) int _d_run_main(int argc, char **argv, void* mainFunc) {
-	return 0;
-}
-
-//                                                         .                                                           .
-//======================================================================================================================
-//                                               ====== Monitor ======
-//======================================================================================================================
+module Runtime.Core.Throw;
 
 
-void testicek() {
-
-    int a;
-    double b;
-    cdouble c;
-    idouble id;
+extern (C) void _d_throwc(Object h) {
+    //TODO
 }

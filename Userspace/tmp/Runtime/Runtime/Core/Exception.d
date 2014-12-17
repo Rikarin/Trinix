@@ -36,15 +36,11 @@ private __gshared AssertHandler _assertHandler = null;
 	_assertHandler = handler;
 }
 
-
-
-
 class RangeError : Error {
 	@safe pure nothrow this(string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
 		super("Range violation", file, line, next);
 	}
 }
-
 
 class AssertError : Error {
 	@safe pure nothrow this(string file, size_t line) {
@@ -59,7 +55,6 @@ class AssertError : Error {
 		super(message, file, line, next);
 	}
 }
-
 
 class FinalizeError : Error {
 	private ClassInfo _info;
@@ -78,13 +73,11 @@ class FinalizeError : Error {
 	}
 }
 
-
 class HiddenFuncError : Error {
 	@safe pure nothrow this(ClassInfo ci) {
 		super("Hidden method called for " ~ ci.Name);
 	}
 }
-
 
 class OutOfMemoryError : Error {
 	@safe pure nothrow this(string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
@@ -96,7 +89,6 @@ class OutOfMemoryError : Error {
 	}
 }
 
-
 class InvalidMemoryOperationError : Error {
 	@safe pure nothrow this(string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
 		super("Invalid memory operation", file, line, next);
@@ -107,13 +99,11 @@ class InvalidMemoryOperationError : Error {
 	}
 }
 
-
 class SwitchError : Error {
 	@safe pure nothrow this(string file = __FILE__, size_t line = __LINE__, Throwable next = null) {
 		super("No appropriate switch clause found", file, line, next);
 	}
 }
-
 
 class UnicodeException : Exception {
 	private size_t _idx;
@@ -123,7 +113,6 @@ class UnicodeException : Exception {
 		_idx = idx;
 	}
 }
-
 
 //======================================================================================================================
 //                                        ====== Overridable Callbacks ======
@@ -143,7 +132,6 @@ extern (C) void OnAssertErrorMessage(string file, size_t line, string message) n
 extern (C) void OnUnittestErrorMessage(string file, size_t line, string message) nothrow {
 	OnAssertErrorMessage(file, line, message);
 }
-
 
 //                                                         .                                                           .
 //======================================================================================================================

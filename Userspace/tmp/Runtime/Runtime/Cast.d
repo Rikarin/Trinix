@@ -37,16 +37,13 @@ extern(C) Object _d_toObject(void* p) {
 	return o;
 }
 
-
 extern(C) void* _d_interface_cast(void* p, ClassInfo c) {
 	if(!p)
 		return null;
 	
 	Interface* pi = **cast(Interface ***)p;
-
 	return _d_dynamic_cast(cast(Object)(p - pi.Offset), c);
 }
-
 
 extern(C) void* _d_dynamic_cast(Object o, ClassInfo c) {
 	void* res = null;
@@ -56,7 +53,6 @@ extern(C) void* _d_dynamic_cast(Object o, ClassInfo c) {
 
 	return res;
 }
-
 
 extern(C) int _d_isbaseof2(ClassInfo oc, ClassInfo c, ref size_t offset) {
 	if(oc is c)
@@ -85,7 +81,6 @@ extern(C) int _d_isbaseof2(ClassInfo oc, ClassInfo c, ref size_t offset) {
 	return false;
 }
 
-
 extern(C) int _d_isbaseof(ClassInfo oc, ClassInfo c) {
 	if (oc is c)
 		return true;
@@ -103,7 +98,6 @@ extern(C) int _d_isbaseof(ClassInfo oc, ClassInfo c) {
 	
 	return false;
 }
-
 
 extern(C) void* _d_interface_vtbl(ClassInfo ic, Object o) {
 	assert(o);

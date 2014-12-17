@@ -21,8 +21,8 @@
     <OutputName>Runtime</OutputName>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Build" command="D:\Instalacky\plink.exe -ssh -l root -i G:/private2.ppk 192.168.0.109 cd /os/Source/Runtime/;make" />
-        <Command type="Clean" command="D:\Instalacky\plink.exe -ssh -l root -i G:/private2.ppk 192.168.0.109 cd /os/Source/Runtime/;make clean" />
+        <Command type="Build" command="../../../Tools/Win.bat make -C Userspace/tmp/Runtime" />
+        <Command type="Clean" command="../../../Tools/Win.bat make clean -C Userspace/tmp/Runtime" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -54,9 +54,46 @@
     <Compile Include="invariant.d" />
     <Compile Include="Runtime\Cast.d" />
     <Compile Include="Runtime\Monitor.d" />
+    <Compile Include="Runtime\Core\Throw.d" />
+    <Compile Include="Runtime\TypeInfo\ti_Ag.d" />
+    <Compile Include="Runtime\TypeInfo\ti_AC.d" />
+    <Compile Include="Runtime\TypeInfo\ti_Acdouble.d" />
+    <Compile Include="Runtime\Utilities\Hash.d" />
+    <Compile Include="Runtime\TypeInfo\ti_cdouble.d" />
+    <Compile Include="Runtime\TypeInfo\ti_wchar.d" />
+    <Compile Include="Runtime\TypeInfo\ti_void.d" />
+    <Compile Include="Runtime\TypeInfo\ti_ushort.d" />
+    <Compile Include="Runtime\TypeInfo\ti_ulong.d" />
+    <Compile Include="Runtime\TypeInfo\ti_uint.d" />
+    <Compile Include="Runtime\TypeInfo\ti_ubyte.d" />
+    <Compile Include="Runtime\TypeInfo\ti_short.d" />
+    <Compile Include="Runtime\TypeInfo\ti_long.d" />
+    <Compile Include="Runtime\TypeInfo\ti_int.d" />
+    <Compile Include="Runtime\TypeInfo\ti_byte.d" />
+    <Compile Include="Runtime\TypeInfo\ti_real.d" />
+    <Compile Include="Runtime\TypeInfo\ti_ptr.d" />
+    <Compile Include="Runtime\TypeInfo\ti_ireal.d" />
+    <Compile Include="Runtime\TypeInfo\ti_ifloat.d" />
+    <Compile Include="Runtime\TypeInfo\ti_float.d" />
+    <Compile Include="Runtime\TypeInfo\ti_double.d" />
+    <Compile Include="Runtime\TypeInfo\ti_idouble.d" />
+    <Compile Include="Runtime\TypeInfo\ti_delegate.d" />
+    <Compile Include="Runtime\TypeInfo\ti_C.d" />
+    <Compile Include="Runtime\TypeInfo\ti_char.d" />
+    <Compile Include="Runtime\TypeInfo\ti_dchar.d" />
+    <Compile Include="Runtime\TypeInfo\ti_creal.d" />
+    <Compile Include="Runtime\TypeInfo\ti_cfloat.d" />
+    <Compile Include="Runtime\TypeInfo\ti_Ashort.d" />
+    <Compile Include="Runtime\Utilities\Memory.d" />
+    <Compile Include="Runtime\TypeInfo\ti_Areal.d" />
+    <Compile Include="Runtime\TypeInfo\ti_Along.d" />
+    <Compile Include="Runtime\TypeInfo\ti_Aint.d" />
+    <Compile Include="Runtime\TypeInfo\ti_Afloat.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Runtime\" />
     <Folder Include="Runtime\Core\" />
+    <Folder Include="Runtime\TypeInfo\" />
+    <Folder Include="Runtime\Utilities\" />
   </ItemGroup>
 </Project>
