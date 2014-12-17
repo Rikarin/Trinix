@@ -291,16 +291,18 @@ final class Thread {
 		*--st = ss;
 
 		asm {
-			"mov RSP, %0" : : "r"(st);
+            mov RSP, st;
 
-			"mov DS, [RSP]";
-			"add RSP, 8";
-			"mov ES, [RSP]";
-			"add RSP, 8";
-			"popq FS";
-			"popq GS";
+			mov DS, [RSP];
+			add RSP, 8;
 
-			"iretq";
+			mov ES, [RSP];
+			add RSP, 8;
+
+			popq FS;
+			popq GS;
+
+			iretq;
 		}
 	}
 

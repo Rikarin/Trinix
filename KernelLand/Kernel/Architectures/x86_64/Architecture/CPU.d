@@ -73,15 +73,15 @@ abstract final class CPU {
 		ulong saveRBX;
 		
 		asm {
-			"mov %0, RBX" : "=r"(saveRBX);
+            mov saveRBX, RBX;
 		}
 		
 		eax = Port.cpuidAX(0x02);
 		count = eax & 0xFF;
 		asm {
-			"mov %0, EBX" : "=r"(ebx);
-			"mov %0, ECX" : "=r"(ecx);
-			"mov %0, EDX" : "=r"(edx);
+            mov ebx, EBX;
+            mov ecx, ECX;
+            mov edx, EDX;
 		}
 
 		for (uint i = 0; i < count; i++) {
@@ -102,15 +102,15 @@ abstract final class CPU {
 				ExamineRegister(edx);
 				
 			eax = Port.cpuidAX(0x02);
-			asm {
-				"mov %0, EBX" : "=r"(ebx);
-				"mov %0, ECX" : "=r"(ecx);
-				"mov %0, EDX" : "=r"(edx);
-			}
+            asm {
+                mov ebx, EBX;
+                mov ecx, ECX;
+                mov edx, EDX;
+            }
 		}
 		
 		asm {
-			"mov RBX, %0" : : "r"(saveRBX);
+            mov RBX, saveRBX;
 		}
 	}
 

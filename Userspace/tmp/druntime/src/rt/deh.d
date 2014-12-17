@@ -11,6 +11,13 @@
 
 module rt.deh;
 
+version (LDC)
+{
+    // We use a libunwind-based EH scheme on all platforms.
+}
+else
+{
+
 extern (C)
 {
     Throwable.TraceInfo _d_traceContext(void* ptr = null);
@@ -35,3 +42,4 @@ else version (Posix)
 else
     static assert (0, "Unsupported architecture");
 
+}

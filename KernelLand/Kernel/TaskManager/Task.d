@@ -120,8 +120,8 @@ abstract final class Task {
 
 		void* rsp, rbp;
 		asm {
-			"mov %0, RSP" : "=r"(rsp);
-			"mov %0, RBP" : "=r"(rbp);
+            mov rsp, RSP;
+            mov rbp, RBP;
 		}
 
 		void* rip = _Proc_Read_RIP();
@@ -184,11 +184,12 @@ abstract final class Task {
 
 	private static void SwitchTasks(void* rsp, void* rbp, void* rip) {		
 		asm {
-			"pop RBP"; //Naked
-			"movq RBP, RSI";
-			"movq RSP, RDI";
-			"movq RAX, 0x12341234";
-			"jmp RDX";
+            naked;
+
+			movq RBP, RSI;
+			movq RSP, RDI;
+			movq RAX, 0x12341234;
+			jmp RDX;
 		}
 	}
 

@@ -1,9 +1,0 @@
-doc/*
-lib/*
-obj/*
-import/*
-druntime.json
-.DS_Store
-trace.def
-trace.log
-Makefile

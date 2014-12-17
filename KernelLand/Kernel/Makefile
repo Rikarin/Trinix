@@ -11,10 +11,10 @@ ifeq ($(BUILD_NUM),)
 	BUILD_NUM = 0
 endif
 
-DFLAGS		+= -fversion=LogUserFriendly -D _MODULE_NAME_=\"Kernel\"
+DFLAGS		+= -d-version=LogUserFriendly
+#-D _MODULE_NAME_=\"Kernel\"
 DFLAGS		+= -IArchitectures/$(ARCHDIR) -I../ -J../../
-CFLAGS		+= -fno-stack-protector
-LDFLAGS		:= -Wl,-T -Wl,Architectures/$(ARCHDIR)/Linker.ld -Wl,-Map -Wl,../Linker.$(ARCH).map
+LDFLAGS		:= -T Architectures/$(ARCHDIR)/Linker.ld -Map ../Linker.$(ARCH).map
 DRUNTIME	:= $(TRXDIR)/Userspace/tmp/druntime/lib/libdruntime-linux64.a
 
 ifeq ($(PLATFORM),default)
@@ -30,15 +30,13 @@ endif
 ifeq ($(DEBUG_BUILD),yes)
 	LDFLAGS += -g
 	DFLAGS 	+= -g
-	CFLAGS 	+= -g
 endif
 
 BUILDINFO_OBJ := $(OBJDIR)buildinfo.c.o
 BUILDINFO_SRC := $(OBJDIR)buildinfo.c
 
 OBJ := $(A_OBJ)
-#TODO D
-OBJ	+= $(addsuffix .o,$(shell find * -name "*.[c|s]" -not -path "*Architectures*"))
+OBJ	+= $(addsuffix .o,$(shell find * -name "*.[s|d]" -not -path "*Architectures*"))
 OBJ := $(filter-out $(BUILDINFO_OBJ), $(OBJ))
 OBJ := $(addprefix $(OBJDIR), $(OBJ))
 OBJ += $(BUILDINFO_OBJ)
@@ -80,14 +78,9 @@ $(DOCDIR)%.html: %.d
 	@$(MKDIR) $(dir $@)
 	@$(DD) $(DFLAGS) -c -fdoc -fdoc-file=$@ $< -o /dev/null
 	
-$(BIN): $(OBJ) $(MODS) $(DRUNTIME) $(shell find * -name "*.d" -not -path "*Architectures*") Architectures/$(ARCHDIR)/Linker.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
+$(BIN): $(OBJ) $(MODS) $(DRUNTIME) Architectures/$(ARCHDIR)/Linker.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
 	@echo --- LD -o $(BIN)
-#	@$(DD) $(DFLAGS) -c -o $(OBJDIR)kernel.d.o $(shell find * -name "*.d" -not -path "*Architectures*")
-#	@$(LD) $(LDFLAGS) -o $(BIN) --defsym __buildnum=$$(( $(BUILD_NUM) + 1 )) -Map ../Linker.$(ARCH).map $(OBJDIR)kernel.d.o $(OBJ) $(DRUNTIME)
-	
-#$(DD) $(LDFLAGS) -o $(BIN) -femit-templates -Wl,--defsym -Wl,__buildnum=$$(( $(BUILD_NUM) + 1 )) -Wl,-Map -Wl,../Linker.$(ARCH).map $(OBJ) $(MODS)  $(DRUNTIME)
-
-	@$(DD) $(DFLAGS) $(LDFLAGS) -o $(BIN) $(shell find * -name "*.d" -not -path "*Architectures*") $(OBJ) $(MODS) $(DRUNTIME)
+	@ld $(LDFLAGS) -o $(BIN) --defsym __buildnum=$$(( $(BUILD_NUM) + 1 )) -Map ../Linker.$(ARCH).map $(OBJ) $(MODS) $(DRUNTIME)
 	@$(OBJDUMP) -d -S $(BIN) > $(BIN).dsm
 	@echo BUILD_NUM = $$(( $(BUILD_NUM) + 1 )) > Makefile.BuildNum.$(ARCH)
 	@$(STRIP) $(BIN)
@@ -96,18 +89,13 @@ $(BIN): $(OBJ) $(MODS) $(DRUNTIME) $(shell find * -name "*.d" -not -path "*Archi
 $(OBJDIR)%.d.o: %.d
 	@echo --- DD -o $@
 	@$(MKDIR) $(dir $@)
-	@$(DD) $(DFLAGS) -o $@ -c -fmake-mdeps=$@.o.dep $<
+	@$(DD) -c $(DFLAGS) -of=$@ $<
+#-deps=$@.o.dep 
 	
 $(OBJDIR)%.s.o: %.s
 	@echo --- AS -o $@
 	@$(MKDIR) $(dir $@)
 	@$(AS) $(ASFLAGS) -o $@ $<
-	@$(CC) $(CFLAGS) -M -MT $@ -MP -o $@.o.dep $<
-	
-$(OBJDIR)%.c.o: %.c
-	@echo --- CC -o $@
-	@$(MKDIR) $(dir $@)
-	@$(CC) $(CFLAGS) -o $@ -c $<
 	@$(CC) $(CFLAGS) -M -MT $@ -MP -o $@.o.dep $<
 	
 %.xo.$(ARCH):
@@ -128,4 +116,4 @@ $(BUILDINFO_OBJ): $(BUILDINFO_SRC)
 	@$(CC) $(CFLAGS) -o $@ -c $<
 	
 	
--include $(DEPFILES)
+#-include $(DEPFILES)

@@ -22,6 +22,10 @@
  */
 module Runtime.Utilities.Memory;
 
+
+@trusted:
+pure
+nothrow:
 extern(C) void* memcpy(void* dest, void* src, ulong count) {
     ubyte* d = cast(ubyte *)dest;
     ubyte* s = cast(ubyte *)src;
@@ -51,3 +55,5 @@ extern(C) void* memset(void* ptr, int value, ulong count) {
     
     return ptr;
 }
+
+extern(C) void* alloca(ulong); //TODO

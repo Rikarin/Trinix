@@ -77,7 +77,8 @@ abstract final class TSS {
         GDT.Table.SetSystemSegment((TSSBase >> 3), TaskStateSegment.sizeof, cast(ulong)_segments[CPU.Identifier], SystemSegmentType.AvailableTSS, 0, true, false, false);
         
         asm {
-            "ltr AX" : : "a"(TSSBase);
+            mov AX, TSSBase;
+       //     ltr AX;
         }
 
 		return true;

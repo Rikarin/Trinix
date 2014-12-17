@@ -32,70 +32,82 @@ private extern(C) void _Proc_RestoreSSE(ulong ptr);
 
 abstract final class Port {
 	static T Read(T)(ushort port) {
-		T ret;
+        T ret;
 
-		static if (is(T == byte) || is(T == ubyte)) {
-			asm {
-				"inb AL, %1" : "=a"(ret) : "dN"(port);
-			}
-		} else static if (is(T == short) || is(T == ushort)) {
-			asm {
-				"inw AX, %1" : "=a"(ret) : "dN"(port);
-			}
-		} else static if (is(T == int) || is(T == uint)) {
-			asm {
-				"inl EAX, %1" : "=a"(ret) : "dN"(port);
-			}
-		}
+        asm {
+            mov DX, port;
+        }
+
+        static if (is(T == byte) || is(T == ubyte)) {
+            asm {
+                in AL, DX;
+                mov ret, AL;
+            }
+        } else static if (is(T == short) || is(T == ushort)) {
+            asm {
+                in AX, DX;
+                mov ret, AX;
+            }
+        } else static if (is(T == int) || is(T == uint)) {
+            asm {
+                in EAX, DX;
+                mov ret, EAX;
+            }
+        }
 		
 		return ret;
 	}
 	
 	static void Write(T)(ushort port, int data) {
-		static if (is(T == byte) || is(T == ubyte)) {
-			asm {
-				"outb %0, AL" : : "dN"(port), "a"(data);
-			}
-		} else static if (is(T == short) || is(T == ushort)) {
-			asm {
-				"outw %0, AX" : : "dN"(port), "a"(data);
-			}
-		} else static if (is(T == int) || is(T == uint)) {
-			asm {
-				"outl %0, EAX" : : "dN"(port), "a"(data);
-			}
-		}
+        asm {
+            mov EAX, data;
+            mov DX, port;
+        }
+
+        static if (is(T == byte) || is(T == ubyte)) {
+            asm {
+                out DX, AL;
+            }
+        } else static if (is(T == short) || is(T == ushort)) {
+            asm {
+                out DX, AX;
+            }
+        } else static if (is(T == int) || is(T == uint)) {
+            asm {
+                out DX, EAX;
+            }
+        }
 	}
 
 	static void Cli() {
 		asm {
-			"cli";
+            cli;
 		}
 	}
 	
 	static void Sti() {
 		asm {
-			"sti";
+            sti;
 		}
 	}
 
 	static void Halt() {
 		asm {
-			"hlt";
+            hlt;
 		}
 	}
 	
 	static void SwapGS() {
 		asm {
-			"swapgs";
+            swapgs;
 		}
 	}
 
 	static bool GetIntFlag() {
 		ulong flags;
 		asm {
-			"pushfq";
-			"pop RAX" : "=a"(flags);
+            pushfq;
+            pop flags;
 		}
 
 		return (flags & 0x200) == 0x200;
@@ -107,16 +119,23 @@ abstract final class Port {
 		hi = value >> 32UL;
 		
 		asm {
-			"wrmsr" : : "d"(hi), "a"(lo), "c"(msr);
+            mov RDX, hi;
+            mov RAX, lo;
+            mov RCX, msr;
+            wrmsr;
 		}
 	}
 
 	static ulong ReadMSR(uint msr) {
 		uint hi, lo;
 		
-		asm {
-			"rdmsr" : "=d"(hi), "=a"(lo) : "c"(msr);
-		}
+        asm {
+            mov ECX, msr;
+            rdmsr;
+
+            mov hi, EDX;
+            mov lo, EAX;
+        }
 		
 		ulong ret = hi;
 		ret <<= 32;
@@ -126,31 +145,45 @@ abstract final class Port {
 	}
 	
 	static uint cpuidAX(uint func) {
-		asm {
-			"cpuid" : "+a"(func);
-		}
-		return func;
+        asm {
+            naked;
+            mov EAX, EDI;
+
+            cpuid;
+            ret;
+        }
 	}
 	
 	static uint cpuidBX(uint func) {
-		asm {
-			"cpuid" : "=b"(func) : "a"(func);
-		}
-		return func;
+        asm {
+            naked;
+            mov EAX, EDI;
+            cpuid;
+
+            mov EAX, EBX;
+            ret;
+        }
 	}
 	
 	static uint cpuidCX(uint func) {
-		asm {
-			"cpuid" : "=c"(func) : "a"(func);
-		}
-		return func;
+        asm {
+            naked;
+            mov EAX, EDI;
+            cpuid;
+            mov EAX, ECX;
+            ret;
+        }
 	}
 	
 	static uint cpuidDX(uint func) {
-		asm {
-			"cpuid" : "=d"(func) : "a"(func);
-		}
-		return func;
+        asm {
+            naked;
+            mov EAX, EDI;
+            cpuid;
+
+            mov EAX, EDX;
+            ret;
+        }
 	}
 
 	static void EnableSSE() {

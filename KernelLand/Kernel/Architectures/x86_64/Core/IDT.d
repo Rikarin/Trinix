@@ -80,8 +80,8 @@ abstract final class IDT {
 		SetInterruptGate(8, &IsrIgnore);
 
         asm {
-            "lidt [RAX]" : : "a"(&_idtBase);
-            "sti";
+            lidt _idtBase;
+            sti;
         }
 		return true;
 	}
@@ -133,8 +133,8 @@ abstract final class IDT {
 	}
 
 	private static template GenerateISR(ulong num, bool needDummyError = true) {
-		const char[] GenerateISR = `private static void isr` ~ num.stringof[0 .. $ - 2] ~ `(){asm{"pop RBP";` ~
-			(needDummyError ? `"pushq 0";` : ``) ~ `"pushq ` ~ num.stringof[0 .. $ - 2] ~ `";"push RAX";"jmp %0" : : "a"(&IsrCommon);}}`;
+		const char[] GenerateISR = `private static void isr` ~ num.stringof[0 .. $ - 2] ~ `(){asm{naked;` ~
+			(needDummyError ? `push 0UL;` : ``) ~ `push ` ~ num.stringof ~ `;jmp IsrCommon;}}`;
 	}
 
 	private static template GenerateISRs(uint start, uint end, bool needDummyError = true) {
@@ -195,59 +195,79 @@ abstract final class IDT {
 	}
 
 	private static void IsrIgnore() {
-		asm {
-			"pop RBP"; //Naked
-			"nop";
-			"nop";
-			"nop";
-			"iretq";
-		}
+        asm {
+            naked;
+            nop;
+            nop;
+            nop;
+            jmp _CPU_iretq;
+        }
 	}
 	
 	extern(C) private static void IsrCommon() {
 		asm {
-			"pop RBP"; //Naked
-			"cli";
+            naked;
+            cli;
 
-			// Save context
-			"push RBX";
-			"push RCX";
-			"push RDX";
-			"push RSI";
-			"push RDI";
-			"push RBP";
-			"push R8";
-			"push R9";
-			"push R10";
-			"push R11";
-			"push R12";
-			"push R13";
-			"push R14";
-			"push R15";
-			
-			// Run dispatcher
-			"mov RDI, RSP";
-			"call %0" : : "r"(&Dispatch);
-			
-			// Restore context
-			"pop R15";
-			"pop R14";
-			"pop R13";
-			"pop R12";
-			"pop R11";
-			"pop R10";
-			"pop R9";
-			"pop R8";
-			"pop RBP";
-			"pop RDI";
-			"pop RSI";
-			"pop RDX";
-			"pop RCX";
-			"pop RBX";
-			"pop RAX";
+            // Save context
+            push RAX;
+            push RBX;
+            push RCX;
+            push RDX;
+            push RSI;
+            push RDI;
+            push RBP;
+            push R8;
+            push R9;
+            push R10;
+            push R11;
+            push R12;
+            push R13;
+            push R14;
+            push R15;
 
-			"add RSP, 16";
-			"iretq";
+            // Save data segments
+         //   mov AX, DS;
+         //   push RAX;
+            // Set data registers
+         //   mov AX, 0x10;
+         //   mov DS, AX;
+         //   mov ES, AX;
+         //   mov FS, AX;
+         //   mov GS, AX;
+         //   mov SS, AX;
+
+            // Run dispatcher
+            mov RDI, RSP;
+            call Dispatch;
+
+            // Restore data segments
+        //    pop RAX;
+         //   mov DS, AX;
+         //   mov ES, AX;
+         //   mov FS, AX;
+         //   mov GS, AX;
+
+            // Restore context
+            pop R15;
+            pop R14;
+            pop R13;
+            pop R12;
+            pop R11;
+            pop R10;
+            pop R9;
+            pop R8;
+            pop RBP;
+            pop RDI;
+            pop RSI;
+            pop RDX;
+            pop RCX;
+            pop RBX;
+            pop RAX;
+
+            add RSP, 16;
+            //jmp _CPU_iretq;
+            iretq;
 		}
 	}
 }

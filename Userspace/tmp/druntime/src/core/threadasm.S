@@ -13,129 +13,312 @@
  *          http://www.boost.org/LICENSE_1_0.txt)
  */
 
+#if (defined(__linux__) || defined(__FreeBSD__)) && defined(__ELF__)
+/*
+ * Mark the resulting object file as not requiring execution permissions on
+ * stack memory. The absence of this section would mark the whole resulting
+ * library as requiring an executable stack, making it impossible to
+ * dynamically load druntime on several Linux platforms where this is
+ * forbidden due to security policies.
+ */
+.section .note.GNU-stack,"",%progbits
+#endif
+
 /************************************************************************************
  * POWER PC ASM BITS
  ************************************************************************************/
 #if defined( __PPC64__ )
 
+/**
+ * Performs a context switch.
+ * r3: location where to store current stack pointer
+ * r4: new stack pointer
+ *
+ * The stack frame uses the standard layout except for floating point and
+ * vector registers.
+ *
+ * ELFv2:
+ * +------------------------+
+ * | TOC Pointer Doubleword | SP+24
+ * +------------------------+
+ * | LR Save Doubleword     | SP+16
+ * +------------------------+
+ * | Reserved               | SP+12
+ * +------------------------+
+ * | CR Save Word           | SP+8
+ * +------------------------+
+ * | Back Chain             | SP+176 <-- Previous function
+ * +------------------------+
+ * | GPR Save Area (14-31)  | SP+32
+ * +------------------------+
+ * | TOC Pointer Doubleword | SP+24
+ * +------------------------+
+ * | LR Save Doubleword     | SP+16
+ * +------------------------+
+ * | Reserved               | SP+12
+ * +------------------------+
+ * | CR Save Word           | SP+8
+ * +------------------------+
+ * | Back Chain             | SP+0   <-- Stored stack pointer
+ * +------------------------+
+ * | VR Save Area (20-31)   | SP-16
+ * +------------------------+
+ * | FPR Save Area (14-31)  | SP-200
+ * +------------------------+
+ *
+ * ELFv1:
+ * +------------------------+
+ * | Parameter Save Area    | SP+48
+ * +------------------------+
+ * | TOC Pointer Doubleword | SP+40
+ * +------------------------+
+ * | Link editor doubleword | SP+32
+ * +------------------------+
+ * | Compiler Doubleword    | SP+24
+ * +------------------------+
+ * | LR Save Doubleword     | SP+16
+ * +------------------------+
+ * | Reserved               | SP+12
+ * +------------------------+
+ * | CR Save Word           | SP+8
+ * +------------------------+
+ * | Back Chain             | SP+256 <-- Previous function
+ * +------------------------+
+ * | GPR Save Area (14-31)  | SP+112
+ * +------------------------+
+ * | Parameter Save Area    | SP+48
+ * +------------------------+
+ * | TOC Pointer Doubleword | SP+40
+ * +------------------------+
+ * | Link editor doubleword | SP+32
+ * +------------------------+
+ * | Compiler Doubleword    | SP+24
+ * +------------------------+
+ * | LR Save Doubleword     | SP+16
+ * +------------------------+
+ * | Reserved               | SP+12
+ * +------------------------+
+ * | CR Save Word           | SP+8
+ * +------------------------+
+ * | Back Chain             | SP+0   <-- Stored stack pointer
+ * +------------------------+
+ * | VR Save Area (20-31)   | SP-16
+ * +------------------------+
+ * | FPR Save Area (14-31)  | SP-200
+ * +------------------------+
+ */
+
+#if defined(_CALL_ELF) && _CALL_ELF == 2
+#define USE_ABI_2
+#define LINKAGE_SZ   32
+#define CR_OFS       8
+#define LR_OFS       16
+#define TOC_OFS      24
+#define GPR_OFS      32
+#define STACK_SZ     (LINKAGE_SZ + 18*8)
+#else
+#define LINKAGE_SZ   48
+#define CR_OFS       8
+#define LR_OFS       16
+#define TOC_OFS      40
+#define GPR_OFS      112
+#define STACK_SZ     (LINKAGE_SZ + 8*8 + 18*8)
+#endif
 
     .text
-    .globl  _D4core6thread18callWithStackShellFMDFPvZvZv
-    .align  2
-    .type _D4core6thread18callWithStackShellFMDFPvZvZv,@function
-    .section  .opd,"aw",@progbits
-_D4core6thread18callWithStackShellFMDFPvZvZv:
+#if defined( USE_ABI_2 )
+    .abiversion 2
+#endif
+    .align 2
+    .globl fiber_switchContext
+    .type  fiber_switchContext,@function
+#if defined( USE_ABI_2 )
+    .section .text.fiber_switchContext,"a",@progbits
+#else
+    .section .opd,"aw",@progbits
+#endif
+fiber_switchContext:
+#if !defined( USE_ABI_2 )
     .align  3
-    .quad .L._D4core6thread18callWithStackShellFMDFPvZvZv
+    .quad .L.fiber_switchContext
     .quad .TOC.@tocbase
     .quad 0
     .text
-/*
- * Called with:
- * r3: pointer context
- * r4: pointer to function
- */
-.L._D4core6thread18callWithStackShellFMDFPvZvZv:
+#endif
+.L.fiber_switchContext:
     .cfi_startproc
+#if defined( USE_ABI_2 )
+    addis 2, 12, .TOC.-.L.fiber_switchContext@ha
+    addi 2, 2, .TOC.-.L.fiber_switchContext@l
+    .localentry fiber_switchContext, .-.L.fiber_switchContext
+#endif
     mflr    0
-    std     0, 16(1)                    // save LR
-    stdu    1, -256(1)                  // stack size: 18*8 + 112 = 256
-    .cfi_def_cfa_offset 256
-    .cfi_offset lr, 16
+    std     0, LR_OFS(1)
+    stdu    1, -STACK_SZ(1)
+    .cfi_def_cfa_offset STACK_SZ
+    .cfi_offset lr, LR_OFS
 
-    /* Save r14-r31 in general register save area */
-    std     14, (112 + 0 * 8)(1)
-    std     15, (112 + 1 * 8)(1)
-    std     16, (112 + 2 * 8)(1)
-    std     17, (112 + 3 * 8)(1)
-    std     18, (112 + 4 * 8)(1)
-    std     19, (112 + 5 * 8)(1)
-    std     20, (112 + 6 * 8)(1)
-    std     21, (112 + 7 * 8)(1)
-    std     22, (112 + 8 * 8)(1)
-    std     23, (112 + 9 * 8)(1)
-    std     24, (112 + 10 * 8)(1)
-    std     25, (112 + 11 * 8)(1)
-    std     26, (112 + 12 * 8)(1)
-    std     27, (112 + 13 * 8)(1)
-    std     28, (112 + 14 * 8)(1)
-    std     29, (112 + 15 * 8)(1)
-    std     30, (112 + 16 * 8)(1)
-    std     31, (112 + 17 * 8)(1)
+    /* Update the old stack pointer */
+    std     1, 0(3)
 
-    /* Save r3-r10 in parameter save area of caller */
-    std     3, (256 + 48 + 0 * 8)(1)
-    std     4, (256 + 48 + 1 * 8)(1)
-    std     5, (256 + 48 + 2 * 8)(1)
-    std     6, (256 + 48 + 3 * 8)(1)
-    std     7, (256 + 48 + 4 * 8)(1)
-    std     8, (256 + 48 + 5 * 8)(1)
-    std     9, (256 + 48 + 6 * 8)(1)
-    std     10, (256 + 48 + 7 * 8)(1)
+    /* Save CC and TOC */
+    mfcr    0
+    sth     0,  CR_OFS(1)
+    std     2,  TOC_OFS(1)
 
-    /* Save r2 in TOC save area */
-    std     2, 40(1)
+    /* Save GPRs */
+    std     14, (GPR_OFS +  0 * 8)(1)
+    std     15, (GPR_OFS +  1 * 8)(1)
+    std     16, (GPR_OFS +  2 * 8)(1)
+    std     17, (GPR_OFS +  3 * 8)(1)
+    std     18, (GPR_OFS +  4 * 8)(1)
+    std     19, (GPR_OFS +  5 * 8)(1)
+    std     20, (GPR_OFS +  6 * 8)(1)
+    std     21, (GPR_OFS +  7 * 8)(1)
+    std     22, (GPR_OFS +  8 * 8)(1)
+    std     23, (GPR_OFS +  9 * 8)(1)
+    std     24, (GPR_OFS + 10 * 8)(1)
+    std     25, (GPR_OFS + 11 * 8)(1)
+    std     26, (GPR_OFS + 12 * 8)(1)
+    std     27, (GPR_OFS + 13 * 8)(1)
+    std     28, (GPR_OFS + 14 * 8)(1)
+    std     29, (GPR_OFS + 15 * 8)(1)
+    std     30, (GPR_OFS + 16 * 8)(1)
+    std     31, (GPR_OFS + 17 * 8)(1)
 
-    /* Do not save r11, r12 and r13. */
+    /* Save VRs */
+    addi    0, 1, (- 1 * 16)
+    stvx    20, 0, 0
+    addi    0, 1, (- 2 * 16)
+    stvx    21, 0, 0
+    addi    0, 1, (- 3 * 16)
+    stvx    22, 0, 0
+    addi    0, 1, (- 4 * 16)
+    stvx    23, 0, 0
+    addi    0, 1, (- 5 * 16)
+    stvx    24, 0, 0
+    addi    0, 1, (- 6 * 16)
+    stvx    25, 0, 0
+    addi    0, 1, (- 7 * 16)
+    stvx    26, 0, 0
+    addi    0, 1, (- 8 * 16)
+    stvx    27, 0, 0
+    addi    0, 1, (- 9 * 16)
+    stvx    28, 0, 0
+    addi    0, 1, (-10 * 16)
+    stvx    29, 0, 0
+    addi    0, 1, (-11 * 16)
+    stvx    30, 0, 0
+    addi    0, 1, (-12 * 16)
+    stvx    31, 0, 0
 
-    /* Call delegate:
-     * r3: pointer to context
-     * r4: pointer to stack
-     */
-    mr      5, 4
-    mr      4, 1
-    ld      6, 0(5)
-    ld      11, 16(5)
-    ld      2, 8(5)
-    mtctr   6
-    bctrl
-    nop
+    /* Save FPRs */
+    stfd    14, ( -1 * 8 -12 * 16)(1)
+    stfd    15, ( -2 * 8 -12 * 16)(1)
+    stfd    16, ( -3 * 8 -12 * 16)(1)
+    stfd    17, ( -4 * 8 -12 * 16)(1)
+    stfd    18, ( -5 * 8 -12 * 16)(1)
+    stfd    19, ( -6 * 8 -12 * 16)(1)
+    stfd    20, ( -7 * 8 -12 * 16)(1)
+    stfd    21, ( -8 * 8 -12 * 16)(1)
+    stfd    22, ( -9 * 8 -12 * 16)(1)
+    stfd    23, (-10 * 8 -12 * 16)(1)
+    stfd    24, (-11 * 8 -12 * 16)(1)
+    stfd    25, (-12 * 8 -12 * 16)(1)
+    stfd    26, (-13 * 8 -12 * 16)(1)
+    stfd    27, (-14 * 8 -12 * 16)(1)
+    stfd    28, (-15 * 8 -12 * 16)(1)
+    stfd    29, (-16 * 8 -12 * 16)(1)
+    stfd    30, (-17 * 8 -12 * 16)(1)
+    stfd    31, (-18 * 8 -12 * 16)(1)
 
-    /* Restore r2 from TOC save area */
-    ld      2, 40(1)
+    /* Set new stack pointer */
+    mr      1, 4
 
-    /* Restore r3-r10 from local variable space */
-    ld      3, (256 + 48 + 0 * 8)(1)
-    ld      4, (256 + 48 + 1 * 8)(1)
-    ld      5, (256 + 48 + 2 * 8)(1)
-    ld      6, (256 + 48 + 3 * 8)(1)
-    ld      7, (256 + 48 + 4 * 8)(1)
-    ld      8, (256 + 48 + 5 * 8)(1)
-    ld      9, (256 + 48 + 6 * 8)(1)
-    ld      10, (256 + 48 + 7 * 8)(1)
+    /* Restore GPRs */
+    ld     14, (GPR_OFS +  0 * 8)(1)
+    ld     15, (GPR_OFS +  1 * 8)(1)
+    ld     16, (GPR_OFS +  2 * 8)(1)
+    ld     17, (GPR_OFS +  3 * 8)(1)
+    ld     18, (GPR_OFS +  4 * 8)(1)
+    ld     19, (GPR_OFS +  5 * 8)(1)
+    ld     20, (GPR_OFS +  6 * 8)(1)
+    ld     21, (GPR_OFS +  7 * 8)(1)
+    ld     22, (GPR_OFS +  8 * 8)(1)
+    ld     23, (GPR_OFS +  9 * 8)(1)
+    ld     24, (GPR_OFS + 10 * 8)(1)
+    ld     25, (GPR_OFS + 11 * 8)(1)
+    ld     26, (GPR_OFS + 12 * 8)(1)
+    ld     27, (GPR_OFS + 13 * 8)(1)
+    ld     28, (GPR_OFS + 14 * 8)(1)
+    ld     29, (GPR_OFS + 15 * 8)(1)
+    ld     30, (GPR_OFS + 16 * 8)(1)
+    ld     31, (GPR_OFS + 17 * 8)(1)
 
-    /* Restore r14-r31 from general register save area */
-    ld      14, (112 + 0 * 8)(1)
-    ld      15, (112 + 1 * 8)(1)
-    ld      16, (112 + 2 * 8)(1)
-    ld      17, (112 + 3 * 8)(1)
-    ld      18, (112 + 4 * 8)(1)
-    ld      19, (112 + 5 * 8)(1)
-    ld      20, (112 + 6 * 8)(1)
-    ld      21, (112 + 7 * 8)(1)
-    ld      22, (112 + 8 * 8)(1)
-    ld      23, (112 + 9 * 8)(1)
-    ld      24, (112 + 10 * 8)(1)
-    ld      25, (112 + 11 * 8)(1)
-    ld      26, (112 + 12 * 8)(1)
-    ld      27, (112 + 13 * 8)(1)
-    ld      28, (112 + 14 * 8)(1)
-    ld      29, (112 + 15 * 8)(1)
-    ld      30, (112 + 16 * 8)(1)
-    ld      31, (112 + 17 * 8)(1)
+    /* Load VRs */
+    addi    0, 1, (- 1 * 16)
+    lvx     20, 0, 0
+    addi    0, 1, (- 2 * 16)
+    lvx     21, 0, 0
+    addi    0, 1, (- 3 * 16)
+    lvx     22, 0, 0
+    addi    0, 1, (- 4 * 16)
+    lvx     23, 0, 0
+    addi    0, 1, (- 5 * 16)
+    lvx     24, 0, 0
+    addi    0, 1, (- 6 * 16)
+    lvx     25, 0, 0
+    addi    0, 1, (- 7 * 16)
+    lvx     26, 0, 0
+    addi    0, 1, (- 8 * 16)
+    lvx     27, 0, 0
+    addi    0, 1, (- 9 * 16)
+    lvx     28, 0, 0
+    addi    0, 1, (-10 * 16)
+    lvx     29, 0, 0
+    addi    0, 1, (-11 * 16)
+    lvx     30, 0, 0
+    addi    0, 1, (-12 * 16)
+    lvx     31, 0, 0
 
-    addi    1, 1, 256
-    ld      0, 16(1)
+    /* Restore FPRs */
+    lfd     14, ( -1 * 8 -12 * 16)(1)
+    lfd     15, ( -2 * 8 -12 * 16)(1)
+    lfd     16, ( -3 * 8 -12 * 16)(1)
+    lfd     17, ( -4 * 8 -12 * 16)(1)
+    lfd     18, ( -5 * 8 -12 * 16)(1)
+    lfd     19, ( -6 * 8 -12 * 16)(1)
+    lfd     20, ( -7 * 8 -12 * 16)(1)
+    lfd     21, ( -8 * 8 -12 * 16)(1)
+    lfd     22, ( -9 * 8 -12 * 16)(1)
+    lfd     23, (-10 * 8 -12 * 16)(1)
+    lfd     24, (-11 * 8 -12 * 16)(1)
+    lfd     25, (-12 * 8 -12 * 16)(1)
+    lfd     26, (-13 * 8 -12 * 16)(1)
+    lfd     27, (-14 * 8 -12 * 16)(1)
+    lfd     28, (-15 * 8 -12 * 16)(1)
+    lfd     29, (-16 * 8 -12 * 16)(1)
+    lfd     30, (-17 * 8 -12 * 16)(1)
+    lfd     31, (-18 * 8 -12 * 16)(1)
+
+    /* Set condition and TOC register */
+    lhz     0, CR_OFS(1)
+    mtcr    0
+    ld      2, TOC_OFS(1)
+
+    /* Return and switch context */
+    addi    1, 1, STACK_SZ
+    ld      0, LR_OFS(1)
     mtlr    0
     blr
     .long 0
     .quad 0
-.Lend:
-    .size _D4core6thread18callWithStackShellFMDFPvZvZv, .Lend-.L._D4core6thread18callWithStackShellFMDFPvZvZv
+    .size  fiber_switchContext,.-.L.fiber_switchContext
     .cfi_endproc
 
 #elif defined( __ppc__ ) || defined( __PPC__ ) || defined( __powerpc__ )
 
+    .section  ".text"
 
 /**
  * Performs a context switch.
@@ -144,11 +327,10 @@ _D4core6thread18callWithStackShellFMDFPvZvZv:
  * r4 - new context pointer
  *
  */
-.text
-.align 2
-.globl _fiber_switchContext
-_fiber_switchContext:
-
+    .align 2
+    .globl fiber_switchContext
+    .type   fiber_switchContext, @function
+fiber_switchContext:
     /* Save linkage area */
     mflr        0
     mfcr        5
@@ -259,6 +441,7 @@ _fiber_switchContext:
 
     /* Return and switch context */
     blr
+    .size  fiber_switchContext,.-fiber_switchContext
 
 #elif defined(__mips__) && _MIPS_SIM == _ABIO32
 /************************************************************************************
@@ -332,4 +515,80 @@ fiber_switchContext:
 
     jr $ra // return
 
+#elif defined(__arm__) && defined(__ARM_EABI__)
+/************************************************************************************
+ * ARM ASM BITS
+ ************************************************************************************/
+
+/**
+ * Performs a context switch.
+ *
+ * Parameters:
+ * r0 - void** - ptr to old stack pointer
+ * r1 - void*  - new stack pointer
+ *
+ * ARM EABI registers:
+ * r0-r3   : argument/scratch registers
+ * r4-r10  : callee-save registers
+ * r11     : frame pointer (or a callee save register if fp isn't needed)
+ * r12 =ip : inter procedure register. We can treat it like any other scratch register
+ * r13 =sp : stack pointer
+ * r14 =lr : link register, it contains the return address (belonging to the function which called us)
+ * r15 =pc : program counter
+ * 
+ * For floating point registers:
+ * According to AAPCS (version 2.09, section 5.1.2) only the d8-d15 registers need to be preserved
+ * across method calls. This applies to all ARM FPU variants, whether they have 16 or 32 double registers
+ * NEON support or not, half-float support or not and so on does not matter.
+ *
+ * Note: If this file was compiled with -mfloat-abi=soft but the code runs on a softfp system with fpu the d8-d15
+ * registers won't be saved (we do not know that the system has got a fpu in that case) but the registers might actually
+ * be used by other code if it was compiled with -mfloat-abi=softfp.
+ *
+ * Interworking is only supported on ARMv5+, not on ARM v4T as ARM v4t requires special stubs when changing
+ * from thumb to arm mode or the other way round.
+ */
+
+.text
+.align  2
+.global fiber_switchContext
+.type   fiber_switchContext, %function
+fiber_switchContext:
+    .fnstart
+    push {r4-r11}
+    // update the oldp pointer. Link register and floating point registers stored later to prevent the GC from
+    // scanning them.
+    str sp, [r0]
+    // push r0 (or any other register) as well to keep stack 8byte aligned
+    push {r0, lr}
+
+    #if defined(__ARM_PCS_VFP) || (defined(__ARM_PCS) && !defined(__SOFTFP__)) // ARM_HardFloat  || ARM_SoftFP
+      vpush {d8-d15}
+      // now switch over to the new stack. Need to subtract (8*8[d8-d15]+2*4[r0, lr]) to position stack pointer
+      // below the last saved register. Remember we saved the SP before pushing [r0, lr, d8-d15]
+      sub sp, r1, #72
+      vpop {d8-d15}
+    #else
+      sub sp, r1, #8
+    #endif
+
+    // we don't really care about r0, we only used that for padding.
+    // r1 is now what used to be in the link register when saving.
+    pop {r0, r1, r4-r11}
+    /**
+     * The link register for the initial jump to fiber_entryPoint must be zero: The jump actually
+     * looks like a normal method call as we jump to the start of the fiber_entryPoint function.
+     * Although fiber_entryPoint never returns and therefore never accesses lr, it saves lr to the stack.
+     * ARM unwinding will then look at the stack, find lr and think that fiber_entryPoint was called by
+     * the function in lr! So if we have some address in lr the unwinder will try to continue stack unwinding,
+     * although it's already at the stack base and crash.
+     * In all other cases the content of lr doesn't matter.
+     * Note: If we simply loaded into lr above and then moved lr into pc, the initial method call
+     * to fiber_entryPoint would look as if it was called from fiber_entryPoint itself, as the fiber_entryPoint
+     * address is in lr on the initial context switch.
+     */
+    mov lr, #0
+    // return by writing lr into pc
+    mov pc, r1
+    .fnend
 #endif

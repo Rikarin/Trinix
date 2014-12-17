@@ -30,13 +30,14 @@ class SpinLock {
 	private long _locked;
 
 	private long AtomicExchange(long* value) {
-		long ret = 1;
+        asm {
+            naked;
 
-		asm {
-			"xchg %0, [%2]" : "=a"(ret) : "a"(1), "r"(value);
-		}
+            mov RAX, 1;
+            xchg [RSI], RAX;
 
-		return ret;
+            ret;
+        }
 	}
 
 	this() {

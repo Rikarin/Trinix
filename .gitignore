@@ -1,6 +1,7 @@
 /VMware
 /Externals/Output
 /KernelLand/Kernel/obj-x86_64/buildinfo.c
+/Userspace/tmp/druntime/dmd*
 *.o
 *.map
 *.log
@@ -23,3 +24,6 @@
 /Externals/CrossCompiler/gmp-*
 /Externals/CrossCompiler/mpfr-*
 /Externals/CrossCompiler/mpc-*
+/Externals/LLVM/build-*
+/Externals/LLVM/ldc-*
+/Externals/LLVM/llvm-*

@@ -111,7 +111,7 @@ extern(C) void KernelMain() {
 	ModuleManager.Initialize();
 	ModuleManager.LoadBuiltins();
 
-	mixin(import("Userspace/Library/Linker.so_src/Elf.d"));
+	//mixin(import("Userspace/Library/Linker.so_src/Elf.d"));
 
 
 	VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 

@@ -12,9 +12,13 @@
 
 module rt.deh_win64_posix;
 
-version (Win64)
+version (LDC)
+{
+    // We use a libunwind-based scheme on all platforms.
+}
+else version (Win64)
     version = Win64_Posix;
-version (Posix)
+else version (Posix)
     version = Win64_Posix;
 
 version (Win64_Posix):

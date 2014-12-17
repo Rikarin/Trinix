@@ -246,7 +246,8 @@ final class Paging {
 		void* addr = GetPhysicalAddress(cast(void *)_root);
 
 		asm {
-			"mov CR3, %0" : : "r"(addr);
+            mov RAX, addr;
+            mov CR3, RAX;
 		}
 	}
 	
@@ -350,13 +351,12 @@ final class Paging {
 		
 		ulong cr2;
 		asm {
-			"mov RAX, CR2" : "=a"(cr2);
+            mov RAX, CR2;
+            mov cr2, RAX;
 		}
 		
 		Log.WriteJSON("cr2", cr2);
-		asm {
-			"cli";
-			"hlt";
-		}
+        Port.Cli();
+        Port.Halt();
 	}
 }

@@ -40,12 +40,13 @@ abstract final class GDT {
 	}
 
 	static bool Initialize() {
-		_tables[CPU.Identifier] = new GlobalDescriptorTable;
+		_tables[CPU.Identifier] = new GlobalDescriptorTable();
 		InitTable(CPU.Identifier);
 
+        GDTBase base = _tables[CPU.Identifier].Base;
         asm {
-            "lgdt [RAX]" : : "a"(&_tables[CPU.Identifier].Base);
-            "call _CPU_refresh_iretq";
+            lgdt base;
+            call _CPU_refresh_iretq;
         }
 
 		return true;

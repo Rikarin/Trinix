@@ -34,6 +34,10 @@ private
     {
         version = USE_PTHREADS;
     }
+    else version( Android )
+    {
+        version = USE_PTHREADS;
+    }
 
     version( Windows )
     {
@@ -74,7 +78,7 @@ private
 
 version( Windows )
 {
-    version (Win32)
+    version (DigitalMars) version (Win32)
         pragma(lib, "snn.lib");
 
     /******************************************

@@ -12,7 +12,6 @@
 
 module rt.memory;
 
-
 import core.memory;
 import rt.sections;
 

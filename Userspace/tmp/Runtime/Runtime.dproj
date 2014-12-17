@@ -89,6 +89,16 @@
     <Compile Include="Runtime\TypeInfo\ti_Along.d" />
     <Compile Include="Runtime\TypeInfo\ti_Aint.d" />
     <Compile Include="Runtime\TypeInfo\ti_Afloat.d" />
+    <Compile Include="Runtime\TypeInfo\ti_Adouble.d" />
+    <Compile Include="Runtime\TypeInfo\ti_Acreal.d" />
+    <Compile Include="Runtime\TypeInfo\ti_Acfloat.d" />
+    <Compile Include="Runtime\Core\ArrayCast.d" />
+    <Compile Include="Runtime\Core\AllocArray.d" />
+    <Compile Include="Runtime\Core\ArrayAssign.d" />
+    <Compile Include="Runtime\Core\ArrayCat.d" />
+    <Compile Include="Runtime\Utilities\Array.d" />
+    <Compile Include="Runtime\Utilities\String.d" />
+    <Compile Include="Runtime\Core\aaA.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Runtime\" />

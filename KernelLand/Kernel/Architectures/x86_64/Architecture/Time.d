@@ -93,7 +93,9 @@ abstract final class Time {
 		uint a, d;
 		
 		asm {
-			"rdtsc" : "=a" (a), "=d" (d);
+            rdtsc;
+            mov a, EAX;
+            mov d, EDX;
 		}
 		
 		return (cast(ulong)d << 32) | a;

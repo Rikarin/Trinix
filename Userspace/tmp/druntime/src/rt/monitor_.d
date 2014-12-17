@@ -38,6 +38,10 @@ private
     {
         version = USE_PTHREADS;
     }
+    else version( Android )
+    {
+        version = USE_PTHREADS;
+    }
 
     // This is what the monitor reference in Object points to
     alias Object.Monitor        IMonitor;
@@ -45,7 +49,7 @@ private
 
     version( Windows )
     {
-        version (Win32)
+        version (DigitalMars) version (Win32)
             pragma(lib, "snn.lib");
         import core.sys.windows.windows;
 
@@ -90,7 +94,7 @@ private
 
 /* =============================== Win32 ============================ */
 
-version( Windows )
+version( Windows ) version( LDC )
 {
     static __gshared CRITICAL_SECTION _monitor_critsec;
 
