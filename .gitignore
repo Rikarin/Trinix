@@ -1,6 +1,7 @@
 /VMware
 /Externals/Output
 /KernelLand/Kernel/obj-x86_64/buildinfo.c
+/Userspace/tmp/druntime/dmd
 *.o
 *.map
 *.log

@@ -100,6 +100,11 @@ private
     }
 }
 
+extern(C) void* malloc(size_t sz, uint ba = 0);
+extern(C) void* calloc(size_t sz, uint ba = 0);
+extern(C) void* realloc(void* p, size_t sz, uint ba = 0);
+extern(C) void free(void* p);
+
 extern (C)
 {
 
@@ -198,35 +203,26 @@ extern (C)
 
     void* gc_malloc( size_t sz, uint ba = 0 )
     {
-        if( proxy is null )
-            return _gc.malloc( sz, ba );
-        return proxy.gc_malloc( sz, ba );
+        return malloc( sz, ba );
     }
 
     BlkInfo gc_qalloc( size_t sz, uint ba = 0 )
     {
-        if( proxy is null )
-        {
-            BlkInfo retval;
-            retval.base = _gc.malloc( sz, ba, &retval.size );
-            retval.attr = ba;
-            return retval;
-        }
-        return proxy.gc_qalloc( sz, ba );
+		BlkInfo retval;
+		retval.base = malloc( sz, ba );
+		retval.size = sz;
+		retval.attr = ba;
+		return retval;
     }
 
     void* gc_calloc( size_t sz, uint ba = 0 )
     {
-        if( proxy is null )
-            return _gc.calloc( sz, ba );
-        return proxy.gc_calloc( sz, ba );
+        return calloc( sz, ba );
     }
 
     void* gc_realloc( void* p, size_t sz, uint ba = 0 )
     {
-        if( proxy is null )
-            return _gc.realloc( p, sz, ba );
-        return proxy.gc_realloc( p, sz, ba );
+        return realloc( p, sz, ba );
     }
 
     size_t gc_extend( void* p, size_t mx, size_t sz )
@@ -245,9 +241,7 @@ extern (C)
 
     void gc_free( void* p )
     {
-        if( proxy is null )
-            return _gc.free( p );
-        return proxy.gc_free( p );
+        return free( p );
     }
 
     void* gc_addrOf( void* p )

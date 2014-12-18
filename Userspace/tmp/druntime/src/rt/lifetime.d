@@ -351,7 +351,7 @@ size_t __arrayPad(size_t size) nothrow pure @safe
 enum N_CACHE_BLOCKS=8;
 
 // note this is TLS, so no need to sync.
-BlkInfo *__blkcache_storage;
+__gshared BlkInfo *__blkcache_storage;
 
 static if(N_CACHE_BLOCKS==1)
 {
@@ -369,7 +369,7 @@ else
     {
         int __nextRndNum = 0;
     }
-    int __nextBlkIdx;
+    __gshared int __nextBlkIdx;
 }
 
 @property BlkInfo *__blkcache() nothrow

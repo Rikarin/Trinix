@@ -111,7 +111,7 @@ extern(C) void KernelMain() {
 	ModuleManager.Initialize();
 	ModuleManager.LoadBuiltins();
 
-	mixin(import("Userspace/Library/Linker.so_src/Elf.d"));
+	//mixin(import("Userspace/Library/Linker.so_src/Elf.d"));
 
 
 	VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
@@ -122,6 +122,8 @@ extern(C) void KernelMain() {
    // new VTY();
 
     VFS.PrintTree(VFS.Root);
+
+    vaTest(14, 45, 78, 34, 56, 8967567, 344);
 
 
 	//Thread thr = new Thread(Task.CurrentThread);
@@ -152,6 +154,8 @@ extern(C) void KernelMain() {
 //	Log.WriteLine("Bye");
 }
 
+import core.vararg;
+
 void testfce() {
 	//for (int i = 0; i < 0x100; i++) {
 	while (true) {
@@ -169,6 +173,10 @@ void testfce() {
 	//dorobit Exit thready
 }
 
+void vaTest(int arg1, ...) {
+    Log.WriteLine("length ", _arguments.length);
+    //va_start(args, arg1);
+}
 
 /*
     void function123(int a, char b, string c) {
