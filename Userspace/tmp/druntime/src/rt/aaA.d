@@ -182,25 +182,23 @@ body
         pe = &e.next;
     }
 
-    {
-        // Not found, create new elem
-        //printf("create new one\n");
-        size_t size = Entry.sizeof + aligntsize(keytitsize) + valuesize;
-        e = cast(Entry *) GC.malloc(size);
-        e.next = null;
-        e.hash = key_hash;
-        ubyte* ptail = cast(ubyte*)(e + 1);
-        memcpy(ptail, pkey, keytitsize);
-        memset(ptail + aligntsize(keytitsize), 0, valuesize); // zero value
-        *pe = e;
+    // Not found, create new elem
+    //printf("create new one\n");
+    size_t size = Entry.sizeof + aligntsize(keytitsize) + valuesize;
+    e = cast(Entry *) GC.malloc(size);
+    e.next = null;
+    e.hash = key_hash;
+    ubyte* ptail = cast(ubyte*)(e + 1);
+    memcpy(ptail, pkey, keytitsize);
+    memset(ptail + aligntsize(keytitsize), 0, valuesize); // zero value
+    *pe = e;
 
-        auto nodes = ++aa.impl.nodes;
-        //printf("length = %d, nodes = %d\n", aa.a.buckets.length, nodes);
-        if (nodes > aa.impl.buckets.length * 4)
-        {
-            //printf("rehash\n");
-            _aaRehash(aa,keyti);
-        }
+    auto nodes = ++aa.impl.nodes;
+    //printf("length = %d, nodes = %d\n", aa.a.buckets.length, nodes);
+    if (nodes > aa.impl.buckets.length * 4)
+    {
+        //printf("rehash\n");
+        _aaRehash(aa,keyti);
     }
 
 Lret:
@@ -572,7 +570,7 @@ Impl* _d_assocarrayliteralTX(const TypeInfo_AssociativeArray ti, void[] keys, vo
     Impl* result;
 
     //printf("_d_assocarrayliteralT(keysize = %d, valuesize = %d, length = %d)\n", keysize, valuesize, length);
-    //printf("tivalue = %.*s\n", typeid(ti.next).name);
+    //printf("tivalue = %.*s\n", ti.next.classinfo.name);
     assert(length == values.length);
     if (length == 0 || valuesize == 0 || keysize == 0)
     {
@@ -668,8 +666,8 @@ const(TypeInfo_AssociativeArray) _aaUnwrapTypeInfo(const(TypeInfo) tiRaw) pure n
 int _aaEqual(in TypeInfo tiRaw, in AA e1, in AA e2)
 {
     //printf("_aaEqual()\n");
-    //printf("keyti = %.*s\n", typeid(ti.key).name);
-    //printf("valueti = %.*s\n", typeid(ti.next).name);
+    //printf("keyti = %.*s\n", ti.key.classinfo.name);
+    //printf("valueti = %.*s\n", ti.next.classinfo.name);
 
     if (e1.impl is e2.impl)
         return 1;

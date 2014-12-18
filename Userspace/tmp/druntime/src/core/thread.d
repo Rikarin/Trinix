@@ -1424,7 +1424,7 @@ private:
     {
         foreach (ref lock; _locks)
         {
-            lock[] = typeid(Mutex).init[];
+            lock[] = Mutex.classinfo.init[];
             (cast(Mutex)lock.ptr).__ctor();
         }
     }

@@ -468,7 +468,7 @@ EXCEPTION_DISPOSITION _d_framehandler(
                                 masterClassInfo = ci;
                                 break;
                             }
-                            if (_d_isbaseof(ci, typeid(Error)))
+                            if (_d_isbaseof(ci, Error.classinfo))
                             {   // It's derived from Error. This _may_ be the master.
                                 master = er;
                                 masterClassInfo = ci;

@@ -92,7 +92,7 @@ private struct Demangle
         //throw new ParseException( msg );
         debug(info) printf( "error: %.*s\n", cast(int) msg.length, msg.ptr );
         throw __ctfe ? new ParseException(msg)
-                     : cast(ParseException) cast(void*) typeid(ParseException).init;
+                     : cast(ParseException) cast(void*) ParseException.classinfo.init;
 
     }
 
@@ -101,7 +101,7 @@ private struct Demangle
     {
         //throw new OverflowException( msg );
         debug(info) printf( "overflow: %.*s\n", cast(int) msg.length, msg.ptr );
-        throw cast(OverflowException) cast(void*) typeid(OverflowException).init;
+        throw cast(OverflowException) cast(void*) OverflowException.classinfo.init;
     }
 
 
@@ -1086,7 +1086,7 @@ private struct Demangle
             next();
             if( '0' > tok() || '9' < tok() )
                 error( "Number expected" );
-            goto case;
+            // fall-through intentional
         case '0': .. case '9':
             parseIntegerValue( name, type );
             return;

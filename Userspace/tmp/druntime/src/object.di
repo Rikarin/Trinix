@@ -316,7 +316,6 @@ class Throwable : Object
     @safe pure nothrow this(string msg, Throwable next = null);
     @safe pure nothrow this(string msg, string file, size_t line, Throwable next = null);
     override string toString();
-    void toString(scope void delegate(in char[]) sink) const;
 }
 
 
@@ -352,11 +351,13 @@ class Error : Throwable
 
 extern (C)
 {
-    // from druntime/src/rt/aaA.d
+    // from druntime/src/compiler/dmd/aaA.d
 
     size_t _aaLen(in void* p) pure nothrow;
     void* _aaGetX(void** pp, const TypeInfo keyti, in size_t valuesize, in void* pkey);
     inout(void)* _aaGetRvalueX(inout void* p, in TypeInfo keyti, in size_t valuesize, in void* pkey);
+    inout(void)* _aaIn(inout void* p, in TypeInfo keyti);
+    void _aaDel(void* p, in TypeInfo keyti, ...);
     inout(void)[] _aaValues(inout void* p, in size_t keysize, in size_t valuesize) pure nothrow;
     inout(void)[] _aaKeys(inout void* p, in size_t keysize) pure nothrow;
     void* _aaRehash(void** pp, in TypeInfo keyti) pure nothrow;
@@ -373,6 +374,18 @@ extern (C)
     void* _aaRangeFrontKey(AARange r);
     void* _aaRangeFrontValue(AARange r);
     void _aaRangePopFront(ref AARange r);
+
+    void* _d_assocarrayliteralT(TypeInfo_AssociativeArray ti, in size_t length, ...);
+}
+
+private template _Unqual(T)
+{
+         static if (is(T U == shared(const U))) alias U _Unqual;
+    else static if (is(T U ==        const U )) alias U _Unqual;
+    else static if (is(T U ==    immutable U )) alias U _Unqual;
+    else static if (is(T U ==        inout U )) alias U _Unqual;
+    else static if (is(T U ==       shared U )) alias U _Unqual;
+    else                                        alias T _Unqual;
 }
 
 struct AssociativeArray(Key, Value)

@@ -16,7 +16,6 @@ module rt.arrayreal;
 // debug=PRINTF
 
 import core.cpuid;
-import rt.util.array;
 
 version (unittest)
 {
@@ -40,6 +39,12 @@ else
 
 //version = log;
 
+@trusted pure nothrow
+bool disjoint(T)(T[] a, T[] b)
+{
+    return (a.ptr + a.length <= b.ptr || b.ptr + b.length <= a.ptr);
+}
+
 alias real T;
 
 extern (C) @trusted nothrow:
@@ -52,10 +57,14 @@ extern (C) @trusted nothrow:
  */
 
 T[] _arraySliceSliceAddSliceAssign_r(T[] a, T[] c, T[] b)
+in
 {
-    enforceTypedArraysConformable("vector operation", a, b);
-    enforceTypedArraysConformable("vector operation", a, c);
-
+        assert(a.length == b.length && b.length == c.length);
+        assert(disjoint(a, b));
+        assert(disjoint(a, c));
+}
+body
+{
     foreach (i; 0..a.length)
         a[i] = b[i] + c[i];
     return a;
@@ -106,10 +115,14 @@ unittest
  */
 
 T[] _arraySliceSliceMinSliceAssign_r(T[] a, T[] c, T[] b)
+in
 {
-    enforceTypedArraysConformable("vector operation", a, b);
-    enforceTypedArraysConformable("vector operation", a, c);
-
+        assert(a.length == b.length && b.length == c.length);
+        assert(disjoint(a, b));
+        assert(disjoint(a, c));
+}
+body
+{
     foreach (i; 0..a.length)
         a[i] = b[i] - c[i];
     return a;
@@ -171,9 +184,13 @@ T[] _arraySliceExpMulSliceMinass_r(T[] a, T value, T[] b)
  */
 
 T[] _arraySliceExpMulSliceAddass_r(T[] a, T value, T[] b)
+in
 {
-    enforceTypedArraysConformable("vector operation", a, b);
-
+        assert(a.length == b.length);
+        assert(disjoint(a, b));
+}
+body
+{
     auto aptr = a.ptr;
     auto aend = aptr + a.length;
     auto bptr = b.ptr;

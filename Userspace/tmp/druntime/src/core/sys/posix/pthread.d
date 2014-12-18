@@ -123,8 +123,9 @@ version( linux )
         PTHREAD_EXPLICIT_SCHED
     }
 
-    enum PTHREAD_MUTEX_INITIALIZER  = pthread_mutex_t.init;
-    enum PTHREAD_ONCE_INIT          = pthread_once_t.init;
+    //enum pthread_mutex_t PTHREAD_MUTEX_INITIALIZER = { 0, 0, null, PTHREAD_MUTEX_NORMAL, { 0, 0 } };
+
+    enum PTHREAD_ONCE_INIT = pthread_once_t.init;
 
     enum
     {
@@ -162,8 +163,9 @@ else version( OSX )
         PTHREAD_EXPLICIT_SCHED  = 2
     }
 
-    enum PTHREAD_MUTEX_INITIALIZER  = pthread_mutex_t.init;
-    enum PTHREAD_ONCE_INIT          = pthread_once_t.init;
+    //enum pthread_mutex_t PTHREAD_MUTEX_INITIALIZER = { 0, 0, null, PTHREAD_MUTEX_NORMAL, { 0, 0 } };
+
+    enum PTHREAD_ONCE_INIT = pthread_once_t.init;
 
     enum
     {
@@ -203,8 +205,9 @@ else version( FreeBSD )
     enum PTHREAD_NEEDS_INIT = 0;
     enum PTHREAD_DONE_INIT  = 1;
 
+    //enum pthread_once_t PTHREAD_ONCE_INIT = { PTHREAD_NEEDS_INIT, null };
+
     enum PTHREAD_MUTEX_INITIALIZER              = null;
-    enum PTHREAD_ONCE_INIT                      = null;
     enum PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP  = null;
     enum PTHREAD_COND_INITIALIZER               = null;
     enum PTHREAD_RWLOCK_INITIALIZER             = null;
@@ -235,9 +238,6 @@ else version (Solaris)
     }
 
     enum PTHREAD_CANCELED = cast(void*)-19;
-
-    enum PTHREAD_MUTEX_INITIALIZER  = pthread_mutex_t.init;
-    enum PTHREAD_ONCE_INIT          = pthread_once_t.init;
 }
 else
 {
@@ -652,32 +652,32 @@ else
 // Timeouts (TMO)
 //
 /*
-int pthread_mutex_timedlock(pthread_mutex_t*, in timespec*);
+int pthread_mutex_timedlock(pthread_mutex_t*, timespec*);
 int pthread_rwlock_timedrdlock(pthread_rwlock_t*, in timespec*);
 int pthread_rwlock_timedwrlock(pthread_rwlock_t*, in timespec*);
 */
 
 version( linux )
 {
-    int pthread_mutex_timedlock(pthread_mutex_t*, in timespec*);
+    int pthread_mutex_timedlock(pthread_mutex_t*, timespec*);
     int pthread_rwlock_timedrdlock(pthread_rwlock_t*, in timespec*);
     int pthread_rwlock_timedwrlock(pthread_rwlock_t*, in timespec*);
 }
 else version( OSX )
 {
-    int pthread_mutex_timedlock(pthread_mutex_t*, in timespec*);
+    int pthread_mutex_timedlock(pthread_mutex_t*, timespec*);
     int pthread_rwlock_timedrdlock(pthread_rwlock_t*, in timespec*);
     int pthread_rwlock_timedwrlock(pthread_rwlock_t*, in timespec*);
 }
 else version( FreeBSD )
 {
-    int pthread_mutex_timedlock(pthread_mutex_t*, in timespec*);
+    int pthread_mutex_timedlock(pthread_mutex_t*, timespec*);
     int pthread_rwlock_timedrdlock(pthread_rwlock_t*, in timespec*);
     int pthread_rwlock_timedwrlock(pthread_rwlock_t*, in timespec*);
 }
 else version (Solaris)
 {
-    int pthread_mutex_timedlock(pthread_mutex_t*, in timespec*);
+    int pthread_mutex_timedlock(pthread_mutex_t*, timespec*);
     int pthread_rwlock_timedrdlock(pthread_rwlock_t*, in timespec*);
     int pthread_rwlock_timedwrlock(pthread_rwlock_t*, in timespec*);
 }

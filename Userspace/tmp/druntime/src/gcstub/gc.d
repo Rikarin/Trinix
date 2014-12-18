@@ -47,7 +47,7 @@ private
     }
 
     extern (C) void thread_init();
-    extern (C) void onOutOfMemoryError() @trusted /* pure dmd @@@BUG11461@@@ */ nothrow;
+    extern (C) void onOutOfMemoryError();
 
     struct Proxy
     {
@@ -127,11 +127,6 @@ private
     __gshared size_t nranges = 0;
 }
 
-extern(C) void* malloc(size_t sz, uint ba = 0);
-extern(C) void* calloc(size_t sz, uint ba = 0);
-extern(C) void* realloc(void* p, size_t sz, uint ba = 0);
-extern(C) void free(void* p);
-
 extern (C) void gc_init()
 {
     // NOTE: The GC must initialize the thread library before its first
@@ -197,26 +192,54 @@ extern (C) uint gc_clrAttr( void* p, uint a )
 
 extern (C) void* gc_malloc( size_t sz, uint ba = 0 )
 {
-    return malloc( sz, ba );
+    if( proxy is null )
+    {
+        void* p = malloc( sz );
+
+        if( sz && p is null )
+            onOutOfMemoryError();
+        return p;
+    }
+    return proxy.gc_malloc( sz, ba );
 }
 
 extern (C) BlkInfo gc_qalloc( size_t sz, uint ba = 0 )
 {
-	BlkInfo retval;
-	retval.base = malloc(sz, ba);
-	retval.size = sz;
-	retval.attr = ba;
-	return retval;
+    if( proxy is null )
+    {
+        BlkInfo retval;
+        retval.base = gc_malloc(sz, ba);
+        retval.size = sz;
+        retval.attr = ba;
+        return retval;
+    }
+    return proxy.gc_qalloc( sz, ba );
 }
 
 extern (C) void* gc_calloc( size_t sz, uint ba = 0 )
 {
-    return calloc( sz, ba );
+    if( proxy is null )
+    {
+        void* p = calloc( 1, sz );
+
+        if( sz && p is null )
+            onOutOfMemoryError();
+        return p;
+    }
+    return proxy.gc_calloc( sz, ba );
 }
 
 extern (C) void* gc_realloc( void* p, size_t sz, uint ba = 0 )
 {
-    return realloc( p, sz, ba );
+    if( proxy is null )
+    {
+        p = realloc( p, sz );
+
+        if( sz && p is null )
+            onOutOfMemoryError();
+        return p;
+    }
+    return proxy.gc_realloc( p, sz, ba );
 }
 
 extern (C) size_t gc_extend( void* p, size_t mx, size_t sz )
@@ -235,7 +258,9 @@ extern (C) size_t gc_reserve( size_t sz )
 
 extern (C) void gc_free( void* p )
 {
-    return free( p );
+    if( proxy is null )
+        return free( p );
+    return proxy.gc_free( p );
 }
 
 extern (C) void* gc_addrOf( void* p )

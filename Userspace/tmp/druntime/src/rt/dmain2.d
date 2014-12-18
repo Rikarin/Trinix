@@ -15,6 +15,7 @@ private
 {
     import rt.memory;
     import rt.sections;
+    import rt.util.console;
     import rt.util.string;
     import core.stdc.stddef;
     import core.stdc.stdlib;
@@ -26,8 +27,21 @@ private
 version (Windows)
 {
     private import core.stdc.wchar_;
-    private import core.sys.windows.windows;
 
+    extern (Windows)
+    {
+        alias int function() FARPROC;
+        FARPROC    GetProcAddress(void*, in char*);
+        void*      LoadLibraryA(in char*);
+        void*      LoadLibraryW(in wchar_t*);
+        int        FreeLibrary(void*);
+        void*      LocalFree(void*);
+        wchar_t*   GetCommandLineW();
+        wchar_t**  CommandLineToArgvW(in wchar_t*, int*);
+        export int WideCharToMultiByte(uint, uint, in wchar_t*, int, char*, int, in char*, int*);
+        export int MultiByteToWideChar(uint, uint, in char*, int, wchar_t*, int);
+        int        IsDebuggerPresent();
+    }
     pragma(lib, "shell32.lib"); // needed for CommandLineToArgvW
 }
 
@@ -304,7 +318,7 @@ extern (C) int _d_run_main(int argc, char **argv, MainFunc mainFunc)
         // This is required because WideCharToMultiByte requires int as input.
         assert(wCommandLineLength <= cast(size_t) int.max, "Wide char command line length must not exceed int.max");
 
-        immutable size_t totalArgsLength = WideCharToMultiByte(CP_UTF8, 0, wCommandLine, cast(int)wCommandLineLength, null, 0, null, null);
+        immutable size_t totalArgsLength = WideCharToMultiByte(65001, 0, wCommandLine, cast(int)wCommandLineLength, null, 0, null, null);
         {
             char* totalArgsBuff = cast(char*) alloca(totalArgsLength);
             size_t j = 0;
@@ -312,13 +326,13 @@ extern (C) int _d_run_main(int argc, char **argv, MainFunc mainFunc)
             {
                 immutable size_t wlen = wcslen(wargs[i]);
                 assert(wlen <= cast(size_t) int.max, "wlen cannot exceed int.max");
-                immutable int len = WideCharToMultiByte(CP_UTF8, 0, &wargs[i][0], cast(int) wlen, null, 0, null, null);
+                immutable int len = WideCharToMultiByte(65001, 0, &wargs[i][0], cast(int) wlen, null, 0, null, null);
                 args[i] = totalArgsBuff[j .. j + len];
                 if (len == 0)
                     continue;
                 j += len;
                 assert(j <= totalArgsLength);
-                WideCharToMultiByte(CP_UTF8, 0, &wargs[i][0], cast(int) wlen, &args[i][0], len, null, null);
+                WideCharToMultiByte(65001, 0, &wargs[i][0], cast(int) wlen, &args[i][0], len, null, null);
             }
         }
         LocalFree(wargs);
@@ -416,88 +430,71 @@ extern (C) int _d_run_main(int argc, char **argv, MainFunc mainFunc)
     return result;
 }
 
-private void formatThrowable(Throwable t, void delegate(in char[] s) nothrow sink)
-{
-    for (; t; t = t.next)
-    {
-        t.toString(sink); sink("\n");
-
-        auto e = cast(Error)t;
-        if (e is null || e.bypassedException is null) continue;
-
-        sink("=== Bypassed ===\n");
-        for (auto t2 = e.bypassedException; t2; t2 = t2.next)
-        {
-            t2.toString(sink); sink("\n");
-        }
-        sink("=== ~Bypassed ===\n");
-    }
-}
-
 private void printThrowable(Throwable t)
 {
-    // On Windows, a console may not be present to print the output to.
-    // Show a message box instead.
-    version (Windows)
+    static void printLocLine(Throwable t)
     {
-        if (!GetConsoleWindow())
+        if (t.file)
         {
-            static struct WSink
-            {
-                wchar_t* ptr; size_t len;
+            console(t.classinfo.name)("@")(t.file)("(")(t.line)(")");
+        }
+        else
+        {
+            console(t.classinfo.name);
+        }
+        console("\n");
+    }
 
-                void sink(in char[] s) nothrow
-                {
-                    if (!s.length) return;
-                    int swlen = MultiByteToWideChar(
-                        CP_UTF8, 0, s.ptr, cast(int)s.length, null, 0);
-                    if (!swlen) return;
+    static void printMsgLine(Throwable t)
+    {
+        if (t.file)
+        {
+            console(t.classinfo.name)("@")(t.file)("(")(t.line)(")");
+        }
+        else
+        {
+            console(t.classinfo.name);
+        }
+        if (t.msg)
+        {
+            console(": ")(t.msg);
+        }
+        console("\n");
+    }
 
-                    auto newPtr = cast(wchar_t*)realloc(ptr,
-                            (this.len + swlen + 1) * wchar_t.sizeof);
-                    if (!newPtr) return;
-                    ptr = newPtr;
-                    auto written = MultiByteToWideChar(
-                            CP_UTF8, 0, s.ptr, cast(int)s.length, ptr+len, swlen);
-                    len += written;
-                }
-
-                wchar_t* get() { if (ptr) ptr[len] = 0; return ptr; }
-
-                void free() { .free(ptr); }
-            }
-
-            WSink buf;
-            formatThrowable(t, &buf.sink);
-
-            if (buf.ptr)
-            {
-                WSink caption;
-                if (t)
-                    caption.sink(t.classinfo.name);
-
-                // Avoid static user32.dll dependency for console applications
-                // by loading it dynamically as needed
-                auto user32 = LoadLibraryW("user32.dll");
-                if (user32)
-                {
-                    alias typeof(&MessageBoxW) PMessageBoxW;
-                    auto pMessageBoxW = cast(PMessageBoxW)
-                        GetProcAddress(user32, "MessageBoxW");
-                    if (pMessageBoxW)
-                        pMessageBoxW(null, buf.get(), caption.get(), MB_ICONERROR);
-                }
-                FreeLibrary(user32);
-                caption.free();
-                buf.free();
-            }
-            return;
+    static void printInfoBlock(Throwable t)
+    {
+        if (t.info)
+        {
+            console("----------------\n");
+            foreach (i; t.info)
+                console(i)("\n");
+            console("----------------\n");
         }
     }
 
-    void sink(in char[] buf) nothrow
+    Throwable firstWithBypass = null;
+
+    for (; t; t = t.next)
     {
-        fprintf(stderr, "%.*s", cast(int)buf.length, buf.ptr);
+        printMsgLine(t);
+        printInfoBlock(t);
+        auto e = cast(Error) t;
+        if (e && e.bypassedException)
+        {
+            console("Bypasses ");
+            printLocLine(e.bypassedException);
+            if (firstWithBypass is null)
+                firstWithBypass = t;
+        }
     }
-    formatThrowable(t, &sink);
+    if (firstWithBypass is null)
+        return;
+    console("=== Bypassed ===\n");
+    for (t = firstWithBypass; t; t = t.next)
+    {
+        auto e = cast(Error) t;
+        if (e && e.bypassedException)
+            printThrowable(e.bypassedException);
+    }
 }

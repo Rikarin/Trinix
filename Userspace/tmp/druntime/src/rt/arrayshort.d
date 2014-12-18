@@ -17,7 +17,6 @@ module rt.arrayshort;
 // debug=PRINTF
 
 private import core.cpuid;
-import rt.util.array;
 
 version (unittest)
 {
@@ -41,6 +40,12 @@ else
 
 //version = log;
 
+@trusted pure nothrow
+bool disjoint(T)(T[] a, T[] b)
+{
+    return (a.ptr + a.length <= b.ptr || b.ptr + b.length <= a.ptr);
+}
+
 alias short T;
 
 extern (C) @trusted nothrow:
@@ -63,9 +68,13 @@ T[] _arraySliceExpAddSliceAssign_t(T[] a, T value, T[] b)
 }
 
 T[] _arraySliceExpAddSliceAssign_s(T[] a, T value, T[] b)
+in
 {
-    enforceTypedArraysConformable("vector operation", a, b);
-
+    assert(a.length == b.length);
+    assert(disjoint(a, b));
+}
+body
+{
     //printf("_arraySliceExpAddSliceAssign_s()\n");
     auto aptr = a.ptr;
     auto aend = aptr + a.length;
@@ -235,10 +244,14 @@ T[] _arraySliceSliceAddSliceAssign_t(T[] a, T[] c, T[] b)
 }
 
 T[] _arraySliceSliceAddSliceAssign_s(T[] a, T[] c, T[] b)
+in
 {
-    enforceTypedArraysConformable("vector operation", a, b);
-    enforceTypedArraysConformable("vector operation", a, c);
-
+        assert(a.length == b.length && b.length == c.length);
+        assert(disjoint(a, b));
+        assert(disjoint(a, c));
+}
+body
+{
     //printf("_arraySliceSliceAddSliceAssign_s()\n");
     auto aptr = a.ptr;
     auto aend = aptr + a.length;
@@ -574,9 +587,13 @@ T[] _arraySliceSliceAddass_t(T[] a, T[] b)
 }
 
 T[] _arraySliceSliceAddass_s(T[] a, T[] b)
+in
 {
-    enforceTypedArraysConformable("vector operation", a, b);
-
+    assert (a.length == b.length);
+    assert (disjoint(a, b));
+}
+body
+{
     //printf("_arraySliceSliceAddass_s()\n");
     auto aptr = a.ptr;
     auto aend = aptr + a.length;
@@ -742,9 +759,13 @@ T[] _arraySliceExpMinSliceAssign_t(T[] a, T value, T[] b)
 }
 
 T[] _arraySliceExpMinSliceAssign_s(T[] a, T value, T[] b)
+in
 {
-    enforceTypedArraysConformable("vector operation", a, b);
-
+    assert(a.length == b.length);
+    assert(disjoint(a, b));
+}
+body
+{
     //printf("_arraySliceExpMinSliceAssign_s()\n");
     auto aptr = a.ptr;
     auto aend = aptr + a.length;
@@ -914,9 +935,13 @@ T[] _arrayExpSliceMinSliceAssign_t(T[] a, T[] b, T value)
 }
 
 T[] _arrayExpSliceMinSliceAssign_s(T[] a, T[] b, T value)
+in
 {
-    enforceTypedArraysConformable("vector operation", a, b);
-
+    assert(a.length == b.length);
+    assert(disjoint(a, b));
+}
+body
+{
     //printf("_arrayExpSliceMinSliceAssign_s()\n");
     auto aptr = a.ptr;
     auto aend = aptr + a.length;
@@ -1092,10 +1117,14 @@ T[] _arraySliceSliceMinSliceAssign_t(T[] a, T[] c, T[] b)
 }
 
 T[] _arraySliceSliceMinSliceAssign_s(T[] a, T[] c, T[] b)
+in
 {
-    enforceTypedArraysConformable("vector operation", a, b);
-    enforceTypedArraysConformable("vector operation", a, c);
-
+        assert(a.length == b.length && b.length == c.length);
+        assert(disjoint(a, b));
+        assert(disjoint(a, c));
+}
+body
+{
     auto aptr = a.ptr;
     auto aend = aptr + a.length;
     auto bptr = b.ptr;
@@ -1430,9 +1459,13 @@ T[] _arraySliceSliceMinass_t(T[] a, T[] b)
 }
 
 T[] _arraySliceSliceMinass_s(T[] a, T[] b)
+in
 {
-    enforceTypedArraysConformable("vector operation", a, b);
-
+    assert (a.length == b.length);
+    assert (disjoint(a, b));
+}
+body
+{
     //printf("_arraySliceSliceMinass_s()\n");
     auto aptr = a.ptr;
     auto aend = aptr + a.length;
@@ -1598,9 +1631,13 @@ T[] _arraySliceExpMulSliceAssign_t(T[] a, T value, T[] b)
 }
 
 T[] _arraySliceExpMulSliceAssign_s(T[] a, T value, T[] b)
+in
 {
-    enforceTypedArraysConformable("vector operation", a, b);
-
+    assert(a.length == b.length);
+    assert(disjoint(a, b));
+}
+body
+{
     //printf("_arraySliceExpMulSliceAssign_s()\n");
     auto aptr = a.ptr;
     auto aend = aptr + a.length;
@@ -1770,10 +1807,14 @@ T[] _arraySliceSliceMulSliceAssign_t(T[] a, T[] c, T[] b)
 }
 
 T[] _arraySliceSliceMulSliceAssign_s(T[] a, T[] c, T[] b)
+in
 {
-    enforceTypedArraysConformable("vector operation", a, b);
-    enforceTypedArraysConformable("vector operation", a, c);
-
+        assert(a.length == b.length && b.length == c.length);
+        assert(disjoint(a, b));
+        assert(disjoint(a, c));
+}
+body
+{
     //printf("_arraySliceSliceMulSliceAssign_s()\n");
     auto aptr = a.ptr;
     auto aend = aptr + a.length;
@@ -2109,9 +2150,13 @@ T[] _arraySliceSliceMulass_t(T[] a, T[] b)
 }
 
 T[] _arraySliceSliceMulass_s(T[] a, T[] b)
+in
 {
-    enforceTypedArraysConformable("vector operation", a, b);
-
+    assert (a.length == b.length);
+    assert (disjoint(a, b));
+}
+body
+{
     //printf("_arraySliceSliceMulass_s()\n");
     auto aptr = a.ptr;
     auto aend = aptr + a.length;
