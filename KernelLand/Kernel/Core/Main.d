@@ -40,6 +40,8 @@
  *      o framework bundle automatic creator
  *      o v Pridat nejaky protector ktory nedovoli allocovat ine bloky pamete okrem Free
  *      o opravit vsetky TODOcka
+ *      o Implement multi CPU support
+ *      o Implementovat statementy ako @trusted nothrow @safe atd...
  */
 
 module Core.Main;

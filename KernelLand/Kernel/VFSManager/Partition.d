@@ -69,7 +69,7 @@ final class Partition : BlockNode {
 	}
 
 	this(IBlockDevice device, long offset, long length, DirectoryNode parent, FileAttributes attributes) {
-		_cache  = new BlockCache(device, 0x1);
+		_cache  = new BlockCache(device, 0x100);
 		_offset = offset;
 		_length = length;
 
@@ -85,7 +85,7 @@ final class Partition : BlockNode {
 			return 0;
 		
 		long len = offset + data.length > _length ? _length - offset : data.length;
-		return Device.Read(_offset + offset, data[0 .. len]); //TODO: cache
+		return _cache.Read(_offset + offset, data[0 .. len]);
 	}
 
 	override ulong Write(long offset, byte[] data) {
@@ -93,7 +93,7 @@ final class Partition : BlockNode {
 			return 0;
 		
 		long len = offset + data.length > _length ? _length - offset : data.length;
-		return Device.Write(_offset + offset, data[0 .. len]); //TODO: cache
+		return _cache.Write(_offset + offset, data[0 .. len]);
 	}
 
 	static void ReadTable(IBlockDevice device) {

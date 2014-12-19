@@ -166,13 +166,16 @@ abstract class Resource {
 		ResourceManager.Unregister(this);
 	}
 
-	void AttachProcess(Process process) {
-		if (_processes.Contains(process) == -1)
-			return;
+    /* returns true if process was attached. check for ACL TODO */
+	bool AttachProcess(Process process) {
+		if (_processes.Contains(process))
+			return false;
 
 		_processes.Add(process);
+        return true;
 	}
 
+    /* returns true if we can delete this instance. implement protection against removing FSNodes etc.TODO */
 	bool DetachProcess(Process process) {
 		_processes.Remove(process);
 

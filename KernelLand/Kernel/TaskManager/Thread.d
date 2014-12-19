@@ -76,7 +76,7 @@ final class Thread {
 	private SpinLock _spinLock;
 
 	private Process _process;
-	private Thread _parent; //Parent thread under the same process
+	private Thread _parent; /* Parent thread in same process */
 
 	private LinkedList!Thread _lastDeadChild;
 	private Mutex _deadChildLock;
@@ -94,7 +94,7 @@ final class Thread {
 
 	private int _quantum;
 	private int _remaining;
-	package int _curCPU; //TO DO: add after multiCPU support
+	//package int _curCPU;
 
 	private ulong _eventState;
 	private void* _waitPointer;
@@ -104,10 +104,10 @@ final class Thread {
 
 	//private int _errno; //WAT?
 
-	// Create new thread for process
+	/* Create new thread for process */
 	package this(Process process) {
 		_id            = Task.NextTID;
-		_curCPU        = -1;
+		//_curCPU        = -1;
 		_status        = ThreadStatus.PreInit;
 		_process       = process;
 		_name          = "Unnamed Thread";
@@ -133,12 +133,12 @@ final class Thread {
 		_process.Threads.Add(this);
 	}
 
-	// Clone thread from other under same process
+	/* Clone thread from other under same process */
 	this(Thread other) {
 		this(other._process, other);
 	}
 
-	// Clone thread from other to the new process
+	/* Clone thread from other to the new process */
 	package this(Process process, Thread other) {
 		this(process);
 		_name         = other._name.dup;
@@ -253,7 +253,6 @@ final class Thread {
 	}
 
 	void Start(void function() entryPoint, string[] args) { //TODO: args...
-		//switch to new thread before run is called
 		_savedState.RSP = cast(void *)_kernelStack.ptr + StackSize;
 		_savedState.RIP = cast(void *)&NewThread;
 
@@ -304,7 +303,7 @@ final class Thread {
 		}
 	}
 
-	ulong WaitTID(ulong tid, ref ThreadStatus status) {
+/*	ulong WaitTID(ulong tid, ref ThreadStatus status) {
 		if (tid == -1) {
 			ulong events = WaitEvents(ThreadEvent.DeadChild);
 			if (events & ThreadEvent.DeadChild) {
@@ -342,7 +341,7 @@ final class Thread {
 
 		return -1;
 	}
-
+*/
 	void Exit(ulong status) {
 		Kill(status && 0xFF);
 
@@ -483,7 +482,7 @@ final class Thread {
 	}
 
 	void Fault(long number) {
-		if (_faultHandler is null) { // Panic
+		if (_faultHandler is null) {    /* Panic */
 			Kill(-1);
 
 			Port.Sti();
@@ -491,7 +490,7 @@ final class Thread {
 			return;
 		}
 
-		if (_curFaultNum) { // Double fault
+		if (_curFaultNum) {             /* Double fault */
 			Log("Threads: Fault: Double fault...");
 			Kill(-1);
 
@@ -512,7 +511,7 @@ final class Thread {
 
 
 
-	//Signals
+	/* Signals */
 	void PostSignal(SignalType signal) {
 		_pendingSignal = signal;
 		PostEvent(ThreadEvent.signal);
@@ -522,7 +521,7 @@ final class Thread {
 
 
 
-	//Events
+	/* Events */
 	void PostEvent(ulong eventMask) {
 		_spinLock.WaitOne();
 		scope(exit) _spinLock.Release();
@@ -566,8 +565,7 @@ final class Thread {
 		return ret;
 	}
 
-
-	//Messages
+	/* Messages */
 	bool SendMessage(byte[] data) {
 		_spinLock.WaitOne();
 		scope(exit) _spinLock.Release();

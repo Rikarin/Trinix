@@ -34,7 +34,7 @@ extern(C) void ArchMain(uint magic, void* info) {
 
     Log("multiboot2");
 	Multiboot.ParseHeader(magic, info);
-    asm {"hlt";}
+
 	CPU.Initialize();
 
     Log("Jumping to [KernelMain]");

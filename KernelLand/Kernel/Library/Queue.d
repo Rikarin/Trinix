@@ -23,8 +23,12 @@
 
 module Library.Queue;
 
+import Library;
+import TaskManager;
+
 
 class Queue(T) {
+    private LinkedList!Thread _waitingThreads;
 	private T[] _array;
 	private long _count;
 
@@ -45,10 +49,15 @@ class Queue(T) {
 	}
 
 	this() {
+        _waitingThreads = new LinkedList!Thread();
 		_array = new T[4];
 	}
 
 	~this() {
+        foreach (x; _waitingThreads)
+            x.Value.Wake();
+
+        delete _waitingThreads;
 		delete _array;
 	}
 
@@ -57,10 +66,16 @@ class Queue(T) {
 			Resize();
 
 		_array[_count++] = item;
+
+        foreach (x; _waitingThreads)
+            x.Value.Wake();
+
+        _waitingThreads.Clear();
 	}
 
 	T Dequeue() {
-		while (!_count) { } //TODO
+		while (!_count)
+            Task.CurrentThread.Sleep();
 
 		T ret = _array[0];
 		_array[0 .. $ - 1] = _array[1 .. $];

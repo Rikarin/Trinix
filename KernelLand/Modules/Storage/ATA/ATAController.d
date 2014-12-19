@@ -25,8 +25,8 @@ module Modules.Storage.ATA.ATAController;
 
 static import Architecture;
 
-import Library;
 import VFSManager;
+import TaskManager;
 import Modules.Storage.ATA.ATADrive;
 
 
@@ -34,7 +34,7 @@ class ATAController {
 	private uint _base;
 	private ubyte _number;
 	private ATADrive[2] _drives;
-	private SpinLock _spinLock; //TODO: mutex?
+    private Mutex _mutex;
 
 	package enum Base {
 		Bus1 = 0x1F0,
@@ -59,11 +59,11 @@ class ATAController {
 	}
 
 	package void Lock() {
-		_spinLock.WaitOne();
+        _mutex.WaitOne();
 	}
 
 	package void Unlock() {
-		_spinLock.Release();
+        _mutex.Release();
 	}
 
 	package T Read(T)(short port) {
@@ -75,9 +75,9 @@ class ATAController {
 	}
 
 	private this(uint base, ubyte number) {
-		_spinLock  = new SpinLock();
-		_base      = base;
-		_number    = number;
+        _mutex  = new Mutex();
+		_base   = base;
+		_number = number;
 
 		Identity(false);
 		Identity(true);
@@ -86,7 +86,7 @@ class ATAController {
 	~this() {
 		delete _drives[0];
 		delete _drives[1];
-		delete _spinLock;
+		delete _mutex;
 	}
 
 	private void Identity(bool isSlave) {

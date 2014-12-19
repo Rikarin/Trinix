@@ -76,7 +76,7 @@ class ATADrive : IBlockDevice {
 			data[i++] = tmp >> 8;
 		}
 
-		//flush buffer
+		/* flush buffer */
 		for (ulong i = 0; i < BlockSize; i++)
 			_controller.Read!short(ATAController.Port.Data);
 		

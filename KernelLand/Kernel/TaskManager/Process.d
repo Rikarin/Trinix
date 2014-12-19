@@ -19,6 +19,9 @@
  * 
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
+ * 
+ * TODO:
+ *      o Signal handler
  */
 
 module TaskManager.Process;
@@ -44,12 +47,7 @@ final class Process {
 	private LinkedList!Thread _threads;
 	private DirectoryNode _cwd;
 
-	/// Use this against _descriptors for holding every used resource for thread eg. mutex, semaphore, fsnode, etc.
-	/// And when process crash/exit we can easily delete objects created by this process.
 	private List!Resource _resources;
-
-
-	//TODO: Signal handlers?
 
 	@property package LinkedList!Thread Threads() {
 		return _threads;
@@ -85,12 +83,13 @@ final class Process {
 		process._cwd      = VFS.Root;
 		process._isKernel = true;
 
+        /* Kernel thread */
 		Thread t          = new Thread(process);
-		t.Name            = "Init";
+		t.Name            = "Kernel";
 		t.Status          = ThreadStatus.Active;
 		t.SetKernelStack();
 
-		//Idle task
+		/* Idle task */
 		Task.IdleTask     = new Thread(t);
 		with (Task.IdleTask) {
 			Name          = "Idle Task";
@@ -110,19 +109,19 @@ final class Process {
 		Task.Processes.Add(this);
 	}
 
-	// Clone other._process to this process and thread other to this process
+	/* Clone other._process to this process and ot to this process */
 	this(Thread other) {
 		this();
-		_uid         = other.ParentProcess._uid;
-		_gid         = other.ParentProcess._gid;
-		_isKernel    = other.ParentProcess._isKernel;
-		_parent      = other.ParentProcess;
-		_paging      = new Paging(other.ParentProcess._paging);
-		_cwd         = other.ParentProcess._cwd;
+		_uid      = other.ParentProcess._uid;
+		_gid      = other.ParentProcess._gid;
+		_isKernel = other.ParentProcess._isKernel;
+		_parent   = other.ParentProcess;
+		_paging   = new Paging(other.ParentProcess._paging);
+		_cwd      = other.ParentProcess._cwd;
 
 		foreach (x; other.ParentProcess._resources) {
-			_resources.Add(x);
-			x.AttachProcess(this);
+			if (x.AttachProcess(this))
+                _resources.Add(x);
 		}
 
 		new Thread(this, other);
@@ -140,15 +139,12 @@ final class Process {
 		delete _paging;
 		delete _threads;
 		delete _resources;
-		delete _resources;
-
-		// Clean up?
 	}
 
 	package ulong[] AllocUserStack(ulong size = Thread.UserStackSize) {
 		for (ulong i = 0; i < size; i += Paging.PageSize) {
 			_userStack -= Paging.PageSize;
-			_paging.AllocFrame(_userStack, AccessMode.DefaultUser); //Nejako nefunguje :/
+			_paging.AllocFrame(_userStack, AccessMode.DefaultUser); //TODO: Nejako nefunguje :/
 		}
 
 		return (cast(ulong *)_userStack)[0 .. size];
