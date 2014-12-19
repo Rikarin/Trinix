@@ -10,7 +10,7 @@
     <IncrementalLinking>true</IncrementalLinking>
     <Includes>
       <Includes>
-        <Path>../../../Kernel</Path>
+        <Path>..\..\..\Kernel</Path>
       </Includes>
     </Includes>
   </PropertyGroup>
@@ -49,5 +49,6 @@
   <ItemGroup>
     <Compile Include="Main.d" />
     <Compile Include="DriverInfo.d" />
+    <Compile Include="package.d" />
   </ItemGroup>
 </Project>

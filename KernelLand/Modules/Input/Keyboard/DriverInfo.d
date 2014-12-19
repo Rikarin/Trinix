@@ -24,7 +24,7 @@
 module Modules.Input.Keyboard.DriverInfo;
 
 import ObjectManager;
-import Modules.Input.Keyboard.Main;
+import Modules.Input.Keyboard;
 
 
 extern(C) const ModuleDef _DriverInfo_Input_Keyboard = {

@@ -21,13 +21,13 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module Modules.Filesystems.Ext2.Ext2PipeNode;
+module Modules.Filesystem.Ext2.Ext2CharNode;
 
 import VFSManager;
-import Modules.Filesystems.Ext2.Ext2Filesystem;
+import Modules.Filesystem.Ext2;
 
 
-final class Ext2PipeNode : PipeNode {
+final class Ext2CharNode : CharNode {
 	private Ext2Filesystem.Inode _inode;
 	private bool _loadedAttribs;
 	

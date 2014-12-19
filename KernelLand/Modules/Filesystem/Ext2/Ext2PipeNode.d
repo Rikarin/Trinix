@@ -21,23 +21,15 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module Modules.Filesystems.Ext2.Ext2BlockNode;
+module Modules.Filesystem.Ext2.Ext2PipeNode;
 
 import VFSManager;
-import Modules.Filesystems.Ext2.Ext2Filesystem;
+import Modules.Filesystem.Ext2;
 
 
-final class Ext2BlockNode : BlockNode {
+final class Ext2PipeNode : PipeNode {
 	private Ext2Filesystem.Inode _inode;
 	private bool _loadedAttribs;
-
-	@property override long Blocks() {
-		return -1; //TODO
-	}
-
-	@property override long BlockSize() {
-		return -1; //TODO
-	}
 	
 	this(int inode, DirectoryNode parent, FileAttributes attributes) {
 		if (parent !is null && parent.FileSystem !is null)
@@ -45,7 +37,7 @@ final class Ext2BlockNode : BlockNode {
 		
 		super(parent, attributes);
 	}
-
+	
 	@property override FileAttributes Attributes() {
 		if (!_loadedAttribs && _parent !is null && _parent.FileSystem !is null) {
 			auto attribs = (cast(Ext2Filesystem)_parent.FileSystem).GetAttributes(_inode);

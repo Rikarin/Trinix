@@ -33,12 +33,8 @@ abstract final class PhysicalMemory {
 	private __gshared BitArray _frames;
 
 	// Used in Multiboot info for shifting addr to the end of the modules
-	@property static ulong MemoryStart() {
+	@property static ref ulong MemoryStart() {
 		return _startMemory;
-	}
-
-	@property static void MemoryStart(ulong addr) {
-		_startMemory = addr;
 	}
 
 	static bool Initialize() {

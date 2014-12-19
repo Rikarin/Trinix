@@ -2,9 +2,9 @@
 # Makefile
 #
 
--include ../Makefile.cfg
+-include ../../Makefile.cfg
 
-OUTPUT 	= $(TRXROOT)/Library/Kappa.framework/crt
+OUTPUT 	= $(TRXROOT)/System/Library/Frameworks/Kappa.framework/crt
 BIN 	= $(OUTPUT)/crt0.o $(OUTPUT)/crt0S.o $(OUTPUT)/crti.o $(OUTPUT)/crtn.o
 CFLAGS := -std=c99
 

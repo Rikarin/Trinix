@@ -149,7 +149,10 @@ iInitialPD:	; Covers 1 GiB
 	dd	iInitialPT1 - KERNEL_BASE + 3, 0
 	dd	iInitialPT2 - KERNEL_BASE + 3, 0
 	dd	iInitialPT3 - KERNEL_BASE + 3, 0
-	times 509 dq 0
+    dd  iInitialPT4 - KERNEL_BASE + 3, 0
+    dd  iInitialPT5 - KERNEL_BASE + 3, 0
+    dd  iInitialPT6 - KERNEL_BASE + 3, 0
+	times 506 dq 0
 
 iStackPD:
 	dd	iKStackPT - KERNEL_BASE + 3, 0
@@ -182,6 +185,24 @@ iInitialPT3:	; 2 MiB
 	dq	i * 4096 + 0x103
 	%assign i i + 1
 	%endrep
+iInitialPT4:    ; 2 MiB
+    %assign i 1536
+    %rep 512
+    dq  i * 4096 + 0x103
+    %assign i i + 1
+    %endrep
+iInitialPT5:    ; 2 MiB
+    %assign i 2048
+    %rep 512
+    dq  i * 4096 + 0x103
+    %assign i i + 1
+    %endrep
+iInitialPT6:    ; 2 MiB
+    %assign i 2560
+    %rep 512
+    dq  i * 4096 + 0x103
+    %assign i i + 1
+    %endrep
 
 [section .padata]
 [global iInitialKernelStack]

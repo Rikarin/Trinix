@@ -21,18 +21,13 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module Modules.Filesystems.Ext2.Ext2Filesystem;
+module Modules.Filesystem.Ext2.Ext2Filesystem;
 
 import Core;
 import Library;
 import VFSManager;
 import ObjectManager;
-
-import Modules.Filesystems.Ext2.Ext2CharNode;
-import Modules.Filesystems.Ext2.Ext2FileNode;
-import Modules.Filesystems.Ext2.Ext2PipeNode;
-import Modules.Filesystems.Ext2.Ext2BlockNode;
-import Modules.Filesystems.Ext2.Ext2DirectoryNode;
+import Modules.Filesystem.Ext2;
 
 
 final class Ext2Filesystem : IFileSystem {

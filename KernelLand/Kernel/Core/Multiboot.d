@@ -66,6 +66,7 @@ enum MultibootMemoryType {
 }
 
 struct MultibootColor {
+align(1):
 	ubyte Red;
 	ubyte Green;
 	ubyte Blue;
@@ -80,17 +81,20 @@ align(1):
 }
 
 struct MultibootTag {
+align(1):
 	uint Type;
 	uint Size;
 }
 
 struct MultibootTagString {
+align(1):
 	uint Type;
 	uint Size;
 	char String;
 }
 
 struct MultibootTagModule {
+align(1):
 	uint Type;
 	uint Size;
 	uint ModStart;
@@ -99,6 +103,7 @@ struct MultibootTagModule {
 }
 
 struct MultibootTagBasicMemInfo {
+align(1):
 	uint Type;
 	uint Size;
 	uint Lower;
@@ -106,6 +111,7 @@ struct MultibootTagBasicMemInfo {
 }
 
 struct MultibootTagBootDev {
+align(1):
 	uint Type;
 	uint Size;
 	uint BiosDev;
@@ -114,6 +120,7 @@ struct MultibootTagBootDev {
 }
 
 struct MultibootTagMemoryMap {
+align(1):
 	uint Type;
 	uint Size;
 	uint EntrySize;
@@ -122,6 +129,7 @@ struct MultibootTagMemoryMap {
 }
 
 struct MultibootTagFramebufferCommon {
+align(1):
 	uint Type;
 	uint Size;
 
@@ -135,6 +143,7 @@ struct MultibootTagFramebufferCommon {
 }
 
 struct MultibootTagFramebuffer {
+align(1):
 	MultibootTagFramebufferCommon Common;
 
 	union {
@@ -193,12 +202,14 @@ abstract final class Multiboot {
 					auto tmp = cast(MultibootTagString *)mbt;
 					char* str = &tmp.String;
 
-                    Log("Name: BootLoaderName, Value", cast(string)str[0 .. tmp.Size - 9]);
+                    Log("Name: BootLoaderName, Value: %s", cast(string)str[0 .. tmp.Size - 9]);
 					break;
 					
 				case MultibootTagType.Module:
 					auto tmp = cast(MultibootTagModule *)mbt;
-					PhysicalMemory.MemoryStart = (((tmp.ModEnd & ~cast(ulong)LinkerScript.KernelEnd)) + 0xFFF) & 0xFFFFFFFFFFFFF000;
+                    if (((tmp.ModEnd + 0xFFF) & ~0xFFFUL) > PhysicalMemory.MemoryStart)
+                        PhysicalMemory.MemoryStart = (tmp.ModEnd + 0xFFF) & ~0xFFFUL;
+
 					char* str = &tmp.String;
 					Modules[ModulesCount++] = tmp;
 

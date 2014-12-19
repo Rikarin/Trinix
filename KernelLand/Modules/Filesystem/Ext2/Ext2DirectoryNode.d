@@ -21,14 +21,14 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module Modules.Filesystems.Ext2.Ext2FileNode;
+module Modules.Filesystem.Ext2.Ext2DirectoryNode;
 
 import VFSManager;
-import Modules.Filesystems.Ext2.Ext2Filesystem;
+import Modules.Filesystem.Ext2;
 
 
-final class Ext2FileNode : FileNode {
-	private Ext2Filesystem.Inode _inode;
+final class Ext2DirectoryNode : DirectoryNode {
+	package Ext2Filesystem.Inode _inode;
 	private bool _loadedAttribs;
 	
 	this(int inode, DirectoryNode parent, FileAttributes attributes) {
@@ -39,8 +39,8 @@ final class Ext2FileNode : FileNode {
 	}
 	
 	@property override FileAttributes Attributes() {
-		if (!_loadedAttribs && _parent !is null && _parent.FileSystem !is null) {
-			auto attribs = (cast(Ext2Filesystem)_parent.FileSystem).GetAttributes(_inode);
+		if (!_loadedAttribs && FileSystem !is null) {
+			auto attribs = (cast(Ext2Filesystem)FileSystem).GetAttributes(_inode);
 			attribs.Name = _attributes.Name;
 			attribs.Type = _attributes.Type;
 
@@ -53,19 +53,5 @@ final class Ext2FileNode : FileNode {
 	
 	@property override void Attributes(FileAttributes value) {
 		_attributes = value; //TODO
-	}
-	
-	override ulong Read(long offset, byte[] data) {
-		if (_parent is null || _parent.FileSystem is null)
-			return 0;
-		
-		return (cast(Ext2Filesystem)_parent.FileSystem).Read(_inode, offset, data);
-	}
-	
-	override ulong Write(long offset, byte[] data) {
-		if (_parent is null || _parent.FileSystem is null)
-			return 0;
-		
-		return (cast(Ext2Filesystem)_parent.FileSystem).Write(_inode, offset, data);
 	}
 }

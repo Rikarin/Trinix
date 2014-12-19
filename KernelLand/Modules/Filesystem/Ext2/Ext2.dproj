@@ -3,57 +3,54 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{682BBC6F-2C34-46F6-AE6C-9CE3D00BFAF3}</ProjectGuid>
+    <ProjectGuid>{F925B1B2-7D47-44BD-9064-20908DEFA840}</ProjectGuid>
+    <BaseDirectory>.</BaseDirectory>
+    <Compiler>DMD2</Compiler>
+    <PreferOneStepBuild>true</PreferOneStepBuild>
     <UseDefaultCompiler>true</UseDefaultCompiler>
     <IncrementalLinking>true</IncrementalLinking>
-    <PreferOneStepBuild>true</PreferOneStepBuild>
-    <Compiler>DMD2</Compiler>
-    <Includes>
-      <Includes>
-        <Path>../../../Kernel</Path>
-      </Includes>
-    </Includes>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug</OutputPath>
+    <Externalconsole>true</Externalconsole>
+    <Target>Executable</Target>
+    <OutputName>Ext2</OutputName>
+    <UnittestMode>false</UnittestMode>
     <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
     <ObjectsDirectory>obj\Debug</ObjectsDirectory>
     <DebugLevel>0</DebugLevel>
-    <UnittestMode>false</UnittestMode>
-    <Externalconsole>true</Externalconsole>
-    <Target>Executable</Target>
-    <OutputName>Ext2</OutputName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release</OutputPath>
-    <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
-    <ObjectsDirectory>obj\Release</ObjectsDirectory>
-    <DebugLevel>0</DebugLevel>
-    <UnittestMode>false</UnittestMode>
     <Externalconsole>true</Externalconsole>
     <Target>Executable</Target>
     <OutputName>Ext2</OutputName>
+    <UnittestMode>false</UnittestMode>
+    <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
+    <ObjectsDirectory>obj\Release</ObjectsDirectory>
+    <DebugLevel>0</DebugLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Unittest|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Unittest</OutputPath>
-    <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
-    <ObjectsDirectory>obj\Unittest</ObjectsDirectory>
-    <DebugLevel>0</DebugLevel>
-    <UnittestMode>true</UnittestMode>
     <Externalconsole>true</Externalconsole>
     <Target>Executable</Target>
     <OutputName>Ext2</OutputName>
+    <UnittestMode>true</UnittestMode>
+    <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
+    <ObjectsDirectory>obj\Unittest</ObjectsDirectory>
+    <DebugLevel>0</DebugLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Ext2BlockNode.d" />
-    <Compile Include="Ext2CharNode.d" />
     <Compile Include="Ext2DirectoryNode.d" />
     <Compile Include="Ext2FileNode.d" />
     <Compile Include="Ext2PipeNode.d" />
     <Compile Include="Main.d" />
+    <Compile Include="package.d" />
     <Compile Include="DriverInfo.d" />
+    <Compile Include="Ext2BlockNode.d" />
+    <Compile Include="Ext2CharNode.d" />
     <Compile Include="Ext2Filesystem.d" />
   </ItemGroup>
 </Project>

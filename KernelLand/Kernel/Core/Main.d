@@ -30,8 +30,6 @@
  *      o eventy, syscally
  *      o kontrolu parametrov pri syscalloch
  *      o ACLka do syscallov?
- *      o najprv skocit do arch zavislej casti kodu, tj. Arch/xxx/Main.d a az
- *        odtial potom preskocit sem...
  *      o debugovat Heap... Obcas to pada na expande...
  *      o spravit to iste jak je pre VFS.AddDriver ci co ale pre Node zariadenia.
  *      o Aby sa z modulu dali pridat veci ako je pipe, pty, vty, atd...
@@ -121,33 +119,32 @@ extern(C) void KernelMain() {
 	//Thread thr = new Thread(Task.CurrentThread);
 	//thr.Start(&testfce, null);
 	//thr.AddActive();
+    //asm {"int 3"; }
 
 	//Task.CurrentThread.WaitEvents(ThreadEvent.DeadChild);
 
-   // asm {"int 5";}
+
+      foreach (tmp; Multiboot.Modules[0 .. Multiboot.ModulesCount]) {
+        char* str = &tmp.String;
+        Log("Start3: %16x, End: %16x, CMD: %s", tmp.ModStart, tmp.ModEnd, cast(string)str[0 .. tmp.Size - 17]);
+
+        ulong* h = cast(ulong *)(cast(ulong)tmp.ModStart | 0xFFFFFFFF_80000000);
+        ulong x = *h;
+        Log("test: %d", x);
+
+        import Library;
+    /*  auto elf = Elf.Load(cast(void *)(cast(ulong)LinkerScript.KernelBase | cast(ulong)tmp.ModStart), "/System/Modules/kokot.html");
+        if (elf)
+            elf.Relocate(null);*/
+    }
+
 
 	Log("Running.....", Time.Uptime);
 
 	while (true) {
 		//Log.WriteLine("Running.....", Time.Uptime);
 	}
-
-/+	foreach (tmp; Multiboot.Modules[0 .. Multiboot.ModulesCount]) {
-		char* str = &tmp.String;
-		Log.WriteJSON("start", tmp.ModStart);
-		Log.WriteJSON("end", tmp.ModEnd);
-		Log.WriteJSON("cmd", cast(string)str[0 .. tmp.Size - 17]);
-
-		import Library;
-	/*	auto elf = Elf.Load(cast(void *)(cast(ulong)LinkerScript.KernelBase | cast(ulong)tmp.ModStart), "/System/Modules/kokot.html");
-		if (elf)
-			elf.Relocate(null);*/
-	}+/
-
-//	Log.WriteLine("Bye");
 }
-
-import core.vararg;
 
 void testfce() {
 	//for (int i = 0; i < 0x100; i++) {

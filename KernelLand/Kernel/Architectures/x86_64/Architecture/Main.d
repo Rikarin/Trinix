@@ -33,7 +33,7 @@ extern(C) void ArchMain(uint magic, void* info) {
 
     Log("multiboot2");
 	Multiboot.ParseHeader(magic, info);
-   
+
 	CPU.Initialize();
 
     Log("Jumping to [KernelMain]");

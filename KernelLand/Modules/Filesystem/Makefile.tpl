@@ -1,3 +1,3 @@
-CATEGORY = Filesystems
+CATEGORY = Filesystem
 
 -include ../../Makefile.tpl

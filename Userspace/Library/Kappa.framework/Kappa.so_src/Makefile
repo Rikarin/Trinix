@@ -1,6 +1,6 @@
--include $(dir $(lastword $(MAKEFILE_LIST)))../Makefile.cfg
+-include $(dir $(lastword $(MAKEFILE_LIST)))../../Makefile.cfg
 
-OUTPUT 	= $(TRXROOT)/Library/Kappa.framework
+OUTPUT 	= $(TRXROOT)/System/Library/Frameworks/Kappa.framework
 NAME 	= Kappa.so.0.1.0
 SRC    += $(shell find -name "*.d")
 BIN		= $(OUTPUT)/$(NAME)
