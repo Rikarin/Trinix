@@ -21,13 +21,11 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  * 
  * TODO:
- *      o v PhysicalMemory by to chcelo nahrat regiony z multibootu a potom
- *        podla nich vytvorit bitmapu
  *      o dokoncit VFS., co tam este chyba?... file..., syscally, static cally,
  *        acl,...
  *      o Dokoncit write/create/remove - spravit Ext2 driver!!!!
  *      o Multitasking a synchronizacne prvky, asi rwlock ci jak
- *      o eventy, syscally
+ *      o eventy, syscally, shared memory
  *      o kontrolu parametrov pri syscalloch
  *      o ACLka do syscallov?
  *      o debugovat Heap... Obcas to pada na expande...
@@ -36,17 +34,18 @@
  *      o documentation, documentation, documentation, ...
  *      o IMPORTANT: interfacovat syscally na konretne volania. tj. kazdy syscall
  *        moze mat uplne ine parametre
- *      o pridat package.d do modulov
  *      o dokoncit keyboard a mouse driver.
- *      o spravit driver na PCI a pipedev...
- *      o shared memory a serial
+ *      o spravit driver na PCI, pipedev, serial port...
  *      o parse command line
  *      o framework bundle automatic creator
+ *      o v Pridat nejaky protector ktory nedovoli allocovat ine bloky pamete okrem Free
+ *      o opravit vsetky TODOcka
  */
 
 module Core.Main;
 
 import Core;
+import Linker;
 import VFSManager;
 import TaskManager;
 import Architecture;
@@ -56,7 +55,7 @@ import SyscallManager;
 
 //==============================================================================
 /* MemoryMap:
-	0xFFFFFFFFE0000000 - mapped regions
+	0xFFFFFFFFE0000000 - 0xFFFFFFFFF0000000 - mapped regions
 */
 extern(C) extern const int giBuildNumber;
 extern(C) extern const char* gsGitHash;
@@ -100,49 +99,37 @@ extern(C) void KernelMain() {
     Log("Timer");
 	Time.Initialize();
 
+    Log("Binary Loader");
+    BinaryLoader.Initialize();
+
     Log("Module Manager");
 	ModuleManager.Initialize();
 	ModuleManager.LoadBuiltins();
+    LoadModules();
 
 	//mixin(import("Userspace/Library/Linker.so_src/Elf.d"));
 
-
 	VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
-	          cast(Partition)VFS.Find("/System/Devices/disk0s1"), "ext2");
+              VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");
 
 
     import Modules.Terminal.VTY.Main;
    // new VTY();
 
-    VFS.PrintTree(VFS.Root);
+    debug VFS.PrintTree(VFS.Root);
 
 	//Thread thr = new Thread(Task.CurrentThread);
 	//thr.Start(&testfce, null);
 	//thr.AddActive();
-    //asm {"int 3"; }
 
 	//Task.CurrentThread.WaitEvents(ThreadEvent.DeadChild);
 
 
-      foreach (tmp; Multiboot.Modules[0 .. Multiboot.ModulesCount]) {
-        char* str = &tmp.String;
-        Log("Start3: %16x, End: %16x, CMD: %s", tmp.ModStart, tmp.ModEnd, cast(string)str[0 .. tmp.Size - 17]);
 
-        ulong* h = cast(ulong *)(cast(ulong)tmp.ModStart | 0xFFFFFFFF_80000000);
-        ulong x = *h;
-        Log("test: %d", x);
-
-        import Library;
-    /*  auto elf = Elf.Load(cast(void *)(cast(ulong)LinkerScript.KernelBase | cast(ulong)tmp.ModStart), "/System/Modules/kokot.html");
-        if (elf)
-            elf.Relocate(null);*/
-    }
-
-
-	Log("Running.....", Time.Uptime);
+	Log("Running, Time = %d", Time.Uptime);
 
 	while (true) {
-		//Log.WriteLine("Running.....", Time.Uptime);
+       // Log("Running, Time = %d", Time.Uptime);
 	}
 }
 

@@ -39,7 +39,7 @@ abstract final class GDT {
 		return _tables[CPU.Identifier];
 	}
 
-	static bool Initialize() {
+	static void Initialize() {
 		_tables[CPU.Identifier] = new GlobalDescriptorTable;
 		InitTable(CPU.Identifier);
 
@@ -47,8 +47,6 @@ abstract final class GDT {
             "lgdt [RAX]" : : "a"(&_tables[CPU.Identifier].Base);
             "call _CPU_refresh_iretq";
         }
-
-		return true;
 	}
 	
 	private static void InitTable(uint table) {

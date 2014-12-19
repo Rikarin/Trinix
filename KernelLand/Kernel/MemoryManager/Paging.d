@@ -19,10 +19,14 @@
  * 
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
+ * 
+ * TODO:
+ *      o Add free for mapped regions
  */
 
 module MemoryManager.Paging;
 
+import Core;
 import Library;
 import TaskManager;
 import Architecture;
@@ -50,7 +54,7 @@ enum AccessMode : uint {
 	User            = 1 << 15,
 	Executable      = 1 << 16,
 
-	// I dont know what Executable really is but its works with it...
+	/* I dont know what Executable really is but its works with it... */
 	DefaultKernel   = Writable | AllocOnAccess | Executable,
 	DefaultUser	    = Writable | AllocOnAccess | Executable | User,
 	AvailableMask   = Writable | AllocOnAccess | Executable | User | MapOnce | CopyOnWrite | Global
@@ -191,7 +195,7 @@ final class Paging {
 	enum PageSize = 0x1000;
 
 	private PageLevel!4* _root;
-	//private void* _regions = cast(void *)0xFFFFFFFFE0000000;
+	private void* _regions = cast(void *)0xFFFFFFFFE0000000;
 
 	this() {
 		_root = new PageLevel!4;
@@ -200,13 +204,13 @@ final class Paging {
 	this(Paging other) {
 		this();
 
-		foreach (i; 0 .. 512) { //PML4
+		foreach (i; 0 .. 512) {                         /* PML4 */
 			if (other._root.Tables[i]) {
-				foreach (j; 0 .. 512) { //PDPT
+				foreach (j; 0 .. 512) {                 /* PDPT */
 					if (other._root.Tables[i].Tables[j]) {
-						foreach (k; 0 .. 512) { //PD
+						foreach (k; 0 .. 512) {         /* PD */
 							if (other._root.Tables[i].Tables[j].Tables[k]) {
-								foreach (m; 0 .. 512) { //PT
+								foreach (m; 0 .. 512) { /* PT */
 									PTE page = other._root.Tables[i].Tables[j].Tables[k].Entries[m];
 									if (page.Present) {
 										ulong address = (cast(ulong)i << 39) | (j << 30) | (k << 21) | (m << 12);
@@ -225,13 +229,13 @@ final class Paging {
 	}
 	
 	~this() {
-		foreach (i; 0 .. 512) { //PML4
+		foreach (i; 0 .. 512) {                                             /* PML4 */
 			if (_root.Tables[i]) {
-				foreach (j; 0 .. 512) { //PDPT
+				foreach (j; 0 .. 512) {                                     /* PDPT */
 					if (_root.Tables[i].Tables[j]) {
-						foreach (k; 0 .. 512) { //PD
+						foreach (k; 0 .. 512) {                             /* PD */
 							if (_root.Tables[i].Tables[j].Tables[k])
-								delete _root.Tables[i].Tables[j].Tables[k]; //PT
+								delete _root.Tables[i].Tables[j].Tables[k]; /* PT */
 						}
 						delete _root.Tables[i].Tables[j];
 					}
@@ -258,17 +262,14 @@ final class Paging {
 		PhysicalMemory.FreeFrame(GetPage(address));
 	}
 	
-	/*ubyte[] MapRegion(void* pAdd, ulong length)
-	{
-		ubyte[] result = MapRegion(pAdd, regions, length);
-		regions += (length & ~0xFFFUL) + ((length & 0xFFF) ? 0x1000 : 0);
+	ubyte[] MapRegion(void* pAdd, ulong length) {
+		ubyte[] result = MapRegion(pAdd, _regions, length);
+		_regions += (length & ~0xFFFUL) + ((length & 0xFFF) ? 0x1000 : 0);
 		return result;
 	}
 	
-	ubyte[] MapRegion(void* pAdd, void* vAdd, ulong length)
-	{
-		for (ulong i = 0; i < length; i += 0x1000)
-		{
+	ubyte[] MapRegion(void* pAdd, void* vAdd, ulong length) {
+		for (ulong i = 0; i < length; i += 0x1000) {
 			auto pt = &GetPage(vAdd + i);
 			
 			pt.Present = true;
@@ -279,16 +280,16 @@ final class Paging {
 		
 		int diff = cast(int)pAdd & 0xFFF;
 		return (cast(ubyte *)vAdd)[diff .. diff + length];
-	}*/
+	}
 
 	ref PTE GetPage(void* address) {
 		ulong add = cast(ulong)address;
 		
 		ushort[4] start;
-		start[3] = (add >> 39) & 511; //PML4E
-		start[2] = (add >> 30) & 511; //PDPTE
-		start[1] = (add >> 21) & 511; //PDE
-		start[0] = (add >> 12) & 511; //PTE
+		start[3] = (add >> 39) & 511; /* PML4E */
+		start[2] = (add >> 30) & 511; /* PDPTE */
+		start[1] = (add >> 21) & 511; /* PDE */
+		start[0] = (add >> 12) & 511; /* PTE */
 
 		auto pdpt = _root.GetOrCreateTable(start[3]);
 		auto pd = pdpt.GetOrCreateTable(start[2]);
@@ -301,10 +302,10 @@ final class Paging {
 		ulong add = cast(ulong)address;
 		
 		ushort[4] start;
-		start[3] = (add >> 39) & 511; //PML4E
-		start[2] = (add >> 30) & 511; //PDPTE
-		start[1] = (add >> 21) & 511; //PDE
-		start[0] = (add >> 12) & 511; //PTE
+		start[3] = (add >> 39) & 511; /* PML4E */
+		start[2] = (add >> 30) & 511; /* PDPTE */
+		start[1] = (add >> 21) & 511; /* PDE */
+		start[0] = (add >> 12) & 511; /* PTE */
 		
 		PageLevel!3* pdpt;
 		if (_root.Entries[start[3]].Present)
@@ -331,29 +332,29 @@ final class Paging {
 		if (stack.RIP == Thread.ThreadReturn)
 			Task.CurrentThread.Exit(stack.RAX);
 
+        debug {
+    		Log(`===> Spadlo to -.-"`);
+            Log("IRQ = %16x | RIP = %16x", stack.IntNumber, stack.RIP);
+            Log("RAX = %16x | RBX = %16x", stack.RAX, stack.RBX);
+            Log("RCX = %16x | RDX = %16x", stack.RCX, stack.RDX);
+            Log("RDI = %16x | RSI = %16x", stack.RDI, stack.RSI);
+            Log("RSP = %16x | RBP = %16x", stack.RSP, stack.RBP);
+            Log(" R8 = %16x |  R9 = %16x", stack.R8, stack.R9);
+            Log("R10 = %16x | R11 = %16x", stack.R10, stack.R11);
+            Log("R12 = %16x | R13 = %16x", stack.R12, stack.R13);
+            Log("R14 = %16x | R15 = %16x", stack.R14, stack.R15);
+            Log(" CS = %16x |  SS = %16x", stack.CS, stack.SS);
+    		
+    		ulong cr2;
+    		asm {
+    			"mov RAX, CR2" : "=a"(cr2);
+    		}
+    		
+    		Log(" CR2 = %16x", cr2);
+            Log("Flags: %16x", stack.Flags);
+        }
 
-		//TODO: testing purpose only...
-		import Core;
-		Log(`===> Spadlo to -.-"`);
-        Log("IRQ = %16x | RIP = %16x", stack.IntNumber, stack.RIP);
-        Log("RAX = %16x | RBX = %16x", stack.RAX, stack.RBX);
-        Log("RCX = %16x | RDX = %16x", stack.RCX, stack.RDX);
-        Log("RDI = %16x | RSI = %16x", stack.RDI, stack.RSI);
-        Log("RSP = %16x | RBP = %16x", stack.RSP, stack.RBP);
-        Log(" R8 = %16x |  R9 = %16x", stack.R8, stack.R9);
-        Log("R10 = %16x | R11 = %16x", stack.R10, stack.R11);
-        Log("R12 = %16x | R13 = %16x", stack.R12, stack.R13);
-        Log("R14 = %16x | R15 = %16x", stack.R14, stack.R15);
-        Log(" CS = %16x |  SS = %16x", stack.CS, stack.SS);
-		
-		ulong cr2;
-		asm {
-			"mov RAX, CR2" : "=a"(cr2);
-		}
-		
-		Log(" CR2 = %16x", cr2);
-        Log("Flags: %16x", stack.Flags);
-
+        //TODO: what to do with this?
 		asm {
 			"cli";
 			"hlt";

@@ -97,7 +97,7 @@ abstract final class Task {
 		return _idle;
 	}
 
-	static bool Initialize() {
+	static void Initialize() {
 		_spinLock = new SpinLock();
 		_procs    = new LinkedList!Process();
 		_threads  = new LinkedList!Thread[Thread.MinPriority + 1];
@@ -107,8 +107,6 @@ abstract final class Task {
 
 		Process proc = Process.Initialize();
 		_currentThread = proc.Threads.First.Value;
-
-		return true;
 	}
 
 	static void Scheduler() {

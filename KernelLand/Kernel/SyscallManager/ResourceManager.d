@@ -99,12 +99,15 @@ abstract final class ResourceManager {
 	 * Returns:
 	 * 		true when initialization was successful
 	 */
-	static bool Initialize() {
+	static void Initialize() {
 		_callTables = new LinkedList!ResouceCallTable();
-		_resources = new List!Resource();
-
-		return true;
+		_resources  = new List!Resource();
 	}
+
+    static void Finalize() {
+        delete _callTables;
+        delete _resources;
+    }
 
 	/**
 	 * This is called only by SyscallManager or by internal library

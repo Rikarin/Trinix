@@ -43,7 +43,7 @@ abstract final class Time {
 	private __gshared ulong _ticks;
 	private __gshared ulong _partMiliseconds;
    
-    static bool Initialize() {
+    static void Initialize() {
 		// Disable NMI
 		Port.Write!byte(0x70, Port.Read!byte(0x70) & 0x7F);
 		Port.Cli();
@@ -68,8 +68,6 @@ abstract final class Time {
 		DeviceManager.RequestIRQ(&IRQHandler, 8);
 		Port.Write!byte(0x70, 0x0C);
 		Port.Read!byte(0x71);
-
-		return true;
 	}
 
 	@property static long Uptime() {

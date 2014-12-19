@@ -163,7 +163,7 @@ enum TermAttributes : uint {
 	TCOOFF = 0x0004,
 	TCOON = 0x0008,
 }
-/+
+/+ TODO
 enum IOCTL_Commands : uint {
 	TCGETS = 0x4000, /* Get termios struct */
 	TCSETS = 0x4001, /* Set termios struct */

@@ -50,12 +50,10 @@ abstract final class SyscallHandler {
 		STAR         = 0x0013_0008_0000_0000
 	}
 
-	static bool Initialize() {
+	static void Initialize() {
 		Port.WriteMSR(Registers.IA32_LSTAR, cast(ulong)&SyscallCommon);
 		Port.WriteMSR(Registers.IA32_STAR, Registers.STAR);
 		Port.WriteMSR(Registers.IA32_FMASK, 0x200);
-
-		return true;
 	}
 
 	static void SyscallDispatcher(SyscallStack* stack) {

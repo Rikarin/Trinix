@@ -40,7 +40,7 @@ abstract final class Logger {
         ushort Address;
     }
     
-    static bool Initialize() {
+    static void Initialize() {
         /* Set cursor */
         Port.Write!byte(0x3D4, 0x0F);
         Port.Write!byte(0x3D5, 0);
@@ -50,8 +50,6 @@ abstract final class Logger {
         /* Clear screen */
         foreach (i; 0 .. 2000)
             _display[i].Address = 0;
-
-        return true;
     }
 
     static void Write(string format, ...) {

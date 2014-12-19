@@ -71,24 +71,21 @@ align(1):
 }
 
 abstract final class ModuleManager {
+    private __gshared char _number = '0';
 	private __gshared LinkedList!ModuleDef _loadedModules;
 	private __gshared LinkedList!ModuleDef _loadingModules;
 	private __gshared LinkedList!ModuleDef _builtinModules;
 
-	static bool Initialize() {
-		_loadedModules = new LinkedList!ModuleDef();
+	static void Initialize() {
+		_loadedModules  = new LinkedList!ModuleDef();
 		_loadingModules = new LinkedList!ModuleDef();
 		_builtinModules = new LinkedList!ModuleDef();
-
-		return true;
 	}
 
-	static bool Finalize() {
+	static void Finalize() {
 		delete _loadedModules;
 		delete _loadingModules;
 		delete _builtinModules;
-
-		return true;
 	}
 
 	static void LoadBuiltins() {
@@ -174,13 +171,15 @@ abstract final class ModuleManager {
 		return ModuleResult.Successful;
 	}
 
-	/* This is garbage...
-	static bool LoadMemory(void* buffer, long length, string args) {
-		scope MemoryNode node = new MemoryNode(buffer, length, null, FSNode.NewAttributes("mem"));
-		return LoadFile(node, args);
-	}
+    static bool LoadMemory(byte[] buffer, string args) {
+        MemoryNode node = new MemoryNode(buffer, VFS.Find!DirectoryNode("MemoryModules", DeviceManager.DevFS),
+                                         FSNode.NewAttributes("mem" ~ _number));
+        _number++;
+
+        return LoadFile(node, args);
+    }
 
 	static bool LoadFile(FSNode file, string args) {
 		return false;
-	}*/
+	}
 }

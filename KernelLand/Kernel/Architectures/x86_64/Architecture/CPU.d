@@ -46,7 +46,7 @@ abstract final class CPU {
 		return TSS.Table;
 	}
 
-	static bool Initialize() {
+	static void Initialize() {
         Logger.Write("SSE, ");
 		Port.InitializeSSE();
 		Port.EnableSSE();
@@ -63,8 +63,6 @@ abstract final class CPU {
         Log("CacheInfo of processor #%d", Identifier);
 		GetCacheInfo();
 		PrintCacheInfo(Identifier);
-
-		return true;
 	}
 
 	private static void GetCacheInfo() {

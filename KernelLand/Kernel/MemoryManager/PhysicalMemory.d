@@ -28,16 +28,39 @@ import Architecture;
 import MemoryManager;
 
 
+enum RegionType {
+    Unknown,
+    Free,
+    Rserved,
+    AcpiReclaimableMemory,
+    AcpiNVSMemory,
+    BadMemory,
+    ISA_DMA_Memory,
+    KernelMemory,
+    InitrdMemory,
+    VideoBackbuffer
+}
+
+struct RegionInfo {
+    ulong Start;
+    ulong Length;
+    RegionType Type;
+}
+
 abstract final class PhysicalMemory {
+    enum MAX_REGIONS = 32;
+    private __gshared RegionInfo[MAX_REGIONS] _regions;
+    private __gshared int _regionIterator;
+
 	private __gshared ulong _startMemory;
 	private __gshared BitArray _frames;
 
-	// Used in Multiboot info for shifting addr to the end of the modules
+	/* Used in Multiboot info for shifting addr to the end of the modules */
 	@property static ref ulong MemoryStart() {
 		return _startMemory;
 	}
 
-	static bool Initialize() {
+	static void Initialize() {
 		_frames = new BitArray(0x10_000, false); //Hack: treba zvetsit paging tabulky v Boot.s lebo sa kernel potom nevie premapovat pre nedostatok pamete :/
 
 		VirtualMemory.KernelPaging = new Paging();
@@ -45,10 +68,9 @@ abstract final class PhysicalMemory {
 			VirtualMemory.KernelPaging.AllocFrame(cast(void *)i, AccessMode.DefaultUser); //TODO: testing
 
         VirtualMemory.KernelPaging.Install();
-		return true;
 	}
 
-	// Used by Paging
+	/* Used by Paging only */
 	package static void AllocFrame(ref PTE page, AccessMode mode) {
 		if (page.Present)
 			return;
@@ -59,7 +81,7 @@ abstract final class PhysicalMemory {
 		page.Mode = mode;
 	}
 
-	// Used by Paging
+	/* Used by Paging only */
 	package static void FreeFrame(ref PTE page) {
 		if (!page.Present)
 			return;
@@ -77,4 +99,9 @@ abstract final class PhysicalMemory {
 
 		return ret;
 	}
+
+    static void AddRegion(RegionInfo info) {
+        if (_regionIterator < MAX_REGIONS)
+            _regions[_regionIterator] = info;
+    }
 }

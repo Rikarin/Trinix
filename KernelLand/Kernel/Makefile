@@ -11,7 +11,8 @@ ifeq ($(BUILD_NUM),)
 	BUILD_NUM = 0
 endif
 
-DFLAGS		+= -fversion=LogUserFriendly -D _MODULE_NAME_=\"Kernel\"
+
+DFLAGS		+= -fdebug -D _MODULE_NAME_=\"Kernel\"
 DFLAGS		+= -IArchitectures/$(ARCHDIR) -I../ -J../../
 CFLAGS		+= -fno-stack-protector
 LDFLAGS		:= -Wl,-T -Wl,Architectures/$(ARCHDIR)/Linker.ld -Wl,-Map -Wl,../Linker.$(ARCH).map

@@ -75,8 +75,8 @@
     <None Include="Architectures\x86_64\Boot\Load.s" />
     <None Include="Architectures\x86_64\Architecture\CPU.s" />
     <None Include="Library\LibraryLoader.dx" />
-    <None Include="Library\Elf.dx" />
     <None Include="TaskManager\Process.s" />
+    <None Include="Library\Elf.dx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ObjectManager\package.d" />
@@ -143,5 +143,7 @@
     <Compile Include="Library\Queue.d" />
     <Compile Include="Library\Termios.d" />
     <Compile Include="Core\Logger.d" />
+    <Compile Include="Linker\BinaryLoader.d" />
+    <Compile Include="Linker\package.d" />
   </ItemGroup>
 </Project>

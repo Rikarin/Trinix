@@ -232,6 +232,12 @@ abstract final class Multiboot {
 					for (auto tmp = &(cast(MultibootTagMemoryMap *)mbt).Entry;
 					     cast(void *)tmp < (cast(void *)mbt + mbt.Size);
 					     tmp = cast(MultibootMemoryMap *)(cast(ulong)tmp + (cast(MultibootTagMemoryMap *)mbt).EntrySize)) {
+                        RegionInfo regInfo;
+                        regInfo.Start  = tmp.Address;
+                        regInfo.Length = tmp.Length;
+                        regInfo.Type   = cast(RegionType)tmp.Type;
+
+                        PhysicalMemory.AddRegion(regInfo);
                         Log("BaseAddr: %x, Length: %x, Type: %x", tmp.Address, tmp.Length, tmp.Type);
 					}
 

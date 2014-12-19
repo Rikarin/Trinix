@@ -72,14 +72,12 @@ abstract final class TSS {
 		return _segments[CPU.Identifier];
 	}
 
-	static bool Initialize() {
+	static void Initialize() {
 		_segments[CPU.Identifier] = new TaskStateSegment();
         GDT.Table.SetSystemSegment((TSSBase >> 3), TaskStateSegment.sizeof, cast(ulong)_segments[CPU.Identifier], SystemSegmentType.AvailableTSS, 0, true, false, false);
         
         asm {
             "ltr AX" : : "a"(TSSBase);
         }
-
-		return true;
 	}
 }

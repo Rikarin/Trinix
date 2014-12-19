@@ -70,7 +70,7 @@ abstract final class IDT {
 	private __gshared InterruptGateDescriptor[256] _entries;
 	
 
-	static bool Initialize() {
+	static void Initialize() {
 		_idtBase.Limit = (InterruptGateDescriptor.sizeof * _entries.length) - 1;
 		_idtBase.Base = cast(ulong)_entries.ptr;
 		
@@ -83,7 +83,6 @@ abstract final class IDT {
             "lidt [RAX]" : : "a"(&_idtBase);
             "sti";
         }
-		return true;
 	}
 
 	static void SetInterruptGate(uint num, void* funcPtr, InterruptStackType ist = InterruptStackType.RegisterStack) {
@@ -186,7 +185,7 @@ abstract final class IDT {
 		else
 			DeviceManager.Handler(*stack);
 
-		// We must disable interrupts before sending ACK. Enable it with iretq
+		/* We must disable interrupts before sending ACK. Enable it with iretq */
 		Port.Cli();
 		if (stack.IntNumber >= 32)
 			DeviceManager.EOI(cast(int)stack.IntNumber - 32);
@@ -196,7 +195,7 @@ abstract final class IDT {
 
 	private static void IsrIgnore() {
 		asm {
-			"pop RBP"; //Naked
+			"pop RBP"; /* Naked */
 			"nop";
 			"nop";
 			"nop";
@@ -206,10 +205,10 @@ abstract final class IDT {
 	
 	extern(C) private static void IsrCommon() {
 		asm {
-			"pop RBP"; //Naked
+			"pop RBP"; /* Naked */
 			"cli";
 
-			// Save context
+			/* Save context */
 			"push RBX";
 			"push RCX";
 			"push RDX";
@@ -225,11 +224,11 @@ abstract final class IDT {
 			"push R14";
 			"push R15";
 			
-			// Run dispatcher
+			/* Call dispatcher */
 			"mov RDI, RSP";
 			"call %0" : : "r"(&Dispatch);
 			
-			// Restore context
+			/* Restore context */
 			"pop R15";
 			"pop R14";
 			"pop R13";
@@ -251,30 +250,3 @@ abstract final class IDT {
 		}
 	}
 }
-
-
-/*
-	Log.WriteJSON("r15", stack.R15);
-	Log.WriteJSON("r14", stack.R14);
-	Log.WriteJSON("r13", stack.R13);
-	Log.WriteJSON("r12", stack.R12);
-	Log.WriteJSON("r11", stack.R11);
-	Log.WriteJSON("r10", stack.R10);
-	Log.WriteJSON("r9", stack.R9);
-	Log.WriteJSON("r8", stack.R8);
-	Log.WriteJSON("rbp", stack.RBP);
-	Log.WriteJSON("rdi", stack.RDI);
-	Log.WriteJSON("rsi", stack.RSI);
-	Log.WriteJSON("rdx", stack.RDX);
-	Log.WriteJSON("rcx", stack.RCX);
-	Log.WriteJSON("rbx", stack.RBX);
-	Log.WriteJSON("rax", stack.RAX);
-	Log.WriteJSON("int", stack.IntNumber);
-	Log.WriteJSON("err", stack.ErrorCode);
-	Log.WriteJSON("rip", stack.RIP);
-	Log.WriteJSON("cs", stack.CS);
-	Log.WriteJSON("flags", stack.Flags);
-	Log.WriteJSON("rsp", stack.RSP);
-	Log.WriteJSON("ss", stack.SS);
-	Port.Halt();
- */

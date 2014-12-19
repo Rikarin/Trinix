@@ -28,6 +28,7 @@ import Library;
 import FileSystem;
 import VFSManager;
 import ObjectManager;
+import SyscallManager;
 
 
 struct FSDriver {
@@ -45,8 +46,8 @@ abstract final class VFS {
 		return _root;
 	}
 
-	static bool Initialize() {
-		_drivers = new LinkedList!FSDriver(); //TODO finalize
+	static void Initialize() {
+		_drivers = new LinkedList!FSDriver();
 
 		_root = new DirectoryNode(null, FSNode.NewAttributes("/"));
 		DirectoryNode system = new DirectoryNode(_root, FSNode.NewAttributes("System"));
@@ -59,10 +60,17 @@ abstract final class VFS {
 		new ZeroDev(DeviceManager.DevFS, "zero");
 		new RandomDev(DeviceManager.DevFS, "random");
 
-		return true;
+        ResourceManager.AddCallTable(FSNode._rcs);
 	}
 
-	static FSNode Find(string path, DirectoryNode start = null) {
+    static void Finalize() {
+        foreach (x; _drivers)
+            delete x;
+
+        delete _drivers;
+    }
+
+	static T Find(T)(string path, DirectoryNode start = null) {
 		FSNode node = start is null ? _root : start;
 		scope List!string list = path.Split('/');
 
@@ -80,11 +88,10 @@ abstract final class VFS {
 			}
 		}
 
-		return node;
+		return cast(T)node;
 	}
 
-	// only for debug use
-	static void PrintTree(DirectoryNode path, long p = 1) {
+	debug static void PrintTree(DirectoryNode path, long p = 1) {
 		foreach (x; path.Childrens) {
 			foreach (i; 0 .. p)
 				Logger.Write(" ");

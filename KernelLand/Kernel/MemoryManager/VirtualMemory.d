@@ -35,7 +35,7 @@ abstract final class VirtualMemory {
 	__gshared Paging KernelPaging;
 	__gshared Heap KernelHeap;
 
-	static bool Initialize() {
+	static void Initialize() {
 		KernelHeap = new Heap(cast(ulong)PhysicalMemory.AllocPage(), Heap.MinSize, Heap.CalculateIndexSize(Heap.MinSize));
 
         _malloc = function(long size) {
@@ -45,8 +45,6 @@ abstract final class VirtualMemory {
         _free = function(void* ptr) {
             KernelHeap.Free(ptr);
         };
-
-		return true;
 	}
 
 	private static void* TmpAlloc(long size) {

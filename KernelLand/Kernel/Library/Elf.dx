@@ -27,8 +27,7 @@ import Core;
 import Library;
 
 
-//ELF64 support only
-class Elf : LibraryLoader {
+class Elf {
 	private struct EHeader {
 		ubyte[16] Identifier;
 		ushort Type;
@@ -151,7 +150,7 @@ class Elf : LibraryLoader {
 		DT_HIPROC = 0x7FFFFFFF	//!< High Definable
 	}
 
-	protected override void* Relocate(string[] args) {
+	protected void* Relocate(string[] args) {
 		EHeader* header = cast(EHeader *)_base;
 
 		Log.WriteLine("Elf", "{");
@@ -352,7 +351,7 @@ class Elf : LibraryLoader {
 		return ret;
 	}
 
-	protected override bool GetSymbol(string name, ref void* ret, ref long size) {
+	protected bool GetSymbol(string name, ref void* ret, ref long size) {
 		EHeader* header = cast(EHeader *)_base;
 		ulong baseDiff;
 		Dynamic* dynamic;
@@ -496,7 +495,7 @@ class Elf : LibraryLoader {
 		return h;
 	}
 
-	protected override bool CheckMagic() {
+	protected bool CheckMagic() {
 		return (cast(EHeader *)_base).Identifier[4] == 2;
 	}
 }
