@@ -23,7 +23,7 @@
 
 module MemoryManager.Heap;
 
-import Core : Log;
+import Core;
 import Library;
 import MemoryManager;
 

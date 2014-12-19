@@ -166,42 +166,34 @@ abstract final class Multiboot {
 
 	static void ParseHeader(uint magic, void* info) {
 		if (magic != Multiboot.BootloaderMagic) {
-			Log.WriteJSON("error", "Bad multiboot2 magic");
-			Log.WriteJSON("value", magic);
+            Log("Error: Bad multiboot 2 magic: %d", magic);
 			Port.Halt();
 		}
 		
 		if (cast(ulong)info & 7) {
-			Log.WriteJSON("error", "Unaligned MBI");
+            Log("Error: Unaligned MBI");
 			Port.Halt();
 		}
 
-		Log.WriteJSON("size", *cast(ulong *)info, 16);
-		Log.WriteJSON("params", "[");
-
+        Log("Size: %x", *cast(ulong *)info);
+        Log("-----------------");
 		MultibootTag* mbt = cast(MultibootTag *)(cast(long)info + cast(long)LinkerScript.KernelBase + 8);
 		for (; mbt.Type != MultibootTagType.End; mbt = cast(MultibootTag *)(cast(ulong)mbt + ((mbt.Size + 7UL) & ~7UL))) {
-			Log.WriteJSON("{");
-			Log.WriteJSON("tag", "{");
-			Log.WriteJSON("type", mbt.Type);
-			Log.WriteJSON("size", mbt.Size);
-			Log.WriteJSON("}");
+            Log("Type %x, Size: %d", mbt.Type, mbt.Size);
 			
 			switch (mbt.Type) {
 				case MultibootTagType.CmdLine:
 					auto tmp = cast(MultibootTagString *)mbt;
 					char* str = &tmp.String;
 
-					Log.WriteJSON("name", "CmdLine");
-					Log.WriteJSON("value", cast(string)str[0 .. tmp.Size - 9]);
+                    Log("Name: CMDLine, Value: %s", cast(string)str[0 .. tmp.Size - 9]);
 					break;
 					
 				case MultibootTagType.BootLoaderName:
 					auto tmp = cast(MultibootTagString *)mbt;
 					char* str = &tmp.String;
 
-					Log.WriteJSON("name", "BootLoaderName");
-					Log.WriteJSON("value", cast(string)str[0 .. tmp.Size - 9]);
+                    Log("Name: BootLoaderName, Value", cast(string)str[0 .. tmp.Size - 9]);
 					break;
 					
 				case MultibootTagType.Module:
@@ -210,44 +202,28 @@ abstract final class Multiboot {
 					char* str = &tmp.String;
 					Modules[ModulesCount++] = tmp;
 
-					Log.WriteJSON("name", "Module");
-					Log.WriteJSON("start", tmp.ModStart);
-					Log.WriteJSON("end", tmp.ModEnd);
-					Log.WriteJSON("cmd", cast(string)str[0 .. tmp.Size - 17]);
+                    Log("Name: Module, Start: %x, End: %x, CMD: %s", tmp.ModStart, tmp.ModEnd, cast(string)str[0 .. tmp.Size - 17]);
 					break;
 					
 				case MultibootTagType.BasicMemInfo:
 					auto tmp = cast(MultibootTagBasicMemInfo *)mbt;
-
-					Log.WriteJSON("name", "BasicMemInfo");
-					Log.WriteJSON("lower", tmp.Lower);
-					Log.WriteJSON("upper", tmp.Upper);
+					Log("Name: BasicMemInfo, Lower: %x, Upper: %x", tmp.Lower, tmp.Upper);
 					break;
 					
 				case MultibootTagType.BootDev:
 					auto tmp = cast(MultibootTagBootDev *)mbt;
-
-					Log.WriteJSON("name", "BootDev");
-					Log.WriteJSON("device", tmp.BiosDev);
-					Log.WriteJSON("slice", tmp.Slice);
-					Log.WriteJSON("part", tmp.Part);
+					Log("Name: BootDev, Device: %x, Slice: %x, Part: %x", tmp.BiosDev, tmp.Slice, tmp.Part);
 					break;
 					
 				case MultibootTagType.MemoryMap:
-					Log.WriteJSON("name", "MemoryMap");
-					Log.WriteJSON("value", "[");
+					Log("MemoryMap ---->");
 
 					for (auto tmp = &(cast(MultibootTagMemoryMap *)mbt).Entry;
 					     cast(void *)tmp < (cast(void *)mbt + mbt.Size);
 					     tmp = cast(MultibootMemoryMap *)(cast(ulong)tmp + (cast(MultibootTagMemoryMap *)mbt).EntrySize)) {
-						Log.WriteJSON("{");
-						Log.WriteJSON("base_addr", tmp.Address);
-						Log.WriteJSON("length", tmp.Length);
-						Log.WriteJSON("type", tmp.Type);
-						Log.WriteJSON("}");
+                        Log("BaseAddr: %x, Length: %x, Type: %x", tmp.Address, tmp.Length, tmp.Type);
 					}
 
-					Log.WriteJSON("]");
 					break;
 
 				case MultibootTagType.VBE:
@@ -322,10 +298,6 @@ abstract final class Multiboot {
 				default:
 					break;
 			}
-
-			Log.WriteJSON("}");
 		}
-
-		Log.WriteJSON("]");
 	}
 }

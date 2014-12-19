@@ -87,38 +87,37 @@ abstract final class VFS {
 	static void PrintTree(DirectoryNode path, long p = 1) {
 		foreach (x; path.Childrens) {
 			foreach (i; 0 .. p)
-				Log.Write(" ");
+				Logger.Write(" ");
 			
-			Log.Write("- ");
-			Log.Write(x.Value.Attributes.Name);
+            Logger.Write("- ");
+            Logger.Write(x.Value.Attributes.Name);
 			
 			switch (x.Value.Attributes.Type) {
 				case FileType.Directory:
-					Log.Write("(D)");
+                    Logger.Write("(D)");
 					break;
 				case FileType.Mountpoint:
-					Log.Write("(M)");
+                    Logger.Write("(M)");
 					break;
 				case FileType.Pipe:
-					Log.Write("(P)");
+                    Logger.Write("(P)");
 					break;
 				case FileType.CharDevice:
-					Log.Write("(C)");
+                    Logger.Write("(C)");
 					break;
 				case FileType.BlockDevice:
-					Log.Write("(B)");
+                    Logger.Write("(B)");
 					break;
 				case FileType.File:
-					Log.Write("(F)");
+                    Logger.Write("(F)");
 					break;
 				case FileType.SymLink:
-					Log.Write("(S)");
+                    Logger.Write("(S)");
 					break;
 				default:
-					Log.Write("(ERROR)");
+                    Logger.Write("(ERROR)");
 			}
-
-			Log.NewLine();
+            Logger.Write("\n");
 			
 			if (x.Value.Attributes.Type & (FileType.Directory | FileType.Mountpoint))
 				PrintTree(cast(DirectoryNode)x.Value, p + 1);

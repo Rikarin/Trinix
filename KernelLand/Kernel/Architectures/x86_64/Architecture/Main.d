@@ -29,13 +29,13 @@ import ObjectManager;
 
 
 extern(C) void ArchMain(uint magic, void* info) {
-    Log.Initialize();
+    Logger.Initialize();
 
-    Log.WriteLine("multiboot2");
+    Log("multiboot2");
 	Multiboot.ParseHeader(magic, info);
    
 	CPU.Initialize();
 
-    Log.WriteLine("Jumping to KernelMain");
+    Log("Jumping to [KernelMain]");
     KernelMain();
 }

@@ -116,16 +116,10 @@ abstract final class ResourceManager {
 	 * TODO
 	 */
 	package static long CallResource(long resource, long id, long param1, long param2, long param3, long param4, long param5) {
-		scope(exit) Log.WriteJSON("}");
-
-		Log.WriteJSON("syscall", "{");
-		Log.WriteJSON("resource", resource);
-		Log.WriteJSON("id", id);
-		Log.WriteJSON("param1", param1);
-		Log.WriteJSON("param2", param2);
-		Log.WriteJSON("param3", param3);
-		Log.WriteJSON("param4", param4);
-		Log.WriteJSON("param5", param5);
+        Log("Syscall ===>");
+        Log(" - Resource = %16x | ID = %16x", resource, id);
+        Log(" - Param1 = %16x   | Param2 = %16x | Param3 = %16x", param1, param2, param3);
+        Log(" - Param4 = %16x   | Param5 = %16x", param4, param5);
 
 		if (resource == 0xFFFFFFFF_FFFFFFFF) {
 			ResouceCallTable table = GetCallTable(cast(string)((cast(char *)id)[0 .. param1]));
@@ -136,7 +130,7 @@ abstract final class ResourceManager {
 		} else if (resource < _resources.Count && _resources[resource] !is null)
 			return _resources[resource].Call(id, param1, param2, param3, param4, param5);
 
-		Log.WriteJSON("value", "Bad call");
+        Log("Error: Bad call");
 		return -1;
 	}
 

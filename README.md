@@ -8,8 +8,8 @@ We had (we dont have it now lol) a framework based on .NET-like conventions but 
 # Community #
 You can join us. Just fork, innovate and pull back.
 
-Wiki: http://trinix.wikia.com/
-IRC: `#Trinix` on `Freenode`
+Wiki: http://trinix.wikia.com/  
+IRC: `#Trinix` on `Freenode`  
 E-Mail: `satoshi@gshost.eu`
 
 Please use our [Coding Conventions](https://github.com/Bloodmanovski/Trinix/blob/master/CC.md).
@@ -35,6 +35,12 @@ Please use our [Coding Conventions](https://github.com/Bloodmanovski/Trinix/blob
 * VFS Manager with `Ext2` readonly filesystem. Basic `dev` devices like null, zero, ...
 * Synchonization primitives Spinlocks, Mutexex, Semapthores, Signals, Events, Messages, Shared Memnory, ...
 * Multitasking with Thread -> Process implementation
+	
+	
+# Hacking druntime #
+* in proxy use our malloc/free/... calls
+* in lifetime add __gshared to some vars
+* add gcc dir and stdvarg from gdc druntime
 	
 	
 # Licence #

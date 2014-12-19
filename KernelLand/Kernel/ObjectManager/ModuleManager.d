@@ -92,32 +92,26 @@ abstract final class ModuleManager {
 	}
 
 	static void LoadBuiltins() {
-		Log.WriteJSON("modules", "[");
+        Log("Loading modules...");
 
 		for (ulong i = cast(ulong)LinkerScript.KernelModules; i < cast(ulong)LinkerScript.KernelModulesEnd;) {
 			ModuleDef* mod = cast(ModuleDef *)i;
 			
 			if (mod.Magic == ModuleMagic) {
-				Log.WriteJSON("{");
-				Log.WriteJSON("name", mod.Name);
-				Log.WriteJSON("identifier", mod.Identifier);
-				Log.WriteJSON("version", mod.Version);
-				Log.WriteJSON("flags", mod.Flags);
+                Log("Name: %s, Identifier: %s", mod.Name, mod.Identifier);
+                Log("Version: %d, Flags: %d", mod.Version, mod.Flags);
 
 				if (mod.Dependencies) {
-					Log.WriteJSON("dependencies", "[");
+					Log("Dependencies: ");
 					foreach (x; mod.Dependencies)
-						Log.WriteJSON(x.Name, x.Args);
-					Log.WriteJSON("]");
+						Log(" - Name: %s", x.Name);
 				}
-				Log.WriteJSON("}");
 
 				_builtinModules.Add(*mod);
 				i += ModuleDef.sizeof;
 			} else
 				i++;
 		}
-		Log.WriteJSON("]");
 
 		foreach (x; _builtinModules)
 			InitModule(x.Value, []);
@@ -125,17 +119,17 @@ abstract final class ModuleManager {
 
 	static ModuleResult InitModule(ModuleDef mod, string[] args) {
 		if (mod.Magic != ModuleMagic) {
-			Log.WriteJSON("error", "Wrong module");
+            Log("Error: Wrong module!");
 			return ModuleResult.BadModule;
 		}
 
 		if (mod.Architecture != ModuleArch.x86_64) {
-			Log.WriteJSON("error", "Ths module isn't for this architecture");
+			Log("Error: Ths module isn't for this architecture");
 			return ModuleResult.BadModule;
 		}
 
 		if (mod.Flags & ModuleFlags.LoadError) {
-			Log.WriteJSON("error", "Somthing went wrong");
+			Log("Error: Something went wrong");
 			return ModuleResult.Misc;
 		}
 
@@ -152,7 +146,7 @@ abstract final class ModuleManager {
 
 			auto dep = Array.Find(_builtinModules, (LinkedListNode!ModuleDef o) => o.Value.Identifier == x.Name);
 			if (!dep) {
-				Log.WriteJSON("error", "Dependency mot found");
+				Log("Error: Dependency mot found");
 				return ModuleResult.Error;
 			}
 
@@ -165,11 +159,11 @@ abstract final class ModuleManager {
 		if (ret != ModuleResult.Successful) {
 			switch (ret) {
 				case ModuleResult.Misc:
-					Log.WriteJSON("error", "something went wrong");
+					Log("Error: something went wrong");
 					break;
 
 				default:
-					Log.WriteJSON("error", "unknown reason");
+					Log("Error: unknown reason");
 			}
 
 			mod.Flags |= ModuleFlags.LoadError;

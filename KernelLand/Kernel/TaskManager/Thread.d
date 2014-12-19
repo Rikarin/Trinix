@@ -150,7 +150,7 @@ final class Thread {
 		if (process == other._process)
 			_parent = other;
 
-		Log.WriteLine("Clonned thread: ", _id);
+		Log("Clonned thread %d", _id);
 	}
 
 	~this() {
@@ -326,11 +326,11 @@ final class Thread {
 				delete deadThread;
 				return ret;
 			} else
-				Log.WriteLine("Threads", "TODO: WaitTID(tid = -1) - Any Child");
+				Log("Threads: TODO: WaitTID(tid = -1) - Any Child");
 		} else if (tid == 0)
-			Log.WriteLine("Threads", "TODO: WaitTID(tid = 0) - Any Child/Sibling");
+			Log("Threads: TODO: WaitTID(tid = 0) - Any Child/Sibling");
 		else if (tid < -1)
-			Log.WriteLine("Threads", "TODO: WaitTID(tid < -1) - TGID");
+			Log("Threads: TODO: WaitTID(tid < -1) - TGID");
 		else if (tid > 0) {
 			ulong id;
 			do
@@ -382,7 +382,7 @@ final class Thread {
 				return;
 
 			default:
-				Log.WriteLine("Threads", "Kill - unsupported thread status");
+				Log("Threads: Kill - unsupported thread status");
 		}
 
 		_retStatus = status;
@@ -492,7 +492,7 @@ final class Thread {
 		}
 
 		if (_curFaultNum) { // Double fault
-			Log.WriteLine("Threads", "Fault: Double fault...");
+			Log("Threads: Fault: Double fault...");
 			Kill(-1);
 
 			Port.Sti();
@@ -505,7 +505,7 @@ final class Thread {
 	}
 
 	void SegFault(void* address) {
-		Log.WriteLine("Threads", "Fault: segment fault...");
+		Log("Threads: Fault: segment fault...");
 		Fault(1);
 	}
 

@@ -107,7 +107,7 @@ abstract class Resource {
 		scope(exit) _mutex.Release();
 			
 		if (!_processes.Contains(Task.CurrentProcess)) {
-			Log.WriteLine("Process ", Task.CurrentProcess.ID, " tried to use resource without attaching them first");
+            Log("Process %d tried to use resource without attaching them first", Task.CurrentProcess.ID);
 			return -1;
 		}
 

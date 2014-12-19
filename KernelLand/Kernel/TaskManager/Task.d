@@ -193,7 +193,7 @@ abstract final class Task {
 	}
 
 	package static void CallFaultHandler(Thread thread) {
-		Log.WriteLine("Threads", "Fault: ", thread.CurrentFaultNum);
+		Log("Threads: Fault %d", thread.CurrentFaultNum);
 		thread.Kill(-1);
 		
 		Port.Sti();

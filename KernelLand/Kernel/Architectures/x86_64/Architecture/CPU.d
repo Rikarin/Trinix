@@ -47,20 +47,20 @@ abstract final class CPU {
 	}
 
 	static bool Initialize() {
-        Log.Write("SSE, ");
+        Logger.Write("SSE, ");
 		Port.InitializeSSE();
 		Port.EnableSSE();
 
-        Log.Write("GDT, ");
+        Logger.Write("GDT, ");
         GDT.Initialize();
 
-        Log.Write("TSS, ");
+        Logger.Write("TSS, ");
         TSS.Initialize();
 
-        Log.WriteLine("IDT");
+        Log("IDT");
         IDT.Initialize();
 
-        Log.WriteLine("CacheInfo of processor #", Identifier);
+        Log("CacheInfo of processor #%d", Identifier);
 		GetCacheInfo();
 		PrintCacheInfo(Identifier);
 
@@ -328,7 +328,7 @@ abstract final class CPU {
 					break;
 
 				case 0xFF:
-                    Log.WriteLine("Not supported cache info for CPUID.EAX=0x02");
+                    Log("Not supported cache info for CPUID.EAX=0x02");
 					return;
 
 				default:
@@ -337,61 +337,21 @@ abstract final class CPU {
 	}
 
 	private static void PrintCacheInfo(int identifier) {
-		//region L1ICache
-		Log.WriteJSON("{");
-		Log.WriteJSON("name", "L1ICache");
-	
-		with (_processorInfo[identifier].L1ICache) {
-			Log.WriteJSON("associativity", Associativity);
-			Log.WriteJSON("length", Length);
-			Log.WriteJSON("block_size", BlockSize);
-			Log.WriteJSON("lines_per_sector", LinesPerSector);
-		}
+		Log("Name: L1ICache");
+		with (_processorInfo[identifier].L1ICache)
+            Log("Assoc = %x, Length = %x, BlockSize = %x, LinesPerSector = %x", Associativity, Length, BlockSize, LinesPerSector);
 
-		Log.WriteJSON("}");
-		//endregion
+        Log("Name: L1DCache");
+        with (_processorInfo[identifier].L1DCache)
+            Log("Assoc = %x, Length = %x, BlockSize = %x, LinesPerSector = %x", Associativity, Length, BlockSize, LinesPerSector);
 
-		//region L1DCache
-		Log.WriteJSON("{");
-		Log.WriteJSON("name", "L1DCache");
-		
-		with (_processorInfo[identifier].L1DCache) {
-			Log.WriteJSON("associativity", Associativity);
-			Log.WriteJSON("length", Length);
-			Log.WriteJSON("block_size", BlockSize);
-			Log.WriteJSON("lines_per_sector", LinesPerSector);
-		}
-		
-		Log.WriteJSON("}");
-		//endregion
+        Log("Name: L2Cache");
+        with (_processorInfo[identifier].L2Cache)
+            Log("Assoc = %x, Length = %x, BlockSize = %x, LinesPerSector = %x", Associativity, Length, BlockSize, LinesPerSector);
 
-		//region L2Cache
-		Log.WriteJSON("{");
-		Log.WriteJSON("name", "L2Cache");
-		
-		with (_processorInfo[identifier].L2Cache) {
-			Log.WriteJSON("associativity", Associativity);
-			Log.WriteJSON("length", Length);
-			Log.WriteJSON("block_size", BlockSize);
-			Log.WriteJSON("lines_per_sector", LinesPerSector);
-		}
-		
-		Log.WriteJSON("}");
-		//endregion
-
-		//region L3Cache
-		Log.WriteJSON("{");
-		Log.WriteJSON("name", "L3Cache");
-		
-		with (_processorInfo[identifier].L3Cache) {
-			Log.WriteJSON("associativity", Associativity);
-			Log.WriteJSON("length", Length);
-			Log.WriteJSON("block_size", BlockSize);
-			Log.WriteJSON("lines_per_sector", LinesPerSector);
-		}
-		
-		Log.WriteJSON("}");
-		//endregion
+        Log("Name: L3Cache");
+        with (_processorInfo[identifier].L3Cache)
+            Log("Assoc = %x, Length = %x, BlockSize = %x, LinesPerSector = %x", Associativity, Length, BlockSize, LinesPerSector);
 	}
 
 	struct Cache {

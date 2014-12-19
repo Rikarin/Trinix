@@ -12,11 +12,205 @@
  *    (See accompanying file LICENSE or copy at
  *          http://www.boost.org/LICENSE_1_0.txt)
  */
+
+/* NOTE: This file has been patched from the original DMD distribution to
+   work with the GDC compiler.
+ */
 module core.stdc.stdarg;
 
 @system:
 
-version( X86 )
+version( GNU )
+{
+    import gcc.builtins;
+    alias __builtin_va_list __gnuc_va_list;
+
+
+    /*********************
+     * The argument pointer type.
+     */
+    alias __gnuc_va_list va_list;
+
+
+    /**********
+     * Initialize ap.
+     * parmn should be the last named parameter.
+     */
+    void va_start(T)(out va_list ap, ref T parmn);
+
+
+    /************
+     * Retrieve and return the next value that is type T.
+     */
+    T va_arg(T)(ref va_list ap);
+
+
+    /*************
+     * Retrieve and store through parmn the next value that is of type T.
+     */
+    void va_arg(T)(ref va_list ap, ref T parmn);
+
+
+    /*************
+     * Retrieve and store through parmn the next value that is of TypeInfo ti.
+     * Used when the static type is not known.
+     */
+  version( X86_64 )
+  {
+    // Layout of this struct must match __gnuc_va_list for C ABI compatibility
+    struct __va_list
+    {
+        uint offset_regs = 6 * 8;            // no regs
+        uint offset_fpregs = 6 * 8 + 8 * 16; // no fp regs
+        void* stack_args;
+        void* reg_args;
+    }
+
+    void va_arg()(ref va_list apx, TypeInfo ti, void* parmn)
+    {
+        __va_list* ap = cast(__va_list*)apx;
+        TypeInfo arg1, arg2;
+        if (!ti.argTypes(arg1, arg2))
+        {
+            bool inXMMregister(TypeInfo arg)
+            {
+                auto s = arg.toString();
+                return (s == "double" || s == "float" || s == "idouble" || s == "ifloat");
+            }
+
+            TypeInfo_Vector v1 = arg1 ? cast(TypeInfo_Vector)arg1 : null;
+            if (arg1 && (arg1.tsize() <= 8 || v1))
+            {   // Arg is passed in one register
+                auto tsize = arg1.tsize();
+                void* p;
+                bool stack = false;
+                auto offset_fpregs_save = ap.offset_fpregs;
+                auto offset_regs_save = ap.offset_regs;
+            L1:
+                if (inXMMregister(arg1) || v1)
+                {   // Passed in XMM register
+                    if (ap.offset_fpregs < (6 * 8 + 16 * 8) && !stack)
+                    {
+                        p = ap.reg_args + ap.offset_fpregs;
+                        ap.offset_fpregs += 16;
+                    }
+                    else
+                    {
+                        p = ap.stack_args;
+                        ap.stack_args += (tsize + size_t.sizeof - 1) & ~(size_t.sizeof - 1);
+                        stack = true;
+                    }
+                }
+                else
+                {   // Passed in regular register
+                    if (ap.offset_regs < 6 * 8 && !stack)
+                    {
+                        p = ap.reg_args + ap.offset_regs;
+                        ap.offset_regs += 8;
+                    }
+                    else
+                    {
+                        p = ap.stack_args;
+                        ap.stack_args += 8;
+                        stack = true;
+                    }
+                }
+                parmn[0..tsize] = p[0..tsize];
+
+                if (arg2)
+                {
+                    if (inXMMregister(arg2))
+                    {   // Passed in XMM register
+                        if (ap.offset_fpregs < (6 * 8 + 16 * 8) && !stack)
+                        {
+                            p = ap.reg_args + ap.offset_fpregs;
+                            ap.offset_fpregs += 16;
+                        }
+                        else
+                        {
+                            if (!stack)
+                            {   // arg1 is really on the stack, so rewind and redo
+                                ap.offset_fpregs = offset_fpregs_save;
+                                ap.offset_regs = offset_regs_save;
+                                stack = true;
+                                goto L1;
+                            }
+                            p = ap.stack_args;
+                            ap.stack_args += (arg2.tsize() + size_t.sizeof - 1) & ~(size_t.sizeof - 1);
+                        }
+                    }
+                    else
+                    {   // Passed in regular register
+                        if (ap.offset_regs < 6 * 8 && !stack)
+                        {
+                            p = ap.reg_args + ap.offset_regs;
+                            ap.offset_regs += 8;
+                        }
+                        else
+                        {
+                            if (!stack)
+                            {   // arg1 is really on the stack, so rewind and redo
+                                ap.offset_fpregs = offset_fpregs_save;
+                                ap.offset_regs = offset_regs_save;
+                                stack = true;
+                                goto L1;
+                            }
+                            p = ap.stack_args;
+                            ap.stack_args += 8;
+                        }
+                    }
+                    auto sz = ti.tsize() - 8;
+                    (parmn + 8)[0..sz] = p[0..sz];
+                }
+            }
+            else
+            {   // Always passed in memory
+                // The arg may have more strict alignment than the stack
+                auto talign = ti.talign();
+                auto tsize = ti.tsize();
+                auto p = cast(void*)((cast(size_t)ap.stack_args + talign - 1) & ~(talign - 1));
+                ap.stack_args = cast(void*)(cast(size_t)p + ((tsize + size_t.sizeof - 1) & ~(size_t.sizeof - 1)));
+                parmn[0..tsize] = p[0..tsize];
+            }
+        }
+        else
+        {
+            assert(false, "not a valid argument type for va_arg");
+        }
+    }
+  }
+  else version( ARM )
+  {
+    void va_arg()(ref va_list ap, TypeInfo ti, void* parmn)
+    {
+        auto p = *cast(void**) &ap;
+        auto tsize = ti.tsize();
+        *cast(void**) &ap += ( tsize + size_t.sizeof - 1 ) & ~( size_t.sizeof - 1 );
+        parmn[0..tsize] = p[0..tsize];
+    }
+  }
+  else
+  {
+    void va_arg()(ref va_list ap, TypeInfo ti, void* parmn)
+    {
+        static assert(false, "Unsupported platform");
+    }
+  }
+
+
+  /***********************
+   * End use of ap.
+   */
+  alias __builtin_va_end va_end;
+
+
+    /***********************
+     * Make a copy of ap.
+     */
+    alias __builtin_va_copy va_copy;
+
+}
+else version( X86 )
 {
     /*********************
      * The argument pointer type.

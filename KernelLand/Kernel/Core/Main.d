@@ -21,9 +21,7 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  * 
  * TODO:
- *      o Log dorobit... problem je v tom ze ak si vymknem log v processe tak
- *        pocas interruptu ho nemozem pouzit...
- *      o v PhysicalMEmory by to chcelo nahrat regiony z multibootu a potom
+ *      o v PhysicalMemory by to chcelo nahrat regiony z multibootu a potom
  *        podla nich vytvorit bitmapu
  *      o dokoncit VFS., co tam este chyba?... file..., syscally, static cally,
  *        acl,...
@@ -37,13 +35,10 @@
  *      o debugovat Heap... Obcas to pada na expande...
  *      o spravit to iste jak je pre VFS.AddDriver ci co ale pre Node zariadenia.
  *      o Aby sa z modulu dali pridat veci ako je pipe, pty, vty, atd...
- *      o V IDT je nejaky problem s RAX registrom...
  *      o documentation, documentation, documentation, ...
- *      o Pridat licenciu a header do kazdeho sourcecode suboru...
  *      o IMPORTANT: interfacovat syscally na konretne volania. tj. kazdy syscall
  *        moze mat uplne ine parametre
  *      o pridat package.d do modulov
- *      o do logu pridat take to klasicke printf z Ccka
  *      o dokoncit keyboard a mouse driver.
  *      o spravit driver na PCI a pipedev...
  *      o shared memory a serial
@@ -63,36 +58,36 @@ import SyscallManager;
 
 //==============================================================================
 /* MemoryMap:
-	0xFFFFFFFFE0000000 - mapovane regiony
-
-eXtensible Operating System
+	0xFFFFFFFFE0000000 - mapped regions
 */
 extern(C) extern const int giBuildNumber;
+extern(C) extern const char* gsGitHash;
+extern(C) extern const char* gsBuildInfo;
 
 extern(C) void KernelMain() {
-	Log.Base = 10;
-	Log.WriteLine(cast(int)giBuildNumber);
-	Log.Base = 16;
+   // Log("Git Hash: %s", cast(string)gsGitHash);
+	Log("Version: %d", cast(int)giBuildNumber);
+    //Log("Build Info: %s", cast(string)gsBuildInfo[0 .. 5]);
 
-    Log.WriteLine("Physical Memory");
+    Log("Physical Memory");
     PhysicalMemory.Initialize();
 
-    Log.WriteLine("Virtual Memory");
+    Log("Virtual Memory");
     VirtualMemory.Initialize();
 
-    Log.WriteLine("Resource Manager");
+    Log("Resource Manager");
     ResourceManager.Initialize();
 
-    Log.WriteLine("Syscall Handler");
+    Log("Syscall Handler");
     SyscallHandler.Initialize();
 
-    Log.WriteLine("Task Manager");
+    Log("Task Manager");
     Task.Initialize();
 
-    Log.WriteLine("VFS Manager");
+    Log("VFS Manager");
     VFS.Initialize();
 
-    Log.WriteLine("Remaping PIC");
+    Log("Remaping PIC");
 	Port.Write!byte(0x20, 0x11);
 	Port.Write!byte(0xA0, 0x11);
 	Port.Write!byte(0x21, 0x20);
@@ -104,10 +99,10 @@ extern(C) void KernelMain() {
 	Port.Write!byte(0x21, 0x00);
 	Port.Write!byte(0xA1, 0x00);
 
-    Log.WriteLine("Timer");
+    Log("Timer");
 	Time.Initialize();
 
-    Log.WriteLine("Module Manager");
+    Log("Module Manager");
 	ModuleManager.Initialize();
 	ModuleManager.LoadBuiltins();
 
@@ -123,17 +118,15 @@ extern(C) void KernelMain() {
 
     VFS.PrintTree(VFS.Root);
 
-    vaTest(14, 45, 78, 34, 56, 8967567, 344);
-
-
 	//Thread thr = new Thread(Task.CurrentThread);
 	//thr.Start(&testfce, null);
 	//thr.AddActive();
 
 	//Task.CurrentThread.WaitEvents(ThreadEvent.DeadChild);
 
+   // asm {"int 5";}
 
-	Log.WriteLine("Running.....", Time.Uptime);
+	Log("Running.....", Time.Uptime);
 
 	while (true) {
 		//Log.WriteLine("Running.....", Time.Uptime);
@@ -171,11 +164,6 @@ void testfce() {
 
 	//while (true) {}
 	//dorobit Exit thready
-}
-
-void vaTest(int arg1, ...) {
-    Log.WriteLine("length ", _arguments.length);
-    //va_start(args, arg1);
 }
 
 /*
