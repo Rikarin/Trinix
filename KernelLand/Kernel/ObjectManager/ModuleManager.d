@@ -24,6 +24,7 @@
 module ObjectManager.ModuleManager;
 
 import Core;
+import Linker;
 import Library;
 import VFSManager;
 import Architecture;
@@ -71,7 +72,7 @@ align(1):
 }
 
 abstract final class ModuleManager {
-    private __gshared char _number = '0';
+    private __gshared char _number = '0'; /* TODO implement more than 10 modules... */
 	private __gshared LinkedList!ModuleDef _loadedModules;
 	private __gshared LinkedList!ModuleDef _loadingModules;
 	private __gshared LinkedList!ModuleDef _builtinModules;
@@ -172,7 +173,7 @@ abstract final class ModuleManager {
 	}
 
     static bool LoadMemory(byte[] buffer, string args) {
-        MemoryNode node = new MemoryNode(buffer, VFS.Find!DirectoryNode("MemoryModules", DeviceManager.DevFS),
+        MemoryNode node = new MemoryNode(buffer, VFS.Find!DirectoryNode("BootModules", DeviceManager.DevFS),
                                          FSNode.NewAttributes("mem" ~ _number));
         _number++;
 
@@ -180,6 +181,15 @@ abstract final class ModuleManager {
     }
 
 	static bool LoadFile(FSNode file, string args) {
+        BinaryLoader bin = BinaryLoader.LoadKernel(file);
+
+        if (bin is null) {
+            Log("ModuleManager: Loading %s module failed!", file.Location);
+            return false;
+        }
+
+        bin.Relocate();
+        Log("okk");
 		return false;
 	}
 }

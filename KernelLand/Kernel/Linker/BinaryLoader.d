@@ -22,18 +22,45 @@
  */
 module Linker.BinaryLoader;
 
+import Core;
+import Linker;
 import Library;
 import VFSManager;
 
 
+struct BinaryLoaderType {
+    uint Magic;
+    uint Mask;
+    BinaryLoader function(FSNode node) Load;
+}
+
+struct BinarySection {
+    ulong Offset;
+    ulong VirtualAddress;
+    ulong FileSize;
+    ulong MemorySize;
+    uint Flags;
+}
 
 class BinaryLoader {
     private __gshared LinkedList!BinaryLoader _binaries;
+    private __gshared LinkedList!BinaryLoaderType _loaders;
 
     private FSNode _node;
+    private long _referenceCount;
+
+    protected ulong _base;
+    protected ulong _entry;
+    protected string _interpreter;
+    protected BinarySection[] _sections;
 
 
-    private this() {
+ /*   @property ref long ReferenceCount() {
+        return _referenceCount;
+    }*/
+
+
+    protected this() {
         _binaries.Add(this);
     }
 
@@ -41,16 +68,40 @@ class BinaryLoader {
         _binaries.Remove(this);
     }
 
-    static void Initialize() {
-        _binaries = new LinkedList!BinaryLoader();
+    bool Relocate() {
+        Log("BinaryLoader: Relocation not supported!");
+        return false;
     }
 
-    static void LoadKernel(FSNode node) {
+    static void Initialize() {
+        _binaries = new LinkedList!BinaryLoader();
+        _loaders  = new LinkedList!BinaryLoaderType();
+
+        //TODO: move to elf initialization
+        BinaryLoaderType elf = { 0x464C457F, 0xFFFFFFFF, &ElfLoader.Load };
+        _loaders.Add(elf);
+    }
+
+    static void Finalize() {
+        delete _binaries;
+        delete _loaders;
+    }
+
+    static BinaryLoader LoadKernel(FSNode node) {
         BinaryLoader bin = FindLoadedBinary(node);
 
-        if (bin is null) {
-            //TODO load
-        }
+        if (bin !is null) /* Already loaded */
+            return bin;
+
+        bin = DoLoad(node);
+        if (bin is null)
+            return null;
+            
+        bin._referenceCount++; /* This will be never unloaded */
+        //_base = MapIn  
+
+        _binaries.Add(bin);
+        return bin;
     }
 
     private static BinaryLoader FindLoadedBinary(FSNode node) {
@@ -60,5 +111,30 @@ class BinaryLoader {
             return null;
 
         return bin.Value;
+    }
+
+    private static BinaryLoader DoLoad(FSNode node) {
+        BinaryLoader ret;
+        uint magic;
+        node.Read(0, magic.ToArray());
+
+        foreach (x; _loaders) {
+            if (x.Value.Magic == (magic & x.Value.Mask)) {
+                ret = x.Value.Load(node);
+                break;
+            }
+        }
+
+        if (ret is null) {
+            Log("BinaryLoader: '%s' is an unknown file type", node.Location);
+        }
+
+        debug {
+            Log("Interpreter: %s", ret._interpreter);
+            Log("Base: %x, Entry: %x", ret._base, ret._entry);
+            Log("NumSections: %d", ret._sections.length);
+        }
+
+        return ret;
     }
 }

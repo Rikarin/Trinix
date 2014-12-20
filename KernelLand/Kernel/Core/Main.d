@@ -38,10 +38,14 @@
  *      o spravit driver na PCI, pipedev, serial port...
  *      o parse command line
  *      o framework bundle automatic creator
- *      o v Pridat nejaky protector ktory nedovoli allocovat ine bloky pamete okrem Free
+ *      o Pridat nejaky protector ktory nedovoli allocovat ine bloky pamete okrem Free
  *      o opravit vsetky TODOcka
  *      o Implement multi CPU support
  *      o Implementovat statementy ako @trusted nothrow @safe atd...
+ *      o prerobit gdc na bundle
+ *      o Exit thready
+ *      o Implement GC
+ *      o Fix \n in Logger
  */
 
 module Core.Main;
@@ -109,8 +113,6 @@ extern(C) void KernelMain() {
 	ModuleManager.LoadBuiltins();
     LoadModules();
 
-	//mixin(import("Userspace/Library/Linker.so_src/Elf.d"));
-
 	VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
               VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");
 
@@ -118,15 +120,7 @@ extern(C) void KernelMain() {
     import Modules.Terminal.VTY.Main;
    // new VTY();
 
-    debug VFS.PrintTree(VFS.Root);
-
-	//Thread thr = new Thread(Task.CurrentThread);
-	//thr.Start(&testfce, null);
-	//thr.AddActive();
-
-	//Task.CurrentThread.WaitEvents(ThreadEvent.DeadChild);
-
-
+   // debug VFS.PrintTree(VFS.Root);
 
 	Log("Running, Time = %d", Time.Uptime);
 
@@ -134,36 +128,3 @@ extern(C) void KernelMain() {
        // Log("Running, Time = %d", Time.Uptime);
 	}
 }
-
-void testfce() {
-	//for (int i = 0; i < 0x100; i++) {
-	while (true) {
-		/*asm {
-			//"mov R8, 0x741";
-			"mov R9, 2";
-			"syscall";// : : "a"(123), "b"(0x4562), "d"(0xABCD), "D"(0x852), "S"(0x963);
-		}*/
-		//Handle.StaticCall(1);
-		//Log.WriteLine("pica", Time.Now);
-		//for (int j = 0; j < 0x100_000_00; j++) {}
-	}
-
-	//while (true) {}
-	//dorobit Exit thready
-}
-
-/*
-    void function123(int a, char b, string c) {
-        Log.WriteLine("int a = ", a);
-        Log.WriteLine("char b = ", b);
-        Log.WriteLine("string c = ", c);
-    }
-
-    partial!(function123, 5, 'x');
-
-template partial(alias func, args1...) {
-    auto partial(T...)(T args2) {
-        return func(args1, args2);
-    }
-}
-*/

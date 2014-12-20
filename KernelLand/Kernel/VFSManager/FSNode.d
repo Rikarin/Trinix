@@ -150,6 +150,26 @@ abstract class FSNode : Resource {
 		return _parent.FileSystem.Remove(this);
 	}
 
+    /* TODO: Too much memory leaks in one function */
+    string Location() {
+        string path;
+        FSNode node = this;
+
+        while (node !is null) {
+            string t = "/" ~ node.Attributes.Name;
+            if (t != "//") {
+                t = t ~ path;
+                path = t;
+            }
+            node = node.Parent;
+        }
+
+        if (path is null)
+            return "/";
+
+        return path;
+    }
+
 	/**
 	 * Create a basic structure of new file sttributes with UID and GID of current
 	 * running process, current time and 644 permissions.

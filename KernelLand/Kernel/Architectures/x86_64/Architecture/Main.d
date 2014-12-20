@@ -42,7 +42,7 @@ extern(C) void ArchMain(uint magic, void* info) {
 }
 
 void LoadModules() {
-    new DirectoryNode(DeviceManager.DevFS, FSNode.NewAttributes("MemoryModules"));
+    new DirectoryNode(DeviceManager.DevFS, FSNode.NewAttributes("BootModules"));
 
     foreach (tmp; Multiboot.Modules[0 .. Multiboot.ModulesCount]) {
         char* str    = &tmp.String;

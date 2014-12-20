@@ -19,9 +19,16 @@
  * 
  * Contributors:
  * Matsumoto Satoshi <satoshi@gshost.eu>
+ * 
+ * TODO:
+ *      o Fix ToArrayA
  */
 module Library.Casters;
 
+
+ref auto ToArrayA(T)(ref T value) {
+    return (cast(byte *)value.ptr)[0 .. value[0].sizeof * value.length];
+}
 
 ref byte[T.sizeof] ToArray(T)(ref T value) {
     return (cast(byte *)&value)[0 .. T.sizeof];

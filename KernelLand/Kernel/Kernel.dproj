@@ -76,7 +76,6 @@
     <None Include="Architectures\x86_64\Architecture\CPU.s" />
     <None Include="Library\LibraryLoader.dx" />
     <None Include="TaskManager\Process.s" />
-    <None Include="Library\Elf.dx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ObjectManager\package.d" />
@@ -145,5 +144,8 @@
     <Compile Include="Core\Logger.d" />
     <Compile Include="Linker\BinaryLoader.d" />
     <Compile Include="Linker\package.d" />
+    <Compile Include="Library\Casters.d" />
+    <Compile Include="Library\Elf.di" />
+    <Compile Include="Linker\ElfLoader.d" />
   </ItemGroup>
 </Project>
