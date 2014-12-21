@@ -48,6 +48,11 @@ struct RegionInfo {
 }
 
 abstract final class PhysicalMemory {
+    enum USER_MIN     = 0x10000;
+    enum USER_LIB_MAX = 0xFFFFFFFF_70000000;
+    enum MODULE_MIN   = 0xFFFFFFFF_D0000000;
+    enum MODULE_MAX   = 0xFFFFFFFF_E0000000;
+
     enum MAX_REGIONS = 32;
     private __gshared RegionInfo[MAX_REGIONS] _regions;
     private __gshared int _regionIterator;
@@ -61,11 +66,11 @@ abstract final class PhysicalMemory {
 	}
 
 	static void Initialize() {
-		_frames = new BitArray(0x10_000, false); //Hack: treba zvetsit paging tabulky v Boot.s lebo sa kernel potom nevie premapovat pre nedostatok pamete :/
+		_frames = new BitArray(0x40_000, false); //Hack: treba zvetsit paging tabulky v Boot.s lebo sa kernel potom nevie premapovat pre nedostatok pamete :/
 
 		VirtualMemory.KernelPaging = new Paging();
-		for (ulong i = 0xFFFFFFFF80000000; i < 0xFFFFFFFF8A000000; i += 0x1000)
-			VirtualMemory.KernelPaging.AllocFrame(cast(void *)i, AccessMode.DefaultUser); //TODO: testing
+		for (v_addr i = 0xFFFFFFFF_80000000; i < 0xFFFFFFFF_8A000000; i += 0x1000)
+			VirtualMemory.KernelPaging.AllocFrame(i, AccessMode.DefaultUser); //TODO: testing
 
         VirtualMemory.KernelPaging.Install();
 	}
@@ -90,11 +95,11 @@ abstract final class PhysicalMemory {
 		page.Present = false;
 	}
 
-	static void* AllocPage(long count = 1) {
+	static v_addr AllocPage(size_t count = 1) {
 		if (count < 1)
 			count = 1;
 			
-		void* ret = LinkerScript.KernelEnd + _startMemory;
+		v_addr ret = cast(v_addr)LinkerScript.KernelEnd + _startMemory;
 		_startMemory += 0x1000 * count;
 
 		return ret;

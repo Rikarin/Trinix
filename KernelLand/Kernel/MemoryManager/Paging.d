@@ -100,8 +100,8 @@ align(1):
 	} else
 		static assert(false);
 	
-	@property void* Location() {
-		return cast(void *)(Address << 12);
+	@property p_addr Location() {
+		return Address << 12;
 	}
 	
 	@property AccessMode Mode() {
@@ -152,11 +152,11 @@ align(1):
 	alias L Level;
 	
 	static if (L == 1) {
-		void* PhysicalAddress(uint index) {
+		p_addr PhysicalAddress(uint index) {
 			if (!Entries[index].Present)
-				return null;
+				return 0;
 			
-			return cast(void *)Entries[index].Location;
+			return Entries[index].Location;
 		}
 		
 		private PageTableEntry!"primary"[512] Entries;
@@ -166,9 +166,9 @@ align(1):
 		}
 		
 		private void SetTable(uint index, PageLevel!(L - 1)* address) {
-			Entries[index].Address = cast(ulong)VirtualMemory.KernelPaging.GetPhysicalAddress(cast(void *)address)  >> 12;
-			Entries[index].Mode = AccessMode.DefaultUser;
-			Tables[index] = address;
+			Entries[index].Address = VirtualMemory.KernelPaging.GetPhysicalAddress(cast(v_addr)address)  >> 12;
+			Entries[index].Mode    = AccessMode.DefaultUser;
+			Tables[index]          = address;
 		}
 		
 		PageLevel!(L - 1)* GetOrCreateTable(uint index) {
@@ -192,10 +192,11 @@ align(1):
 
 
 final class Paging {
-	enum PageSize = 0x1000;
+	enum PAGE_SIZE = 0x1000;
 
+    private __gshared bool _initialized;
 	private PageLevel!4* _root;
-	private void* _regions = cast(void *)0xFFFFFFFFE0000000;
+	private v_addr _regions = 0xFFFFFFFF_E0000000;
 
 	this() {
 		_root = new PageLevel!4;
@@ -247,29 +248,30 @@ final class Paging {
 	}
 
 	void Install() {
-		void* addr = GetPhysicalAddress(cast(void *)_root);
+        _initialized = true; /* We must hack GetPhysicalAddres... */
+		p_addr addr = GetPhysicalAddress(cast(v_addr)_root);
 
 		asm {
 			"mov CR3, %0" : : "r"(addr);
 		}
 	}
 	
-	void AllocFrame(void* address, AccessMode mode) {
+	void AllocFrame(v_addr address, AccessMode mode) {
 		PhysicalMemory.AllocFrame(GetPage(address), mode);
 	}
 	
-	void FreeFrame(void* address) {
+	void FreeFrame(v_addr address) {
 		PhysicalMemory.FreeFrame(GetPage(address));
 	}
 	
-	ubyte[] MapRegion(void* pAdd, ulong length) {
+	/*ubyte[] MapRegion(p_addr pAdd, size_t length) {
 		ubyte[] result = MapRegion(pAdd, _regions, length);
-		_regions += (length & ~0xFFFUL) + ((length & 0xFFF) ? 0x1000 : 0);
+		_regions += (length & ~0xFFFUL) + ((length & 0xFFF) ? PAGE_SIZE : 0);
 		return result;
 	}
 	
-	ubyte[] MapRegion(void* pAdd, void* vAdd, ulong length) {
-		for (ulong i = 0; i < length; i += 0x1000) {
+	ubyte[] MapRegion(p_addr pAdd, v_addr vAdd, size_t length) {
+		for (ulong i = 0; i < length; i += PAGE_SIZE) {
 			auto pt = &GetPage(vAdd + i);
 			
 			pt.Present = true;
@@ -280,9 +282,9 @@ final class Paging {
 		
 		int diff = cast(int)pAdd & 0xFFF;
 		return (cast(ubyte *)vAdd)[diff .. diff + length];
-	}
+	}*/
 
-	ref PTE GetPage(void* address) {
+	ref PTE GetPage(v_addr address) {
 		ulong add = cast(ulong)address;
 		
 		ushort[4] start;
@@ -298,32 +300,33 @@ final class Paging {
 		return pt.Entries[start[0]];
 	}
 
-	void* GetPhysicalAddress(void* address) {
-		ulong add = cast(ulong)address;
+	p_addr GetPhysicalAddress(v_addr address) {
+        if (!_initialized)
+            return address - cast(ulong)LinkerScript.KernelBase;
 		
 		ushort[4] start;
-		start[3] = (add >> 39) & 511; /* PML4E */
-		start[2] = (add >> 30) & 511; /* PDPTE */
-		start[1] = (add >> 21) & 511; /* PDE */
-		start[0] = (add >> 12) & 511; /* PTE */
+        start[3] = (address >> 39) & 511; /* PML4E */
+        start[2] = (address >> 30) & 511; /* PDPTE */
+        start[1] = (address >> 21) & 511; /* PDE */
+        start[0] = (address >> 12) & 511; /* PTE */
 		
 		PageLevel!3* pdpt;
 		if (_root.Entries[start[3]].Present)
 			pdpt = _root.Tables[start[3]];
 		else
-			return cast(void *)(add - cast(ulong)LinkerScript.KernelBase);
+            return 0;
 		
 		PageLevel!2* pd;
 		if (pdpt.Entries[start[2]].Present)
 			pd = pdpt.Tables[start[2]];
 		else
-			return cast(void *)(add - cast(ulong)LinkerScript.KernelBase);
+            return 0;
 		
 		PageLevel!1* pt;
 		if (pd.Entries[start[1]].Present)
 			pt = pd.Tables[start[1]];
 		else
-			return cast(void *)(add - cast(ulong)LinkerScript.KernelBase);
+            return 0;
 		
 		return pt.Entries[start[0]].Location;
 	}

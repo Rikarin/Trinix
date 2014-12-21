@@ -29,8 +29,8 @@ import MemoryManager;
 
 
 final class Heap {
-	private enum Magic = 0xDEADC0DE;
-	enum MinSize = 0x200000;
+	private enum MAGIC = 0xDEADC0DE;
+	enum MIN_SIZE      = 0x200000;
 
 	private ulong _start;
 	private ulong _end;
@@ -47,12 +47,12 @@ final class Heap {
 
 		Header* header = cast(Header *)_start;
 		header.Size    = _free;
-		header.Magic   = Magic;
+		header.Magic   = MAGIC;
 		header.IsHole  = true;
 
 		Footer* footer = cast(Footer *)_end - Footer.sizeof;
 		footer.Head    = header;
-		footer.Magic   = Magic;
+        footer.Magic   = MAGIC;
 
 		_index.Data = cast(Header **)offset;
 		InsertIntoIndex(header);
@@ -62,7 +62,7 @@ final class Heap {
 		delete _spinLock;
 	}
 
-	void* Alloc(long size, bool expandable = true) {
+	v_addr Alloc(long size, bool expandable = true) {
 		_spinLock.WaitOne();
 		scope(exit) _spinLock.Release();
 
@@ -86,34 +86,34 @@ final class Heap {
 		if (header.Size > (newSize + Header.sizeof + Footer.sizeof)) {
 			Footer* newFooter = cast(Footer *)(cast(ulong)header + newSize - Footer.sizeof);
 			newFooter.Head    = header;
-			newFooter.Magic   = Magic;
+            newFooter.Magic   = MAGIC;
 
 			Header* newHeader = cast(Header *)(cast(ulong)header + newSize);
 			newHeader.IsHole  = true;
-			newHeader.Magic   = Magic;
+            newHeader.Magic   = MAGIC;
 			newHeader.Size    = cast(long)footer - cast(long)newHeader + Footer.sizeof;
 
 			header.Size  = newSize;
 			footer.Head  = newHeader;
-			footer.Magic = Magic;
+            footer.Magic = MAGIC;
 
 			InsertIntoIndex(newHeader);
 		}
 
 		_free -= header.Size;
-		return cast(void *)(cast(ulong)header + Header.sizeof);
+		return cast(ulong)header + Header.sizeof;
 	}
 
-	void Free(void* ptr) {
-		if (ptr is null)
+	void Free(v_addr ptr) {
+		if (!ptr)
 			return;
 
 		Header* header = cast(Header *)(cast(ulong)ptr - Header.sizeof);
-		if (header.Magic != Magic)
+        if (header.Magic != MAGIC)
 			return;
 
 		Footer* footer = cast(Footer *)(cast(ulong)header + header.Size - Footer.sizeof);
-		if (footer.Magic != Magic)
+        if (footer.Magic != MAGIC)
 			return;
 
 		_spinLock.WaitOne();
@@ -121,7 +121,7 @@ final class Heap {
 
 		_free += header.Size;
 		Footer* prevFooter = cast(Footer *)(cast(ulong)header - Footer.sizeof);
-		if (prevFooter.Magic == Magic && prevFooter.Head.IsHole) {
+        if (prevFooter.Magic == MAGIC && prevFooter.Head.IsHole) {
 			header = prevFooter.Head;
 			RemoveFromIndex(header);
 
@@ -130,7 +130,7 @@ final class Heap {
 		}
 
 		Header* nextHeader = cast(Header *)(cast(ulong)footer - Footer.sizeof);
-		if (nextHeader.Magic == Magic && nextHeader.IsHole) {
+        if (nextHeader.Magic == MAGIC && nextHeader.IsHole) {
 			RemoveFromIndex(nextHeader);
 
 			footer = cast(Footer *)(cast(ulong)footer + nextHeader.Size);
@@ -141,11 +141,11 @@ final class Heap {
 		header.IsHole = true;
 		InsertIntoIndex(header);
 
-		if (cast(ulong)footer == cast(ulong)_end - Footer.sizeof && header.Size >= 0x2000 && cast(ulong)_end - _start > MinSize)
+		if (cast(ulong)footer == cast(ulong)_end - Footer.sizeof && header.Size >= 0x2000 && cast(ulong)_end - _start > MIN_SIZE)
 			Contract();
 	}
 
-	private void Expand(ulong quantity) {
+	private void Expand(size_t quantity) {
 		if (quantity & 0xFFF)
 			quantity = (quantity & ~0xFFFUL) + 0x1000;
 
@@ -159,7 +159,7 @@ final class Heap {
 			lastHeader.Size += quantity;
 
 			lastFooter       = cast(Footer *)(cast(ulong)newEnd - Footer.sizeof);
-			lastFooter.Magic = Magic;
+            lastFooter.Magic = MAGIC;
 			lastFooter.Head  = lastHeader;
 
 			InsertIntoIndex(lastHeader);
@@ -168,10 +168,10 @@ final class Heap {
 			lastFooter = cast(Footer *)(cast(ulong)newEnd - Footer.sizeof);
 
 			lastHeader.IsHole = true;
-			lastHeader.Magic  = Magic;
+            lastHeader.Magic  = MAGIC;
 			lastHeader.Size   = quantity;
 
-			lastFooter.Magic = Magic;
+            lastFooter.Magic = MAGIC;
 			lastFooter.Head  = lastHeader;
 
 			InsertIntoIndex(lastHeader);
@@ -189,7 +189,7 @@ final class Heap {
 			return;
 
 		ulong quantity;
-		while (_end - _start - quantity > MinSize && lastHeader.Size - quantity > 0x1000)
+		while (_end - _start - quantity > MIN_SIZE && lastHeader.Size - quantity > 0x1000)
 			quantity += 0x1000;
 
 		if (!quantity)
@@ -201,7 +201,7 @@ final class Heap {
 		RemoveFromIndex(lastHeader);
 		lastHeader.Size -= quantity;
 		lastFooter       = cast(Footer *)(cast(ulong)lastFooter - quantity);
-		lastFooter.Magic = Magic;
+        lastFooter.Magic = MAGIC;
 		lastFooter.Head  = lastHeader;
 
 		_end = newEnd;

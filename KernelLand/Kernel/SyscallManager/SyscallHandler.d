@@ -26,6 +26,7 @@ module SyscallManager.SyscallHandler;
 import TaskManager;
 import Architecture;
 import ObjectManager;
+import MemoryManager;
 import SyscallManager;
 
 
@@ -58,9 +59,12 @@ abstract final class SyscallHandler {
 
 	static void SyscallDispatcher(SyscallStack* stack) {
 		Port.SaveSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
+        VirtualMemory.KernelPaging.Install();
+
 		with (stack)
 			RAX = ResourceManager.CallResource(R9, R8, RDI, RSI, RDX, RBX, RAX);
 
+        Task.CurrentProcess.PageTable.Install();
 		Port.RestoreSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
 	}
 

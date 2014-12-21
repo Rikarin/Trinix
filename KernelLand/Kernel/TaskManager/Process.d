@@ -35,7 +35,7 @@ import SyscallManager;
 
 
 final class Process {
-	private void* _userStack = cast(void *)0xFFFFFFFF80000000;
+	private v_addr _userStack = 0xFFFFFFFF_80000000;
 
 	private ulong _id;
 	private ulong _uid;
@@ -142,8 +142,8 @@ final class Process {
 	}
 
 	package ulong[] AllocUserStack(ulong size = Thread.UserStackSize) {
-		for (ulong i = 0; i < size; i += Paging.PageSize) {
-			_userStack -= Paging.PageSize;
+		for (ulong i = 0; i < size; i += Paging.PAGE_SIZE) {
+            _userStack -= Paging.PAGE_SIZE;
 			_paging.AllocFrame(_userStack, AccessMode.DefaultUser); //TODO: Nejako nefunguje :/
 		}
 

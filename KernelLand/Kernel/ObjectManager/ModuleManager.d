@@ -189,7 +189,6 @@ abstract final class ModuleManager {
         }
 
         bin.Relocate();
-        Log("okk");
 		return false;
 	}
 }

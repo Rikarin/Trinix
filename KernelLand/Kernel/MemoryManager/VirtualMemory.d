@@ -27,39 +27,42 @@ import Core;
 import MemoryManager;
 import ObjectManager;
 
+alias v_addr = ulong;
+alias p_addr = ulong;
+
 
 abstract final class VirtualMemory {
-	private __gshared void* function(long size) _malloc = &TmpAlloc;
-	private __gshared void function(void* ptr) _free;
+	private __gshared v_addr function(size_t size) _malloc = &TmpAlloc;
+	private __gshared void function(v_addr ptr) _free;
 
 	__gshared Paging KernelPaging;
 	__gshared Heap KernelHeap;
 
 	static void Initialize() {
-		KernelHeap = new Heap(cast(ulong)PhysicalMemory.AllocPage(), Heap.MinSize, Heap.CalculateIndexSize(Heap.MinSize));
+		KernelHeap = new Heap(cast(v_addr)PhysicalMemory.AllocPage(), Heap.MIN_SIZE, Heap.CalculateIndexSize(Heap.MIN_SIZE));
 
-        _malloc = function(long size) {
+        _malloc = function(size_t size) {
             return KernelHeap.Alloc(size);
         };
         
-        _free = function(void* ptr) {
+        _free = function(v_addr ptr) {
             KernelHeap.Free(ptr);
         };
 	}
 
-	private static void* TmpAlloc(long size) {
+	private static v_addr TmpAlloc(size_t size) {
 		return PhysicalMemory.AllocPage(size / 0x1000);
 	}
 }
 
-extern(C) void* malloc(long size, int ba) {
-	void* ret = VirtualMemory._malloc(size);
+extern(C) void* malloc(size_t size, int ba) {
+	v_addr ret = VirtualMemory._malloc(size);
 	//Log.WriteJSON("MemoryAlloc", "{", "size", size, "ba", ba, "address", cast(ulong)ret, "}");
-	return ret;
+	return cast(void *)ret;
 }
 
 extern(C) void free(void* ptr) {
 	//Log.WriteJSON("MemoryFree", cast(ulong)ptr);
 
-	VirtualMemory._free(ptr);
+	VirtualMemory._free(cast(v_addr)ptr);
 }

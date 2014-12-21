@@ -46,6 +46,7 @@
  *      o Exit thready
  *      o Implement GC
  *      o Fix \n in Logger
+ *      o define vaddr a paddr aliasy alias vaddr = ulong
  */
 
 module Core.Main;
