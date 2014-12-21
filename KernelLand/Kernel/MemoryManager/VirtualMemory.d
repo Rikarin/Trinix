@@ -32,6 +32,8 @@ alias p_addr = ulong;
 
 
 abstract final class VirtualMemory {
+    private __gshared v_addr _regions = 0xFFFFFFFF_E0000000;
+
 	private __gshared v_addr function(size_t size) _malloc = &TmpAlloc;
 	private __gshared void function(v_addr ptr) _free;
 
@@ -39,7 +41,7 @@ abstract final class VirtualMemory {
 	__gshared Heap KernelHeap;
 
 	static void Initialize() {
-		KernelHeap = new Heap(cast(v_addr)PhysicalMemory.AllocPage(), Heap.MIN_SIZE, Heap.CalculateIndexSize(Heap.MIN_SIZE));
+		KernelHeap = new Heap(cast(v_addr)PhysicalMemory.AllocPage(1), Heap.MIN_SIZE, Heap.CalculateIndexSize(Heap.MIN_SIZE));
 
         _malloc = function(size_t size) {
             return KernelHeap.Alloc(size);
@@ -49,6 +51,16 @@ abstract final class VirtualMemory {
             KernelHeap.Free(ptr);
         };
 	}
+
+    static v_addr AllocAlignedBlock(size_t num) {
+        if (_malloc == &TmpAlloc)
+            return PhysicalMemory.AllocPage(num);
+        else {
+            v_addr ret = _regions;
+            _regions += num * Paging.PAGE_SIZE;
+            return ret;
+        }
+    }
 
 	private static v_addr TmpAlloc(size_t size) {
 		return PhysicalMemory.AllocPage(size / 0x1000);

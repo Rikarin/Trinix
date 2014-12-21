@@ -26,6 +26,7 @@ import Core;
 import Linker;
 import Library;
 import VFSManager;
+import MemoryManager;
 
 
 class ElfLoader : BinaryLoader {
@@ -72,10 +73,7 @@ class ElfLoader : BinaryLoader {
     
     private struct Dynamic {
         long Tag;
-        union {
-            ulong Value;
-            ulong Ptr;
-        }
+        ulong Value;
     }
     
     private struct Symbol {
@@ -121,6 +119,12 @@ class ElfLoader : BinaryLoader {
         PT_LOPROC = 0x70000000,
         PT_HIPROC = 0x7fffffff
     }
+
+    enum {
+        PF_X = 1,
+        PF_W = 2,
+        PF_R = 4
+    }
     
     enum {
         DT_NULL,    //!< Marks End of list
@@ -151,10 +155,12 @@ class ElfLoader : BinaryLoader {
         DT_HIPROC = 0x7FFFFFFF  //!< High Definable
     }
 
+    private EHeader _eHeader;
+    private PHeader[] _pHeader;
+
     private this() {
         super();
     }
-
 
     static ElfLoader Load(FSNode node) {
         EHeader header;
@@ -162,7 +168,7 @@ class ElfLoader : BinaryLoader {
 
         /* Sanity check */
         if (header.Identifier[0] != 0x7F || header.Identifier[1] != 'E' ||
-            header.Identifier[2] != 'L' || header.Identifier[3] != 'F') {
+            header.Identifier[2] != 'L'  || header.Identifier[3] != 'F') {
             Log("ELF: Non-ELF file was passed to ELF loader!");
             return null;
         }
@@ -221,6 +227,8 @@ class ElfLoader : BinaryLoader {
                 loadSegments++;
 
         auto ret      = new ElfLoader();
+        ret._eHeader  = header;
+        ret._pHeader  = pHeader;
         ret._base     = ~0UL;
         ret._entry    = header.Entry;
         ret._sections = new BinarySection[loadSegments];
@@ -263,7 +271,12 @@ class ElfLoader : BinaryLoader {
             ret._sections[j].FileSize       = x.FileSize;
             ret._sections[j].MemorySize     = x.MemorySize;
             ret._sections[j].VirtualAddress = x.VirtualAddress;
-            //TODO: flags
+
+            if(!(x.Flags & PF_W))
+                ret._sections[j].Flags |= BinaryLoader.SectionFlag.ReadOnly;
+
+            if (x.Flags & PF_X)
+                ret._sections[j].Flags |= BinaryLoader.SectionFlag.Executable;
             j++;
         }
 
@@ -272,176 +285,163 @@ class ElfLoader : BinaryLoader {
 
 
 
+    private Dynamic* _dynamic;
+    private Symbol* _symbol;
+    private v_addr _baseDiff;
+    private v_addr _stringTable;
+    private v_addr _hashTable;
 
 
-
-
-
-
-
-
-
-
-    public void* Relocate() {
-        EHeader* header = cast(EHeader *)_base;
-
-        debug {
-            Log("\nELF Header");
-            Log("---------------------");
-            Log(" Type    = %d", header.Type);
-            Log(" Machine = %d", header.Machine);
-            Log(" Version = %d", header.Version);
-            Log(" Entry   = %x", header.Entry);
-            Log(" PHOff   = %x", header.ProgramHeaderOffset);
-            Log(" SHOff   = %x", header.SectionHeaderOffset);
-            Log(" Flags   = %x", header.Flags);
-            Log(" EHSize  = %d", header.ElfHeaderSize);
-            Log(" PHESize = %d", header.ProgramHeaderEntrySize);
-            Log(" PHNum   = %d", header.ProgramHeaderNumber);
-            Log(" SHESize = %d", header.SectionHeaderEntrySize);
-            Log(" SHNum   = %d", header.SectionHeaderNumber);
-            Log(" Table   = %d", header.TableIndex);
+    private void ParseTables() {
+        /* check if binary is mapped */
+        if (!_mappedBinary) {
+            Log("ELF Relocation: Binary is not mapped!");
+            return;
         }
-        
-        PHeader* pheader = cast(PHeader *)(cast(ulong)header + cast(ulong)header.ProgramHeaderOffset);
-        Dynamic* dynamic;
-        ulong compiledBase = -1;
-        
-        // Scan for dynamic table
-        foreach (x; pheader[0 .. header.ProgramHeaderNumber]) {
+
+        /* Scan for dynamic table */
+        foreach (x; _pHeader) {
             if (x.Type == PT_DYNAMIC)
-                dynamic = cast(Dynamic *)x.Offset;
-            else if (x.Type == PT_LOAD && compiledBase > x.VirtualAddress)
-                compiledBase = x.VirtualAddress;
+                _dynamic = cast(Dynamic *)x.VirtualAddress;
+            else if (x.Type == PT_LOAD && _baseDiff > x.VirtualAddress)
+                _baseDiff = x.VirtualAddress;
         }
-        
-        ulong baseDiff = cast(ulong)header - compiledBase;
-        Log("BaseDiff = %d", baseDiff);
-        
-        if (dynamic is null) {
-            Log("ELF Relocation: No PT_DYNAMIC segment");
-            return cast(void *)(cast(ulong)dynamic + baseDiff);
-        }
-        
-        dynamic = cast(Dynamic *)(cast(ulong)dynamic + baseDiff);
-        Symbol* symbol;
-        byte* stringTable;
-        uint* hashTab;
-        
-        // Parse dynamic table
-        for (int i = 0; dynamic[i].Tag != DT_NULL; i++) {
-            switch (dynamic[i].Tag) {
+
+        if (_dynamic is null)
+            return;
+
+        _baseDiff = _mappedBinary - _baseDiff;
+        _dynamic  = cast(Dynamic *)(cast(v_addr)_dynamic + _baseDiff);
+        Log("BaseDiff = %x", _baseDiff);
+
+        /* Parse dynamic table */
+        for (int i = 0; _dynamic[i].Tag != DT_NULL; i++) {
+            switch (_dynamic[i].Tag) {
                 case DT_SYMTAB:
-                    dynamic[i].Ptr += baseDiff;
-                    symbol = cast(Symbol *)dynamic[i].Ptr;
+                    _dynamic[i].Value += _baseDiff;
+                    _symbol = cast(Symbol *)_dynamic[i].Value;
                     break;
                     
                 case DT_STRTAB:
-                    dynamic[i].Ptr += baseDiff;
-                    stringTable = cast(byte *)dynamic[i].Ptr;
+                    _dynamic[i].Value += _baseDiff;
+                    _stringTable = _dynamic[i].Value;
                     break;
                     
                 case DT_HASH:
-                    dynamic[i].Ptr += baseDiff;
-                    hashTab = cast(uint *)dynamic[i].Ptr;
+                    _dynamic[i].Value += _baseDiff;
+                    _hashTable = _dynamic[i].Value;
                     break;
                     
                 default:
             }
         }
-        
-        if (symbol is null || stringTable is null || hashTab is null) {
-            Log("ELF Relocation: Missing Symbol, String of HashTable");
-            return null;
+    }
+
+
+
+
+
+
+    public v_addr Relocate() {
+        if (!_baseDiff)
+            ParseTables();
+
+        if (_dynamic is null) {
+            Log("ELF Relocation: No PT_DYNAMIC segment");
+            return cast(ulong)_eHeader.Entry + _baseDiff;
         }
+
+        if (_symbol is null || !_stringTable || !_hashTable) {
+            Log("ELF Relocation: Missing symbol, string table or hash table");
+            return 0;
+        }
+
+
+
+        Log("%s(%d): number of symbols: %d", __FILE__, __LINE__, (cast(uint *)_hashTable)[1]);
+
         
         Relocation* relocation;
         RelocationA* relocationA;
         long relocationCount;
         long relocationACount;
-        void* pltRel;
+        v_addr pltRel;
         long pltSize;
         long pltType;
         
-        for (int i = 0; dynamic[i].Tag != DT_NULL; i++) {
-            switch (dynamic[i].Tag) {
+        for (int i = 0; _dynamic[i].Tag != DT_NULL; i++) {
+            switch (_dynamic[i].Tag) {
                 case DT_SONAME:
                     break;
                     
                 case DT_NEEDED:
-                    Log("ELF: Modules cannot load library");
-                    return null;
+                    Log("ELF Relocation: Modules cannot load library");
+                    return 0;
                     
                 case DT_REL:
-                    dynamic[i].Ptr += baseDiff;
-                    relocation = cast(Relocation *)dynamic[i].Ptr;
+                    _dynamic[i].Value += _baseDiff;
+                    relocation = cast(Relocation *)_dynamic[i].Value;
                     break;
                     
                 case DT_RELSZ:
-                    relocationCount = dynamic[i].Value / Relocation.sizeof;
+                    relocationCount = _dynamic[i].Value / Relocation.sizeof;
                     break;
                     
                 case DT_RELENT:
-                    if (dynamic[i].Value != Relocation.sizeof) {
+                    if (_dynamic[i].Value != Relocation.sizeof) {
                         Log("ELF Relocation: DT_RELENT != Relocation.sizeof");
-                        return null;
+                        return 0;
                     }
                     break;
                     
                 case DT_RELA:
-                    dynamic[i].Ptr += baseDiff;
-                    relocationA = cast(RelocationA *)dynamic[i].Ptr;
+                    _dynamic[i].Value += _baseDiff;
+                    relocationA = cast(RelocationA *)_dynamic[i].Value;
                     break;
                     
                 case DT_RELASZ:
-                    relocationACount = dynamic[i].Value / RelocationA.sizeof;
+                    relocationACount = _dynamic[i].Value / RelocationA.sizeof;
                     break;
                     
                 case DT_RELAENT:
-                    if (dynamic[i].Value != RelocationA.sizeof) {
+                    if (_dynamic[i].Value != RelocationA.sizeof) {
                         Log("ELF Relocation: DT_RELAENT != RelocationA.sizeof");
-                        return null;
+                        return 0;
                     }
                     break;
                     
                 case DT_JMPREL:
-                    dynamic[i].Ptr += baseDiff;
-                    pltRel = cast(void *)dynamic[i].Ptr;
+                    _dynamic[i].Value += _baseDiff;
+                    pltRel = _dynamic[i].Value;
                     break;
                     
                 case DT_PLTREL:
-                    pltType = dynamic[i].Value;
+                    pltType = _dynamic[i].Value;
                     break;
                     
                 case DT_PLTRELSZ:
-                    pltSize = dynamic[i].Value;
+                    pltSize = _dynamic[i].Value;
                     break;
                     
                 default:
             }
         }
-        
-        int Reloc(ulong info, void* ptr, long addend) {
-            return DoReloc(stringTable, symbol, info, ptr, addend);
-        }
-        
-        int fail;
+
+        bool fail;
         if (relocation) {
-            Log("RelocationCount = %d", relocationCount);
+            Log("Rel count = %d", relocationCount);
             
             foreach (x; relocation[0 .. relocationCount]) {
-                ulong* ptr = cast(ulong *)(x.Offset + baseDiff);
-                fail |= Reloc(x.Info, ptr, *ptr);
+                ulong ptr = x.Offset + _baseDiff;
+                fail |= DoReloc(x.Info, ptr, *(cast(ulong *)ptr));
             }
         }
         
         if (relocationA) {
-            Log("RelocationACount = %d", relocationACount);
+            Log("Rela count = %d", relocationACount);
             
-            foreach (x; relocationA[0 .. relocationACount]) {
-                ulong* ptr = cast(ulong *)(x.Offset + baseDiff);
-                fail |= Reloc(x.Info, ptr, x.Addend);
-            }
+            foreach (x; relocationA[0 .. relocationACount])
+                fail |= DoReloc(x.Info, x.Offset + _baseDiff, x.Addend);
         }
         
         if (pltRel && pltType) {
@@ -449,117 +449,77 @@ class ElfLoader : BinaryLoader {
                 Relocation* plt = cast(Relocation *)pltRel;
                 ulong count = pltSize / Relocation.sizeof;
                 
-                Log("plt Relocation count = %d", count);
+                Log("plt rel count = %d", count);
                 foreach (x; plt[0 .. count]) {
-                    ulong* ptr = cast(ulong *)(x.Offset + baseDiff);
-                    fail |= Reloc(x.Info, ptr, *ptr);
+                    ulong ptr = x.Offset + _baseDiff;
+                    fail |= DoReloc(x.Info, ptr, *(cast(ulong *)ptr));
                 }
             } else {
                 RelocationA* plt = cast(RelocationA *)pltRel;
                 ulong count = pltSize / RelocationA.sizeof;
                 
-                Log("plt RelocationA count = %d", count);
-                foreach (x; plt[0 .. count]) {
-                    ulong* ptr = cast(ulong *)(x.Offset + baseDiff);
-                    fail |= Reloc(x.Info, ptr, x.Addend);
-                }
+                Log("plt rela count = %d", count);
+                foreach (x; plt[0 .. count])
+                    fail |= DoReloc(x.Info, x.Offset + _baseDiff, x.Addend);
             }
         }
         
         if (fail) {
             Log("Jolanda: Spadlo to!");
-            return null;
+            return 0;
         }
         
-        void* ret = cast(void *)(cast(ulong)header.Entry + baseDiff);
-        Log("RelocationDone ptr = %x", cast(ulong)ret);
+        v_addr ret = cast(ulong)_eHeader.Entry + _baseDiff;
+        Log("relocation done ptr = %x", cast(ulong)ret);
         return ret;
     }
 
-    bool GetSymbol(string name, ref void* ret, ref long size) {
-        EHeader* header = cast(EHeader *)_base;
-        ulong baseDiff;
-        Dynamic* dynamic;
-        
-        PHeader* pheader = cast(PHeader *)(cast(ulong)header + header.ProgramHeaderOffset);
-        foreach (x; pheader[0 .. header.ProgramHeaderNumber]) {
-            if (x.Type == PT_DYNAMIC)
-                dynamic = cast(Dynamic *)x.VirtualAddress;
-            else if (x.Type == PT_LOAD && baseDiff > x.VirtualAddress)
-                baseDiff = x.VirtualAddress;
-        }
-        
-        if (dynamic is null) {
-            Log("ELF: Unable to find PT_DYNAMIC segment");
+    bool GetSymbol(string name, ref v_addr ret, ref long size) {
+        if (_dynamic is null) {
+            Log("ELF Relocation: Unable to find PT_DYNAMIC segment");
             return false;
         }
-        
-        baseDiff = cast(ulong)header - baseDiff;
-        dynamic = cast(Dynamic *)(cast(ulong)dynamic + baseDiff);
-        
-        Symbol* symbol;
-        byte* stringTable;
-        uint* pBuckets;
-        
-        /* Parse dynamic table */
-        for (int i = 0; dynamic[i].Tag != DT_NULL; i++) {
-            switch (dynamic[i].Tag) {
-                case DT_SYMTAB:
-                    dynamic[i].Ptr += baseDiff;
-                    symbol = cast(Symbol *)dynamic[i].Ptr;
-                    break;
-                    
-                case DT_STRTAB:
-                    dynamic[i].Ptr += baseDiff;
-                    stringTable = cast(byte *)dynamic[i].Ptr;
-                    break;
-                    
-                case DT_HASH:
-                    dynamic[i].Ptr += baseDiff;
-                    pBuckets = cast(uint *)dynamic[i].Ptr;
-                    break;
-                    
-                default:
-            }
-        }
-        
+
+        uint* pBuckets = cast(uint *)_hashTable;
         uint nBuckets = pBuckets[0];
         pBuckets = &pBuckets[2];
         uint* pCahins = &pBuckets[nBuckets];
         
         uint nameHash = HashName(name);
         nameHash %= nBuckets;
-        
-        int i = pBuckets[nameHash];
-        if (symbol[i].SectionTableIndex && (cast(char *)(cast(ulong)stringTable + cast(ulong)symbol[i].Name)).ToString() == name) {
-            ret = cast(void *)(cast(ulong)symbol[i].Value + baseDiff);
-            size = symbol[i].Size;
 
-            Log("Name: %s, Return: %x", name, cast(ulong)ret);
+        int i = pBuckets[nameHash];
+        //Log("err, name1: %s", name);
+        if (_symbol[i].SectionTableIndex && (cast(char *)(_stringTable + cast(ulong)_symbol[i].Name)).ToString() == name) {
+            ret = _symbol[i].Value + _baseDiff;
+            size = _symbol[i].Size;
+
+            Log("Name: %s, Return: %x", name, ret);
             return true;
         }
         
         while (pCahins[i]) {
             i = pCahins[i];
-            if (symbol[i].SectionTableIndex && (cast(char *)(cast(ulong)stringTable + cast(ulong)symbol[i].Name)).ToString() == name) {
-                ret = cast(void *)(cast(ulong)symbol[i].Value + baseDiff);
-                size = symbol[i].Size;
-                
-                Log("Name: %s, Return: %x", name, cast(ulong)ret);
+
+            if (_symbol[i].SectionTableIndex && (cast(char *)(_stringTable + cast(ulong)_symbol[i].Name)).ToString() == name) {
+                ret = _symbol[i].Value + _baseDiff;
+                size = _symbol[i].Size;
+
+                Log("Name: %s, Return: %x", name, ret);
                 return true;
             }
         }
-        
+
         return false;
     }
     
-    private bool DoReloc(byte* stringTable, Symbol* symbol, ulong info, void* ptr, long addend) {
+    private bool DoReloc(ulong info, v_addr ptr, long addend) {
         int sym = cast(int)(info >> 32);
         int type = cast(int)(info & 0xFFFFFFFF);
-        string symName = (cast(char *)(cast(ulong)stringTable + cast(ulong)symbol[sym].Name)).ToString();
-        void* symval;
+        string symName = (cast(char *)(_stringTable + cast(ulong)_symbol[sym].Name)).ToString();
+        v_addr symval;
         long size;
-        
+
         switch (type) {
             case RelocationType.R_X86_64_NONE:
                 break;

@@ -69,8 +69,11 @@ abstract final class PhysicalMemory {
 		_frames = new BitArray(0x40_000, false); //Hack: treba zvetsit paging tabulky v Boot.s lebo sa kernel potom nevie premapovat pre nedostatok pamete :/
 
 		VirtualMemory.KernelPaging = new Paging();
-		for (v_addr i = 0xFFFFFFFF_80000000; i < 0xFFFFFFFF_8A000000; i += 0x1000)
+		for (v_addr i = 0xFFFFFFFF_80000000; i < 0xFFFFFFFF_8A000000; i += Paging.PAGE_SIZE)
 			VirtualMemory.KernelPaging.AllocFrame(i, AccessMode.DefaultUser); //TODO: testing
+
+        for (v_addr i = 0xFFFFFFFF_E0000000; i < 0xFFFFFFFF_EA000000; i += Paging.PAGE_SIZE)
+            VirtualMemory.KernelPaging.AllocFrame(i, AccessMode.DefaultKernel);
 
         VirtualMemory.KernelPaging.Install();
 	}
@@ -95,12 +98,12 @@ abstract final class PhysicalMemory {
 		page.Present = false;
 	}
 
-	static v_addr AllocPage(size_t count = 1) {
-		if (count < 1)
-			count = 1;
+	static v_addr AllocPage(size_t num) {
+        if (num < 1)
+            num = 1;
 			
 		v_addr ret = cast(v_addr)LinkerScript.KernelEnd + _startMemory;
-		_startMemory += 0x1000 * count;
+        _startMemory += 0x1000 * num;
 
 		return ret;
 	}

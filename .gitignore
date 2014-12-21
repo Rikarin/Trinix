@@ -24,3 +24,4 @@
 /Externals/CrossCompiler/gmp-*
 /Externals/CrossCompiler/mpfr-*
 /Externals/CrossCompiler/mpc-*
+/KernelLand/Kernel/obj-x86_64/symbols.s

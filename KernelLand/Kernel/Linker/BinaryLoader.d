@@ -26,6 +26,7 @@ import Core;
 import Linker;
 import Library;
 import VFSManager;
+import MemoryManager;
 
 
 struct BinaryLoaderType {
@@ -36,21 +37,34 @@ struct BinaryLoaderType {
 
 struct BinarySection {
     ulong Offset;
-    ulong VirtualAddress;
+    v_addr VirtualAddress;
     ulong FileSize;
     ulong MemorySize;
     uint Flags;
 }
 
 class BinaryLoader {
+    enum BIN_LOWEST       = PhysicalMemory.USER_MIN;
+    enum BIN_GRANULARITY  = 0x10000;
+    enum BIN_HIGHEST      = PhysicalMemory.USER_LIB_MAX - BIN_GRANULARITY;
+    enum KLIB_LOWEST      = PhysicalMemory.MODULE_MIN;
+    enum KLIB_GRANULARITY = 0x10000;
+    enum KLIB_HIGHEST     = PhysicalMemory.MODULE_MAX - KLIB_GRANULARITY;
+
+    enum SectionFlag {
+        ReadOnly   = 1,
+        Executable = 2
+    }
+
     private __gshared LinkedList!BinaryLoader _binaries;
     private __gshared LinkedList!BinaryLoaderType _loaders;
 
     private FSNode _node;
     private long _referenceCount;
+    protected v_addr _mappedBinary;
 
-    protected ulong _base;
-    protected ulong _entry;
+    protected v_addr _base;
+    protected v_addr _entry;
     protected string _interpreter;
     protected BinarySection[] _sections;
 
@@ -68,9 +82,9 @@ class BinaryLoader {
         _binaries.Remove(this);
     }
 
-    bool Relocate() {
+    v_addr Relocate() {
         Log("BinaryLoader: Relocation not supported!");
-        return false;
+        return 0;
     }
 
     static void Initialize() {
@@ -98,7 +112,7 @@ class BinaryLoader {
             return null;
             
         bin._referenceCount++; /* This will be never unloaded */
-        //_base = MapIn  
+        bin.MapIn(KLIB_LOWEST, KLIB_HIGHEST);
 
         _binaries.Add(bin);
         return bin;
@@ -125,16 +139,88 @@ class BinaryLoader {
             }
         }
 
-        if (ret is null) {
+        if (ret is null)
             Log("BinaryLoader: '%s' is an unknown file type", node.Location);
-        }
-
+            
         debug {
             Log("Interpreter: %s", ret._interpreter);
             Log("Base: %x, Entry: %x", ret._base, ret._entry);
             Log("NumSections: %d", ret._sections.length);
         }
 
+        ret._node = node;
         return ret;
+    }
+
+    private void MapIn(ulong loadMin, ulong loadMax) {
+        _referenceCount++;
+        ulong base = _base;
+
+        if (base) {
+            foreach (x; _sections) {
+                if (!CheckFreeMemory(x.VirtualAddress, x.MemorySize)) {
+                    base = 0;
+                    Log("BinaryLoader: Address %x is taken", x.VirtualAddress);
+                    break;
+                }
+            }
+        }
+
+        if (!base) {
+            base = loadMax;
+            while (base >= loadMin) {
+                int i;
+                for (i = 0; i < _sections.length; i++) {
+                    v_addr addr = _sections[i].VirtualAddress - _base + base;
+                    size_t size = _sections[i].MemorySize;
+
+                    if (addr + size > loadMax)
+                        break;
+                        
+                    if (!CheckFreeMemory(addr, size))
+                        break;
+                }
+
+                if (i == _sections.length)
+                    break;
+
+                base -= BIN_GRANULARITY;
+            }
+            Log("Allocated base %x", base);
+        }
+
+        if (base < loadMin) {
+            Log("BinaryLoader: Executable '%s' cannot be loaded, not enought space", _node.Location);
+            return;
+        }
+
+        /* Map in */
+        foreach(i, x; _sections) {
+            v_addr addr = x.VirtualAddress - _base + base;
+            Log("%d - %x, %x bytes form offset %x (%x)", i, addr, x.FileSize, x.Offset, x.Flags);
+            VFS.MapIn(_node, addr, x.FileSize, x.Offset);
+
+            for (v_addr j = addr + x.FileSize; j < x.MemorySize - x.FileSize; j += Paging.PAGE_SIZE)
+                VirtualMemory.KernelPaging.AllocFrame(j, AccessMode.DefaultKernel);
+        }
+
+        _mappedBinary = base;
+    }
+
+    /* return true if memory is free */
+    private bool CheckFreeMemory(v_addr start, size_t length) {
+        length += start & (Paging.PAGE_SIZE - 1);
+        length = (length + Paging.PAGE_SIZE - 1) & ~(Paging.PAGE_SIZE - 1);
+        start &= ~(Paging.PAGE_SIZE - 1);
+
+        for (; length > Paging.PAGE_SIZE; length -= Paging.PAGE_SIZE, start += Paging.PAGE_SIZE) {
+            if (VirtualMemory.KernelPaging.GetPhysicalAddress(start))
+                return false;
+        }
+
+        if (length == Paging.PAGE_SIZE && VirtualMemory.KernelPaging.GetPhysicalAddress(start))
+            return false;
+
+        return true;
     }
 }

@@ -59,6 +59,12 @@ SECTIONS {
 		iKernelModulesEnd = .;
     }
 	
+	.symbols ALIGN(0x1000) : AT(ADDR(.symbols) - _kernel_base) {
+			PROVIDE(iKernelSymbols = .);
+		PROVIDE(iKernelSymbolsEnd = .);
+		*(.symbols .symbols.*)
+    }
+	
 	.tdata ALIGN(0x1000) : AT(ADDR(.tdata) - _kernel_base) {
 		*(.tdata .tdata.*)
     }

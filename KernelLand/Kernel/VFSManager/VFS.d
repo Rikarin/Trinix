@@ -28,6 +28,7 @@ import Library;
 import FileSystem;
 import VFSManager;
 import ObjectManager;
+import MemoryManager;
 import SyscallManager;
 
 
@@ -157,4 +158,12 @@ abstract final class VFS {
 
 		return drv.Mount(mountpoint, partition);
 	}
+
+    /* TODO: implenet flags... */
+    static void MapIn(FSNode node, v_addr start, size_t length, ulong offset) {
+        for (v_addr i = start; i < start + length; i += Paging.PAGE_SIZE)
+            VirtualMemory.KernelPaging.AllocFrame(i, AccessMode.DefaultKernel);
+
+        node.Read(offset, (cast(byte *)start)[0 .. length]);
+    }
 }

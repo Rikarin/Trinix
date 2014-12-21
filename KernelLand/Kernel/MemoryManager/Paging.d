@@ -175,10 +175,12 @@ align(1):
 			PageLevel!(L - 1)* ret = Tables[index];
 			
 			if (!ret) {
-				static if (L == 1)
-					ret = new PageLevel!(L - 1);
-				else
-					ret = new PageLevel!(L - 1);
+                static if (L == 1)
+                    ret = cast(PageLevel!(L - 1) *)VirtualMemory.AllocAlignedBlock(1);
+                else
+                    ret = cast(PageLevel!(L - 1) *)VirtualMemory.AllocAlignedBlock(2);
+
+                *ret = (PageLevel!(L - 1)).init;
 				SetTable(index, ret);
 			}
 			
@@ -196,7 +198,6 @@ final class Paging {
 
     private __gshared bool _initialized;
 	private PageLevel!4* _root;
-	private v_addr _regions = 0xFFFFFFFF_E0000000;
 
 	this() {
 		_root = new PageLevel!4;
@@ -264,7 +265,7 @@ final class Paging {
 		PhysicalMemory.FreeFrame(GetPage(address));
 	}
 	
-	/*ubyte[] MapRegion(p_addr pAdd, size_t length) {
+	/*ubyte[] MapRegion(p_addr pAdd, size_t length) { TODO: move this to VirtualMemory
 		ubyte[] result = MapRegion(pAdd, _regions, length);
 		_regions += (length & ~0xFFFUL) + ((length & 0xFFF) ? PAGE_SIZE : 0);
 		return result;
@@ -285,19 +286,10 @@ final class Paging {
 	}*/
 
 	ref PTE GetPage(v_addr address) {
-		ulong add = cast(ulong)address;
-		
-		ushort[4] start;
-		start[3] = (add >> 39) & 511; /* PML4E */
-		start[2] = (add >> 30) & 511; /* PDPTE */
-		start[1] = (add >> 21) & 511; /* PDE */
-		start[0] = (add >> 12) & 511; /* PTE */
-
-		auto pdpt = _root.GetOrCreateTable(start[3]);
-		auto pd = pdpt.GetOrCreateTable(start[2]);
-		auto pt = pd.GetOrCreateTable(start[1]);
-		
-		return pt.Entries[start[0]];
+        return _root.GetOrCreateTable((address >> 39) & 511)
+                .GetOrCreateTable((address >> 30) & 511)
+                .GetOrCreateTable((address >> 21) & 511)
+                .Entries[(address >> 12) & 511];
 	}
 
 	p_addr GetPhysicalAddress(v_addr address) {
