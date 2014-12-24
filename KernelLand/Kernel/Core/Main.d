@@ -112,7 +112,7 @@ extern(C) void KernelMain() {
     Log("Module Manager");
 	ModuleManager.Initialize();
 	ModuleManager.LoadBuiltins();
-    LoadModules();
+  //  LoadModules();
 
 	VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
               VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");

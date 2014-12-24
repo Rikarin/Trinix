@@ -30,197 +30,196 @@ import MemoryManager;
 
 
 struct BinaryLoaderType {
-    uint Magic;
-    uint Mask;
-    BinaryLoader function(FSNode node) Load;
+	uint Magic;
+	uint Mask;
+	BinaryLoader function(FSNode node) Load;
 }
 
 struct BinarySection {
-    ulong Offset;
-    v_addr VirtualAddress;
-    ulong FileSize;
-    ulong MemorySize;
-    uint Flags;
+	ulong Offset;
+	v_addr VirtualAddress;
+	ulong FileSize;
+	ulong MemorySize;
+	uint Flags;
 }
 
 class BinaryLoader {
-    enum BIN_LOWEST       = PhysicalMemory.USER_MIN;
-    enum BIN_GRANULARITY  = 0x10000;
-    enum BIN_HIGHEST      = PhysicalMemory.USER_LIB_MAX - BIN_GRANULARITY;
-    enum KLIB_LOWEST      = PhysicalMemory.MODULE_MIN;
-    enum KLIB_GRANULARITY = 0x10000;
-    enum KLIB_HIGHEST     = PhysicalMemory.MODULE_MAX - KLIB_GRANULARITY;
+	enum BIN_LOWEST       = PhysicalMemory.USER_MIN;
+	enum BIN_GRANULARITY  = 0x10000;
+	enum BIN_HIGHEST      = PhysicalMemory.USER_LIB_MAX - BIN_GRANULARITY;
+	enum KLIB_LOWEST      = PhysicalMemory.MODULE_MIN;
+	enum KLIB_GRANULARITY = 0x10000;
+	enum KLIB_HIGHEST     = PhysicalMemory.MODULE_MAX - KLIB_GRANULARITY;
 
-    enum SectionFlag {
-        ReadOnly   = 1,
-        Executable = 2
-    }
+	enum SectionFlag {
+		ReadOnly   = 1,
+		Executable = 2
+	}
 
-    private __gshared LinkedList!BinaryLoader _binaries;
-    private __gshared LinkedList!BinaryLoaderType _loaders;
+	private __gshared LinkedList!BinaryLoader _binaries;
+	private __gshared LinkedList!BinaryLoaderType _loaders;
 
-    private FSNode _node;
-    private long _referenceCount;
-    protected v_addr _mappedBinary;
+	private FSNode _node;
+	private long _referenceCount;
+	protected v_addr _mappedBinary;
 
-    protected v_addr _base;
-    protected v_addr _entry;
-    protected string _interpreter;
-    protected BinarySection[] _sections;
+	protected v_addr _base;
+	protected v_addr _entry;
+	protected string _interpreter;
+	protected BinarySection[] _sections;
 
+	
+	/*   @property ref long ReferenceCount() {
+	 return _referenceCount;
+	 }*/
+	
+	protected this() {
+		_binaries.Add(this);
+	}
 
- /*   @property ref long ReferenceCount() {
-        return _referenceCount;
-    }*/
+	~this() {
+		_binaries.Remove(this);
+	}
 
+	v_addr Relocate() {
+		Log("BinaryLoader: Relocation not supported!");
+		return 0;
+	}
 
-    protected this() {
-        _binaries.Add(this);
-    }
+	static void Initialize() {
+		_binaries = new LinkedList!BinaryLoader();
+		_loaders  = new LinkedList!BinaryLoaderType();
 
-    ~this() {
-        _binaries.Remove(this);
-    }
+		//TODO: move to elf initialization
+		BinaryLoaderType elf = { 0x464C457F, 0xFFFFFFFF, &ElfLoader.Load };
+		_loaders.Add(elf);
+	}
 
-    v_addr Relocate() {
-        Log("BinaryLoader: Relocation not supported!");
-        return 0;
-    }
+	static void Finalize() {
+		delete _binaries;
+		delete _loaders;
+	}
 
-    static void Initialize() {
-        _binaries = new LinkedList!BinaryLoader();
-        _loaders  = new LinkedList!BinaryLoaderType();
+	static BinaryLoader LoadKernel(FSNode node) {
+		BinaryLoader bin = FindLoadedBinary(node);
 
-        //TODO: move to elf initialization
-        BinaryLoaderType elf = { 0x464C457F, 0xFFFFFFFF, &ElfLoader.Load };
-        _loaders.Add(elf);
-    }
+		if (bin !is null) /* Already loaded */
+			return bin;
 
-    static void Finalize() {
-        delete _binaries;
-        delete _loaders;
-    }
+		bin = DoLoad(node);
+		if (bin is null)
+			return null;
+		
+		bin._referenceCount++; /* This will be never unloaded */
+		bin.MapIn(KLIB_LOWEST, KLIB_HIGHEST);
 
-    static BinaryLoader LoadKernel(FSNode node) {
-        BinaryLoader bin = FindLoadedBinary(node);
+		_binaries.Add(bin);
+		return bin;
+	}
 
-        if (bin !is null) /* Already loaded */
-            return bin;
+	private static BinaryLoader FindLoadedBinary(FSNode node) {
+		auto bin = Array.Find(_binaries, (LinkedListNode!BinaryLoader o) => o.Value._node is node);
 
-        bin = DoLoad(node);
-        if (bin is null)
-            return null;
-            
-        bin._referenceCount++; /* This will be never unloaded */
-        bin.MapIn(KLIB_LOWEST, KLIB_HIGHEST);
+		if (bin is null)
+			return null;
 
-        _binaries.Add(bin);
-        return bin;
-    }
+		return bin.Value;
+	}
 
-    private static BinaryLoader FindLoadedBinary(FSNode node) {
-        auto bin = Array.Find(_binaries, (LinkedListNode!BinaryLoader o) => o.Value._node is node);
+	private static BinaryLoader DoLoad(FSNode node) {
+		BinaryLoader ret;
+		uint magic;
+		node.Read(0, magic.ToArray());
 
-        if (bin is null)
-            return null;
+		foreach (x; _loaders) {
+			if (x.Value.Magic == (magic & x.Value.Mask)) {
+				ret = x.Value.Load(node);
+				break;
+			}
+		}
 
-        return bin.Value;
-    }
+		if (ret is null)
+			Log("BinaryLoader: '%s' is an unknown file type", node.Location);
+		
+		debug {
+			Log("Interpreter: %s", ret._interpreter);
+			Log("Base: %x, Entry: %x", ret._base, ret._entry);
+			Log("NumSections: %d", ret._sections.length);
+		}
 
-    private static BinaryLoader DoLoad(FSNode node) {
-        BinaryLoader ret;
-        uint magic;
-        node.Read(0, magic.ToArray());
+		ret._node = node;
+		return ret;
+	}
 
-        foreach (x; _loaders) {
-            if (x.Value.Magic == (magic & x.Value.Mask)) {
-                ret = x.Value.Load(node);
-                break;
-            }
-        }
+	private void MapIn(ulong loadMin, ulong loadMax) {
+		_referenceCount++;
+		ulong base = _base;
 
-        if (ret is null)
-            Log("BinaryLoader: '%s' is an unknown file type", node.Location);
-            
-        debug {
-            Log("Interpreter: %s", ret._interpreter);
-            Log("Base: %x, Entry: %x", ret._base, ret._entry);
-            Log("NumSections: %d", ret._sections.length);
-        }
+		if (base) {
+			foreach (x; _sections) {
+				if (!CheckFreeMemory(x.VirtualAddress, x.MemorySize)) {
+					base = 0;
+					Log("BinaryLoader: Address %x is taken", x.VirtualAddress);
+					break;
+				}
+			}
+		}
 
-        ret._node = node;
-        return ret;
-    }
+		if (!base) {
+			base = loadMax;
+			while (base >= loadMin) {
+				int i;
+				for (i = 0; i < _sections.length; i++) {
+					v_addr addr = _sections[i].VirtualAddress - _base + base;
+					size_t size = _sections[i].MemorySize;
 
-    private void MapIn(ulong loadMin, ulong loadMax) {
-        _referenceCount++;
-        ulong base = _base;
+					if (addr + size > loadMax)
+						break;
+					
+					if (!CheckFreeMemory(addr, size))
+						break;
+				}
 
-        if (base) {
-            foreach (x; _sections) {
-                if (!CheckFreeMemory(x.VirtualAddress, x.MemorySize)) {
-                    base = 0;
-                    Log("BinaryLoader: Address %x is taken", x.VirtualAddress);
-                    break;
-                }
-            }
-        }
+				if (i == _sections.length)
+					break;
 
-        if (!base) {
-            base = loadMax;
-            while (base >= loadMin) {
-                int i;
-                for (i = 0; i < _sections.length; i++) {
-                    v_addr addr = _sections[i].VirtualAddress - _base + base;
-                    size_t size = _sections[i].MemorySize;
+				base -= BIN_GRANULARITY;
+			}
+			Log("Allocated base %x", base);
+		}
 
-                    if (addr + size > loadMax)
-                        break;
-                        
-                    if (!CheckFreeMemory(addr, size))
-                        break;
-                }
+		if (base < loadMin) {
+			Log("BinaryLoader: Executable '%s' cannot be loaded, not enought space", _node.Location);
+			return;
+		}
 
-                if (i == _sections.length)
-                    break;
+		/* Map in */
+		foreach(i, x; _sections) {
+			v_addr addr = x.VirtualAddress - _base + base;
+			Log("%d - %x, %x bytes form offset %x (%x)", i, addr, x.FileSize, x.Offset, x.Flags);
+			VFS.MapIn(_node, addr, x.FileSize, x.Offset);
 
-                base -= BIN_GRANULARITY;
-            }
-            Log("Allocated base %x", base);
-        }
+			for (v_addr j = addr + x.FileSize; j < x.MemorySize - x.FileSize; j += Paging.PAGE_SIZE)
+				VirtualMemory.KernelPaging.AllocFrame(j, AccessMode.DefaultKernel);
+		}
 
-        if (base < loadMin) {
-            Log("BinaryLoader: Executable '%s' cannot be loaded, not enought space", _node.Location);
-            return;
-        }
+		_mappedBinary = base;
+	}
 
-        /* Map in */
-        foreach(i, x; _sections) {
-            v_addr addr = x.VirtualAddress - _base + base;
-            Log("%d - %x, %x bytes form offset %x (%x)", i, addr, x.FileSize, x.Offset, x.Flags);
-            VFS.MapIn(_node, addr, x.FileSize, x.Offset);
+	/* return true if memory is free */
+	private bool CheckFreeMemory(v_addr start, size_t length) {
+		length += start & (Paging.PAGE_SIZE - 1);
+		length = (length + Paging.PAGE_SIZE - 1) & ~(Paging.PAGE_SIZE - 1);
+		start &= ~(Paging.PAGE_SIZE - 1);
 
-            for (v_addr j = addr + x.FileSize; j < x.MemorySize - x.FileSize; j += Paging.PAGE_SIZE)
-                VirtualMemory.KernelPaging.AllocFrame(j, AccessMode.DefaultKernel);
-        }
+		for (; length > Paging.PAGE_SIZE; length -= Paging.PAGE_SIZE, start += Paging.PAGE_SIZE) {
+			if (VirtualMemory.KernelPaging.GetPhysicalAddress(start))
+				return false;
+		}
 
-        _mappedBinary = base;
-    }
+		if (length == Paging.PAGE_SIZE && VirtualMemory.KernelPaging.GetPhysicalAddress(start))
+			return false;
 
-    /* return true if memory is free */
-    private bool CheckFreeMemory(v_addr start, size_t length) {
-        length += start & (Paging.PAGE_SIZE - 1);
-        length = (length + Paging.PAGE_SIZE - 1) & ~(Paging.PAGE_SIZE - 1);
-        start &= ~(Paging.PAGE_SIZE - 1);
-
-        for (; length > Paging.PAGE_SIZE; length -= Paging.PAGE_SIZE, start += Paging.PAGE_SIZE) {
-            if (VirtualMemory.KernelPaging.GetPhysicalAddress(start))
-                return false;
-        }
-
-        if (length == Paging.PAGE_SIZE && VirtualMemory.KernelPaging.GetPhysicalAddress(start))
-            return false;
-
-        return true;
-    }
+		return true;
+	}
 }
