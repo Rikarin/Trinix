@@ -1,4 +1,6 @@
 # Trinix #
+
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Bloodmanovski/Trinix?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Trinix is a hobby operating system written from scratch. OS is written in D language.
 Based on OOP standards cuz POSIX is shit. Only 64-bit CPU is, was and will be supported.
 Development began one beautiful day in January 3 years ago.
