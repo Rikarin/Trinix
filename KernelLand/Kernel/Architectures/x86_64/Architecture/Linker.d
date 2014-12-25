@@ -27,7 +27,7 @@ import ObjectManager;
 import MemoryManager;
 
 
-private extern(C) __gshared {
+private extern(C) extern __gshared {
 	ubyte iKernelBase;
 	ubyte iKernelEnd;
 	ubyte iKernelSymbols;

@@ -43,6 +43,7 @@ OBJ := $(A_OBJ)
 #TODO D
 OBJ	+= $(addsuffix .o,$(shell find * -name "*.[c|s]" -not -path "*Architectures*"))
 OBJ := $(filter-out $(BUILDINFO_OBJ), $(OBJ))
+OBJ := $(filter-out $(SYMBOLS_OBJ), $(OBJ))
 OBJ := $(addprefix $(OBJDIR), $(OBJ))
 OBJ += $(BUILDINFO_OBJ)
 
@@ -83,11 +84,11 @@ $(DOCDIR)%.html: %.d
 	@$(MKDIR) $(dir $@)
 	@$(DD) $(DFLAGS) -c -fdoc -fdoc-file=$@ $< -o /dev/null
 	
-$(BIN): $(OBJ) $(MODS) $(DRUNTIME) $(shell find * -name "*.d" -not -path "*Architectures*") Architectures/$(ARCHDIR)/Linker.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
+$(BIN): $(OBJ) $(MODS) $(DRUNTIME) $(shell find * -name "*.d" -not -path "*Architectures*") Architectures/$(ARCHDIR)/Linker.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk $(SYMBOLS_OBJ)
 	@echo --- LD -o $(BIN)
 #$(DD) $(LDFLAGS) -o $(BIN) -femit-templates -Wl,--defsym -Wl,__buildnum=$$(( $(BUILD_NUM) + 1 )) -Wl,-Map -Wl,../Linker.$(ARCH).map $(OBJ) $(MODS)  $(DRUNTIME)
 	
-	@$(DD) $(DFLAGS) $(LDFLAGS) -o $(BIN) $(shell find * -name "*.d" -not -path "*Architectures*") $(OBJ) $(MODS) $(DRUNTIME)
+	@$(DD) $(DFLAGS) $(LDFLAGS) -o $(BIN) $(shell find * -name "*.d" -not -path "*Architectures*") $(OBJ) $(MODS) $(DRUNTIME) $(SYMBOLS_OBJ)
 	@$(OBJDUMP) -d -S $(BIN) > $(BIN).dsm
 	@echo BUILD_NUM = $$(( $(BUILD_NUM) + 1 )) > Makefile.BuildNum.$(ARCH)
 #@$(STRIP) $(BIN)
@@ -130,7 +131,8 @@ $(BUILDINFO_OBJ): $(BUILDINFO_SRC)
 $(SYMBOLS_SRC):
 	@echo --- Generating symbols table
 	@$(DD) $(DFLAGS) $(LDFLAGS) -o $(BIN) $(filter-out $(SYMBOLS_SRC), $(shell find * -name "*.d" -not -path "*Architectures*")) $(OBJ) $(MODS) $(DRUNTIME)
-	nm $(BIN) -g | python2 ../../Tools/generate_symbols.py > $@
+	$(OBJCOPY) -R .tbss $(BIN)
+	@nm $(BIN) -g | python2 ../../Tools/generate_symbols.py > $@
 
 
 $(SYMBOLS_OBJ): $(SYMBOLS_SRC)

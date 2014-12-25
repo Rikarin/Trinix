@@ -60,9 +60,9 @@ SECTIONS {
     }
 	
 	.symbols ALIGN(0x1000) : AT(ADDR(.symbols) - _kernel_base) {
-			PROVIDE(iKernelSymbols = .);
-		PROVIDE(iKernelSymbolsEnd = .);
+		iKernelSymbols = .;
 		*(.symbols .symbols.*)
+		iKernelSymbolsEnd = .;
     }
 	
 	.tdata ALIGN(0x1000) : AT(ADDR(.tdata) - _kernel_base) {
