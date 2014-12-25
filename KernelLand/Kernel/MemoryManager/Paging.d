@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -196,24 +196,24 @@ align(1):
 final class Paging {
 	enum PAGE_SIZE = 0x1000;
 
-    private __gshared bool _initialized;
-	private PageLevel!4* _root;
+    private __gshared bool m_initialized;
+	private PageLevel!4* m_root;
 
 	this() {
-		_root = new PageLevel!4;
+		m_root = new PageLevel!4;
 	}
 	
 	this(Paging other) {
 		this();
 
 		foreach (i; 0 .. 512) {                         /* PML4 */
-			if (other._root.Tables[i]) {
+			if (other.m_root.Tables[i]) {
 				foreach (j; 0 .. 512) {                 /* PDPT */
-					if (other._root.Tables[i].Tables[j]) {
+					if (other.m_root.Tables[i].Tables[j]) {
 						foreach (k; 0 .. 512) {         /* PD */
-							if (other._root.Tables[i].Tables[j].Tables[k]) {
+							if (other.m_root.Tables[i].Tables[j].Tables[k]) {
 								foreach (m; 0 .. 512) { /* PT */
-									PTE page = other._root.Tables[i].Tables[j].Tables[k].Entries[m];
+									PTE page = other.m_root.Tables[i].Tables[j].Tables[k].Entries[m];
 									if (page.Present) {
 										ulong address = (cast(ulong)i << 39) | (j << 30) | (k << 21) | (m << 12);
 
@@ -232,25 +232,25 @@ final class Paging {
 	
 	~this() {
 		foreach (i; 0 .. 512) {                                             /* PML4 */
-			if (_root.Tables[i]) {
+			if (m_root.Tables[i]) {
 				foreach (j; 0 .. 512) {                                     /* PDPT */
-					if (_root.Tables[i].Tables[j]) {
+					if (m_root.Tables[i].Tables[j]) {
 						foreach (k; 0 .. 512) {                             /* PD */
-							if (_root.Tables[i].Tables[j].Tables[k])
-								delete _root.Tables[i].Tables[j].Tables[k]; /* PT */
+							if (m_root.Tables[i].Tables[j].Tables[k])
+								delete m_root.Tables[i].Tables[j].Tables[k]; /* PT */
 						}
-						delete _root.Tables[i].Tables[j];
+						delete m_root.Tables[i].Tables[j];
 					}
 				}
-				delete _root.Tables[i];
+				delete m_root.Tables[i];
 			}
 		}
-		delete _root;
+		delete m_root;
 	}
 
 	void Install() {
-        _initialized = true; /* We must hack GetPhysicalAddres... */
-		p_addr addr = GetPhysicalAddress(cast(v_addr)_root);
+        m_initialized = true; /* We must hack GetPhysicalAddres... */
+		p_addr addr = GetPhysicalAddress(cast(v_addr)m_root);
 
 		asm {
 			"mov CR3, %0" : : "r"(addr);
@@ -286,14 +286,14 @@ final class Paging {
 	}*/
 
 	ref PTE GetPage(v_addr address) {
-        return _root.GetOrCreateTable((address >> 39) & 511)
+        return m_root.GetOrCreateTable((address >> 39) & 511)
                 .GetOrCreateTable((address >> 30) & 511)
                 .GetOrCreateTable((address >> 21) & 511)
                 .Entries[(address >> 12) & 511];
 	}
 
 	p_addr GetPhysicalAddress(v_addr address) {
-        if (!_initialized)
+        if (!m_initialized)
             return address - cast(ulong)LinkerScript.KernelBase;
 		
 		ushort[4] start;
@@ -303,8 +303,8 @@ final class Paging {
         start[0] = (address >> 12) & 511; /* PTE */
 		
 		PageLevel!3* pdpt;
-		if (_root.Entries[start[3]].Present)
-			pdpt = _root.Tables[start[3]];
+		if (m_root.Entries[start[3]].Present)
+			pdpt = m_root.Tables[start[3]];
 		else
             return 0;
 		
@@ -324,7 +324,7 @@ final class Paging {
 	}
 
 	static void PageFaultHandler(ref InterruptStack stack) {
-		if (stack.RIP == Thread.ThreadReturn)
+		if (stack.RIP == Thread.THREAD_RETURN)
 			Task.CurrentThread.Exit(stack.RAX);
 
         debug {

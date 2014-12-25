@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -28,19 +28,19 @@ import TaskManager;
 
 
 class Queue(T) {
-    private LinkedList!Thread _waitingThreads;
-	private T[] _array;
-	private long _count;
+    private LinkedList!Thread m_waitingThreads;
+	private T[] m_array;
+	private long m_count;
 
 	@property long Count() {
-		return _count;
+		return m_count;
 	}
 
 	int opApply(int delegate(ref T) dg) {
 		int result;
 
-		foreach (i; 0 .. _count) {
-			result = dg(_array[i]);
+		foreach (i; 0 .. m_count) {
+			result = dg(m_array[i]);
 			if (result)
 				break;
 		}
@@ -49,45 +49,45 @@ class Queue(T) {
 	}
 
 	this() {
-        _waitingThreads = new LinkedList!Thread();
-		_array = new T[4];
+        m_waitingThreads = new LinkedList!Thread();
+		m_array = new T[4];
 	}
 
 	~this() {
-        foreach (x; _waitingThreads)
+        foreach (x; m_waitingThreads)
             x.Value.Wake();
 
-        delete _waitingThreads;
-		delete _array;
+        delete m_waitingThreads;
+		delete m_array;
 	}
 
 	void Enqueue(T item) {
-		if (Count == _array.length)
+		if (Count == m_array.length)
 			Resize();
 
-		_array[_count++] = item;
+		m_array[m_count++] = item;
 
-        foreach (x; _waitingThreads)
+        foreach (x; m_waitingThreads)
             x.Value.Wake();
 
-        _waitingThreads.Clear();
+        m_waitingThreads.Clear();
 	}
 
 	T Dequeue() {
-		while (!_count)
+		while (!m_count)
             Task.CurrentThread.Sleep();
 
-		T ret = _array[0];
-		_array[0 .. $ - 1] = _array[1 .. $];
-		_count--;
+		T ret = m_array[0];
+		m_array[0 .. $ - 1] = m_array[1 .. $];
+		m_count--;
 		return ret;
 	}
 
 	private void Resize() {
-		T[] newArray = new T[_array.length * 2];
-		newArray[0 .. _array.length] = _array[0 .. $];
+		T[] newArray = new T[m_array.length * 2];
+		newArray[0 .. m_array.length] = m_array[0 .. $];
 
-		delete _array;
-		_array = newArray;
+		delete m_array;
+		m_array = newArray;
 	}
 }

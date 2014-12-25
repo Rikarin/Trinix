@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -47,30 +47,30 @@ struct TaskState {
 
 
 abstract final class Task {
-	private __gshared ulong _nextPID = 1;
-	private __gshared ulong _nextTID = 1;
+	private __gshared ulong m_nextPID = 1;
+	private __gshared ulong m_nextTID = 1;
 
-	private __gshared SpinLock _spinLock;
-	private __gshared LinkedList!Process _procs;
-	private __gshared LinkedList!Thread[] _threads;
-	private __gshared Thread _currentThread;
-	private __gshared Thread _idle;
+	private __gshared SpinLock m_spinLock;
+	private __gshared LinkedList!Process m_procs;
+	private __gshared LinkedList!Thread[] m_threads;
+	private __gshared Thread m_currentThread;
+	private __gshared Thread m_idle;
 
 	@property package static SpinLock ThreadLock() {
-		return _spinLock;
+		return m_spinLock;
 	}
 
 	@property package static LinkedList!Thread[] Threads() {
-		return _threads;
+		return m_threads;
 	}
 
 	@property package static LinkedList!Process Processes() {
-		return _procs;
+		return m_procs;
 	}
 
 	@property package static size_t ThreadCount() {
 		size_t count;
-		foreach (x; _threads)
+		foreach (x; m_threads)
 			if (x !is null)
 				count += x.Count;
 
@@ -78,7 +78,7 @@ abstract final class Task {
 	}
 
 	@property static Thread CurrentThread() {
-		return _currentThread;
+		return m_currentThread;
 	}
 
 	@property static Process CurrentProcess() {
@@ -86,31 +86,31 @@ abstract final class Task {
 	}
 
 	@property package static ulong NextPID() {
-		return _nextPID++;
+		return m_nextPID++;
 	}
 
 	@property package static ulong NextTID() {
-		return _nextTID++;
+		return m_nextTID++;
 	}
 
 	@property package static ref Thread IdleTask() {
-		return _idle;
+		return m_idle;
 	}
 
 	static void Initialize() {
-		_spinLock = new SpinLock();
-		_procs    = new LinkedList!Process();
-		_threads  = new LinkedList!Thread[Thread.MinPriority + 1];
+		m_spinLock = new SpinLock();
+		m_procs    = new LinkedList!Process();
+		m_threads  = new LinkedList!Thread[Thread.MIN_PRIORITY + 1];
 
-		foreach (ref x; _threads)
+		foreach (ref x; m_threads)
 			x = new LinkedList!Thread();
 
 		Process proc = Process.Initialize();
-		_currentThread = proc.Threads.First.Value;
+		m_currentThread = proc.Threads.First.Value;
 	}
 
 	static void Scheduler() {
-		if (_spinLock.IsLocked)
+		if (m_spinLock.IsLocked)
 			return;
 	
 		if (CurrentThread.Remaining--)
@@ -144,9 +144,9 @@ abstract final class Task {
 		//Port.DisableSSE();
 
 		/// Change to next thread
-		_currentThread = next;
-		_currentThread.SetKernelStack();
-		_currentThread.ParentProcess._paging.Install();
+		m_currentThread = next;
+		m_currentThread.SetKernelStack();
+		m_currentThread.ParentProcess.m_paging.Install();
 
 		with (CurrentThread.SavedState)
 			SwitchTasks(RSP, RBP, RIP);
@@ -165,7 +165,7 @@ abstract final class Task {
 	}
 
 	private static Thread GetRunnable() {
-		foreach (x; _threads) {
+		foreach (x; m_threads) {
 			if (x.Count) {
 				foreach (y; x) {
 					if (y.Value.Status == ThreadStatus.Active) {
@@ -177,7 +177,7 @@ abstract final class Task {
 			}
 		}
 
-		return _idle;
+		return m_idle;
 	}
 
 	private static void SwitchTasks(void* rsp, void* rbp, void* rip) {		

@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -35,13 +35,13 @@ import SyscallManager;
  * 
  */
 abstract class FSNode : Resource {
-    package static const ResouceCallTable _rcs = {
+    package static const ResouceCallTable m_rcs = {
         "com.trinix.VFSManager.FSNode",
         &StaticCallback
     };
 
-	package DirectoryNode _parent;
-	protected FileAttributes _attributes;
+	package DirectoryNode m_parent;
+	protected FileAttributes m_attributes;
 
 	/**
 	 * Constructor must be always called from child class
@@ -56,7 +56,7 @@ abstract class FSNode : Resource {
 		];
 
 		if (parent !is null) {
-			_parent = parent;
+			m_parent = parent;
 			parent.Childrens.Add(this);
 		}
 
@@ -69,10 +69,10 @@ abstract class FSNode : Resource {
 	 * 
 	 */
 	~this() {
-		if (_parent !is null)
-			_parent.Childrens.Remove(this);
+		if (m_parent !is null)
+			m_parent.Childrens.Remove(this);
 
-		delete _attributes.Name;
+		delete m_attributes.Name;
 	}
 
 	/**
@@ -82,7 +82,7 @@ abstract class FSNode : Resource {
 	 * 		parent of this node
 	 */
 	@property DirectoryNode Parent() {
-		return _parent;
+		return m_parent;
 	}
 
 	/**
@@ -92,7 +92,7 @@ abstract class FSNode : Resource {
 	 * 		attributes of this node
 	 */
 	@property FileAttributes Attributes() {
-		return _attributes;
+		return m_attributes;
 	}
 
 	/**
@@ -102,7 +102,7 @@ abstract class FSNode : Resource {
 	 * 		value	=		attributes what we want to set
 	 */
 	@property void Attributes(FileAttributes value) {
-		_attributes = value;
+		m_attributes = value;
 	}
 
 	/**
@@ -140,14 +140,14 @@ abstract class FSNode : Resource {
 	 * 		true if this node was removed successfuly
 	 */
 	bool Remove() {
-		if (_parent is null || _parent.FileSystem is null)
+		if (m_parent is null || m_parent.FileSystem is null)
 			return false;
 
-		if (_attributes.Type == (FileType.Directory | FileType.Mountpoint) 
+		if (m_attributes.Type == (FileType.Directory | FileType.Mountpoint) 
 		    && (cast(DirectoryNode)this).Childrens.Count)
 			return false;
 			
-		return _parent.FileSystem.Remove(this);
+		return m_parent.FileSystem.Remove(this);
 	}
 
     /* TODO: Too much memory leaks in one function */

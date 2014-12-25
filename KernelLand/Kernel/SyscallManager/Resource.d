@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -31,14 +31,14 @@ import SyscallManager;
 
 
 abstract class Resource {
-	private Mutex _mutex;
-	private LinkedList!(CallTable *) _callTables;
-	private LinkedList!Process _processes;
+	private Mutex m_mutex;
+	private LinkedList!(CallTable *) m_callTables;
+	private LinkedList!Process m_processes;
 
-	private long _id;
-	private DeviceType _type;
-	private long _version;
-	private string _identifier;
+	private long m_id;
+	private DeviceType m_type;
+	private long m_version;
+	private string m_identifier;
 
 	protected struct CallTable {
 		long ID;
@@ -56,37 +56,37 @@ abstract class Resource {
 	}
 
 	@property long Handle() {
-		return _id;
+		return m_id;
 	}
 
 	@property ref DeviceType Type() {
-		return _type;
+		return m_type;
 	}
 
 	@property ref long Version() {
-		return _version;
+		return m_version;
 	}
 
 	@property ref string Identifier() {
-		return _identifier;
+		return m_identifier;
 	}
 
 	// Called from ResourceManager
 	package long Call(long id, long param1, long param2, long param3, long param4, long param5) {
 		switch (id) {
 			case 0:
-				return _type;
+				return m_type;
 
 			case 1:
-				(cast(char *)param1)[0 .. _identifier.length] = _identifier[0 .. $];
+				(cast(char *)param1)[0 .. m_identifier.length] = m_identifier[0 .. $];
 				return param1;
 
 			case 2:
-				return _version;
+				return m_version;
 
 			case 3:
 				long ret;
-				foreach_reverse (x; _callTables) {
+				foreach_reverse (x; m_callTables) {
 					if (ret == param2)
 						return ret;
 
@@ -95,7 +95,7 @@ abstract class Resource {
 				return ret;
 
 			case 4:
-				foreach_reverse (x; _callTables)
+				foreach_reverse (x; m_callTables)
 					if ((cast(char *)param1)[0 .. param2] == x.Value.Identifier)
 						return x.Value.ID;
 				return -1;
@@ -103,15 +103,15 @@ abstract class Resource {
 			default:
 		}
 
-		_mutex.WaitOne();
-		scope(exit) _mutex.Release();
+		m_mutex.WaitOne();
+		scope(exit) m_mutex.Release();
 			
-		if (!_processes.Contains(Task.CurrentProcess)) {
+		if (!m_processes.Contains(Task.CurrentProcess)) {
             Log("Process %d tried to use resource without attaching them first", Task.CurrentProcess.ID);
 			return -1;
 		}
 
-		foreach_reverse (x; _callTables) {
+		foreach_reverse (x; m_callTables) {
 			if (x.Value.ID == id) {
 				switch (x.Value.Params) {
 					case 0:
@@ -136,50 +136,50 @@ abstract class Resource {
 	}
 
 	protected this(DeviceType type, string identifier, long ver, const CallTable[] callTables) {
-		_callTables = new LinkedList!(CallTable *)();
-		_processes  = new LinkedList!Process();
-		_mutex      = new Mutex();
-		_type       = type;
-		_identifier = identifier;
-		_version    = ver;
-		_id         = ResourceManager.Register(this);
+		m_callTables = new LinkedList!(CallTable *)();
+		m_processes  = new LinkedList!Process();
+		m_mutex      = new Mutex();
+		m_type       = type;
+		m_identifier = identifier;
+		m_version    = ver;
+		m_id         = ResourceManager.Register(this);
 
 		AddCallTables(callTables);
 	}
 
 	protected this(const ModuleDef info, const CallTable[] callTables) {
-		_callTables = new LinkedList!(CallTable *)();
-		_processes  = new LinkedList!Process();
-		_mutex      = new Mutex();
-		_type       = info.Type;
-		_identifier = info.Identifier;
-		_version    = info.Version;
-		_id         = ResourceManager.Register(this);
+		m_callTables = new LinkedList!(CallTable *)();
+		m_processes  = new LinkedList!Process();
+		m_mutex      = new Mutex();
+		m_type       = info.Type;
+		m_identifier = info.Identifier;
+		m_version    = info.Version;
+		m_id         = ResourceManager.Register(this);
 		
 		AddCallTables(callTables);
 	}
 
 	protected ~this() {
-		delete _mutex;
-		delete _callTables;
+		delete m_mutex;
+		delete m_callTables;
 
 		ResourceManager.Unregister(this);
 	}
 
     /* returns true if process was attached. check for ACL TODO */
 	bool AttachProcess(Process process) {
-		if (_processes.Contains(process))
+		if (m_processes.Contains(process))
 			return false;
 
-		_processes.Add(process);
+		m_processes.Add(process);
         return true;
 	}
 
     /* returns true if we can delete this instance. implement protection against removing FSNodes etc.TODO */
 	bool DetachProcess(Process process) {
-		_processes.Remove(process);
+		m_processes.Remove(process);
 
-		if (!_processes.Count)
+		if (!m_processes.Count)
 			return true;
 
 		return false;
@@ -187,7 +187,7 @@ abstract class Resource {
 
 	protected void AddCallTables(const CallTable[] callTables) {
 		foreach (x; callTables)
-			if (!_callTables.Contains(cast(CallTable *)&x))
-				_callTables.Add(cast(CallTable *)&x);
+			if (!m_callTables.Contains(cast(CallTable *)&x))
+				m_callTables.Add(cast(CallTable *)&x);
 	}
 }

@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -57,7 +57,7 @@ final class TmpFS : IFileSystem {
 		if (length > data.length)
 			length = data.length;
 
-		data[] = node._data[offset .. offset + length];
+		data[] = node.m_data[offset .. offset + length];
 		return length;
 	}
 	
@@ -67,15 +67,15 @@ final class TmpFS : IFileSystem {
 		if (end > node.Attributes.Length) {
 			byte[] tmp = new byte[end];
 
-			if (node._data !is null) {
-				tmp[0 .. node._data.length] = node._data[];
-				delete node._data;
+			if (node.m_data !is null) {
+				tmp[0 .. node.m_data.length] = node.m_data[];
+				delete node.m_data;
 			}
 
-			node._data = tmp;
+			node.m_data = tmp;
 		}
 
-		node._data[offset .. end] = data[];
+		node.m_data[offset .. end] = data[];
 		return data.length;
 	}
 	
@@ -99,8 +99,8 @@ final class TmpFS : IFileSystem {
 	bool Remove(FSNode node) {
 		if (node.Attributes.Type == FileType.File) {
 			auto n = cast(TmpFileNode)node;
-			if (n._data !is null)
-				delete n._data;
+			if (n.m_data !is null)
+				delete n.m_data;
 		}
 
 		return true;
@@ -125,12 +125,12 @@ final class TmpFS : IFileSystem {
 
 
 final class TmpFileNode : FileNode {
-	private byte[] _data;
+	private byte[] m_data;
 	
 	
 	@property override FileAttributes Attributes() {
-		_attributes.Length = _data.length;
-		return _attributes;
+		m_attributes.Length = m_data.length;
+		return m_attributes;
 	}
 	
 	this(DirectoryNode parent, FileAttributes fileAttributes) {
@@ -138,20 +138,20 @@ final class TmpFileNode : FileNode {
 	}
 
 	~this() {
-		delete _data;
+		delete m_data;
 	}
 
 	override ulong Read(long offset, byte[] data) {
-		if (_parent is null || _parent.FileSystem is null)
+		if (m_parent is null || m_parent.FileSystem is null)
 			return 0;
 		
-		return (cast(TmpFS)_parent.FileSystem).Read(this, offset, data);
+		return (cast(TmpFS)m_parent.FileSystem).Read(this, offset, data);
 	}
 	
 	override ulong Write(long offset, byte[] data) {
-		if (_parent is null || _parent.FileSystem is null)
+		if (m_parent is null || m_parent.FileSystem is null)
 			return 0;
 		
-		return (cast(TmpFS)_parent.FileSystem).Write(this, offset, data);
+		return (cast(TmpFS)m_parent.FileSystem).Write(this, offset, data);
 	}
 }

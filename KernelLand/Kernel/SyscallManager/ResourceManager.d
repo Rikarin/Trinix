@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -52,8 +52,8 @@ struct ResouceCallTable {
  * 
  */
 abstract final class ResourceManager {
-	private __gshared LinkedList!ResouceCallTable _callTables;
-	private __gshared List!Resource _resources;
+	private __gshared LinkedList!ResouceCallTable m_callTables;
+	private __gshared List!Resource m_resources;
 
 	/**
 	 * Register a instance of Resource class to ResourceManager.
@@ -67,11 +67,11 @@ abstract final class ResourceManager {
 	 * 		unique id for every register Resource
 	 */
 	package static long Register(Resource resource) {
-		if (_resources.Contains(resource))
+		if (m_resources.Contains(resource))
 			return -1;
 
-		_resources.Add(resource);
-		return _resources.IndexOf(resource);
+		m_resources.Add(resource);
+		return m_resources.IndexOf(resource);
 	}
 
 	/**
@@ -84,12 +84,12 @@ abstract final class ResourceManager {
 	 * 		true when object was removed successfuly
 	 */
 	package static bool Unregister(Resource resource) {
-		long index = _resources.IndexOf(resource);
+		long index = m_resources.IndexOf(resource);
 
 		if (index == -1)
 			return false;
 
-		_resources[index] = null;
+		m_resources[index] = null;
 		return true;
 	}
 
@@ -100,13 +100,13 @@ abstract final class ResourceManager {
 	 * 		true when initialization was successful
 	 */
 	static void Initialize() {
-		_callTables = new LinkedList!ResouceCallTable();
-		_resources  = new List!Resource();
+		m_callTables = new LinkedList!ResouceCallTable();
+		m_resources  = new List!Resource();
 	}
 
     static void Finalize() {
-        delete _callTables;
-        delete _resources;
+        delete m_callTables;
+        delete m_resources;
     }
 
 	/**
@@ -130,31 +130,31 @@ abstract final class ResourceManager {
 				return -1;
 
 			return table.Callback(param1, param2, param3, param4, param5);
-		} else if (resource < _resources.Count && _resources[resource] !is null)
-			return _resources[resource].Call(id, param1, param2, param3, param4, param5);
+		} else if (resource < m_resources.Count && m_resources[resource] !is null)
+			return m_resources[resource].Call(id, param1, param2, param3, param4, param5);
 
         Log("Error: Bad call");
 		return -1;
 	}
 
 	static bool AddCallTable(const ResouceCallTable callTable) {
-		if (_callTables.Contains(callTable))
+		if (m_callTables.Contains(callTable))
 			return false;
 
-		_callTables.Add(callTable);
+		m_callTables.Add(callTable);
 		return true;
 	}
 
 	static bool RemoveCallTable(const ResouceCallTable callTable) {
-		if (!_callTables.Contains(callTable))
+		if (!m_callTables.Contains(callTable))
 			return false;
 
-		_callTables.Remove(callTable);
+		m_callTables.Remove(callTable);
 		return true;
 	}
 
 	static ResouceCallTable GetCallTable(string identifier) {
-		auto table = Array.Find(_callTables, (LinkedListNode!ResouceCallTable o) => o.Value.Identifier == identifier);
+		auto table = Array.Find(m_callTables, (LinkedListNode!ResouceCallTable o) => o.Value.Identifier == identifier);
 		return table !is null ? table.Value : cast(ResouceCallTable)null;
 	}
 }

@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -52,7 +52,7 @@ abstract final class Logger {
             m_display[i].Address = 0;
     }
 
-    static void write(string format, ...) {
+    static void Write(string format, ...) {
         char[1024] buffer;
         
         long len = ParseString(buffer, format, _arguments, _argptr);

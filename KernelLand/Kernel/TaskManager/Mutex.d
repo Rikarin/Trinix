@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -28,50 +28,50 @@ import TaskManager;
 
 
 class Mutex {
-	private SpinLock _spinLock;
-	private LinkedList!Thread _waiting;
-	private Thread _owner;
+	private SpinLock m_spinLock;
+	private LinkedList!Thread m_waiting;
+	private Thread m_owner;
 
 	this() {
-		_spinLock = new SpinLock();
-		_waiting = new LinkedList!Thread();
+		m_spinLock = new SpinLock();
+		m_waiting = new LinkedList!Thread();
 	}
 
 	~this() {
-		delete _spinLock;
-		delete _waiting;
+		delete m_spinLock;
+		delete m_waiting;
 	}
 
 	bool WaitOne() {
-		_spinLock.WaitOne();
+		m_spinLock.WaitOne();
 
-		if (_owner) {
-			_waiting.Add(Task.CurrentThread);
-			Task.CurrentThread.Sleep(ThreadStatus.MutexSleep, cast(void *)this, 0, _spinLock);
+		if (m_owner) {
+			m_waiting.Add(Task.CurrentThread);
+			Task.CurrentThread.Sleep(ThreadStatus.MutexSleep, cast(void *)this, 0, m_spinLock);
 		} else {
-			_owner = Task.CurrentThread;
-			_spinLock.Release();
+			m_owner = Task.CurrentThread;
+			m_spinLock.Release();
 		}
 
 		return true;
 	}
 
 	void Release() {
-		_spinLock.WaitOne();
+		m_spinLock.WaitOne();
 
-		if (_waiting.Count) {
-			_owner = _waiting.First.Value;
-			_waiting.RemoveFirst();
+		if (m_waiting.Count) {
+			m_owner = m_waiting.First.Value;
+			m_waiting.RemoveFirst();
 
-			if (_owner.Status != ThreadStatus.Active)
-				_owner.AddActive();
+			if (m_owner.Status != ThreadStatus.Active)
+				m_owner.AddActive();
 		} else
-			_owner = null;
+			m_owner = null;
 
-		_spinLock.Release();
+		m_spinLock.Release();
 	}
 
 	bool IsLocked() {
-		return _owner !is null;
+		return m_owner !is null;
 	}
 }

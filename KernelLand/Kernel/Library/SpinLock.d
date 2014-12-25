@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -27,7 +27,7 @@ import TaskManager;
 
 
 class SpinLock {
-	private long _locked;
+	private long m_locked;
 
 	private long AtomicExchange(long* value) {
 		long ret = 1;
@@ -40,23 +40,23 @@ class SpinLock {
 	}
 
 	this() {
-		_locked = false;
+		m_locked = false;
 	}
 
 	this(bool initiallyOwned) {
-		_locked = initiallyOwned;
+		m_locked = initiallyOwned;
 	}
 
 	bool WaitOne() {
-		while (AtomicExchange(&_locked)) {}
+		while (AtomicExchange(&m_locked)) {}
 		return true;
 	}
 
 	void Release() {
-		_locked = false;
+		m_locked = false;
 	}
 
 	@property bool IsLocked() {
-		return _locked != 0;
+		return m_locked != 0;
 	}
 }

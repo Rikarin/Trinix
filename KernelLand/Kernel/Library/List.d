@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -25,38 +25,38 @@ module Library.List;
 
 
 class List(T) {
-	private T[] _array;
-	private long _count;
+	private T[] m_array;
+	private long m_count;
 
 	@property long Capacity() {
-		return _array.length;
+		return m_array.length;
 	}
 
 	@property long Count() {
-		return _count;
+		return m_count;
 	}
 
 	void opIndexAssign(T value, long index) {
-		_array[index] = value;
+		m_array[index] = value;
 	}
 
 	T opIndex(long index) {
-		return _array[index];
+		return m_array[index];
 	}
 
 	T[] opSlice(long i, long j) {
-		return _array[i .. j];
+		return m_array[i .. j];
 	}
 
 	long opDollar() {
-		return _count;
+		return m_count;
 	}
 
 	int opApply(int delegate(ref T) dg) {
 		int result;
 		
-		foreach (i; 0 .. _count) {
-			result = dg(_array[i]);
+		foreach (i; 0 .. m_count) {
+			result = dg(m_array[i]);
 			if (result)
 				break;
 		}
@@ -67,8 +67,8 @@ class List(T) {
 	int opApplyReverse(int delegate(ref T) dg) {
 		int result;
 		
-		for (long i = _count; i >= 0; i--) {
-			result = dg(_array[i]);
+		for (long i = m_count; i >= 0; i--) {
+			result = dg(m_array[i]);
 			if (result)
 				break;
 		}
@@ -77,40 +77,40 @@ class List(T) {
 	}
 
 	this(long capacity = 4) {
-		_array = new T[capacity];
+		m_array = new T[capacity];
 	}
 
 	~this() {
-		delete _array;
+		delete m_array;
 	}
 
 	void Add(T item) {
 		if (Count == Capacity)
 			Resize();
 		
-		_array[_count++] = item;
+		m_array[m_count++] = item;
 	}
 
 	void AddRange(List!T other) in {
 		if (other is null)
 			assert(false);
 	} body {
-		long tmp = other._array.length + Capacity;
+		long tmp = other.m_array.length + Capacity;
 		while (Capacity < tmp)
 			Resize();
 
-		_array[_count .. (_count + other._count)] = other._array[0 .. $];
-		_count += other._count;
+		m_array[m_count .. (m_count + other.m_count)] = other.m_array[0 .. $];
+		m_count += other.m_count;
 	}
 	
 	void Clear() {
-		_array[] = null;
-		_count = 0;
+		m_array[] = null;
+		m_count = 0;
 	}
 	
 	bool Contains(T item) {
-		for (long i = 0; i < _count; i++)
-			if (_array[i] == item)
+		for (long i = 0; i < m_count; i++)
+			if (m_array[i] == item)
 				return true;
 
 		return false;
@@ -126,29 +126,29 @@ class List(T) {
 	}
 	
 	void RemoveAt(long index) in {
-		if (index < 0 || index > _count)
+		if (index < 0 || index > m_count)
 			assert(false);
 	} body {		
-		_array[index .. $] = _array[index + 1 .. $];
-		_count--;
+		m_array[index .. $] = m_array[index + 1 .. $];
+		m_count--;
 	}
 	
 	void RemoveRange(long index, long count) in {
 		if (count < 0 || index < 0)
 			assert(false);
 
-		if (_count < count - index || _count < index)
+		if (m_count < count - index || m_count < index)
 			assert(false);
 	} body {
-		_array[index .. $] = _array[index + count .. $];
-		_count -= count;
+		m_array[index .. $] = m_array[index + count .. $];
+		m_count -= count;
 	}
 	
 	void Reverse() {
-		for (long i = 0; i < _count; i++) {
-			T tmp = _array[i];
-			_array[i] = _array[_count - i];
-			_array[_count - i] = tmp;
+		for (long i = 0; i < m_count; i++) {
+			T tmp = m_array[i];
+			m_array[i] = m_array[m_count - i];
+			m_array[m_count - i] = tmp;
 		}
 	}
 	
@@ -156,19 +156,19 @@ class List(T) {
 		if (index < 0 || count < 0)
 			assert(false);
 		
-		if (_count < count - index || _count < index)
+		if (m_count < count - index || m_count < index)
 			assert(false);
 	} body {
-		for (long i = index; i < index + _count; i++) {
-			T tmp = _array[i];
-			_array[i] = _array[index + count - i];
-			_array[index + count - i] = tmp;
+		for (long i = index; i < index + m_count; i++) {
+			T tmp = m_array[i];
+			m_array[i] = m_array[index + count - i];
+			m_array[index + count - i] = tmp;
 		}
 	}
 	
 	long IndexOf(T item) {
-		foreach (i; 0 .. _count)
-			if (_array[i] == item)
+		foreach (i; 0 .. m_count)
+			if (m_array[i] == item)
 				return i;
 		
 		return -1;
@@ -176,9 +176,9 @@ class List(T) {
 
 	private void Resize() {
 		T[] newArray = new T[Capacity * 2];
-		newArray[0 .. _array.length] = _array[0 .. $];
+		newArray[0 .. m_array.length] = m_array[0 .. $];
 		
-		delete _array;
-		_array = newArray;
+		delete m_array;
+		m_array = newArray;
 	}
 }

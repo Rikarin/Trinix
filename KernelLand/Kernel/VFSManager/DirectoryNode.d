@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -28,96 +28,96 @@ import VFSManager;
 
 
 class DirectoryNode : FSNode {
-	package IFileSystem _fileSystem;
-	private LinkedList!FSNode _childrens;
-	private DirectoryNode _mounted;
-	private bool _isLoaded;
+	package IFileSystem m_fileSystem;
+	private LinkedList!FSNode m_childrens;
+	private DirectoryNode m_mounted;
+	private bool m_isLoaded;
 
 	@property ref bool IsLoaded() {
-		if (_mounted)
-			return _mounted.IsLoaded;
+		if (m_mounted)
+			return m_mounted.IsLoaded;
 
-		return _isLoaded;
+		return m_isLoaded;
 	}
 
 	@property ref IFileSystem FileSystem() {
-		if (_mounted)
-			return _mounted.FileSystem;
+		if (m_mounted)
+			return m_mounted.FileSystem;
 
-		return _fileSystem;
+		return m_fileSystem;
 	}
 
 	@property override FileAttributes Attributes() {
-		if (_attributes.Name == "/" && _parent)
-			return _parent.Attributes;
+		if (m_attributes.Name == "/" && m_parent)
+			return m_parent.Attributes;
 
-		return _attributes;
+		return m_attributes;
 	}
 
 	@property override void Attributes(FileAttributes value) {
-		if (_attributes.Name == "/" && _parent)
-			return _parent.Attributes = value;
+		if (m_attributes.Name == "/" && m_parent)
+			return m_parent.Attributes = value;
 		else
-			_attributes = value;
+			m_attributes = value;
 	}
 
 	@property override DirectoryNode Parent() {
-		if (_attributes.Name == "/" && _parent)
-			return _parent.Parent;
+		if (m_attributes.Name == "/" && m_parent)
+			return m_parent.Parent;
 		
-		return _parent;
+		return m_parent;
 	}
 
 	@property LinkedList!FSNode Childrens() {
-		if (_mounted)
-			return _mounted.Childrens;
+		if (m_mounted)
+			return m_mounted.Childrens;
 
 		LoadContent();
-		return _childrens;
+		return m_childrens;
 	}
 
 	@property bool IsMountpointable() {
 		if (!LoadContent())
 			return false;
 
-		return !_childrens.Count;
+		return !m_childrens.Count;
 	}
 
 	this(DirectoryNode parent, FileAttributes fileAttributes) {
-		_childrens  = new LinkedList!FSNode();
-		_attributes = fileAttributes;
-		_attributes.Type = FileType.Directory;
+		m_childrens  = new LinkedList!FSNode();
+		m_attributes = fileAttributes;
+		m_attributes.Type = FileType.Directory;
 
 		if (parent)
-			_fileSystem = parent._fileSystem;
+			m_fileSystem = parent.m_fileSystem;
 
 		super(parent);
 		Identifier = "com.trinix.VFSManager.DirectoryNode";
 	}
 
 	~this() {
-		if (_attributes.Name == "/" && _parent)
-			(cast(DirectoryNode)_parent).Unmount();
+		if (m_attributes.Name == "/" && m_parent)
+			(cast(DirectoryNode)m_parent).Unmount();
 
-		foreach (x; _childrens)
+		foreach (x; m_childrens)
 			delete x;
 
-		delete _childrens;
+		delete m_childrens;
 	}
 
 	void Unmount() {
-		_attributes.Type = FileType.Directory;
-		_mounted._parent = null;
+		m_attributes.Type = FileType.Directory;
+		m_mounted.m_parent = null;
 
-		delete _mounted;
-		_mounted = null;
+		delete m_mounted;
+		m_mounted = null;
 	}
 
 	bool Mount(DirectoryNode childRoot) {
-		if (IsMountpointable && childRoot._parent is null) {
-			_mounted = childRoot;
-			_attributes.Type = FileType.Mountpoint;
-			childRoot._parent = this;
+		if (IsMountpointable && childRoot.m_parent is null) {
+			m_mounted = childRoot;
+			m_attributes.Type = FileType.Mountpoint;
+			childRoot.m_parent = this;
 
 			return true;
 		}
@@ -126,13 +126,13 @@ class DirectoryNode : FSNode {
 	}
 
 	FSNode opIndex(string name) {
-		if (_mounted)
-			return _mounted[name];
+		if (m_mounted)
+			return m_mounted[name];
 
 		if (!LoadContent())
 			return null;
 
-		foreach (x; _childrens)
+		foreach (x; m_childrens)
 			if (x.Value.Attributes.Name == name)
 				return x.Value;
 
@@ -140,23 +140,23 @@ class DirectoryNode : FSNode {
 	}
 
 	FSNode Create(FileAttributes attributes) {
-		if (_mounted)
-			return _mounted.Create(attributes);
+		if (m_mounted)
+			return m_mounted.Create(attributes);
 
-		if (_fileSystem is null)
+		if (m_fileSystem is null)
 			return null;
 			
-		return _fileSystem.Create(this, attributes);
+		return m_fileSystem.Create(this, attributes);
 	}
 
 	private bool LoadContent() {
-		if (_mounted)
-			return _mounted.LoadContent();
+		if (m_mounted)
+			return m_mounted.LoadContent();
 
-		if (IsLoaded || _fileSystem is null)
+		if (IsLoaded || m_fileSystem is null)
 			return true;
 
-		_isLoaded = _fileSystem.LoadContent(this);
-		return _isLoaded;
+		m_isLoaded = m_fileSystem.LoadContent(this);
+		return m_isLoaded;
 	}
 }

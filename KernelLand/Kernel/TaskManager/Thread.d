@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -29,6 +29,7 @@ import TaskManager;
 import Architecture;
 import ObjectManager;
 import SyscallManager;
+import MemoryManager;
 
 
 enum ThreadStatus {
@@ -62,201 +63,201 @@ struct IPCMessage {
 }
 
 final class Thread {
-	enum StackSize       = 0x4000;
-	enum UserStackSize   = 0x1000; //0
-	enum MinPriority     = 10;
-	enum DefaultPriority = 5;
-	enum DefaultQuantum  = 5;
-	private enum ThreadReturn   = 0xDEADC0DE;
+	enum STACK_SIZE       = 0x4000;
+	enum USER_STACK_SIZE   = 0x1000; //* 10
+	enum MIN_PRIORITY     = 10;
+	enum DEFAULT_PRIORITY = 5;
+	enum DEFAULT_QUANTUM  = 5;
+	private enum THREAD_RETURN   = 0xDEADC0DE; //TODO: deprecated
 
-	private ulong _id;
-	private string _name;
+	private ulong m_id;
+	private string m_name;
 
-	private ThreadStatus _status;
-	private SpinLock _spinLock;
+	private ThreadStatus m_status;
+	private SpinLock m_spinLock;
 
-	private Process _process;
-	private Thread _parent; /* Parent thread in same process */
+	private Process m_process;
+	private Thread m_parent; /* Parent thread in same process */
 
-	private LinkedList!Thread _lastDeadChild;
-	private Mutex _deadChildLock;
+	private LinkedList!Thread m_lastDeadChild;
+	private Mutex m_deadChildLock;
 
-	private ulong[] _kernelStack;
-	private ulong[2] _syscallStack;
-	private ulong[] _userStack;
-	private TaskState _savedState;
+	private ulong[] m_kernelStack;
+	private ulong[2] m_syscallStack;
+	private ulong[] m_userStack;
+	private TaskState m_savedState;
 
-	private long _curFaultNum;
-	private void* _faultHandler;
+	private long m_curFaultNum;
+	private void* m_faultHandler;
 
-	private SignalType _pendingSignal;
-	private LinkedList!(IPCMessage *) _messages;
+	private SignalType m_pendingSignal;
+	private LinkedList!(IPCMessage *) m_messages;
 
-	private int _quantum;
-	private int _remaining;
+	private int m_quantum;
+	private int m_remaining;
 	//package int _curCPU;
 
-	private ulong _eventState;
-	private void* _waitPointer;
-	private ulong _retStatus;
+	private ulong m_eventState;
+	private void* m_waitPointer;
+	private ulong m_retStatus;
 
-	private int _priority;
+	private int m_priority;
 
 	//private int _errno; //WAT?
 
 	/* Create new thread for process */
 	package this(Process process) {
-		_id            = Task.NextTID;
+		m_id            = Task.NextTID;
 		//_curCPU        = -1;
-		_status        = ThreadStatus.PreInit;
-		_process       = process;
-		_name          = "Unnamed Thread";
-		_remaining     = DefaultQuantum;
-		_quantum       = DefaultQuantum;
-		_priority      = DefaultPriority;
+		m_status        = ThreadStatus.PreInit;
+		m_process       = process;
+		m_name          = "Unnamed Thread";
+		m_remaining     = DEFAULT_QUANTUM;
+		m_quantum       = DEFAULT_QUANTUM;
+		m_priority      = DEFAULT_PRIORITY;
 
-		_spinLock      = new SpinLock();
-		_lastDeadChild = new LinkedList!Thread();
-		_deadChildLock = new Mutex();
-		_messages      = new LinkedList!(IPCMessage *)();
-		_kernelStack   = new ulong[StackSize];
-		_userStack     = new ulong[UserStackSize];//TODO: ParentProcess.AllocUserStack();
+		m_spinLock      = new SpinLock();
+		m_lastDeadChild = new LinkedList!Thread();
+		m_deadChildLock = new Mutex();
+		m_messages      = new LinkedList!(IPCMessage *)();
+		m_kernelStack   = new ulong[STACK_SIZE];
+		m_userStack     = new ulong[USER_STACK_SIZE];//TODO: ParentProcess.AllocUserStack();
 
-		_syscallStack[1] = cast(ulong)_kernelStack.ptr + StackSize / 2;
+		m_syscallStack[1] = cast(ulong)m_kernelStack.ptr + STACK_SIZE / 2;
 
-		_savedState.SSEInt.Header = cast(ulong)new byte[0x20F].ptr;
-		_savedState.SSEInt.Data   = (_savedState.SSEInt.Header + 0x0F) & ~0x0F;
+		m_savedState.SSEInt.Header = cast(ulong)new byte[0x20F].ptr;
+		m_savedState.SSEInt.Data   = (m_savedState.SSEInt.Header + 0x0F) & ~0x0F;
 
-		_savedState.SSESyscall.Header = cast(ulong)new byte[0x20F].ptr;
-		_savedState.SSESyscall.Data   = (_savedState.SSESyscall.Header + 0x0F) & ~0x0F;
+		m_savedState.SSESyscall.Header = cast(ulong)new byte[0x20F].ptr;
+		m_savedState.SSESyscall.Data   = (m_savedState.SSESyscall.Header + 0x0F) & ~0x0F;
 
-		_process.Threads.Add(this);
+		m_process.Threads.Add(this);
 	}
 
 	/* Clone thread from other under same process */
 	this(Thread other) {
-		this(other._process, other);
+		this(other.m_process, other);
 	}
 
 	/* Clone thread from other to the new process */
 	package this(Process process, Thread other) {
 		this(process);
-		_name         = other._name.dup;
-		_remaining    = other._quantum;
-		_quantum      = other._quantum;
-		_priority     = other._priority;
-		_faultHandler = other._faultHandler;
+		m_name         = other.m_name.dup;
+		m_remaining    = other.m_quantum;
+		m_quantum      = other.m_quantum;
+		m_priority     = other.m_priority;
+		m_faultHandler = other.m_faultHandler;
 
-		if (process == other._process)
-			_parent = other;
+		if (process == other.m_process)
+			m_parent = other;
 
-		Log("Clonned thread %d", _id);
+		Log("Clonned thread %d", m_id);
 	}
 
 	~this() {
 		RemoveActive();
-		_status = ThreadStatus.Buried;
-		_process.Threads.Remove(this);
+		m_status = ThreadStatus.Buried;
+		m_process.Threads.Remove(this);
 
-		if (!_process.Threads.Count)
-			delete _process;
+		if (!m_process.Threads.Count)
+			delete m_process;
 
-		delete _name;
-		delete _spinLock;
-		delete _deadChildLock;
-		delete _messages;
-		delete _kernelStack;
+		delete m_name;
+		delete m_spinLock;
+		delete m_deadChildLock;
+		delete m_messages;
+		delete m_kernelStack;
 
-		ulong* sse = cast(ulong *)_savedState.SSEInt.Header;
+		ulong* sse = cast(ulong *)m_savedState.SSEInt.Header;
 		delete sse;
 
-		sse = cast(ulong *)_savedState.SSESyscall.Header;
+		sse = cast(ulong *)m_savedState.SSESyscall.Header;
 		delete sse;
 	}
 
 	package void SetKernelStack() {
-		CPU.TSSTable.RSP0 = _kernelStack.ptr + StackSize;
+		CPU.TSSTable.RSP0 = cast(v_addr)m_kernelStack.ptr + STACK_SIZE;
 
 		Port.SwapGS();
-		Port.WriteMSR(SyscallHandler.Registers.IA32_GS_BASE, cast(ulong)_syscallStack.ptr);
+		Port.WriteMSR(SyscallHandler.Registers.IA32_GS_BASE, cast(ulong)m_syscallStack.ptr);
 		Port.SwapGS();
 	}
 
 	@property ulong ID() {
-		return _id;
+		return m_id;
 	}
 
 	@property void Name(string value) {
-		delete _name;
-		_name = value;
+		delete m_name;
+		m_name = value;
 	}
 
 	@property string Name() {
-		return _name;
+		return m_name;
 	}
 
 	@property Process ParentProcess() {
-		return _process;
+		return m_process;
 	}
 
 	@property void* WaitPointer() {
-		return _waitPointer;
+		return m_waitPointer;
 	}
 
 	@property ref void* FaultHandler() {
-		return _faultHandler;
+		return m_faultHandler;
 	}
 
 	@property ref ThreadStatus Status() {
-		return _status;
+		return m_status;
 	}
 
 	@property ref ulong RetStatus() {
-		return _retStatus;
+		return m_retStatus;
 	}
 
 	@property ref TaskState SavedState() {
-		return _savedState;
+		return m_savedState;
 	}
 
 	@property int Priority() {
-		return _priority;
+		return m_priority;
 	}
 
 	@property ref int Quantum() {
-		return _quantum;
+		return m_quantum;
 	}
 
 	@property ref int Remaining() {
-		return _remaining;
+		return m_remaining;
 	}
 
 	@property long CurrentFaultNum() {
-		return _curFaultNum;
+		return m_curFaultNum;
 	}
 
 	@property void Priority(int priority) {
-		if (priority < 0 || priority > MinPriority)
-			priority = MinPriority;
+		if (priority < 0 || priority > MIN_PRIORITY)
+			priority = MIN_PRIORITY;
 
-		if (priority == _priority)
+		if (priority == m_priority)
 			return;
 
 		if (this != Task.CurrentThread) {
 			Task.ThreadLock.WaitOne();
-			Task.Threads[_priority].Remove(this);
+			Task.Threads[m_priority].Remove(this);
 			Task.Threads[priority].Add(this);
-			_priority = priority;
+			m_priority = priority;
 			Task.ThreadLock.Release();
 		} else
-			_priority = priority;
+			m_priority = priority;
 	}
 
 	void Start(void function() entryPoint, string[] args) { //TODO: args...
-		_savedState.RSP = cast(void *)_kernelStack.ptr + StackSize;
-		_savedState.RIP = cast(void *)&NewThread;
+		m_savedState.RSP = cast(void *)m_kernelStack.ptr + STACK_SIZE;
+		m_savedState.RIP = cast(void *)&NewThread;
 
-		_kernelStack[0] = cast(ulong)entryPoint;
+		m_kernelStack[0] = cast(ulong)entryPoint;
 	}
 
 	private static void NewThread() {
@@ -268,18 +269,18 @@ final class Thread {
 			DeviceManager.EOI(0);
 
 			if (Task.CurrentThread.ParentProcess.IsKernel)
-				Run(0x202, _kernelStack[0], 0x08, 0x10);
+				Run(0x202, m_kernelStack[0], 0x08, 0x10);
 			else
-				Run(0x202, _kernelStack[0], 0x1B, 0x23);
+				Run(0x202, m_kernelStack[0], 0x1B, 0x23);
 		}
 	}
 
 	private void Run(ulong flags, ulong ip, ushort cs, ushort ss) {
-		ulong* st = cast(ulong *)(cast(ulong)_userStack.ptr + UserStackSize);
-		*st = ThreadReturn;
+		ulong* st = cast(ulong *)(cast(ulong)m_userStack.ptr + USER_STACK_SIZE);
+		*st = THREAD_RETURN;
 
 		*--st = ss;
-		*--st = cast(ulong)_userStack.ptr + UserStackSize;
+		*--st = cast(ulong)m_userStack.ptr + USER_STACK_SIZE;
 		*--st = flags;
 		*--st = cs;
 		*--st = ip;
@@ -352,16 +353,16 @@ final class Thread {
 	void Kill(ulong status) {
 		bool isCurrentThread = this == Task.CurrentThread;
 
-		_spinLock.WaitOne();
-		scope(exit) _spinLock.Release();
+		m_spinLock.WaitOne();
+		scope(exit) m_spinLock.Release();
 
-		foreach (x; _messages) {
+		foreach (x; m_messages) {
 			auto a = x.Value;
 			delete a;
 		}
 
 		Task.ThreadLock.WaitOne();
-		switch (_status) {
+		switch (m_status) {
 			case ThreadStatus.PreInit:
 				break;
 
@@ -370,10 +371,10 @@ final class Thread {
 
 			case ThreadStatus.Active:
 				if (!isCurrentThread)
-					Task.Threads[_priority].Remove(this);
+					Task.Threads[m_priority].Remove(this);
 
-				_remaining = 0;
-				_quantum = 0;
+				m_remaining = 0;
+				m_quantum = 0;
 				break;
 
 			case ThreadStatus.Zombie:
@@ -384,13 +385,13 @@ final class Thread {
 				Log("Threads: Kill - unsupported thread status");
 		}
 
-		_retStatus = status;
-		_status = ThreadStatus.Zombie;
+		m_retStatus = status;
+		m_status = ThreadStatus.Zombie;
 		Task.ThreadLock.Release();
 
-		_parent._deadChildLock.WaitOne();
-		_parent._lastDeadChild.Add(this);
-		_parent.PostEvent(ThreadEvent.DeadChild);
+		m_parent.m_deadChildLock.WaitOne();
+		m_parent.m_lastDeadChild.Add(this);
+		m_parent.PostEvent(ThreadEvent.DeadChild);
 
 		if (isCurrentThread)
 			while (true)
@@ -405,35 +406,35 @@ final class Thread {
 		assert(status != ThreadStatus.Active);
 		assert(status != ThreadStatus.Dead);
 
-		while (_status == status)
+		while (m_status == status)
 			Yield();
 	}
 
 	ulong Sleep(ThreadStatus status, void* ptr, ulong num, SpinLock lock) {
 		RemoveActive();
-		_status = status;
-		_waitPointer = ptr;
-		_retStatus = num;
+		m_status = status;
+		m_waitPointer = ptr;
+		m_retStatus = num;
 
 		if (lock)
 			lock.Release();
 
 		WaitForStatusEnd(status);
-		_waitPointer = null;
-		return _retStatus;
+		m_waitPointer = null;
+		return m_retStatus;
 	}
 
 	void Sleep() {
-		if (_messages.Count)
+		if (m_messages.Count)
 			return;
 
 		RemoveActive();
-		_status = ThreadStatus.Sleeping;
+		m_status = ThreadStatus.Sleeping;
 		WaitForStatusEnd(ThreadStatus.Sleeping);
 	}
 
 	bool Wake() {
-		switch (_status) {
+		switch (m_status) {
 			case ThreadStatus.Active:
 				return false;
 
@@ -442,14 +443,14 @@ final class Thread {
 				return true;
 
 			case ThreadStatus.SemaphoreSleep:
-				Semaphore semaphore = cast(Semaphore)_waitPointer;
+				Semaphore semaphore = cast(Semaphore)m_waitPointer;
 				semaphore.LockInternal();
 				scope(exit) semaphore.UnlockInternal();
 
 				if (!semaphore.Waiting.Remove(this) && !semaphore.Signaling.Remove(this))
 					return false;
 					
-				_retStatus = 0;
+				m_retStatus = 0;
 				AddActive();
 				return true;
 
@@ -466,23 +467,23 @@ final class Thread {
 
 	void RemoveActive() {
 		Task.ThreadLock.WaitOne();
-		Task.Threads[_priority].Remove(this);
+		Task.Threads[m_priority].Remove(this);
 		Task.ThreadLock.Release();
 	}
 
 	void AddActive() {
-		if (_status == ThreadStatus.Active || !_savedState.RIP)
+		if (m_status == ThreadStatus.Active || !m_savedState.RIP)
 			return;
-		_status = ThreadStatus.Active;
+		m_status = ThreadStatus.Active;
 
 		Task.ThreadLock.WaitOne();
 		if (Task.CurrentThread != this)
-			Task.Threads[_priority].Add(this);
+			Task.Threads[m_priority].Add(this);
 		Task.ThreadLock.Release();
 	}
 
 	void Fault(long number) {
-		if (_faultHandler is null) {    /* Panic */
+		if (m_faultHandler is null) {    /* Panic */
 			Kill(-1);
 
 			Port.Sti();
@@ -490,7 +491,7 @@ final class Thread {
 			return;
 		}
 
-		if (_curFaultNum) {             /* Double fault */
+		if (m_curFaultNum) {             /* Double fault */
 			Log("Threads: Fault: Double fault...");
 			Kill(-1);
 
@@ -499,7 +500,7 @@ final class Thread {
 			return;
 		}
 
-		_curFaultNum = number;
+		m_curFaultNum = number;
 		Task.CallFaultHandler(this);
 	}
 
@@ -513,7 +514,7 @@ final class Thread {
 
 	/* Signals */
 	void PostSignal(SignalType signal) {
-		_pendingSignal = signal;
+		m_pendingSignal = signal;
 		PostEvent(ThreadEvent.signal);
 	}
 	//TODO
@@ -523,14 +524,14 @@ final class Thread {
 
 	/* Events */
 	void PostEvent(ulong eventMask) {
-		_spinLock.WaitOne();
-		scope(exit) _spinLock.Release();
+		m_spinLock.WaitOne();
+		scope(exit) m_spinLock.Release();
 
-		_eventState |= eventMask;
+		m_eventState |= eventMask;
 
-		switch (_status) {
+		switch (m_status) {
 			case ThreadStatus.EventSleep:
-				if (_retStatus & eventMask)
+				if (m_retStatus & eventMask)
 					AddActive();
 				break;
 
@@ -544,57 +545,57 @@ final class Thread {
 	}
 
 	void ClearEvent(ulong eventMask) {
-		_eventState &= ~eventMask;
+		m_eventState &= ~eventMask;
 	}
 
 	ulong WaitEvents(ulong eventMask) {
 		if (!eventMask)
 			return 0;
 
-		_spinLock.WaitOne();
-		scope(exit) _spinLock.Release();
+		m_spinLock.WaitOne();
+		scope(exit) m_spinLock.Release();
 
-		if ((_eventState & eventMask) == 0) {
-			Sleep(ThreadStatus.EventSleep, null, eventMask, _spinLock);
-			_spinLock.WaitOne();
+		if ((m_eventState & eventMask) == 0) {
+			Sleep(ThreadStatus.EventSleep, null, eventMask, m_spinLock);
+			m_spinLock.WaitOne();
 		}
 
-		ulong ret = _eventState & eventMask;
-		_eventState &= ~eventMask;
+		ulong ret = m_eventState & eventMask;
+		m_eventState &= ~eventMask;
 
 		return ret;
 	}
 
 	/* Messages */
 	bool SendMessage(byte[] data) {
-		_spinLock.WaitOne();
-		scope(exit) _spinLock.Release();
+		m_spinLock.WaitOne();
+		scope(exit) m_spinLock.Release();
 
-		if (_status == ThreadStatus.Dead)
+		if (m_status == ThreadStatus.Dead)
 			return false;
 
 		IPCMessage* msg = new IPCMessage();
 		msg.Source = Task.CurrentThread;
 		msg.Data[] = data;
-		_messages.Add(msg);
+		m_messages.Add(msg);
 
 		PostEvent(ThreadEvent.IPCMesage);
 		return true;
 	}
 
 	bool GetMessage(ref Thread source, ref byte[] data) {
-		if (!_messages.Count)
+		if (!m_messages.Count)
 			return false;
 
-		_spinLock.WaitOne();
-		scope(exit) _spinLock.Release();
+		m_spinLock.WaitOne();
+		scope(exit) m_spinLock.Release();
 
-		source = _messages.First.Value.Source;
-		data = _messages.First.Value.Data;
-		_messages.RemoveFirst();
+		source = m_messages.First.Value.Source;
+		data = m_messages.First.Value.Data;
+		m_messages.RemoveFirst();
 
-		if (_messages.Count)
-			_eventState |= ThreadEvent.IPCMesage;
+		if (m_messages.Count)
+			m_eventState |= ThreadEvent.IPCMesage;
 
 		return true;
 	}

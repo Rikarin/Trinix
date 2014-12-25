@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -35,42 +35,42 @@ import SyscallManager;
 
 
 final class Process {
-	private v_addr _userStack = 0xFFFFFFFF_80000000;
+	private v_addr m_userStack = 0xFFFFFFFF_80000000;
 
-	private ulong _id;
-	private ulong _uid;
-	private ulong _gid;
-	private bool _isKernel;
+	private ulong m_id;
+	private ulong m_uid;
+	private ulong m_gid;
+	private bool m_isKernel;
 
-	private Process _parent;
-	package Paging _paging;
-	private LinkedList!Thread _threads;
-	private DirectoryNode _cwd;
+	private Process m_parent;
+	package Paging m_paging;
+	private LinkedList!Thread m_threads;
+	private DirectoryNode m_cwd;
 
-	private List!Resource _resources;
+	private List!Resource m_resources;
 
 	@property package LinkedList!Thread Threads() {
-		return _threads;
+		return m_threads;
 	}
 
 	@property ulong ID() {
-		return _id;
+		return m_id;
 	}
 
 	@property ulong UID() {
-		return _uid;
+		return m_uid;
 	}
 
 	@property ulong GID() {
-		return _gid;
+		return m_gid;
 	}
 
 	@property Paging PageTable() {
-		return _paging;
+		return m_paging;
 	}
 
 	@property bool IsKernel() {
-		return _isKernel;
+		return m_isKernel;
 	}
 
 
@@ -79,9 +79,9 @@ final class Process {
 			return null;
 
 		Process process   = new Process();
-		process._paging   = VirtualMemory.KernelPaging;
-		process._cwd      = VFS.Root;
-		process._isKernel = true;
+		process.m_paging   = VirtualMemory.KernelPaging;
+		process.m_cwd      = VFS.Root;
+		process.m_isKernel = true;
 
         /* Kernel thread */
 		Thread t          = new Thread(process);
@@ -93,7 +93,7 @@ final class Process {
 		Task.IdleTask     = new Thread(t);
 		with (Task.IdleTask) {
 			Name          = "Idle Task";
-			Priority      = MinPriority;
+			Priority      = MIN_PRIORITY;
 			Quantum       = 1;
 			Start(&Task.Idle, null);
 		}
@@ -102,9 +102,9 @@ final class Process {
 	}
 
 	private this() {
-		_id          = Task.NextPID;
-		_threads     = new LinkedList!Thread();
-		_resources   = new List!Resource();
+		m_id          = Task.NextPID;
+		m_threads     = new LinkedList!Thread();
+		m_resources   = new List!Resource();
 
 		Task.Processes.Add(this);
 	}
@@ -112,41 +112,41 @@ final class Process {
 	/* Clone other._process to this process and ot to this process */
 	this(Thread other) {
 		this();
-		_uid      = other.ParentProcess._uid;
-		_gid      = other.ParentProcess._gid;
-		_isKernel = other.ParentProcess._isKernel;
-		_parent   = other.ParentProcess;
-		_paging   = new Paging(other.ParentProcess._paging);
-		_cwd      = other.ParentProcess._cwd;
+		m_uid      = other.ParentProcess.m_uid;
+		m_gid      = other.ParentProcess.m_gid;
+		m_isKernel = other.ParentProcess.m_isKernel;
+		m_parent   = other.ParentProcess;
+		m_paging   = new Paging(other.ParentProcess.m_paging);
+		m_cwd      = other.ParentProcess.m_cwd;
 
-		foreach (x; other.ParentProcess._resources) {
+		foreach (x; other.ParentProcess.m_resources) {
 			if (x.AttachProcess(this))
-                _resources.Add(x);
+                m_resources.Add(x);
 		}
 
 		new Thread(this, other);
 	}
 
 	~this() {
-		foreach (x; _resources) {
+		foreach (x; m_resources) {
 			if (x.DetachProcess(this))
 				delete x;
 		}
 
-		foreach (x; _threads)
+		foreach (x; m_threads)
 			delete x;
 
-		delete _paging;
-		delete _threads;
-		delete _resources;
+		delete m_paging;
+		delete m_threads;
+		delete m_resources;
 	}
 
-	package ulong[] AllocUserStack(ulong size = Thread.UserStackSize) {
+	package ulong[] AllocUserStack(ulong size = Thread.USER_STACK_SIZE) {
 		for (ulong i = 0; i < size; i += Paging.PAGE_SIZE) {
-            _userStack -= Paging.PAGE_SIZE;
-			_paging.AllocFrame(_userStack, AccessMode.DefaultUser); //TODO: Nejako nefunguje :/
+            m_userStack -= Paging.PAGE_SIZE;
+			m_paging.AllocFrame(m_userStack, AccessMode.DefaultUser); //TODO: Nejako nefunguje :/
 		}
 
-		return (cast(ulong *)_userStack)[0 .. size];
+		return (cast(ulong *)m_userStack)[0 .. size];
 	}
 }

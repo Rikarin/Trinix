@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -31,8 +31,8 @@ abstract class BlockNode : FSNode {
 	@property long BlockSize();
 
 	this(DirectoryNode parent, FileAttributes attributes) {
-		_attributes = attributes;
-		_attributes.Type = FileType.BlockDevice;
+		m_attributes = attributes;
+		m_attributes.Type = FileType.BlockDevice;
 
 		super(parent);
 	}

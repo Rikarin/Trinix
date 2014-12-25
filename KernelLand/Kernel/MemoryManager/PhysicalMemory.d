@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -54,19 +54,19 @@ abstract final class PhysicalMemory {
     enum MODULE_MAX   = 0xFFFFFFFF_E0000000;
 
     enum MAX_REGIONS = 32;
-    private __gshared RegionInfo[MAX_REGIONS] _regions;
-    private __gshared int _regionIterator;
+    private __gshared RegionInfo[MAX_REGIONS] m_regions;
+    private __gshared int m_regionIterator;
 
-	private __gshared ulong _startMemory;
-	private __gshared BitArray _frames;
+	private __gshared ulong m_startMemory;
+	private __gshared BitArray m_frames;
 
 	/* Used in Multiboot info for shifting addr to the end of the modules */
 	@property static ref ulong MemoryStart() {
-		return _startMemory;
+		return m_startMemory;
 	}
 
 	static void Initialize() {
-		_frames = new BitArray(0x40_000, false); //Hack: treba zvetsit paging tabulky v Boot.s lebo sa kernel potom nevie premapovat pre nedostatok pamete :/
+		m_frames = new BitArray(0x40_000, false); //Hack: treba zvetsit paging tabulky v Boot.s lebo sa kernel potom nevie premapovat pre nedostatok pamete :/
 
 		VirtualMemory.KernelPaging = new Paging();
 		for (v_addr i = 0xFFFFFFFF_80000000; i < 0xFFFFFFFF_8A000000; i += Paging.PAGE_SIZE)
@@ -83,8 +83,8 @@ abstract final class PhysicalMemory {
 		if (page.Present)
 			return;
 		
-		long index = _frames.FirstFreeBit();
-		_frames[index] = true;
+		long index = m_frames.FirstFreeBit();
+		m_frames[index] = true;
 		page.Address = index;
 		page.Mode = mode;
 	}
@@ -94,7 +94,7 @@ abstract final class PhysicalMemory {
 		if (!page.Present)
 			return;
 		
-		_frames[page.Address] = false;
+		m_frames[page.Address] = false;
 		page.Present = false;
 	}
 
@@ -102,14 +102,14 @@ abstract final class PhysicalMemory {
         if (num < 1)
             num = 1;
 			
-		v_addr ret = cast(v_addr)LinkerScript.KernelEnd + _startMemory;
-        _startMemory += 0x1000 * num;
+		v_addr ret = cast(v_addr)LinkerScript.KernelEnd + m_startMemory;
+        m_startMemory += 0x1000 * num;
 
 		return ret;
 	}
 
     static void AddRegion(RegionInfo info) {
-        if (_regionIterator < MAX_REGIONS)
-            _regions[_regionIterator] = info;
+        if (m_regionIterator < MAX_REGIONS)
+            m_regions[m_regionIterator] = info;
     }
 }

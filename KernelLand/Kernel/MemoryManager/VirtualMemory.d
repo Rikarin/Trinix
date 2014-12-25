@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -32,10 +32,10 @@ alias p_addr = ulong;
 
 
 abstract final class VirtualMemory {
-    private __gshared v_addr _regions = 0xFFFFFFFF_E0000000;
+    private __gshared v_addr m_regions = 0xFFFFFFFF_E0000000;
 
-	private __gshared v_addr function(size_t size) _malloc = &TmpAlloc;
-	private __gshared void function(v_addr ptr) _free;
+	private __gshared v_addr function(size_t size) m_malloc = &TmpAlloc;
+	private __gshared void function(v_addr ptr) m_free;
 
 	__gshared Paging KernelPaging;
 	__gshared Heap KernelHeap;
@@ -43,21 +43,21 @@ abstract final class VirtualMemory {
 	static void Initialize() {
 		KernelHeap = new Heap(cast(v_addr)PhysicalMemory.AllocPage(1), Heap.MIN_SIZE, Heap.CalculateIndexSize(Heap.MIN_SIZE));
 
-        _malloc = function(size_t size) {
+        m_malloc = function(size_t size) {
             return KernelHeap.Alloc(size);
         };
         
-        _free = function(v_addr ptr) {
+        m_free = function(v_addr ptr) {
             KernelHeap.Free(ptr);
         };
 	}
 
     static v_addr AllocAlignedBlock(size_t num) {
-        if (_malloc == &TmpAlloc)
+        if (m_malloc == &TmpAlloc)
             return PhysicalMemory.AllocPage(num);
         else {
-            v_addr ret = _regions;
-            _regions += num * Paging.PAGE_SIZE;
+            v_addr ret = m_regions;
+            m_regions += num * Paging.PAGE_SIZE;
             return ret;
         }
     }
@@ -68,7 +68,7 @@ abstract final class VirtualMemory {
 }
 
 extern(C) void* malloc(size_t size, int ba) {
-	v_addr ret = VirtualMemory._malloc(size);
+	v_addr ret = VirtualMemory.m_malloc(size);
 	//Log.WriteJSON("MemoryAlloc", "{", "size", size, "ba", ba, "address", cast(ulong)ret, "}");
 	return cast(void *)ret;
 }
@@ -76,5 +76,5 @@ extern(C) void* malloc(size_t size, int ba) {
 extern(C) void free(void* ptr) {
 	//Log.WriteJSON("MemoryFree", cast(ulong)ptr);
 
-	VirtualMemory._free(cast(v_addr)ptr);
+	VirtualMemory.m_free(cast(v_addr)ptr);
 }

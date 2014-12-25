@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,7 +18,7 @@
  * governing permissions and limitations under the License.
  * 
  * Contributors:
- * Matsumoto Satoshi <satoshi@gshost.eu>
+ *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 module Linker.BinaryLoader;
 
@@ -31,8 +31,8 @@ import MemoryManager;
 
 struct BinaryLoaderType {
 	uint Magic;
-	uint Mask;
-	BinaryLoader function(FSNode node) Load;
+    uint Mask;
+    BinaryLoader function(FSNode node) Load;
 }
 
 struct BinarySection {
@@ -56,17 +56,17 @@ class BinaryLoader {
 		Executable = 2
 	}
 
-	private __gshared LinkedList!BinaryLoader _binaries;
-	private __gshared LinkedList!BinaryLoaderType _loaders;
+	private __gshared LinkedList!BinaryLoader m_binaries;
+	private __gshared LinkedList!BinaryLoaderType m_loaders;
 
-	private FSNode _node;
-	private long _referenceCount;
-	protected v_addr _mappedBinary;
+	private FSNode m_node;
+	private long m_referenceCount;
+	protected v_addr m_mappedBinary;
 
-	protected v_addr _base;
-	protected v_addr _entry;
-	protected string _interpreter;
-	protected BinarySection[] _sections;
+	protected v_addr m_base;
+	protected v_addr m_entry;
+	protected string m_interpreter;
+	protected BinarySection[] m_sections;
 
 	
 	/*   @property ref long ReferenceCount() {
@@ -74,11 +74,11 @@ class BinaryLoader {
 	 }*/
 	
 	protected this() {
-		_binaries.Add(this);
+		m_binaries.Add(this);
 	}
 
 	~this() {
-		_binaries.Remove(this);
+		m_binaries.Remove(this);
 	}
 
 	v_addr Relocate() {
@@ -87,17 +87,17 @@ class BinaryLoader {
 	}
 
 	static void Initialize() {
-		_binaries = new LinkedList!BinaryLoader();
-		_loaders  = new LinkedList!BinaryLoaderType();
+		m_binaries = new LinkedList!BinaryLoader();
+		m_loaders  = new LinkedList!BinaryLoaderType();
 
 		//TODO: move to elf initialization
 		BinaryLoaderType elf = { 0x464C457F, 0xFFFFFFFF, &ElfLoader.Load };
-		_loaders.Add(elf);
+		m_loaders.Add(elf);
 	}
 
 	static void Finalize() {
-		delete _binaries;
-		delete _loaders;
+		delete m_binaries;
+		delete m_loaders;
 	}
 
 	static BinaryLoader LoadKernel(FSNode node) {
@@ -110,15 +110,15 @@ class BinaryLoader {
 		if (bin is null)
 			return null;
 		
-		bin._referenceCount++; /* This will be never unloaded */
+		bin.m_referenceCount++; /* This will be never unloaded */
 		bin.MapIn(KLIB_LOWEST, KLIB_HIGHEST);
 
-		_binaries.Add(bin);
+		m_binaries.Add(bin);
 		return bin;
 	}
 
 	private static BinaryLoader FindLoadedBinary(FSNode node) {
-		auto bin = Array.Find(_binaries, (LinkedListNode!BinaryLoader o) => o.Value._node is node);
+		auto bin = Array.Find(m_binaries, (LinkedListNode!BinaryLoader o) => o.Value.m_node is node);
 
 		if (bin is null)
 			return null;
@@ -131,7 +131,7 @@ class BinaryLoader {
 		uint magic;
 		node.Read(0, magic.ToArray());
 
-		foreach (x; _loaders) {
+		foreach (x; m_loaders) {
 			if (x.Value.Magic == (magic & x.Value.Mask)) {
 				ret = x.Value.Load(node);
 				break;
@@ -142,21 +142,21 @@ class BinaryLoader {
 			Log("BinaryLoader: '%s' is an unknown file type", node.Location);
 		
 		debug {
-			Log("Interpreter: %s", ret._interpreter);
-			Log("Base: %x, Entry: %x", ret._base, ret._entry);
-			Log("NumSections: %d", ret._sections.length);
+			Log("Interpreter: %s", ret.m_interpreter);
+			Log("Base: %x, Entry: %x", ret.m_base, ret.m_entry);
+			Log("NumSections: %d", ret.m_sections.length);
 		}
 
-		ret._node = node;
+		ret.m_node = node;
 		return ret;
 	}
 
 	private void MapIn(ulong loadMin, ulong loadMax) {
-		_referenceCount++;
-		ulong base = _base;
+		m_referenceCount++;
+		ulong base = m_base;
 
 		if (base) {
-			foreach (x; _sections) {
+			foreach (x; m_sections) {
 				if (!CheckFreeMemory(x.VirtualAddress, x.MemorySize)) {
 					base = 0;
 					Log("BinaryLoader: Address %x is taken", x.VirtualAddress);
@@ -169,9 +169,9 @@ class BinaryLoader {
 			base = loadMax;
 			while (base >= loadMin) {
 				int i;
-				for (i = 0; i < _sections.length; i++) {
-					v_addr addr = _sections[i].VirtualAddress - _base + base;
-					size_t size = _sections[i].MemorySize;
+				for (i = 0; i < m_sections.length; i++) {
+					v_addr addr = m_sections[i].VirtualAddress - m_base + base;
+					size_t size = m_sections[i].MemorySize;
 
 					if (addr + size > loadMax)
 						break;
@@ -180,7 +180,7 @@ class BinaryLoader {
 						break;
 				}
 
-				if (i == _sections.length)
+				if (i == m_sections.length)
 					break;
 
 				base -= BIN_GRANULARITY;
@@ -189,21 +189,21 @@ class BinaryLoader {
 		}
 
 		if (base < loadMin) {
-			Log("BinaryLoader: Executable '%s' cannot be loaded, not enought space", _node.Location);
+			Log("BinaryLoader: Executable '%s' cannot be loaded, not enought space", m_node.Location);
 			return;
 		}
 
 		/* Map in */
-		foreach(i, x; _sections) {
-			v_addr addr = x.VirtualAddress - _base + base;
+		foreach(i, x; m_sections) {
+			v_addr addr = x.VirtualAddress - m_base + base;
 			Log("%d - %x, %x bytes form offset %x (%x)", i, addr, x.FileSize, x.Offset, x.Flags);
-			VFS.MapIn(_node, addr, x.FileSize, x.Offset);
+			VFS.MapIn(m_node, addr, x.FileSize, x.Offset);
 
 			for (v_addr j = addr + x.FileSize; j < x.MemorySize - x.FileSize; j += Paging.PAGE_SIZE)
 				VirtualMemory.KernelPaging.AllocFrame(j, AccessMode.DefaultKernel);
 		}
 
-		_mappedBinary = base;
+		m_mappedBinary = base;
 	}
 
 	/* return true if memory is free */

@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -51,12 +51,12 @@ abstract final class TSS {
 	private __gshared TaskStateSegment*[256] m_segments;
 
 	@property static TaskStateSegment* Table() {
-		return m_segments[CPU.identifier];
+		return m_segments[CPU.Identifier];
 	}
 
 	static void Initialize() {
-		m_segments[CPU.identifier] = new TaskStateSegment();
-        GDT.Table.SetSystemSegment((TSS_BASE >> 3), TaskStateSegment.sizeof, cast(v_addr)m_segments[CPU.identifier], SystemSegmentType.AvailableTSS, 0, true, false, false);
+		m_segments[CPU.Identifier] = new TaskStateSegment();
+        GDT.Table.SetSystemSegment((TSS_BASE >> 3), TaskStateSegment.sizeof, cast(v_addr)m_segments[CPU.Identifier], SystemSegmentType.AvailableTSS, 0, true, false, false);
         
         asm {
             "ltr AX" : : "a"(TSS_BASE);

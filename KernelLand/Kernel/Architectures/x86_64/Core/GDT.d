@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -36,12 +36,12 @@ abstract final class GDT {
 	private __gshared GlobalDescriptorTable*[256] m_tables;
 
 	@property static GlobalDescriptorTable* Table() {
-		return m_tables[CPU.identifier];
+		return m_tables[CPU.Identifier];
 	}
 
 	static void Initialize() {
-		m_tables[CPU.identifier] = new GlobalDescriptorTable();
-		InitTable(CPU.identifier);
+		m_tables[CPU.Identifier] = new GlobalDescriptorTable();
+		InitTable(CPU.Identifier);
 
         asm {
             "lgdt [RAX]" : : "a"(&m_tables[CPU.Identifier].Base);

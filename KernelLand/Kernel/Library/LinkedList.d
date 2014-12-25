@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -25,20 +25,20 @@ module Library.LinkedList;
 
 
 class LinkedList(T) {
-	private LinkedListNode!T _head;
-	private long _count;
-	private long _version;
+	private LinkedListNode!T m_head;
+	private long m_count;
+	private long m_version;
 
 	@property long Count() {
-		return _count;
+		return m_count;
 	}
 
 	@property LinkedListNode!T First() {
-		return _head;
+		return m_head;
 	}
 
 	@property LinkedListNode!T Last() {
-		return _head is null ? null : _head._prev;
+		return m_head is null ? null : m_head._prev;
 	}
 
 	this() {
@@ -72,8 +72,8 @@ class LinkedList(T) {
 		LinkedListNode!T result = new LinkedListNode!T(node._list, value);
 		InternalInsertNodeBefore(node, result);
 
-		if (node is _head)
-			_head = result;
+		if (node is m_head)
+			m_head = result;
 
 		return result;
 	}
@@ -84,18 +84,18 @@ class LinkedList(T) {
 		InternalInsertNodeBefore(node, newNode);
 		newNode._list = this;
 
-		if (node is _head)
-			_head = newNode;
+		if (node is m_head)
+			m_head = newNode;
 	}
 
 	LinkedListNode!T AddFirst(T value) {
 		LinkedListNode!T result = new LinkedListNode!T(this, value);
 
-		if (_head is null)
+		if (m_head is null)
 			InternalInsertNodeToEmptyList(result);
 		else {
-			InternalInsertNodeBefore(_head, result);
-			_head = result;
+			InternalInsertNodeBefore(m_head, result);
+			m_head = result;
 		}
 
 		return result;
@@ -104,11 +104,11 @@ class LinkedList(T) {
 	void AddFirst(LinkedListNode!T node) {
 		ValidateNewNode(node);
 		
-		if (_head is null)
+		if (m_head is null)
 			InternalInsertNodeToEmptyList(node);
 		else {
-			InternalInsertNodeBefore(_head, node);
-			_head = node;
+			InternalInsertNodeBefore(m_head, node);
+			m_head = node;
 		}
 
 		node._list = this;
@@ -117,10 +117,10 @@ class LinkedList(T) {
 	LinkedListNode!T AddLast(T value) {
 		LinkedListNode!T result = new LinkedListNode!T(this, value);
 		
-		if (_head is null)
+		if (m_head is null)
 			InternalInsertNodeToEmptyList(result);
 		else
-			InternalInsertNodeBefore(_head, result);
+			InternalInsertNodeBefore(m_head, result);
 		
 		return result;
 	}
@@ -128,16 +128,16 @@ class LinkedList(T) {
 	void AddLast(LinkedListNode!T node) {
 		ValidateNewNode(node);
 		
-		if (_head is null)
+		if (m_head is null)
 			InternalInsertNodeToEmptyList(node);
 		else
-			InternalInsertNodeBefore(_head, node);
+			InternalInsertNodeBefore(m_head, node);
 		
 		node._list = this;
 	}
 
 	void Clear() {
-		auto current = _head;
+		auto current = m_head;
 
 		while (current !is null) {
 			auto tmp = current;
@@ -146,9 +146,9 @@ class LinkedList(T) {
 			delete tmp;
 		}
 
-		_head = null;
-		_count = 0;
-		_version++;
+		m_head = null;
+		m_count = 0;
+		m_version++;
 	}
 
 	bool Contains(T value) {
@@ -156,24 +156,24 @@ class LinkedList(T) {
 	}
 
 	LinkedListNode!T Find(T value) {
-		LinkedListNode!T node = _head;
+		LinkedListNode!T node = m_head;
 
 		if (node) {
 			do {
 				if (value is node._item)
 					return node;
 				node = node._next;
-			} while (node !is _head);
+			} while (node !is m_head);
 		}
 
 		return null;
 	}
 
 	LinkedListNode!T FindLast(T value) {
-		if (_head is null)
+		if (m_head is null)
 			return null;
 
-		LinkedListNode!T last = _head._prev;
+		LinkedListNode!T last = m_head._prev;
 		LinkedListNode!T node = last;
 		
 		if (node) {
@@ -204,23 +204,23 @@ class LinkedList(T) {
 	}
 
 	void RemoveFirst() in {
-		if (_head is null)
+		if (m_head is null)
 			assert(0);
 	} body {
-		InternalRemoveNode(_head);
+		InternalRemoveNode(m_head);
 	}
 
 	void RemoveLast() in {
-		if (_head is null)
+		if (m_head is null)
 			assert(0);
 	} body {
-		InternalRemoveNode(_head._prev);
+		InternalRemoveNode(m_head._prev);
 	}
 
 	int opApply(int delegate(ref LinkedListNode!T) dg) {
 		int result;
 
-		for (auto x = _head; x !is null; x = x.Next) {
+		for (auto x = m_head; x !is null; x = x.Next) {
 			result = dg(x);
 			if (result)
 				break;
@@ -232,7 +232,7 @@ class LinkedList(T) {
 	int opApplyReverse(int delegate(ref LinkedListNode!T) dg) {
 		int result;
 		
-		for (auto x = _head; x !is null; x = x.Prev) {
+		for (auto x = m_head; x !is null; x = x.Prev) {
 			result = dg(x);
 			if (result)
 				break;
@@ -246,38 +246,38 @@ class LinkedList(T) {
 		newNode._prev    = node._prev;
 		node._prev._next = newNode;
 		node._prev       = newNode;            
-		_version++;
-		_count++;
+		m_version++;
+		m_count++;
 	}
 
 	private void InternalInsertNodeToEmptyList(LinkedListNode!T newNode) in {
-		assert(_head is null && !_count, "LinkedList must be empty when this method is called!");
+		assert(m_head is null && !m_count, "LinkedList must be empty when this method is called!");
 	} body {
 		newNode._next = newNode;
 		newNode._prev = newNode;
-		_head = newNode;
-		_version++;
-		_count++; 
+		m_head = newNode;
+		m_version++;
+		m_count++; 
 	}
 
 	private void InternalRemoveNode(LinkedListNode!T node) in {
 		assert(node._list is this, "Deleting the node from another list!");   
-		assert(_head !is null, "This method shouldn't be called on empty list!");
+		assert(m_head !is null, "This method shouldn't be called on empty list!");
 	} body {
 		if (node._next == node) {
-			_head = null;
+			m_head = null;
 		} else {
 			node._next._prev = node._prev;
 			node._prev._next = node._next;
 			
-			if (_head is node)
-				_head = node._next;
+			if (m_head is node)
+				m_head = node._next;
 		}
 
 		node.Invalidate();
 		delete node;
-		_count--;
-		_version++;
+		m_count--;
+		m_version++;
 	}
 
 	private void ValidateNewNode(LinkedListNode!T node) {
@@ -312,11 +312,11 @@ final class LinkedListNode(T) {
 	}
 
 	@property LinkedListNode!T Next() {
-		return _next is null || _next is _list._head ? null : _next;
+		return _next is null || _next is _list.m_head ? null : _next;
 	}
 
 	@property LinkedListNode!T Prev() {
-		return _prev is null || _prev is _list._head ? null : _prev;
+		return _prev is null || _prev is _list.m_head ? null : _prev;
 	}
 
 	@property ref T Value() { 

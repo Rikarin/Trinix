@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -72,21 +72,21 @@ align(1):
 }
 
 abstract final class ModuleManager {
-    private __gshared char _number = '0'; /* TODO implement more than 10 modules... */
-	private __gshared LinkedList!ModuleDef _loadedModules;
-	private __gshared LinkedList!ModuleDef _loadingModules;
-	private __gshared LinkedList!ModuleDef _builtinModules;
+    private __gshared char m_number = '0'; /* TODO implement more than 10 modules... */
+	private __gshared LinkedList!ModuleDef m_loadedModules;
+	private __gshared LinkedList!ModuleDef m_loadingModules;
+	private __gshared LinkedList!ModuleDef m_builtinModules;
 
 	static void Initialize() {
-		_loadedModules  = new LinkedList!ModuleDef();
-		_loadingModules = new LinkedList!ModuleDef();
-		_builtinModules = new LinkedList!ModuleDef();
+		m_loadedModules  = new LinkedList!ModuleDef();
+		m_loadingModules = new LinkedList!ModuleDef();
+		m_builtinModules = new LinkedList!ModuleDef();
 	}
 
 	static void Finalize() {
-		delete _loadedModules;
-		delete _loadingModules;
-		delete _builtinModules;
+		delete m_loadedModules;
+		delete m_loadingModules;
+		delete m_builtinModules;
 	}
 
 	static void LoadBuiltins() {
@@ -105,13 +105,13 @@ abstract final class ModuleManager {
 						Log(" - Name: %s", x.Name);
 				}
 
-				_builtinModules.Add(*mod);
+				m_builtinModules.Add(*mod);
 				i += ModuleDef.sizeof;
 			} else
 				i++;
 		}
 
-		foreach (x; _builtinModules)
+		foreach (x; m_builtinModules)
 			InitModule(x.Value, []);
 	}
 
@@ -131,18 +131,18 @@ abstract final class ModuleManager {
 			return ModuleResult.Misc;
 		}
 
-		if (_loadedModules.Contains(mod))
+		if (m_loadedModules.Contains(mod))
 			return ModuleResult.Successful;
 
-		_loadingModules.Add(mod);
+		m_loadingModules.Add(mod);
 		foreach (x; mod.Dependencies) {
-			if (Array.Find(_loadedModules, (LinkedListNode!ModuleDef o) => o.Value.Identifier == x.Name))
+			if (Array.Find(m_loadedModules, (LinkedListNode!ModuleDef o) => o.Value.Identifier == x.Name))
 				continue;
 
-			if (Array.Find(_loadingModules, (LinkedListNode!ModuleDef o) => o.Value.Identifier == x.Name))
+			if (Array.Find(m_loadingModules, (LinkedListNode!ModuleDef o) => o.Value.Identifier == x.Name))
 				continue;
 
-			auto dep = Array.Find(_builtinModules, (LinkedListNode!ModuleDef o) => o.Value.Identifier == x.Name);
+			auto dep = Array.Find(m_builtinModules, (LinkedListNode!ModuleDef o) => o.Value.Identifier == x.Name);
 			if (!dep) {
 				Log("Error: Dependency mot found");
 				return ModuleResult.Error;
@@ -152,7 +152,7 @@ abstract final class ModuleManager {
 		}
 
 		ModuleResult ret = mod.Initialize(args);
-		_loadingModules.Remove(mod);
+		m_loadingModules.Remove(mod);
 
 		if (ret != ModuleResult.Successful) {
 			switch (ret) {
@@ -168,14 +168,14 @@ abstract final class ModuleManager {
 			return ret;
 		}
 
-		_loadedModules.Add(mod);
+		m_loadedModules.Add(mod);
 		return ModuleResult.Successful;
 	}
 
     static bool LoadMemory(byte[] buffer, string args) {
         MemoryNode node = new MemoryNode(buffer, VFS.Find!DirectoryNode("BootModules", DeviceManager.DevFS),
-                                         FSNode.NewAttributes("mem" ~ _number));
-        _number++;
+                                         FSNode.NewAttributes("mem" ~ m_number));
+        m_number++;
 
         return LoadFile(node, args);
     }

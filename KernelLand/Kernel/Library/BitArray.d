@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -25,8 +25,8 @@ module Library.BitArray;
 
 
 final class BitArray {
-	private ulong[] _bits;
-	private long _minimal;
+	private ulong[] m_bits;
+	private long m_minimal;
 	
 	private long IndexFromBit(long bit) { return bit / 64; }
 	private long OffsetFromBit(long bit) { return bit % 64; }
@@ -36,7 +36,7 @@ final class BitArray {
 	private long OffsetFromInt(long i) { return i % 2; }
 
 	@property long Count() {
-		return _bits.length * 64;
+		return m_bits.length * 64;
 	}
 	
 	void opIndexAssign(bool value, long index) {
@@ -50,43 +50,43 @@ final class BitArray {
 	this(BitArray bits) in {
 		assert(bits);
 	} body {
-		_bits = new ulong[bits._bits.length];
-		foreach (long i, x; bits._bits)
-			_bits[i] = x;
+		m_bits = new ulong[bits.m_bits.length];
+		foreach (long i, x; bits.m_bits)
+			m_bits[i] = x;
 	}
 	
 	this(bool[] bits) in {
 		assert (bits);
 	} body {
-		_bits = new ulong[IndexFromBit(bits.length) + 1];
+		m_bits = new ulong[IndexFromBit(bits.length) + 1];
 		
 		foreach (i; 0 .. bits.length)
-			_bits[IndexFromBit(i)] = bits[i];
+			m_bits[IndexFromBit(i)] = bits[i];
 	}
 
 	this(long count) in {
 		assert(count);
 	} body {		
-		_bits = new ulong[IndexFromBit(count) + 1];
+		m_bits = new ulong[IndexFromBit(count) + 1];
 	}
 	
 	this(long count, bool value) in {
 		assert(count);
 	} body {
-		_bits = new ulong[IndexFromBit(count) + 1];
+		m_bits = new ulong[IndexFromBit(count) + 1];
 		SetAll(value);
 	}
 		
 	~this() {
-		delete _bits;
+		delete m_bits;
 	}
 	
 	
 	BitArray Not() {
-		foreach (i; 0 .. _bits.length)
-			_bits[i] = ~_bits[i];
+		foreach (i; 0 .. m_bits.length)
+			m_bits[i] = ~m_bits[i];
 
-		_minimal = 0;
+		m_minimal = 0;
 		return this;
 	}
 	
@@ -94,10 +94,10 @@ final class BitArray {
 		assert(value);
 		assert(Count == value.Count);
 	} body {
-		foreach (i; 0 .. _bits.length)
-			_bits[i] |= value._bits[i];
+		foreach (i; 0 .. m_bits.length)
+			m_bits[i] |= value.m_bits[i];
 
-		_minimal = 0;
+		m_minimal = 0;
 		return this;
 	}
 	
@@ -105,10 +105,10 @@ final class BitArray {
 		assert(value);
 		assert(Count == value.Count);
 	} body {
-		foreach (i; 0 .. _bits.length)
-			_bits[i] ^= value._bits[i];
+		foreach (i; 0 .. m_bits.length)
+			m_bits[i] ^= value.m_bits[i];
 
-		_minimal = 0;
+		m_minimal = 0;
 		return this;
 	}
 	
@@ -116,10 +116,10 @@ final class BitArray {
 		assert(value);
 		assert(Count == value.Count);
 	} body {
-		foreach (i; 0 .. _bits.length)
-			_bits[i] &= value._bits[i];
+		foreach (i; 0 .. m_bits.length)
+			m_bits[i] &= value.m_bits[i];
 
-		_minimal = 0;
+		m_minimal = 0;
 		return this;
 	}
 	
@@ -127,35 +127,35 @@ final class BitArray {
 		assert(index > 0 && index < Count);
 	} body {
 		if (value)
-			_bits[IndexFromBit(index)] |= (1UL << OffsetFromBit(index));
+			m_bits[IndexFromBit(index)] |= (1UL << OffsetFromBit(index));
 		else {
-			_bits[IndexFromBit(index)] &= ~(1UL << OffsetFromBit(index));
-			_minimal = IndexFromBit(index);
+			m_bits[IndexFromBit(index)] &= ~(1UL << OffsetFromBit(index));
+			m_minimal = IndexFromBit(index);
 		}
 	}
 	
 	void SetAll(bool value) {
-		foreach (i; 0 .. _bits.length)
-			_bits[i] = value ? 0xFFFF_FFFF_FFFF_FFFF : 0;
+		foreach (i; 0 .. m_bits.length)
+			m_bits[i] = value ? 0xFFFF_FFFF_FFFF_FFFF : 0;
 
-		_minimal = 0;
+		m_minimal = 0;
 	}
 	
 	bool Get(long index) in {
 		assert(index > 0 && index < Count);
 	} body {
-		return (_bits[IndexFromBit(index)] & (1UL << OffsetFromBit(index))) != 0;
+		return (m_bits[IndexFromBit(index)] & (1UL << OffsetFromBit(index))) != 0;
 	}
 	
 	long FirstFreeBit() {
-		foreach (i; _minimal .. _bits.length) {
-			if (_bits[i] != 0xFFFF_FFFF_FFFF_FFFF) {
+		foreach (i; m_minimal .. m_bits.length) {
+			if (m_bits[i] != 0xFFFF_FFFF_FFFF_FFFF) {
 				foreach(j; 0 .. 64) {
-					if (!(_bits[i] & (1UL << j)))
+					if (!(m_bits[i] & (1UL << j)))
 						return i * 64 + j;
 				}
 			} else
-				_minimal = i;
+				m_minimal = i;
 		}
 
 		return -1;

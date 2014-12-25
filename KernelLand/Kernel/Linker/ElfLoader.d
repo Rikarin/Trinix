@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,7 +18,7 @@
  * governing permissions and limitations under the License.
  * 
  * Contributors:
- * Matsumoto Satoshi <satoshi@gshost.eu>
+ *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 module Linker.ElfLoader;
 
@@ -155,8 +155,8 @@ class ElfLoader : BinaryLoader {
 		DT_HIPROC = 0x7FFFFFFF  //!< High Definable
 	}
 
-	private EHeader _eHeader;
-	private PHeader[] _pHeader;
+	private EHeader m_eHeader;
+	private PHeader[] m_pHeader;
 
 	private this() {
 		super();
@@ -227,11 +227,11 @@ class ElfLoader : BinaryLoader {
 				loadSegments++;
 
 		auto ret      = new ElfLoader();
-		ret._eHeader  = header;
-		ret._pHeader  = pHeader;
-		ret._base     = ~0UL;
-		ret._entry    = header.Entry;
-		ret._sections = new BinarySection[loadSegments];
+		ret.m_eHeader  = header;
+		ret.m_pHeader  = pHeader;
+		ret.m_base     = ~0UL;
+		ret.m_entry    = header.Entry;
+		ret.m_sections = new BinarySection[loadSegments];
 
 		int j;
 		foreach (i, x; pHeader) {
@@ -250,7 +250,7 @@ class ElfLoader : BinaryLoader {
 			}
 
 			if (x.Type == PT_INTERP) {
-				if (ret._interpreter)
+				if (ret.m_interpreter)
 					continue;
 
 				char[] name = new char[x.FileSize];
@@ -263,20 +263,20 @@ class ElfLoader : BinaryLoader {
 			if (x.Type != PT_LOAD)
 				continue;
 
-			if (x.VirtualAddress < ret._base)
-				ret._base = x.VirtualAddress;
+			if (x.VirtualAddress < ret.m_base)
+				ret.m_base = x.VirtualAddress;
 
-			ret._sections[j].Flags          = 0;
-			ret._sections[j].Offset         = x.Offset;
-			ret._sections[j].FileSize       = x.FileSize;
-			ret._sections[j].MemorySize     = x.MemorySize;
-			ret._sections[j].VirtualAddress = x.VirtualAddress;
+			ret.m_sections[j].Flags          = 0;
+			ret.m_sections[j].Offset         = x.Offset;
+			ret.m_sections[j].FileSize       = x.FileSize;
+			ret.m_sections[j].MemorySize     = x.MemorySize;
+			ret.m_sections[j].VirtualAddress = x.VirtualAddress;
 
 			if(!(x.Flags & PF_W))
-				ret._sections[j].Flags |= BinaryLoader.SectionFlag.ReadOnly;
+				ret.m_sections[j].Flags |= BinaryLoader.SectionFlag.ReadOnly;
 
 			if (x.Flags & PF_X)
-				ret._sections[j].Flags |= BinaryLoader.SectionFlag.Executable;
+				ret.m_sections[j].Flags |= BinaryLoader.SectionFlag.Executable;
 			j++;
 		}
 
@@ -285,51 +285,51 @@ class ElfLoader : BinaryLoader {
 
 	
 
-	private Dynamic* _dynamic;
-	private Symbol* _symbol;
-	private v_addr _baseDiff;
-	private v_addr _stringTable;
-	private v_addr _hashTable;
+	private Dynamic* m_dynamic;
+	private Symbol* m_symbol;
+	private v_addr m_baseDiff;
+	private v_addr m_stringTable;
+	private v_addr m_hashTable;
 
 	
 	private void ParseTables() {
 		/* check if binary is mapped */
-		if (!_mappedBinary) {
+		if (!m_mappedBinary) {
 			Log("ELF Relocation: Binary is not mapped!");
 			return;
 		}
 
 		/* Scan for dynamic table */
-		foreach (x; _pHeader) {
+		foreach (x; m_pHeader) {
 			if (x.Type == PT_DYNAMIC)
-				_dynamic = cast(Dynamic *)x.VirtualAddress;
-			else if (x.Type == PT_LOAD && _baseDiff > x.VirtualAddress)
-				_baseDiff = x.VirtualAddress;
+				m_dynamic = cast(Dynamic *)x.VirtualAddress;
+			else if (x.Type == PT_LOAD && m_baseDiff > x.VirtualAddress)
+				m_baseDiff = x.VirtualAddress;
 		}
 
-		if (_dynamic is null)
+		if (m_dynamic is null)
 			return;
 
-		_baseDiff = _mappedBinary - _baseDiff;
-		_dynamic  = cast(Dynamic *)(cast(v_addr)_dynamic + _baseDiff);
-		Log("BaseDiff = %x", _baseDiff);
+		m_baseDiff = m_mappedBinary - m_baseDiff;
+		m_dynamic  = cast(Dynamic *)(cast(v_addr)m_dynamic + m_baseDiff);
+		Log("BaseDiff = %x", m_baseDiff);
 
 		/* Parse dynamic table */
-		for (int i = 0; _dynamic[i].Tag != DT_NULL; i++) {
-			switch (_dynamic[i].Tag) {
+		for (int i = 0; m_dynamic[i].Tag != DT_NULL; i++) {
+			switch (m_dynamic[i].Tag) {
 				case DT_SYMTAB:
-					_dynamic[i].Value += _baseDiff;
-					_symbol = cast(Symbol *)_dynamic[i].Value;
+					m_dynamic[i].Value += m_baseDiff;
+					m_symbol = cast(Symbol *)m_dynamic[i].Value;
 					break;
 					
 				case DT_STRTAB:
-					_dynamic[i].Value += _baseDiff;
-					_stringTable = _dynamic[i].Value;
+					m_dynamic[i].Value += m_baseDiff;
+					m_stringTable = m_dynamic[i].Value;
 					break;
 					
 				case DT_HASH:
-					_dynamic[i].Value += _baseDiff;
-					_hashTable = _dynamic[i].Value;
+					m_dynamic[i].Value += m_baseDiff;
+					m_hashTable = m_dynamic[i].Value;
 					break;
 					
 				default:
@@ -343,22 +343,22 @@ class ElfLoader : BinaryLoader {
 
 	
 	public v_addr Relocate() {
-		if (!_baseDiff)
+		if (!m_baseDiff)
 			ParseTables();
 
-		if (_dynamic is null) {
+		if (m_dynamic is null) {
 			Log("ELF Relocation: No PT_DYNAMIC segment");
-			return cast(ulong)_eHeader.Entry + _baseDiff;
+			return cast(ulong)m_eHeader.Entry + m_baseDiff;
 		}
 
-		if (_symbol is null || !_stringTable || !_hashTable) {
+		if (m_symbol is null || !m_stringTable || !m_hashTable) {
 			Log("ELF Relocation: Missing symbol, string table or hash table");
 			return 0;
 		}
 
 		
 
-		Log("%s(%d): number of symbols: %d", __FILE__, __LINE__, (cast(uint *)_hashTable)[1]);
+		Log("%s(%d): number of symbols: %d", __FILE__, __LINE__, (cast(uint *)m_hashTable)[1]);
 
 		
 		Relocation* relocation;
@@ -369,8 +369,8 @@ class ElfLoader : BinaryLoader {
 		long pltSize;
 		long pltType;
 		
-		for (int i = 0; _dynamic[i].Tag != DT_NULL; i++) {
-			switch (_dynamic[i].Tag) {
+		for (int i = 0; m_dynamic[i].Tag != DT_NULL; i++) {
+			switch (m_dynamic[i].Tag) {
 				case DT_SONAME:
 					break;
 					
@@ -379,48 +379,48 @@ class ElfLoader : BinaryLoader {
 					return 0;
 					
 				case DT_REL:
-					_dynamic[i].Value += _baseDiff;
-					relocation = cast(Relocation *)_dynamic[i].Value;
+					m_dynamic[i].Value += m_baseDiff;
+					relocation = cast(Relocation *)m_dynamic[i].Value;
 					break;
 					
 				case DT_RELSZ:
-					relocationCount = _dynamic[i].Value / Relocation.sizeof;
+					relocationCount = m_dynamic[i].Value / Relocation.sizeof;
 					break;
 					
 				case DT_RELENT:
-					if (_dynamic[i].Value != Relocation.sizeof) {
+					if (m_dynamic[i].Value != Relocation.sizeof) {
 						Log("ELF Relocation: DT_RELENT != Relocation.sizeof");
 						return 0;
 					}
 					break;
 					
 				case DT_RELA:
-					_dynamic[i].Value += _baseDiff;
-					relocationA = cast(RelocationA *)_dynamic[i].Value;
+					m_dynamic[i].Value += m_baseDiff;
+					relocationA = cast(RelocationA *)m_dynamic[i].Value;
 					break;
 					
 				case DT_RELASZ:
-					relocationACount = _dynamic[i].Value / RelocationA.sizeof;
+					relocationACount = m_dynamic[i].Value / RelocationA.sizeof;
 					break;
 					
 				case DT_RELAENT:
-					if (_dynamic[i].Value != RelocationA.sizeof) {
+					if (m_dynamic[i].Value != RelocationA.sizeof) {
 						Log("ELF Relocation: DT_RELAENT != RelocationA.sizeof");
 						return 0;
 					}
 					break;
 					
 				case DT_JMPREL:
-					_dynamic[i].Value += _baseDiff;
-					pltRel = _dynamic[i].Value;
+					m_dynamic[i].Value += m_baseDiff;
+					pltRel = m_dynamic[i].Value;
 					break;
 					
 				case DT_PLTREL:
-					pltType = _dynamic[i].Value;
+					pltType = m_dynamic[i].Value;
 					break;
 					
 				case DT_PLTRELSZ:
-					pltSize = _dynamic[i].Value;
+					pltSize = m_dynamic[i].Value;
 					break;
 					
 				default:
@@ -432,7 +432,7 @@ class ElfLoader : BinaryLoader {
 			Log("Rel count = %d", relocationCount);
 			
 			foreach (x; relocation[0 .. relocationCount]) {
-				ulong ptr = x.Offset + _baseDiff;
+				ulong ptr = x.Offset + m_baseDiff;
 				fail |= DoReloc(x.Info, ptr, *(cast(ulong *)ptr));
 			}
 		}
@@ -441,7 +441,7 @@ class ElfLoader : BinaryLoader {
 			Log("Rela count = %d", relocationACount);
 			
 			foreach (x; relocationA[0 .. relocationACount])
-				fail |= DoReloc(x.Info, x.Offset + _baseDiff, x.Addend);
+				fail |= DoReloc(x.Info, x.Offset + m_baseDiff, x.Addend);
 		}
 		
 		if (pltRel && pltType) {
@@ -451,7 +451,7 @@ class ElfLoader : BinaryLoader {
 				
 				Log("plt rel count = %d", count);
 				foreach (x; plt[0 .. count]) {
-					ulong ptr = x.Offset + _baseDiff;
+					ulong ptr = x.Offset + m_baseDiff;
 					fail |= DoReloc(x.Info, ptr, *(cast(ulong *)ptr));
 				}
 			} else {
@@ -460,7 +460,7 @@ class ElfLoader : BinaryLoader {
 				
 				Log("plt rela count = %d", count);
 				foreach (x; plt[0 .. count])
-					fail |= DoReloc(x.Info, x.Offset + _baseDiff, x.Addend);
+					fail |= DoReloc(x.Info, x.Offset + m_baseDiff, x.Addend);
 			}
 		}
 		
@@ -469,18 +469,18 @@ class ElfLoader : BinaryLoader {
 			return 0;
 		}
 		
-		v_addr ret = cast(ulong)_eHeader.Entry + _baseDiff;
+		v_addr ret = cast(ulong)m_eHeader.Entry + m_baseDiff;
 		Log("relocation done ptr = %x", cast(ulong)ret);
 		return ret;
 	}
 
 	bool GetSymbol(string name, ref v_addr ret, ref long size) {
-		if (_dynamic is null) {
+		if (m_dynamic is null) {
 			Log("ELF Relocation: Unable to find PT_DYNAMIC segment");
 			return false;
 		}
 
-		uint* pBuckets = cast(uint *)_hashTable;
+		uint* pBuckets = cast(uint *)m_hashTable;
 		uint nBuckets = pBuckets[0];
 		pBuckets = &pBuckets[2];
 		uint* pCahins = &pBuckets[nBuckets];
@@ -490,9 +490,9 @@ class ElfLoader : BinaryLoader {
 
 		int i = pBuckets[nameHash];
 		//Log("err, name1: %s", name);
-		if (_symbol[i].SectionTableIndex && (cast(char *)(_stringTable + cast(ulong)_symbol[i].Name)).ToString() == name) {
-			ret = _symbol[i].Value + _baseDiff;
-			size = _symbol[i].Size;
+		if (m_symbol[i].SectionTableIndex && (cast(char *)(m_stringTable + cast(ulong)m_symbol[i].Name)).ToString() == name) {
+			ret = m_symbol[i].Value + m_baseDiff;
+			size = m_symbol[i].Size;
 
 			Log("Name: %s, Return: %x", name, ret);
 			return true;
@@ -501,9 +501,9 @@ class ElfLoader : BinaryLoader {
 		while (pCahins[i]) {
 			i = pCahins[i];
 
-			if (_symbol[i].SectionTableIndex && (cast(char *)(_stringTable + cast(ulong)_symbol[i].Name)).ToString() == name) {
-				ret = _symbol[i].Value + _baseDiff;
-				size = _symbol[i].Size;
+			if (m_symbol[i].SectionTableIndex && (cast(char *)(m_stringTable + cast(ulong)m_symbol[i].Name)).ToString() == name) {
+				ret = m_symbol[i].Value + m_baseDiff;
+				size = m_symbol[i].Size;
 
 				Log("Name: %s, Return: %x", name, ret);
 				return true;
@@ -516,7 +516,7 @@ class ElfLoader : BinaryLoader {
 	private bool DoReloc(ulong info, v_addr ptr, long addend) {
 		int sym = cast(int)(info >> 32);
 		int type = cast(int)(info & 0xFFFFFFFF);
-		string symName = (cast(char *)(_stringTable + cast(ulong)_symbol[sym].Name)).ToString();
+		string symName = (cast(char *)(m_stringTable + cast(ulong)m_symbol[sym].Name)).ToString();
 		v_addr symval;
 		long size;
 
@@ -549,7 +549,7 @@ class ElfLoader : BinaryLoader {
 				break;
 				
 			case RelocationType.R_X86_64_RELATIVE:
-				*cast(ulong *)ptr = cast(ulong)_base + addend;
+				*cast(ulong *)ptr = cast(ulong)m_base + addend;
 				break;
 				
 			default:

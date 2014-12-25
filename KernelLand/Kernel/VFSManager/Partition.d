@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -29,71 +29,71 @@ import ObjectManager;
 
 
 final class Partition : BlockNode {
-	private __gshared char[] _diskName = cast(char[])"disk0";
+	private __gshared char[] m_diskName = cast(char[])"disk0";
 
-	private BlockCache _cache;
-	private long _offset;
-	private long _length;
+	private BlockCache m_cache;
+	private long m_offset;
+	private long m_length;
 
 	private struct MBREntry {
 	align(1):
 		ubyte Bootable;
 		ubyte StartHead;
-		private ushort _startSC;
+		private ushort m_startSC;
 		ubyte ID;
 		ubyte EndHead;
-		private ushort _endSC;
+		private ushort m_endSC;
 		uint StartLBA;
 		uint Size;
 
-		mixin(Bitfield!(_startSC, "StartSector", 6, "StartCylinder", 10));
-		mixin(Bitfield!(_endSC, "EndSector", 6, "EndCylinder", 10));
+		mixin(Bitfield!(m_startSC, "StartSector", 6, "StartCylinder", 10));
+		mixin(Bitfield!(m_endSC, "EndSector", 6, "EndCylinder", 10));
 	}
 
 	@property private static string NextDiskName() {
-		char[] ret = _diskName.dup;
-		_diskName[$ - 1]++;
+		char[] ret = m_diskName.dup;
+		m_diskName[$ - 1]++;
 
 		return cast(string)ret;
 	}
 
 	@property IBlockDevice Device() {
-		return _cache.Device;
+		return m_cache.Device;
 	}
 
 	@property override long Blocks() {
-		return _length;
+		return m_length;
 	}
 	@property override long BlockSize() {
-		return _cache.Device.BlockSize;
+		return m_cache.Device.BlockSize;
 	}
 
 	this(IBlockDevice device, long offset, long length, DirectoryNode parent, FileAttributes attributes) {
-		_cache  = new BlockCache(device, 0x100);
-		_offset = offset;
-		_length = length;
+		m_cache  = new BlockCache(device, 0x100);
+		m_offset = offset;
+		m_length = length;
 
 		super(parent, attributes);
 	}
 
 	~this() {
-		delete _cache;
+		delete m_cache;
 	}
 
 	override ulong Read(long offset, byte[] data) {
-		if (offset > _length)
+		if (offset > m_length)
 			return 0;
 		
-		long len = offset + data.length > _length ? _length - offset : data.length;
-		return _cache.Read(_offset + offset, data[0 .. len]);
+		long len = offset + data.length > m_length ? m_length - offset : data.length;
+		return m_cache.Read(m_offset + offset, data[0 .. len]);
 	}
 
 	override ulong Write(long offset, byte[] data) {
-		if (offset > _length)
+		if (offset > m_length)
 			return 0;
 		
-		long len = offset + data.length > _length ? _length - offset : data.length;
-		return _cache.Write(_offset + offset, data[0 .. len]);
+		long len = offset + data.length > m_length ? m_length - offset : data.length;
+		return m_cache.Write(m_offset + offset, data[0 .. len]);
 	}
 
 	static void ReadTable(IBlockDevice device) {

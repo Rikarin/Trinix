@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -49,18 +49,18 @@ final class Ext2BlockNode : BlockNode {
 	@property override FileAttributes Attributes() {
 		if (!_loadedAttribs && _parent !is null && _parent.FileSystem !is null) {
 			auto attribs = (cast(Ext2Filesystem)_parent.FileSystem).GetAttributes(_inode);
-			attribs.Name = _attributes.Name;
-			attribs.Type = _attributes.Type;
+			attribs.Name = m_attributes.Name;
+			attribs.Type = m_attributes.Type;
 
-			_attributes = attribs;
+			m_attributes = attribs;
 			_loadedAttribs = true;
 		}
 		
-		return _attributes;
+		return m_attributes;
 	}
 	
 	@property override void Attributes(FileAttributes value) {
-		_attributes = value; //TODO
+		m_attributes = value; //TODO
 	}
 	
 	override ulong Read(long offset, byte[] data) {

@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -40,18 +40,14 @@ struct FSDriver {
 
 
 abstract final class VFS {
-	private __gshared DirectoryNode _root;
-	private __gshared LinkedList!FSDriver _drivers;
-
-	@property static DirectoryNode Root() {
-		return _root;
-	}
+	__gshared DirectoryNode Root;
+	private __gshared LinkedList!FSDriver m_drivers;
 
 	static void Initialize() {
-		_drivers = new LinkedList!FSDriver();
+		m_drivers = new LinkedList!FSDriver();
 
-		_root = new DirectoryNode(null, FSNode.NewAttributes("/"));
-		DirectoryNode system = new DirectoryNode(_root, FSNode.NewAttributes("System"));
+		Root = new DirectoryNode(null, FSNode.NewAttributes("/"));
+		DirectoryNode system = new DirectoryNode(Root, FSNode.NewAttributes("System"));
 
 		DeviceManager.DevFS = new DirectoryNode(system, FSNode.NewAttributes("Devices"));
 		DevFS.Mount(DeviceManager.DevFS);
@@ -61,22 +57,22 @@ abstract final class VFS {
 		new ZeroDev(DeviceManager.DevFS, "zero");
 		new RandomDev(DeviceManager.DevFS, "random");
 
-        ResourceManager.AddCallTable(FSNode._rcs);
+        ResourceManager.AddCallTable(FSNode.m_rcs);
 	}
 
     static void Finalize() {
-        foreach (x; _drivers)
+        foreach (x; m_drivers)
             delete x;
 
-        delete _drivers;
+        delete m_drivers;
     }
 
 	static T Find(T)(string path, DirectoryNode start = null) {
-		FSNode node = start is null ? _root : start;
+		FSNode node = start is null ? Root : start;
 		scope List!string list = path.Split('/');
 
 		if (list[0] is null)
-			node = _root;
+			node = Root;
 
 		foreach (x; list) {
 			if (x == "..")
@@ -133,18 +129,18 @@ abstract final class VFS {
 	}
 
 	static void AddDriver(FSDriver driver) {
-		if (_drivers.Contains(driver))
+		if (m_drivers.Contains(driver))
 			return;
 
-		_drivers.Add(driver);
+		m_drivers.Add(driver);
 	}
 
 	static void RemoveDriver(string name) {
-		_drivers.Remove(Array.Find(_drivers, (LinkedListNode!FSDriver o) => o.Value.Name == name));
+		m_drivers.Remove(Array.Find(m_drivers, (LinkedListNode!FSDriver o) => o.Value.Name == name));
 	}
 
 	static FSDriver GetFSDriver(string name) {
-		auto drv = Array.Find(_drivers, (LinkedListNode!FSDriver o) => o.Value.Name == name);
+		auto drv = Array.Find(m_drivers, (LinkedListNode!FSDriver o) => o.Value.Name == name);
 		return drv !is null ? drv.Value : cast(FSDriver)null;
 	}
 

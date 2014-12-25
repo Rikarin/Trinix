@@ -145,7 +145,6 @@
     <Compile Include="Linker\BinaryLoader.d" />
     <Compile Include="Linker\package.d" />
     <Compile Include="Library\Casters.d" />
-    <Compile Include="Library\Elf.di" />
     <Compile Include="Linker\ElfLoader.d" />
     <Compile Include="Architectures\x86_64\Core\InterruptType.d" />
     <Compile Include="Architectures\x86_64\Core\InterruptStackType.d" />

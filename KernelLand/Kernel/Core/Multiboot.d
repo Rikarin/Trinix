@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -155,7 +155,7 @@ align(1):
 		struct {
 			ubyte RedFieldPos;
 			ubyte RedMaskSize;
-			ubyte GreenFieldPos;
+	    	ubyte GreenFieldPos;
 			ubyte GreenMaskSize;
 			ubyte BlueFieldPos;
 			ubyte BlueMaskSize;
@@ -174,7 +174,7 @@ abstract final class Multiboot {
 	__gshared int ModulesCount;
 
 	static void ParseHeader(uint magic, v_addr info) {
-		if (magic != Multiboot.BootloaderMagic) {
+		if (magic != BOOTLOADER_MAGIC) {
             Log("Error: Bad multiboot 2 magic: %d", magic);
 			Port.Halt();
 		}

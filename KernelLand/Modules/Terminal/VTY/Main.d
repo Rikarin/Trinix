@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -243,7 +243,7 @@ class TTYDev : CharNode {
 
 		super(parent, attributes);
 		Identifier = "com.modules.Terminal.VTY.TTY";
-		_attributes.Length = _vty._in.Count;
+		m_attributes.Length = _vty._in.Count;
 	}
 
 	ulong Read(long offset, byte[] data) {
@@ -288,7 +288,7 @@ class PTYDev : CharNode {
 
 		super(parent, attributes);
 		Identifier = "com.modules.Terminal.VTY.PTY";
-		_attributes.Length = _vty._out.Count;
+		m_attributes.Length = _vty._out.Count;
 	}
 
 	ulong Read(long offset, byte[] data) {

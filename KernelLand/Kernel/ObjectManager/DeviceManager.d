@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -66,23 +66,23 @@ enum DeviceCommonCall {
 }
 
 abstract final class DeviceManager {
-	private __gshared void function(ref InterruptStack stack) _handlers[48];
+	private __gshared void function(ref InterruptStack stack) m_handlers[48];
 	__gshared DirectoryNode DevFS;
 
 	static void RequestIRQ(void function(ref InterruptStack) handle, int intNumber) {
 		if (intNumber < 16)
-			_handlers[intNumber + 32] = handle;
+			m_handlers[intNumber + 32] = handle;
 	}
 
 	static void RequestISR(void function(ref InterruptStack) handle, int intNumber) {
 		if (intNumber < 32)
-			_handlers[intNumber] = handle;
+			m_handlers[intNumber] = handle;
 	}
 
 	static void Handler(ref InterruptStack stack) {
 		if (stack.IntNumber < 48) {
-			if (_handlers[stack.IntNumber] !is null)
-				_handlers[stack.IntNumber](stack);
+			if (m_handlers[stack.IntNumber] !is null)
+				m_handlers[stack.IntNumber](stack);
 		}
 	}
 

@@ -10,7 +10,7 @@
     <Compiler>DMD2</Compiler>
     <Includes>
       <Includes>
-        <Path>../../../Kernel</Path>
+        <Path>..\..\..\Kernel</Path>
       </Includes>
     </Includes>
   </PropertyGroup>

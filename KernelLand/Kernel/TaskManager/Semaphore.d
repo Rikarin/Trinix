@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -28,71 +28,71 @@ import TaskManager;
 
 
 class Semaphore {
-	private string _name;
-	private int _value;
-	private int _maxValue;
-	private SpinLock _spinLock;
-	private LinkedList!Thread _waiting;
-	private LinkedList!Thread _signaling;
+	private string m_name;
+	private int m_value;
+	private int m_maxValue;
+	private SpinLock m_spinLock;
+	private LinkedList!Thread m_waiting;
+	private LinkedList!Thread m_signaling;
 
 	this(int initialCount, int maxCount, string name) in {
 		assert(initialCount > 0);
 		assert(maxCount > 0);
 	} body {
-		_value     = initialCount;
-		_maxValue  = maxCount;
-		_name      = name;
-		_spinLock  = new SpinLock();
-		_waiting   = new LinkedList!Thread();
-		_signaling = new LinkedList!Thread();
+		m_value     = initialCount;
+		m_maxValue  = maxCount;
+		m_name      = name;
+		m_spinLock  = new SpinLock();
+		m_waiting   = new LinkedList!Thread();
+		m_signaling = new LinkedList!Thread();
 	}
 	
 	~this() {
-		delete _signaling;
-		delete _spinLock;
-		delete _waiting;
-		delete _name;
+		delete m_signaling;
+		delete m_spinLock;
+		delete m_waiting;
+		delete m_name;
 	}
 
 	@property package void LockInternal() {
-		_spinLock.WaitOne();
+		m_spinLock.WaitOne();
 	}
 
 	@property package void UnlockInternal() {
-		_spinLock.Release();
+		m_spinLock.Release();
 	}
 
 	@property package LinkedList!Thread Waiting() {
-		return _waiting;
+		return m_waiting;
 	}
 
 	@property package LinkedList!Thread Signaling() {
-		return _signaling;
+		return m_signaling;
 	}
 
 	int WaitOne() {
 		int taken;
-		_spinLock.WaitOne();
+		m_spinLock.WaitOne();
 
-		if (_value > 0) {
+		if (m_value > 0) {
 			taken = 1;
-			_value--;
+			m_value--;
 		} else {
-			_waiting.Add(Task.CurrentThread);
-			taken = cast(int)Task.CurrentThread.Sleep(ThreadStatus.SemaphoreSleep, cast(void *)this, 1, _spinLock);
-			_spinLock.WaitOne();
+			m_waiting.Add(Task.CurrentThread);
+			taken = cast(int)Task.CurrentThread.Sleep(ThreadStatus.SemaphoreSleep, cast(void *)this, 1, m_spinLock);
+			m_spinLock.WaitOne();
 		}
 
-		while ((!_maxValue || _value < _maxValue) && _signaling.Count) {
-			Thread t = _signaling.First.Value;
-			ulong given = (t.RetStatus && _value + t.RetStatus < _maxValue) ? t.RetStatus : _maxValue - _value;
+		while ((!m_maxValue || m_value < m_maxValue) && m_signaling.Count) {
+			Thread t = m_signaling.First.Value;
+			ulong given = (t.RetStatus && m_value + t.RetStatus < m_maxValue) ? t.RetStatus : m_maxValue - m_value;
 
-			_value -= given;
+			m_value -= given;
 			t.RetStatus = given;
 			t.AddActive();
 
-			_signaling.RemoveFirst();
-			_spinLock.Release();
+			m_signaling.RemoveFirst();
+			m_spinLock.Release();
 			return taken;
 		}
 
@@ -102,28 +102,28 @@ class Semaphore {
 	int Release(int releaseCount) in {
 		assert(releaseCount >= 0);
 	} body {
-		_spinLock.WaitOne();
+		m_spinLock.WaitOne();
 		int added;
 
-		if (_maxValue && _value == _maxValue) {
-			_signaling.Add(Task.CurrentThread);
-			added = cast(int)Task.CurrentThread.Sleep(ThreadStatus.SemaphoreSleep, cast(void *)this, releaseCount, _spinLock);
-			_spinLock.WaitOne();
+		if (m_maxValue && m_value == m_maxValue) {
+			m_signaling.Add(Task.CurrentThread);
+			added = cast(int)Task.CurrentThread.Sleep(ThreadStatus.SemaphoreSleep, cast(void *)this, releaseCount, m_spinLock);
+			m_spinLock.WaitOne();
 		} else {
-			added = (_maxValue && _value + releaseCount > _maxValue) ? _maxValue - _value : releaseCount;
-			_value += releaseCount;
+			added = (m_maxValue && m_value + releaseCount > m_maxValue) ? m_maxValue - m_value : releaseCount;
+			m_value += releaseCount;
 		}
 
-		while (_value && _waiting.Count) {
-			Thread t = _waiting.First.Value;
-			int given = (t.RetStatus && _value > t.RetStatus) ? cast(int)t.RetStatus : _value;
+		while (m_value && m_waiting.Count) {
+			Thread t = m_waiting.First.Value;
+			int given = (t.RetStatus && m_value > t.RetStatus) ? cast(int)t.RetStatus : m_value;
 
-			_value -= given;
+			m_value -= given;
 			t.RetStatus = given;
 			t.AddActive();
 
-			_spinLock.Release();
-			_waiting.RemoveFirst();
+			m_spinLock.Release();
+			m_waiting.RemoveFirst();
 		}
 
 		return added;
@@ -135,9 +135,9 @@ class Semaphore {
 
 		Semaphore semaphore = cast(Semaphore)thread.WaitPointer;
 		with (semaphore) {
-			_spinLock.WaitOne();
-			_waiting.Remove(thread);
-			_spinLock.Release();
+			m_spinLock.WaitOne();
+			m_waiting.Remove(thread);
+			m_spinLock.Release();
 
 			thread.RetStatus = 0;
 			thread.AddActive();

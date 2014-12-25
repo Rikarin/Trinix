@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -29,48 +29,48 @@ import MemoryManager;
 
 
 final class Heap {
-	private enum MAGIC = 0xDEADC0DE;
-	enum MIN_SIZE      = 0x200000;
+	enum MAGIC    = 0xDEADC0DE;
+	enum MIN_SIZE = 0x200000;
 
-	private ulong _start;
-	private ulong _end;
-	private ulong _free;
+	private ulong m_start;
+	private ulong m_end;
+	private ulong m_free;
 
-	private Index _index;
-	private SpinLock _spinLock;
+	private Index m_index;
+	private SpinLock m_spinLock;
 
 	this(ulong offset, long size, long indexSize) {
-		_spinLock = new SpinLock();
-		_start    = offset + indexSize;
-		_end      = offset + size;
-		_free     = _end - _start;
+		m_spinLock = new SpinLock();
+		m_start    = offset + indexSize;
+		m_end      = offset + size;
+		m_free     = m_end - m_start;
 
-		Header* header = cast(Header *)_start;
-		header.Size    = _free;
+		Header* header = cast(Header *)m_start;
+		header.Size    = m_free;
 		header.Magic   = MAGIC;
 		header.IsHole  = true;
 
-		Footer* footer = cast(Footer *)_end - Footer.sizeof;
+		Footer* footer = cast(Footer *)m_end - Footer.sizeof;
 		footer.Head    = header;
         footer.Magic   = MAGIC;
 
-		_index.Data = cast(Header **)offset;
+		m_index.Data = cast(Header **)offset;
 		InsertIntoIndex(header);
 	}
 
 	~this() {
-		delete _spinLock;
+		delete m_spinLock;
 	}
 
 	v_addr Alloc(long size, bool expandable = true) {
-		_spinLock.WaitOne();
-		scope(exit) _spinLock.Release();
+		m_spinLock.WaitOne();
+		scope(exit) m_spinLock.Release();
 
 		long newSize = size + Header.sizeof + Footer.sizeof;
 		long i;
-		for (; i < _index.Size && _index.Data[i].Size < newSize; i++) {}
+		for (; i < m_index.Size && m_index.Data[i].Size < newSize; i++) {}
 
-		if (i == _index.Size) {
+		if (i == m_index.Size) {
 			if (expandable) {
 				Expand((size + 0xFFF) & 0xFFFFFFFFFFFFF000);
 				return Alloc(size, false);
@@ -78,7 +78,7 @@ final class Heap {
 				assert(false);
 		}
 
-		Header* header = _index.Data[i];
+		Header* header = m_index.Data[i];
 		Footer* footer = cast(Footer *)(cast(ulong)header + header.Size - Footer.sizeof);
 		header.IsHole = false;
 		RemoveFromIndex(header);
@@ -100,7 +100,7 @@ final class Heap {
 			InsertIntoIndex(newHeader);
 		}
 
-		_free -= header.Size;
+		m_free -= header.Size;
 		return cast(ulong)header + Header.sizeof;
 	}
 
@@ -116,10 +116,10 @@ final class Heap {
         if (footer.Magic != MAGIC)
 			return;
 
-		_spinLock.WaitOne();
-		scope(exit) _spinLock.Release();
+		m_spinLock.WaitOne();
+		scope(exit) m_spinLock.Release();
 
-		_free += header.Size;
+		m_free += header.Size;
 		Footer* prevFooter = cast(Footer *)(cast(ulong)header - Footer.sizeof);
         if (prevFooter.Magic == MAGIC && prevFooter.Head.IsHole) {
 			header = prevFooter.Head;
@@ -141,7 +141,7 @@ final class Heap {
 		header.IsHole = true;
 		InsertIntoIndex(header);
 
-		if (cast(ulong)footer == cast(ulong)_end - Footer.sizeof && header.Size >= 0x2000 && cast(ulong)_end - _start > MIN_SIZE)
+		if (cast(ulong)footer == cast(ulong)m_end - Footer.sizeof && header.Size >= 0x2000 && cast(ulong)m_end - m_start > MIN_SIZE)
 			Contract();
 	}
 
@@ -149,9 +149,9 @@ final class Heap {
 		if (quantity & 0xFFF)
 			quantity = (quantity & ~0xFFFUL) + 0x1000;
 
-		ulong newEnd = _end + quantity;
+		ulong newEnd = m_end + quantity;
 
-		Footer* lastFooter = cast(Footer *)(cast(ulong)_end - Footer.sizeof);
+		Footer* lastFooter = cast(Footer *)(cast(ulong)m_end - Footer.sizeof);
 		Header* lastHeader = lastFooter.Head;
 
 		if (lastHeader.IsHole) {
@@ -164,7 +164,7 @@ final class Heap {
 
 			InsertIntoIndex(lastHeader);
 		} else {
-			lastHeader = cast(Header *)_end;
+			lastHeader = cast(Header *)m_end;
 			lastFooter = cast(Footer *)(cast(ulong)newEnd - Footer.sizeof);
 
 			lastHeader.IsHole = true;
@@ -177,26 +177,26 @@ final class Heap {
 			InsertIntoIndex(lastHeader);
 		}
 
-		_end = newEnd;
-		_free += quantity;
+		m_end = newEnd;
+		m_free += quantity;
 	}
 
 	private void Contract() {
-		Footer* lastFooter = cast(Footer *)(cast(ulong)_end - Footer.sizeof);
+		Footer* lastFooter = cast(Footer *)(cast(ulong)m_end - Footer.sizeof);
 		Header *lastHeader = lastFooter.Head;
 
 		if (!lastHeader.IsHole)
 			return;
 
 		ulong quantity;
-		while (_end - _start - quantity > MIN_SIZE && lastHeader.Size - quantity > 0x1000)
+		while (m_end - m_start - quantity > MIN_SIZE && lastHeader.Size - quantity > 0x1000)
 			quantity += 0x1000;
 
 		if (!quantity)
 			return;
 
-		ulong newEnd = _end - quantity;
-		_free -= quantity;
+		ulong newEnd = m_end - quantity;
+		m_free -= quantity;
 
 		RemoveFromIndex(lastHeader);
 		lastHeader.Size -= quantity;
@@ -204,14 +204,14 @@ final class Heap {
         lastFooter.Magic = MAGIC;
 		lastFooter.Head  = lastHeader;
 
-		_end = newEnd;
+		m_end = newEnd;
 	}
 
 	private void RemoveFromIndex(long index) {
-		_index.Size--;
+		m_index.Size--;
 
-		while(index < _index.Size)
-			_index.Data[index] = _index.Data[++index];
+		while(index < m_index.Size)
+			m_index.Data[index] = m_index.Data[++index];
 	}
 
 	private void RemoveFromIndex(Header* header) {
@@ -222,34 +222,34 @@ final class Heap {
 	}
 
 	private long FindIndexEntry(Header* header) {
-		foreach (i; 0 .. _index.Size)
-			if (_index.Data[i] == header)
+		foreach (i; 0 .. m_index.Size)
+			if (m_index.Data[i] == header)
 				return i;
 
 		return -1;
 	}
 
 	private void InsertIntoIndex(Header* header) {
-		if ((_index.Size * (Header *).sizeof + cast(ulong)_index.Data) >= _start)
+		if ((m_index.Size * (Header *).sizeof + cast(ulong)m_index.Data) >= m_start)
 			return;
 
 		long i;
-		for (; i < _index.Size && _index.Data[i].Size < header.Size; i++)
-			if (_index.Data[i] == header)
+		for (; i < m_index.Size && m_index.Data[i].Size < header.Size; i++)
+			if (m_index.Data[i] == header)
 				return;
 
 
-		if (i == _index.Size)
-			_index.Data[_index.Size++] = header;
+		if (i == m_index.Size)
+			m_index.Data[m_index.Size++] = header;
 		else {
 			long pos = i;
-			i = _index.Size;
+			i = m_index.Size;
 
 			while (i > pos)
-				_index.Data[i] = _index.Data[--i];
+				m_index.Data[i] = m_index.Data[--i];
 
-			_index.Size++;
-			_index.Data[pos] = header;
+			m_index.Size++;
+			m_index.Data[pos] = header;
 		}
 	}
 

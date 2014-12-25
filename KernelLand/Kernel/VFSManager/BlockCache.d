@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
+ * http://bit.ly/1wIYh3A and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -31,8 +31,8 @@ import ObjectManager;
 
 
 final class BlockCache {
-	private IBlockDevice _device;
-	private CachedBlock[] _cache;
+	private IBlockDevice m_device;
+	private CachedBlock[] m_cache;
 
 	private struct CachedBlock {
 		ulong ID;
@@ -42,11 +42,11 @@ final class BlockCache {
 	}
 
 	@property IBlockDevice Device() {
-		return _device;
+		return m_device;
 	}
 
 	this(IBlockDevice device, long size) {
-		_device = device;
+		m_device = device;
 		/*_cache = new CachedBlock[size];
 
 		foreach (x; _cache)
@@ -63,9 +63,9 @@ final class BlockCache {
 	}
 
 	void Synchronize() {
-		foreach (x; _cache) {
+		foreach (x; m_cache) {
 			if (x.Dirty) {
-				if (_device.Write(x.ID, x.Data) == x.Data.length)
+				if (m_device.Write(x.ID, x.Data) == x.Data.length)
 					x.Dirty = false;
 			}
 		}
@@ -85,7 +85,7 @@ final class BlockCache {
 			return size;
 		}*/
 	
-		return _device.Read(offset, data);
+		return m_device.Read(offset, data);
 	}
 
 	ulong Write(long offset, byte[] data) {
@@ -98,11 +98,11 @@ final class BlockCache {
 			return size;
 		}*/
 
-		return _device.Write(offset, data);
+		return m_device.Write(offset, data);
 	}
 
     private ulong GetCache(long offset, byte[] data) {
-        foreach (x; _cache) {
+        foreach (x; m_cache) {
             if (x.ID == offset && x.LastUse) {
                 x.LastUse = Time.Now;
                 data[] = x.Data[0 .. data.length];
@@ -118,7 +118,7 @@ final class BlockCache {
         CachedBlock* best;
         long ret = data.length;
         
-        foreach (ref x; _cache) {
+        foreach (ref x; m_cache) {
             if (x.ID == offset) {
                 best = &x;
                 break;
@@ -127,7 +127,7 @@ final class BlockCache {
         }
         
         if (best.Dirty && (best.ID != offset || !dirty))
-            ret = _device.Write(best.ID, best.Data);
+            ret = m_device.Write(best.ID, best.Data);
         
         best.ID = offset;
         best.LastUse = Time.Now;
