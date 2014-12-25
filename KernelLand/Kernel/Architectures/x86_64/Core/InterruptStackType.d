@@ -1,7 +1,7 @@
 ﻿/**
  * Copyright (c) 2014 Trinix Foundation. All rights reserved.
  * 
- * This file is part of Trinix Operating System and is released under Trinix 
+ * This file is part of Trinix Operating System and is released under Trinix
  * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
  * except in compliance with the License. The rights granted to you under the
  * License may not be used to create, or enable the creation or redistribution
@@ -13,7 +13,7 @@
  * http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
- * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+ * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  * KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  * 
@@ -21,43 +21,14 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module FileSystem.RandomDev;
-
-import VFSManager;
-import Architecture;
+module Architectures.x86_64.Core.InterruptStackType;
 
 
-final class RandomDev : CharNode {
-	private __gshared ulong m_number;
-
-	this(DirectoryNode parent, string name) {
-		super(parent, NewAttributes(name));
-
-		m_attributes.Length = 1024;
-	}
-	
-	override ulong Read(long offset, byte[] data) {
-		foreach (ref x; data) {
-			m_number = (Rand() - Rand2() + Rand3()) * Time.Now;
-			x = cast(byte)(m_number & 0xFF);
-		}
-
-		return data.length;
-	}
-	
-	override ulong Write(long offset, byte[] data) {
-		return 0;
-	}
-
-	private ulong Rand() {
-		return (m_number * 125) % 2796203;
-	}
-
-	private ulong Rand2() {
-		return (m_number * 32719 + 3) % 32749;
-	}
-
-	private ulong Rand3() {
-		return (((m_number * 214013L + 2531011L) >> 16) & 32767);
-	}
+enum InterruptStackType : ushort {
+    RegisterStack,
+    StackFault,
+    DoubleFault,
+    NMI,
+    Debug,
+    MCE
 }

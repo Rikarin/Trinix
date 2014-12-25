@@ -29,8 +29,8 @@ import ObjectManager;
 
 
 abstract final class Logger {
-    private __gshared DisplayChar* _display = cast(DisplayChar *)0xFFFFFFFF800B8000;
-    private __gshared int _iterator;
+    private __gshared DisplayChar* m_display = cast(DisplayChar *)0xFFFFFFFF800B8000;
+    private __gshared int m_iterator;
 
     private union DisplayChar {
         struct {
@@ -49,10 +49,10 @@ abstract final class Logger {
         
         /* Clear screen */
         foreach (i; 0 .. 2000)
-            _display[i].Address = 0;
+            m_display[i].Address = 0;
     }
 
-    static void Write(string format, ...) {
+    static void write(string format, ...) {
         char[1024] buffer;
         
         long len = ParseString(buffer, format, _arguments, _argptr);
@@ -192,20 +192,20 @@ abstract final class Logger {
     //TODO
     private static void NewLine() {
         Scroll();
-        _iterator += 80 - (_iterator % 80);
+        m_iterator += 80 - (m_iterator % 80);
     }
 
     private static void Put(char[] str) {
         Scroll();
-        Print(str, 0, _iterator);
-        _iterator += str.length;
+        Print(str, 0, m_iterator);
+        m_iterator += str.length;
     }
     
     private static void Scroll() {
-        if (_iterator > 80 * 25) {
-            _display[0 .. _iterator - 80] = _display[80 .. _iterator];
-            _display[_iterator - 80 .. _iterator] = cast(DisplayChar)0;
-            _iterator -= 80;
+        if (m_iterator > 80 * 25) {
+            m_display[0 .. m_iterator - 80] = m_display[80 .. m_iterator];
+            m_display[m_iterator - 80 .. m_iterator] = cast(DisplayChar)0;
+            m_iterator -= 80;
         }
     }
     
@@ -218,15 +218,15 @@ abstract final class Logger {
                 int n = (offset + i) % 4;
 
                 foreach (j; 0 .. n) {
-                    _display[line * 80 + offset + i].Char = str[i];
-                    _display[line * 80 + offset + i].Color = color;
+                    m_display[line * 80 + offset + i].Char = str[i];
+                    m_display[line * 80 + offset + i].Color = color;
                     offset++;
                     continue;
                 }
             }
 
-            _display[line * 80 + offset + i].Char = str[i];
-            _display[line * 80 + offset + i].Color = color;
+            m_display[line * 80 + offset + i].Char = str[i];
+            m_display[line * 80 + offset + i].Color = color;
         }
     }
 }

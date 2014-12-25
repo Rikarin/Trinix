@@ -30,18 +30,18 @@ import ObjectManager;
 
 abstract final class Time {
 	private enum {
-		TimerRate = 14,
-		TimerFreq = 0x8000 >> TimerRate,
-		MsPerTickWhole = 1000 / TimerFreq,
-		MsPerTickFract = (0x80000000 * (1000 % TimerFreq)) / TimerFreq
+		TIMER_RATE = 14,
+		TIMER_FREQUENCY = 0x8000 >> TIMER_RATE,
+		MS_PER_TICK_WHOLE = 1000 / TIMER_FREQUENCY,
+		MS_PER_TICK_FRACT = (0x80000000 * (1000 % TIMER_FREQUENCY)) / TIMER_FREQUENCY
 	}
 
-	private __gshared ulong _tscAtLastTick;
-	private __gshared ulong _tscPerTick;
+	private __gshared ulong m_tscAtLastTick;
+	private __gshared ulong m_tscPerTick;
 
-	private __gshared long _timestamp;
-	private __gshared ulong _ticks;
-	private __gshared ulong _partMiliseconds;
+	private __gshared long m_timestamp;
+	private __gshared ulong m_ticks;
+	private __gshared ulong m_partMiliseconds;
    
     static void Initialize() {
 		// Disable NMI
@@ -52,7 +52,7 @@ abstract final class Time {
 		Port.Write!byte(0x70, 0x0A);
 		byte val = Port.Read!byte(0x71);
 		val &= 0xF0;
-		val |= TimerRate + 1;
+		val |= TIMER_RATE + 1;
 		Port.Write!byte(0x70, 0x0A);
 		Port.Write!byte(0x71, val);
 
@@ -71,20 +71,20 @@ abstract final class Time {
 	}
 
 	@property static long Uptime() {
-		return _timestamp;
+		return m_timestamp;
 	}
 
 	@property static long Now() {
 		ulong tsc = ReadTSC();
-		tsc -= _tscAtLastTick;
-		tsc *= MsPerTickWhole;
+		tsc -= m_tscAtLastTick;
+		tsc *= MS_PER_TICK_WHOLE;
 
-		if (_tscPerTick)
-			tsc /= _tscPerTick;
+		if (m_tscPerTick)
+			tsc /= m_tscPerTick;
 		else
 			tsc = 0;
 
-		return _timestamp + tsc;
+		return m_timestamp + tsc;
 	}
 
 	private static ulong ReadTSC() {
@@ -100,17 +100,17 @@ abstract final class Time {
 	private static void IRQHandler(ref InterruptStack stack) {
 		ulong curTSC = ReadTSC();
 		
-		if (_tscAtLastTick)
-			_tscPerTick = curTSC - _tscAtLastTick;
-		_tscAtLastTick = curTSC;
+		if (m_tscAtLastTick)
+			m_tscPerTick = curTSC - m_tscAtLastTick;
+		m_tscAtLastTick = curTSC;
 		
-		_ticks++;
-		_timestamp += MsPerTickWhole;
-		_partMiliseconds += MsPerTickFract;
-		if (_partMiliseconds > 0x80000000) {
-			_timestamp++;
+		m_ticks++;
+		m_timestamp += MS_PER_TICK_WHOLE;
+		m_partMiliseconds += MS_PER_TICK_FRACT;
+		if (m_partMiliseconds > 0x80000000) {
+			m_timestamp++;
 			
-			_partMiliseconds -= 0x80000000;
+			m_partMiliseconds -= 0x80000000;
 		}
 		
 		//TODO: call timers....

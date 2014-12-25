@@ -33,39 +33,36 @@ private extern(C) void _CPU_refresh_iretq();
 
 
 abstract final class GDT {
-	private __gshared GlobalDescriptorTable*[256] _tables;
+	private __gshared GlobalDescriptorTable*[256] m_tables;
 
 	@property static GlobalDescriptorTable* Table() {
-		return _tables[CPU.Identifier];
+		return m_tables[CPU.identifier];
 	}
 
 	static void Initialize() {
-		_tables[CPU.Identifier] = new GlobalDescriptorTable;
-		InitTable(CPU.Identifier);
+		m_tables[CPU.identifier] = new GlobalDescriptorTable();
+		InitTable(CPU.identifier);
 
         asm {
-            "lgdt [RAX]" : : "a"(&_tables[CPU.Identifier].Base);
+            "lgdt [RAX]" : : "a"(&m_tables[CPU.Identifier].Base);
             "call _CPU_refresh_iretq";
         }
 	}
 	
 	private static void InitTable(uint table) {
-		_tables[table].Base.Limit = (SegmentDescriptor.sizeof * _tables[table].Entries.length) - 1;
-		_tables[table].Base.Base	= cast(ulong)_tables[table].Entries.ptr;
+		m_tables[table].Base.Limit = (SegmentDescriptor.sizeof * m_tables[table].Entries.length) - 1;
+		m_tables[table].Base.Base  = cast(ulong)m_tables[table].Entries.ptr;
 		
-		//Null
-		_tables[table].SetNull(0);
-		
-		//Kernel
-		_tables[table].SetCodeSegment(1, false, 0, true);
-		_tables[table].SetDataSegment(2, true, 0);
-		
-		//User 64
-		_tables[table].SetDataSegment(3, true, 3);
-		_tables[table].SetCodeSegment(4, true, 3, true);
 
-		//User 32
-		_tables[table].SetDataSegment(5, true, 3);
+		m_tables[table].SetNull(0);                         /* Null */
+
+		m_tables[table].SetCodeSegment(1, false, 0, true);  /* Kernel */
+		m_tables[table].SetDataSegment(2, true, 0);
+
+        m_tables[table].SetDataSegment(3, true, 3);         /* User 64 */
+		m_tables[table].SetCodeSegment(4, true, 3, true);
+
+		m_tables[table].SetDataSegment(5, true, 3);         /* User 32 */
 	}
 	
 	private struct GDTBase {
@@ -76,12 +73,12 @@ abstract final class GDT {
 	
 	private struct CodeSegmentDescriptor {
 	align(1):
-		ushort Limit = 0xFFFF;
-		ushort Base = 0x0000;
-		ubyte BaseMid = 0x00;
+		ushort Limit         = 0xFFFF;
+		ushort Base          = 0x0000;
+		ubyte BaseMid        = 0x00;
 		private ubyte Flags1 = 0b11111101;
 		private ubyte Flags2 = 0b00000000;
-		ubyte BaseHigh = 0x00;
+		ubyte BaseHigh       = 0x00;
 		
 		mixin(Bitfield!(Flags1, "zero3", 2, "c", 1, "ones0", 2, "dpl", 2, "p", 1));
 		mixin(Bitfield!(Flags2, "zero4", 5, "l", 1, "d", 1, "Granularity", 1));
@@ -89,12 +86,12 @@ abstract final class GDT {
 	
 	private struct DataSegmentDescriptor {
 	align(1):
-		ushort Limit = 0xFFFF;
-		ushort Base = 0x0000;
-		ubyte BaseMid = 0x00;
+		ushort Limit         = 0xFFFF;
+		ushort Base          = 0x0000;
+		ubyte BaseMid        = 0x00;
 		private ubyte Flags1 = 0b11110011;
 		private ubyte Flags2 = 0b11001111;
-		ubyte BaseHigh = 0x00;
+		ubyte BaseHigh       = 0x00;
 		
 		mixin(Bitfield!(Flags1, "zero4", 5, "dpl", 2, "p", 1));
 	}
@@ -140,37 +137,37 @@ abstract final class GDT {
 			Entries[index].CodeSegment = CodeSegmentDescriptor.init;
 			
 			with (Entries[index].CodeSegment) {
-				c = conforming;
+				c   = conforming;
 				dpl = DPL;
-				p = present;
-				l = true;
-				d = false;
+				p   = present;
+				l   = true;
+				d   = false;
 			}
 		}
 		
 		void SetDataSegment(uint index, bool present, ubyte DPL) {
-			Entries[index].DataSegment	= DataSegmentDescriptor.init;
-			Entries[index].DataSegment.p = present;
-			Entries[index].DataSegment.dpl	= DPL;
+			Entries[index].DataSegment     = DataSegmentDescriptor.init;
+			Entries[index].DataSegment.p   = present;
+			Entries[index].DataSegment.dpl = DPL;
 		}
 		
-		void SetSystemSegment(uint index, uint limit, ulong base, SystemSegmentType segType, ubyte DPL, bool present, bool avail, bool granularity) {
-			Entries[index].SystemSegmentLo = SystemSegmentDescriptor.init;
+		void SetSystemSegment(uint index, uint limit, v_addr base, SystemSegmentType segType, ubyte DPL, bool present, bool avail, bool granularity) {
+			Entries[index].SystemSegmentLo     = SystemSegmentDescriptor.init;
 			Entries[index + 1].SystemSegmentHi = SystemSegmentExtension.init;
 			
 			with (Entries[index].SystemSegmentLo) {
-				BaseLo = (base & 0xFFFF);
+				BaseLo    = (base & 0xFFFF);
 				BaseMidLo = (base >> 16) & 0xFF;
 				BaseMidHi = (base >> 24) & 0xFF;
 				
-				LimitLo = limit & 0xFFFF;
-				LimitHi = (limit >> 16) & 0xF;
+				LimitLo   = limit & 0xFFFF;
+				LimitHi   = (limit >> 16) & 0xF;
 				
-				Type = segType;
-				dpl = DPL;
-				p = present;
-				avl = avail;
-				g = granularity;
+				Type      = segType;
+				dpl       = DPL;
+				p         = present;
+				avl       = avail;
+				g         = granularity;
 			}
 			
 			Entries[index + 1].SystemSegmentHi.BaseHi = (base >> 32) & 0xFFFFFFFF;

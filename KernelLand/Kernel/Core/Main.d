@@ -47,6 +47,8 @@
  *      o Implement GC
  *      o Fix \n in Logger
  *      o define vaddr a paddr aliasy alias vaddr = ulong
+ *      o Prepisat vsetky konstanty na ABC_DEF a pouzit m_var namiesto _var
+ *      o Prepisat fce z PascalCase na cammelCase ???
  */
 
 module Core.Main;

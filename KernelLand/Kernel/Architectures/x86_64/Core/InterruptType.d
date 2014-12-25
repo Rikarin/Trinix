@@ -21,45 +21,27 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module Architectures.x86_64.Core.TSS;
-
-import Architecture;
-import MemoryManager;
-import ObjectManager;
-import Architectures.x86_64.Core;
+module Architectures.x86_64.Core.InterruptType;
 
 
-struct TaskStateSegment {
-align(1):
-	private uint m_reserved0;
-	
-	v_addr RSP0;
-	private v_addr m_rsp1;
-	private v_addr m_rsp2;
-	
-	private ulong m_reserved1;
-	private v_addr[7] m_ist;
-	private ulong m_reserved2;
-	private ushort m_reserved3;
-	
-	private ushort m_ioMap;
-}
-
-
-abstract final class TSS {
-	private enum TSS_BASE = 0x28;
-	private __gshared TaskStateSegment*[256] m_segments;
-
-	@property static TaskStateSegment* Table() {
-		return m_segments[CPU.identifier];
-	}
-
-	static void Initialize() {
-		m_segments[CPU.identifier] = new TaskStateSegment();
-        GDT.Table.SetSystemSegment((TSS_BASE >> 3), TaskStateSegment.sizeof, cast(v_addr)m_segments[CPU.identifier], SystemSegmentType.AvailableTSS, 0, true, false, false);
-        
-        asm {
-            "ltr AX" : : "a"(TSS_BASE);
-        }
-	}
+enum InterruptType : uint {
+    DivisionByZero,
+    Debug,
+    NMI,
+    Breakpoint,
+    INTO,
+    OutOfBounds,
+    InvalidOpcode,
+    NoCoprocessor,
+    DoubleFault,
+    CoprocessorSegmentOverrun,
+    BadTSS,
+    SegmentNotPresent,
+    StackFault,
+    GeneralProtectionFault,
+    PageFault,
+    UnknownInterrupt,
+    CoprocessorFault,
+    AlignmentCheck,
+    MachineCheck
 }

@@ -24,6 +24,8 @@
 module Architecture.Linker;
 
 import ObjectManager;
+import MemoryManager;
+
 
 private extern(C) __gshared {
 	ubyte iKernelBase;
@@ -38,28 +40,28 @@ private extern(C) __gshared {
 
 abstract final class LinkerScript {
 	@property {
-		static void* KernelBase() {
-			return &iKernelBase;
+		static v_addr KernelBase() {
+			return cast(v_addr)&iKernelBase;
 		}
 		
-		static void* KernelEnd() {
-			return &iKernelEnd;
+		static v_addr KernelEnd() {
+			return cast(v_addr)&iKernelEnd;
 		}
 	
-		static void* KernelSymbols() {
-			return &iKernelSymbols;
+		static v_addr KernelSymbols() {
+			return cast(v_addr)&iKernelSymbols;
 		}
 		
-		static void* KernelSymbolsEnd() {
-			return &iKernelSymbolsEnd;
+		static v_addr KernelSymbolsEnd() {
+			return cast(v_addr)&iKernelSymbolsEnd;
 		}
 
-		static void* KernelModules() {
-			return &iKernelModules;
+		static v_addr KernelModules() {
+			return cast(v_addr)&iKernelModules;
 		}
 
-		static void* KernelModulesEnd() {
-			return &iKernelModulesEnd;
+		static v_addr KernelModulesEnd() {
+			return cast(v_addr)&iKernelModulesEnd;
 		}
 	}
 }

@@ -27,9 +27,10 @@ import Core;
 import VFSManager;
 import Architecture;
 import ObjectManager;
+import MemoryManager;
 
 
-extern(C) void ArchMain(uint magic, void* info) {
+extern(C) void ArchMain(uint magic, v_addr info) {
     Logger.Initialize();
 
     Log("multiboot2");
@@ -46,7 +47,7 @@ void LoadModules() {
 
     foreach (tmp; Multiboot.Modules[0 .. Multiboot.ModulesCount]) {
         char* str    = &tmp.String;
-        ulong addr   = tmp.ModStart | cast(ulong)LinkerScript.KernelBase;
+        ulong addr   = tmp.ModStart | LinkerScript.KernelBase;
         ulong length = tmp.ModEnd - tmp.ModStart;
 
         Log("Start: %16x, Length: %16x, CMD: %s", addr, length, cast(string)str[0 .. tmp.Size - 17]);

@@ -27,7 +27,7 @@ import VFSManager;
 
 
 final class TmpFS : IFileSystem {
-	private DirectoryNode _rootNode;
+	private DirectoryNode m_rootNode;
 
 	private this() {
 
@@ -42,7 +42,7 @@ final class TmpFS : IFileSystem {
 	}
 	
 	@property DirectoryNode RootNode() {
-		return _rootNode;
+		return m_rootNode;
 	}
 	
 	bool Unmount() {
@@ -111,10 +111,10 @@ final class TmpFS : IFileSystem {
 			return null;
 		
 		TmpFS ret = new TmpFS();
-		ret._rootNode = new DirectoryNode(null, FSNode.NewAttributes("/"));
-		ret._rootNode.FileSystem = ret;
+		ret.m_rootNode = new DirectoryNode(null, FSNode.NewAttributes("/"));
+		ret.m_rootNode.FileSystem = ret;
 		
-		if (!mountpoint.Mount(ret._rootNode)) {
+		if (!mountpoint.Mount(ret.m_rootNode)) {
 			delete ret;
 			return null;
 		}

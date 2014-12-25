@@ -33,46 +33,14 @@ import SyscallManager;
 import Architectures.x86_64.Core;
 
 
-enum InterruptStackType : ushort {
-	RegisterStack,
-	StackFault,
-	DoubleFault,
-	NMI,
-	Debug,
-	MCE
-}
-
-enum InterruptType : uint {
-	DivisionByZero,
-	Debug,
-	NMI,
-	Breakpoint,
-	INTO,
-	OutOfBounds,
-	InvalidOpcode,
-	NoCoprocessor,
-	DoubleFault,
-	CoprocessorSegmentOverrun,
-	BadTSS,
-	SegmentNotPresent,
-	StackFault,
-	GeneralProtectionFault,
-	PageFault,
-	UnknownInterrupt,
-	CoprocessorFault,
-	AlignmentCheck,
-	MachineCheck,
-}
-
-
 abstract final class IDT {
-	private __gshared IDTBase _idtBase;
-	private __gshared InterruptGateDescriptor[256] _entries;
+	private __gshared IDTBase m_idtBase;
+	private __gshared InterruptGateDescriptor[256] m_entries;
 	
 
 	static void Initialize() {
-		_idtBase.Limit = (InterruptGateDescriptor.sizeof * _entries.length) - 1;
-		_idtBase.Base = cast(ulong)_entries.ptr;
+		m_idtBase.Limit = (InterruptGateDescriptor.sizeof * m_entries.length) - 1;
+		m_idtBase.Base  = cast(ulong)m_entries.ptr;
 		
 		mixin(GenerateIDT!50);
 		
@@ -80,7 +48,7 @@ abstract final class IDT {
 		SetInterruptGate(8, &IsrIgnore);
 
         asm {
-            "lidt [RAX]" : : "a"(&_idtBase);
+            "lidt [RAX]" : : "a"(&m_idtBase);
             "sti";
         }
 	}
@@ -112,14 +80,14 @@ abstract final class IDT {
 	}
 	
 	private static void SetGate(uint num, SystemSegmentType gateType, ulong funcPtr, ushort dplFlags, ushort istFlags) {
-		with (_entries[num]) {
-			TargetLow = funcPtr & 0xFFFF;
-			Segment = 0x08;
-			ist = istFlags;
-			p = true;
-			dpl = dplFlags;
-			Type = cast(uint)gateType;
-			TargetMid = (funcPtr >> 16) & 0xFFFF;
+		with (m_entries[num]) {
+			TargetLow  = funcPtr & 0xFFFF;
+			Segment    = 0x08;
+			ist        = istFlags;
+			p          = true;
+			dpl        = dplFlags;
+			Type       = cast(uint)gateType;
+			TargetMid  = (funcPtr >> 16) & 0xFFFF;
 			TargetHigh = (funcPtr >> 32);
 		}
 	}
@@ -133,7 +101,7 @@ abstract final class IDT {
 
 	private static template GenerateISR(ulong num, bool needDummyError = true) {
 		const char[] GenerateISR = `private static void isr` ~ num.stringof[0 .. $ - 2] ~ `(){asm{"pop RBP";` ~
-			(needDummyError ? `"pushq 0";` : ``) ~ `"pushq ` ~ num.stringof[0 .. $ - 2] ~ `";"push RAX";"jmp %0" : : "a"(&IsrCommon);}}`;
+			(needDummyError ? `"pushq 0";` : ``) ~ `"pushq ` ~ num.stringof[0 .. $ - 2] ~ `";"push RAX";"jmp %0" : : "a"(&ISRCommon);}}`;
 	}
 
 	private static template GenerateISRs(uint start, uint end, bool needDummyError = true) {
@@ -203,7 +171,7 @@ abstract final class IDT {
 		}
 	}
 	
-	extern(C) private static void IsrCommon() {
+	extern(C) private static void ISRCommon() {
 		asm {
 			"pop RBP"; /* Naked */
 			"cli";

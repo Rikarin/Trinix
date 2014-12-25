@@ -77,7 +77,7 @@ align(1):
 	ulong Address;
 	ulong Length;
 	uint Type;
-	private uint _zero;
+	private uint m_zero;
 }
 
 struct MultibootTag {
@@ -139,7 +139,7 @@ align(1):
 	uint Height;
 	ubyte Bpp;
 	ubyte FramebufferType;
-	private ushort _reserved;
+	private ushort m_reserved;
 }
 
 struct MultibootTagFramebuffer {
@@ -165,28 +165,28 @@ align(1):
 
 
 abstract final class Multiboot {
+    private enum {
+        HEADER_MAGIC     = 0xE85250D6,
+        BOOTLOADER_MAGIC = 0x36D76289
+    }
+
 	__gshared MultibootTagModule*[256] Modules;
 	__gshared int ModulesCount;
 
-	private enum {
-		HeaderMagic = 0xE85250D6,
-		BootloaderMagic = 0x36D76289
-	}
-
-	static void ParseHeader(uint magic, void* info) {
+	static void ParseHeader(uint magic, v_addr info) {
 		if (magic != Multiboot.BootloaderMagic) {
             Log("Error: Bad multiboot 2 magic: %d", magic);
 			Port.Halt();
 		}
 		
-		if (cast(ulong)info & 7) {
+		if (info & 7) {
             Log("Error: Unaligned MBI");
 			Port.Halt();
 		}
 
         Log("Size: %x", *cast(ulong *)info);
         Log("-----------------");
-		MultibootTag* mbt = cast(MultibootTag *)(cast(long)info + cast(long)LinkerScript.KernelBase + 8);
+		MultibootTag* mbt = cast(MultibootTag *)(info + LinkerScript.KernelBase + 8);
 		for (; mbt.Type != MultibootTagType.End; mbt = cast(MultibootTag *)(cast(ulong)mbt + ((mbt.Size + 7UL) & ~7UL))) {
             Log("Type %x, Size: %d", mbt.Type, mbt.Size);
 			
