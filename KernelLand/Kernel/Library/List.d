@@ -32,7 +32,7 @@ class List(T) {
 	@property long Count()          { return m_count; }
     long opDollar()                 { return m_count; }
 	ref T opIndex(long index)       { return m_array[index]; }
-	ref T[] opSlice(long i, long j) { return m_array[i .. j]; }
+	T[] opSlice(long i, long j) { return m_array[i .. j]; }
 
 	int opApply(int delegate(ref T) dg) {
 		int result;
