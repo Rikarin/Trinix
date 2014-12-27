@@ -41,8 +41,8 @@ List!string Split(string str, char delimiter) {
 	return ret;
 }
 
-string ToString(char* str) {
+string ToString(const char* str) {
 	int i;
 	while (str[i++] != '\0') {}
-	return cast(string)str[0 .. i];
+	return cast(string)str[0 .. i - 1];
 }

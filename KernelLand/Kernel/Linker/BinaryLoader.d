@@ -26,6 +26,7 @@ import Core;
 import Linker;
 import Library;
 import VFSManager;
+import Architecture;
 import MemoryManager;
 
 
@@ -55,6 +56,12 @@ class BinaryLoader {
 		ReadOnly   = 1,
 		Executable = 2
 	}
+
+    private struct KernelSymbol {
+    align(1):
+        v_addr Address;
+        char Name;
+    }
 
 	private __gshared LinkedList!BinaryLoader m_binaries;
 	private __gshared LinkedList!BinaryLoaderType m_loaders;
@@ -93,6 +100,16 @@ class BinaryLoader {
 		//TODO: move to elf initialization
 		BinaryLoaderType elf = { 0x464C457F, 0xFFFFFFFF, &ElfLoader.Load };
 		m_loaders.Add(elf);
+
+        Log("Starts at %x", LinkerScript.KernelSymbols);
+
+        for (auto sym = cast(KernelSymbol *)LinkerScript.KernelSymbols;
+             cast(v_addr)sym < LinkerScript.KernelSymbolsEnd;) {
+            string name = (&sym.Name).ToString();
+           // Log("Symbol %s at address %x", name, sym.Address);
+
+            sym += KernelSymbol.sizeof + name.length;
+        }
 	}
 
 	static void Finalize() {

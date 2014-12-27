@@ -92,7 +92,6 @@
     <Compile Include="Architectures\x86_64\Core\IDT.d" />
     <Compile Include="Architectures\x86_64\Architecture\Port.d" />
     <Compile Include="Architectures\x86_64\Architecture\package.d" />
-    <Compile Include="Architectures\x86_64\Architecture\Linker.d" />
     <Compile Include="Architectures\x86_64\Architecture\CPU.d" />
     <Compile Include="Architectures\x86_64\Architecture\Main.d" />
     <Compile Include="Library\BitArray.d" />
@@ -148,5 +147,6 @@
     <Compile Include="Linker\ElfLoader.d" />
     <Compile Include="Architectures\x86_64\Core\InterruptType.d" />
     <Compile Include="Architectures\x86_64\Core\InterruptStackType.d" />
+    <Compile Include="Architectures\x86_64\Architecture\LinkerScript.d" />
   </ItemGroup>
 </Project>
