@@ -32,9 +32,7 @@ class Queue(T) {
 	private T[] m_array;
 	private long m_count;
 
-	@property long Count() {
-		return m_count;
-	}
+	@property long Count() { return m_count; }
 
 	int opApply(int delegate(ref T) dg) {
 		int result;

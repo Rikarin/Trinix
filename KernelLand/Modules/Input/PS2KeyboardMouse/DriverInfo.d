@@ -30,7 +30,7 @@ import Modules.Input.PS2KeyboardMouse.PS2Keyboard;
 
 
 extern(C) const ModuleDef _DriverInfo_Input_PS2KeyboardMouse = {
-	Magic: ModuleMagic,
+    Magic: MODULE_MAGIC,
 	Type: DeviceType.Input,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,
@@ -41,7 +41,7 @@ extern(C) const ModuleDef _DriverInfo_Input_PS2KeyboardMouse = {
 };
 
 extern(C) const ModuleDef _DriverInfo_Input_PS2Keyboard = {
-	Magic: ModuleMagic,
+    Magic: MODULE_MAGIC,
 	Type: DeviceType.Input,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,
@@ -56,7 +56,7 @@ extern(C) const ModuleDef _DriverInfo_Input_PS2Keyboard = {
 };
 
 extern(C) const ModuleDef _DriverInfo_Input_PS2Mouse = {
-	Magic: ModuleMagic,
+    Magic: MODULE_MAGIC,
 	Type: DeviceType.Input,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,

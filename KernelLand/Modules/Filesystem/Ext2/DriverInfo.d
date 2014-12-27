@@ -28,7 +28,7 @@ import Modules.Filesystem.Ext2;
 
 
 extern(C) const ModuleDef _DriverInfo_Filesystem_Ext2 = {
-	Magic: ModuleMagic,
+    Magic: MODULE_MAGIC,
 	Type: DeviceType.Filesystem,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,

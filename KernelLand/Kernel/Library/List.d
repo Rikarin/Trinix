@@ -28,29 +28,11 @@ class List(T) {
 	private T[] m_array;
 	private long m_count;
 
-	@property long Capacity() {
-		return m_array.length;
-	}
-
-	@property long Count() {
-		return m_count;
-	}
-
-	void opIndexAssign(T value, long index) {
-		m_array[index] = value;
-	}
-
-	T opIndex(long index) {
-		return m_array[index];
-	}
-
-	T[] opSlice(long i, long j) {
-		return m_array[i .. j];
-	}
-
-	long opDollar() {
-		return m_count;
-	}
+	@property long Capacity()       { return m_array.length; } 
+	@property long Count()          { return m_count; }
+    long opDollar()                 { return m_count; }
+	ref T opIndex(long index)       { return m_array[index]; }
+	ref T[] opSlice(long i, long j) { return m_array[i .. j]; }
 
 	int opApply(int delegate(ref T) dg) {
 		int result;

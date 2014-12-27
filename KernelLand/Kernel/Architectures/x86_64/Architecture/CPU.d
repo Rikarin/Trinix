@@ -38,13 +38,8 @@ abstract final class CPU {
     //TODO: deprecated private __gshared ubyte*[256] m_stacks;
     private __gshared ProcessorInfo[256] m_processorInfo;
 
-    @property static int Identifier() {
-        return 0;
-    }
-
-    @property static TaskStateSegment* TSSTable() {
-        return TSS.Table;
-    }
+    @property static int Identifier()             { return 0; }
+    @property static TaskStateSegment* TSSTable() { return TSS.Table; }
 
     static void Initialize() {
         Logger.Write("SSE, ");
@@ -70,10 +65,7 @@ abstract final class CPU {
         uint count, temp;
         ulong saveRBX;
         
-        asm {
-            "mov %0, RBX" : "=r"(saveRBX);
-        }
-        
+        asm { "mov %0, RBX" : "=r"(saveRBX); }
         eax = Port.cpuidAX(0x02);
         count = eax & 0xFF;
         asm {
@@ -107,9 +99,7 @@ abstract final class CPU {
             }
         }
         
-        asm {
-            "mov RBX, %0" : : "r"(saveRBX);
-        }
+        asm { "mov RBX, %0" : : "r"(saveRBX); }
     }
 
     private static void ExamineRegister(uint reg) {

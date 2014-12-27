@@ -63,10 +63,10 @@ enum AccessMode : uint {
 
 struct PageTableEntry(string T) {
 align(1):
-	private ulong pml;
+	private ulong m_pml;
 
 	static if (T == "primary") {
-		mixin(Bitfield!(pml,
+        mixin(Bitfield!(m_pml,
 		                "Present", 1,
 		                "ReadWrite", 1,
 		                "User", 1,
@@ -82,7 +82,7 @@ align(1):
 		                "NX", 1
 		                ));
 	} else static if (T == "secondary") {
-		mixin(Bitfield!(pml,
+        mixin(Bitfield!(m_pml,
 		                "Present", 1,
 		                "ReadWrite", 1,
 		                "User", 1,

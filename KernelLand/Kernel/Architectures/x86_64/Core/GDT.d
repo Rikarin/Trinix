@@ -73,27 +73,27 @@ abstract final class GDT {
 	
 	private struct CodeSegmentDescriptor {
 	align(1):
-		ushort Limit         = 0xFFFF;
-		ushort Base          = 0x0000;
-		ubyte BaseMid        = 0x00;
-		private ubyte Flags1 = 0b11111101;
-		private ubyte Flags2 = 0b00000000;
-		ubyte BaseHigh       = 0x00;
+		ushort Limit           = 0xFFFF;
+		ushort Base            = 0x0000;
+		ubyte BaseMid          = 0x00;
+		private ubyte m_flags1 = 0b11111101;
+        private ubyte m_flags2 = 0b00000000;
+		ubyte BaseHigh         = 0x00;
 		
-		mixin(Bitfield!(Flags1, "zero3", 2, "c", 1, "ones0", 2, "dpl", 2, "p", 1));
-		mixin(Bitfield!(Flags2, "zero4", 5, "l", 1, "d", 1, "Granularity", 1));
+        mixin(Bitfield!(m_flags1, "zero3", 2, "c", 1, "ones0", 2, "dpl", 2, "p", 1));
+        mixin(Bitfield!(m_flags2, "zero4", 5, "l", 1, "d", 1, "Granularity", 1));
 	}
 	
 	private struct DataSegmentDescriptor {
 	align(1):
-		ushort Limit         = 0xFFFF;
-		ushort Base          = 0x0000;
-		ubyte BaseMid        = 0x00;
-		private ubyte Flags1 = 0b11110011;
-		private ubyte Flags2 = 0b11001111;
-		ubyte BaseHigh       = 0x00;
+		ushort Limit           = 0xFFFF;
+		ushort Base            = 0x0000;
+		ubyte BaseMid          = 0x00;
+        private ubyte m_flags1 = 0b11110011;
+        private ubyte m_flags2 = 0b11001111;
+		ubyte BaseHigh         = 0x00;
 		
-		mixin(Bitfield!(Flags1, "zero4", 5, "dpl", 2, "p", 1));
+        mixin(Bitfield!(m_flags1, "zero4", 5, "dpl", 2, "p", 1));
 	}
 	
 	private struct SystemSegmentDescriptor {
@@ -101,12 +101,12 @@ abstract final class GDT {
 		ushort LimitLo;
 		ushort BaseLo;
 		ubyte BaseMidLo;
-		private ubyte Flags1;
-		private ubyte Flags2;
+        private ubyte m_flags1;
+        private ubyte m_flags2;
 		ubyte BaseMidHi;
 		
-		mixin(Bitfield!(Flags1, "Type", 4, "Zero0", 1, "dpl", 2, "p", 1));
-		mixin(Bitfield!(Flags2, "LimitHi", 4, "avl", 1, "Zero1", 2, "g", 1));
+        mixin(Bitfield!(m_flags1, "Type", 4, "Zero0", 1, "dpl", 2, "p", 1));
+        mixin(Bitfield!(m_flags2, "LimitHi", 4, "avl", 1, "Zero1", 2, "g", 1));
 	}
 	
 	private struct SystemSegmentExtension {

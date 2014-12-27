@@ -48,7 +48,6 @@
  *      o Fix \n in Logger
  *      o define vaddr a paddr aliasy alias vaddr = ulong
  *      o Prepisat vsetky konstanty na ABC_DEF a pouzit m_var namiesto _var
- *      o Prepisat fce z PascalCase na cammelCase ???
  */
 
 module Core.Main;
@@ -94,16 +93,16 @@ extern(C) void KernelMain() {
     VFS.Initialize();
 
     Log("Remaping PIC");
-	Port.Write!byte(0x20, 0x11);
-	Port.Write!byte(0xA0, 0x11);
-	Port.Write!byte(0x21, 0x20);
-	Port.Write!byte(0xA1, 0x28);
-	Port.Write!byte(0x21, 0x04);
-	Port.Write!byte(0xA1, 0x02);
-	Port.Write!byte(0x21, 0x01);
-	Port.Write!byte(0xA1, 0x01);
-	Port.Write!byte(0x21, 0x00);
-	Port.Write!byte(0xA1, 0x00);
+	Port.Write(0x20, 0x11);
+	Port.Write(0xA0, 0x11);
+	Port.Write(0x21, 0x20);
+	Port.Write(0xA1, 0x28);
+	Port.Write(0x21, 0x04);
+	Port.Write(0xA1, 0x02);
+	Port.Write(0x21, 0x01);
+	Port.Write(0xA1, 0x01);
+	Port.Write(0x21, 0x00);
+	Port.Write(0xA1, 0x00);
 
     Log("Timer");
 	Time.Initialize();

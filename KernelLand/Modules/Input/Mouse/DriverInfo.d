@@ -28,7 +28,7 @@ import Modules.Input.Mouse.Main;
 
 
 extern(C) const ModuleDef _DriverInfo_Input_Mouse = {
-	Magic: ModuleMagic,
+    Magic: MODULE_MAGIC,
 	Type: DeviceType.Input,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,

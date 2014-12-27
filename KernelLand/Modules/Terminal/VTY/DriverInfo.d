@@ -28,7 +28,7 @@ import Modules.Terminal.VTY.Main;
 
 
 extern(C) const ModuleDef _DriverInfo_Terminal_VTY = {
-	Magic: ModuleMagic,
+    Magic: MODULE_MAGIC,
 	Type: DeviceType.Terminal,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,

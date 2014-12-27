@@ -56,46 +56,25 @@ abstract final class Task {
 	private __gshared Thread m_currentThread;
 	private __gshared Thread m_idle;
 
-	@property package static SpinLock ThreadLock() {
-		return m_spinLock;
-	}
-
-	@property package static LinkedList!Thread[] Threads() {
-		return m_threads;
-	}
-
-	@property package static LinkedList!Process Processes() {
-		return m_procs;
-	}
-
-	@property package static size_t ThreadCount() {
-		size_t count;
-		foreach (x; m_threads)
-			if (x !is null)
-				count += x.Count;
-
-		return count;
-	}
-
-	@property static Thread CurrentThread() {
-		return m_currentThread;
-	}
-
-	@property static Process CurrentProcess() {
-		return CurrentThread.ParentProcess;
-	}
-
-	@property package static ulong NextPID() {
-		return m_nextPID++;
-	}
-
-	@property package static ulong NextTID() {
-		return m_nextTID++;
-	}
-
-	@property package static ref Thread IdleTask() {
-		return m_idle;
-	}
+    @property {
+        static Thread CurrentThread()                 { return m_currentThread; }
+        static Process CurrentProcess()               { return CurrentThread.ParentProcess;}
+        package static SpinLock ThreadLock()          { return m_spinLock; }
+        package static ulong NextPID()                { return m_nextPID++; }
+        package static ulong NextTID()                { return m_nextTID++; }
+        package static ref Thread IdleTask()          { return m_idle; }
+        package static LinkedList!Thread[] Threads()  { return m_threads; }
+        package static LinkedList!Process Processes() { return m_procs; }
+        
+        package static size_t ThreadCount() {
+            size_t count;
+            foreach (x; m_threads)
+                if (x !is null)
+                    count += x.Count;
+            
+            return count;
+        }
+    }
 
 	static void Initialize() {
 		m_spinLock = new SpinLock();

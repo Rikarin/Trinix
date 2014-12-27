@@ -23,72 +23,58 @@
 
 module Architecture.Port;
 
-private extern(C) void _Proc_EnableSSE();
-private extern(C) void _Proc_DisableSSE();
-private extern(C) void _Proc_InitialiseSSE();
-private extern(C) void _Proc_SaveSSE(ulong ptr);
-private extern(C) void _Proc_RestoreSSE(ulong ptr);
+import Library;
+
+private extern(C) extern pure nothrow {
+    void _Proc_EnableSSE();
+    void _Proc_DisableSSE();
+    void _Proc_InitialiseSSE();
+    void _Proc_SaveSSE(ulong ptr);
+    void _Proc_RestoreSSE(ulong ptr);
+}
 
 
 abstract final class Port {
-	static T Read(T)(ushort port) {
+nothrow:
+
+	static T Read(T = byte)(ushort port) pure {
 		T ret;
 
-		static if (is(T == byte) || is(T == ubyte)) {
-			asm {
-				"inb AL, %1" : "=a"(ret) : "dN"(port);
-			}
-		} else static if (is(T == short) || is(T == ushort)) {
-			asm {
-				"inw AX, %1" : "=a"(ret) : "dN"(port);
-			}
-		} else static if (is(T == int) || is(T == uint)) {
-			asm {
-				"inl EAX, %1" : "=a"(ret) : "dN"(port);
-			}
+		static if (isByte!T) {
+			asm { "inb AL, %1" : "=a"(ret) : "dN"(port); }
+		} else static if (isShort!T) {
+			asm { "inw AX, %1" : "=a"(ret) : "dN"(port); }
+		} else static if (isInt!T) {
+			asm { "inl EAX, %1" : "=a"(ret) : "dN"(port); }
 		}
 		
 		return ret;
 	}
 	
-	static void Write(T)(ushort port, int data) {
-		static if (is(T == byte) || is(T == ubyte)) {
-			asm {
-				"outb %0, AL" : : "dN"(port), "a"(data);
-			}
-		} else static if (is(T == short) || is(T == ushort)) {
-			asm {
-				"outw %0, AX" : : "dN"(port), "a"(data);
-			}
-		} else static if (is(T == int) || is(T == uint)) {
-			asm {
-				"outl %0, EAX" : : "dN"(port), "a"(data);
-			}
+	static void Write(T = byte)(ushort port, int data) pure {
+		static if (isByte!T) {
+			asm { "outb %0, AL" : : "dN"(port), "a"(data); }
+		} else static if (isShort!T) {
+			asm { "outw %0, AX" : : "dN"(port), "a"(data); }
+		} else static if (isInt!T) {
+			asm { "outl %0, EAX" : : "dN"(port), "a"(data); }
 		}
 	}
 
-	static void Cli() {
-		asm {
-			"cli";
-		}
+	static void Cli() pure {
+		asm { "cli"; }
 	}
 	
-	static void Sti() {
-		asm {
-			"sti";
-		}
+	static void Sti() pure {
+		asm { "sti"; }
 	}
 
-	static void Halt() {
-		asm {
-			"hlt";
-		}
+	static void Halt() pure {
+		asm { "hlt"; }
 	}
 	
 	static void SwapGS() {
-		asm {
-			"swapgs";
-		}
+		asm { "swapgs"; }
 	}
 
 	static bool GetIntFlag() {
@@ -106,17 +92,13 @@ abstract final class Port {
 		lo = value & 0xFFFFFFFF;
 		hi = value >> 32UL;
 		
-		asm {
-			"wrmsr" : : "d"(hi), "a"(lo), "c"(msr);
-		}
+		asm { "wrmsr" : : "d"(hi), "a"(lo), "c"(msr); }
 	}
 
 	static ulong ReadMSR(uint msr) {
 		uint hi, lo;
 		
-		asm {
-			"rdmsr" : "=d"(hi), "=a"(lo) : "c"(msr);
-		}
+		asm { "rdmsr" : "=d"(hi), "=a"(lo) : "c"(msr); }
 		
 		ulong ret = hi;
 		ret <<= 32;
@@ -126,38 +108,30 @@ abstract final class Port {
 	}
 	
 	static uint cpuidAX(uint func) {
-		asm {
-			"cpuid" : "+a"(func);
-		}
+		asm { "cpuid" : "+a"(func); }
 		return func;
 	}
 	
 	static uint cpuidBX(uint func) {
-		asm {
-			"cpuid" : "=b"(func) : "a"(func);
-		}
+		asm { "cpuid" : "=b"(func) : "a"(func); }
 		return func;
 	}
 	
 	static uint cpuidCX(uint func) {
-		asm {
-			"cpuid" : "=c"(func) : "a"(func);
-		}
+		asm { "cpuid" : "=c"(func) : "a"(func); }
 		return func;
 	}
 	
 	static uint cpuidDX(uint func) {
-		asm {
-			"cpuid" : "=d"(func) : "a"(func);
-		}
+		asm { "cpuid" : "=d"(func) : "a"(func); }
 		return func;
 	}
 
-	static void EnableSSE() {
+	static void EnableSSE() pure {
 		_Proc_EnableSSE();
 	}
 
-	static void DisableSSE() {
+	static void DisableSSE() pure {
 		_Proc_DisableSSE();
 	}
 

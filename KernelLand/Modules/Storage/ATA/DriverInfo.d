@@ -28,7 +28,7 @@ import Modules.Storage.ATA.Main;
 
 
 extern(C) const ModuleDef _DriverInfo_Storage_ATA = {
-	Magic: ModuleMagic,
+    Magic: MODULE_MAGIC,
 	Type: DeviceType.Input,
 	Architecture: ModuleArch.x86_64,
 	Flags: 0x00,

@@ -148,5 +148,6 @@
     <Compile Include="Architectures\x86_64\Core\InterruptType.d" />
     <Compile Include="Architectures\x86_64\Core\InterruptStackType.d" />
     <Compile Include="Architectures\x86_64\Architecture\LinkerScript.d" />
+    <Compile Include="Library\Template.d" />
   </ItemGroup>
 </Project>

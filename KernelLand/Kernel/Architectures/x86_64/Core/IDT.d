@@ -45,7 +45,7 @@ abstract final class IDT {
 		mixin(GenerateIDT!50);
 		
 		SetSystemGate(3, &isr3, InterruptStackType.Debug);
-		SetInterruptGate(8, &IsrIgnore);
+        SetInterruptGate(8, &ISRIgnore);
 
         asm {
             "lidt [RAX]" : : "a"(&m_idtBase);
@@ -54,11 +54,11 @@ abstract final class IDT {
 	}
 
 	static void SetInterruptGate(uint num, void* funcPtr, InterruptStackType ist = InterruptStackType.RegisterStack) {
-		SetGate(num, SystemSegmentType.InterruptGate, cast(ulong)funcPtr, 0, ist);
+		SetGate(num, SystemSegmentType.InterruptGate, cast(v_addr)funcPtr, 0, ist);
 	}
 	
 	static void SetSystemGate(uint num, void* funcPtr, InterruptStackType ist = InterruptStackType.RegisterStack) {
-		SetGate(num, SystemSegmentType.InterruptGate, cast(ulong)funcPtr, 3, ist);
+        SetGate(num, SystemSegmentType.InterruptGate, cast(v_addr)funcPtr, 3, ist);
 	}
 
 	private struct IDTBase {
@@ -97,10 +97,11 @@ abstract final class IDT {
 			const char[] GenerateIDT = ``;
 		else
 			const char[] GenerateIDT = `SetInterruptGate(` ~ idx.stringof ~ `, &isr` ~ idx.stringof[0 .. $ - 1] ~ `);` ~ GenerateIDT!(numberISRs, idx + 1);
+        //TODO: q{} syntax
 	}
 
 	private static template GenerateISR(ulong num, bool needDummyError = true) {
-		const char[] GenerateISR = `private static void isr` ~ num.stringof[0 .. $ - 2] ~ `(){asm{"pop RBP";` ~
+        const char[] GenerateISR = `private static void isr` ~ num.stringof[0 .. $ - 2] ~ `(){asm{"pop RBP";` ~ //TODO: q{} syntax
 			(needDummyError ? `"pushq 0";` : ``) ~ `"pushq ` ~ num.stringof[0 .. $ - 2] ~ `";"push RAX";"jmp %0" : : "a"(&ISRCommon);}}`;
 	}
 
@@ -161,7 +162,7 @@ abstract final class IDT {
 		Port.RestoreSSE(Task.CurrentThread.SavedState.SSEInt.Data);
 	}
 
-	private static void IsrIgnore() {
+	private static void ISRIgnore() {
 		asm {
 			"pop RBP"; /* Naked */
 			"nop";

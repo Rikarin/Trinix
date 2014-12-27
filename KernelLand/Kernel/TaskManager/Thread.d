@@ -88,7 +88,7 @@ final class Thread {
 	private TaskState m_savedState;
 
 	private long m_curFaultNum;
-	private void* m_faultHandler;
+	private void* m_faultHandler; //WTF?
 
 	private SignalType m_pendingSignal;
 	private LinkedList!(IPCMessage *) m_messages;
@@ -98,7 +98,7 @@ final class Thread {
 	//package int _curCPU;
 
 	private ulong m_eventState;
-	private void* m_waitPointer;
+	private void* m_waitPointer; //WTF??
 	private ulong m_retStatus;
 
 	private int m_priority;
@@ -183,75 +183,42 @@ final class Thread {
 		Port.SwapGS();
 	}
 
-	@property ulong ID() {
-		return m_id;
-	}
-
-	@property void Name(string value) {
-		delete m_name;
-		m_name = value;
-	}
-
-	@property string Name() {
-		return m_name;
-	}
-
-	@property Process ParentProcess() {
-		return m_process;
-	}
-
-	@property void* WaitPointer() {
-		return m_waitPointer;
-	}
-
-	@property ref void* FaultHandler() {
-		return m_faultHandler;
-	}
-
-	@property ref ThreadStatus Status() {
-		return m_status;
-	}
-
-	@property ref ulong RetStatus() {
-		return m_retStatus;
-	}
-
-	@property ref TaskState SavedState() {
-		return m_savedState;
-	}
-
-	@property int Priority() {
-		return m_priority;
-	}
-
-	@property ref int Quantum() {
-		return m_quantum;
-	}
-
-	@property ref int Remaining() {
-		return m_remaining;
-	}
-
-	@property long CurrentFaultNum() {
-		return m_curFaultNum;
-	}
-
-	@property void Priority(int priority) {
-		if (priority < 0 || priority > MIN_PRIORITY)
-			priority = MIN_PRIORITY;
-
-		if (priority == m_priority)
-			return;
-
-		if (this != Task.CurrentThread) {
-			Task.ThreadLock.WaitOne();
-			Task.Threads[m_priority].Remove(this);
-			Task.Threads[priority].Add(this);
-			m_priority = priority;
-			Task.ThreadLock.Release();
-		} else
-			m_priority = priority;
-	}
+    @property {
+        ulong ID()                 { return m_id; }
+        string Name()              { return m_name; }
+        int Priority()             { return m_priority; }
+        ref int Quantum()          { return m_quantum; }
+        void* WaitPointer()        { return m_waitPointer; }
+        ref int Remaining()        { return m_remaining; }
+        ref ulong RetStatus()      { return m_retStatus; }
+        long CurrentFaultNum()     { return m_curFaultNum; }
+        Process ParentProcess()    { return m_process; }
+        ref void* FaultHandler()   { return m_faultHandler; }
+        ref ThreadStatus Status()  { return m_status; }
+        ref TaskState SavedState() { return m_savedState; }
+        
+        void Name(string value) {
+            delete m_name;
+            m_name = value;
+        }
+        
+        void Priority(int priority) {
+            if (priority < 0 || priority > MIN_PRIORITY)
+                priority = MIN_PRIORITY;
+            
+            if (priority == m_priority)
+                return;
+            
+            if (this != Task.CurrentThread) {
+                Task.ThreadLock.WaitOne();
+                Task.Threads[m_priority].Remove(this);
+                Task.Threads[priority].Add(this);
+                m_priority = priority;
+                Task.ThreadLock.Release();
+        } else
+            m_priority = priority;
+        }
+    }
 
 	void Start(void function() entryPoint, string[] args) { //TODO: args...
 		m_savedState.RSP = cast(void *)m_kernelStack.ptr + STACK_SIZE;

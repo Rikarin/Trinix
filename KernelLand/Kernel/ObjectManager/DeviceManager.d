@@ -88,8 +88,8 @@ abstract final class DeviceManager {
 
 	static void EOI(int irqNumber) {
 		if (irqNumber >= 8)
-			Port.Write!byte(0xA0, 0x20);
+			Port.Write(0xA0, 0x20);
 		
-		Port.Write!byte(0x20, 0x20);
+		Port.Write(0x20, 0x20);
 	}
 }

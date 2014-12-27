@@ -50,16 +50,13 @@ abstract final class TSS {
 	private enum TSS_BASE = 0x28;
 	private __gshared TaskStateSegment*[256] m_segments;
 
-	@property static TaskStateSegment* Table() {
-		return m_segments[CPU.Identifier];
-	}
+	@property static TaskStateSegment* Table() { return m_segments[CPU.Identifier]; }
 
 	static void Initialize() {
 		m_segments[CPU.Identifier] = new TaskStateSegment();
-        GDT.Table.SetSystemSegment((TSS_BASE >> 3), TaskStateSegment.sizeof, cast(v_addr)m_segments[CPU.Identifier], SystemSegmentType.AvailableTSS, 0, true, false, false);
+        GDT.Table.SetSystemSegment((TSS_BASE >> 3), TaskStateSegment.sizeof, cast(v_addr)m_segments[CPU.Identifier],
+                                   SystemSegmentType.AvailableTSS, 0, true, false, false);
         
-        asm {
-            "ltr AX" : : "a"(TSS_BASE);
-        }
+        asm { "ltr AX" : : "a"(TSS_BASE); }
 	}
 }

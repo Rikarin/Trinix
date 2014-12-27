@@ -42,10 +42,10 @@ abstract final class Logger {
     
     static void Initialize() {
         /* Set cursor */
-        Port.Write!byte(0x3D4, 0x0F);
-        Port.Write!byte(0x3D5, 0);
-        Port.Write!byte(0x3D4, 0x0E);
-        Port.Write!byte(0x3D5, 0);
+        Port.Write(0x3D4, 0x0F);
+        Port.Write(0x3D5, 0);
+        Port.Write(0x3D4, 0x0E);
+        Port.Write(0x3D5, 0);
         
         /* Clear screen */
         foreach (i; 0 .. 2000)
@@ -356,7 +356,7 @@ abstract final class Log {
         }
         
         private static bool IsTransmitEmpty() {
-            return (Port.Read!byte(cast(short)(port + 5)) & 0x20) != 0;
+            return (Port.Read(cast(short)(port + 5)) & 0x20) != 0;
         }
         
         private static void Write(char c) {

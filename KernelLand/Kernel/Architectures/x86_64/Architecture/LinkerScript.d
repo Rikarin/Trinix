@@ -28,40 +28,22 @@ import MemoryManager;
 
 
 private extern(C) extern __gshared {
-	ubyte iKernelBase;
-	ubyte iKernelEnd;
-	ubyte iKernelSymbols;
-	ubyte iKernelSymbolsEnd;
-
-	ubyte iKernelModules;
-	ubyte iKernelModulesEnd;
+    ubyte iKernelBase;
+    ubyte iKernelEnd;
+    ubyte iKernelSymbols;
+    ubyte iKernelSymbolsEnd;
+    
+    ubyte iKernelModules;
+    ubyte iKernelModulesEnd;
 }
 
-
 abstract final class LinkerScript {
-	@property {
-		static v_addr KernelBase() {
-			return cast(v_addr)&iKernelBase;
-		}
-		
-		static v_addr KernelEnd() {
-			return cast(v_addr)&iKernelEnd;
-		}
-	
-		static v_addr KernelSymbols() {
-			return cast(v_addr)&iKernelSymbols;
-		}
-		
-		static v_addr KernelSymbolsEnd() {
-			return cast(v_addr)&iKernelSymbolsEnd;
-		}
-
-		static v_addr KernelModules() {
-			return cast(v_addr)&iKernelModules;
-		}
-
-		static v_addr KernelModulesEnd() {
-			return cast(v_addr)&iKernelModulesEnd;
-		}
-	}
+    @property {
+        static v_addr KernelBase()       { return cast(v_addr)&iKernelBase; }
+        static v_addr KernelEnd()        { return cast(v_addr)&iKernelEnd; }
+        static v_addr KernelSymbols()    { return cast(v_addr)&iKernelSymbols; }
+        static v_addr KernelSymbolsEnd() { return cast(v_addr)&iKernelSymbolsEnd; }
+        static v_addr KernelModules()    { return cast(v_addr)&iKernelModules; }
+        static v_addr KernelModulesEnd() { return cast(v_addr)&iKernelModulesEnd; }
+    }
 }

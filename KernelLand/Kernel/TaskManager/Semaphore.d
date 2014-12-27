@@ -35,6 +35,9 @@ class Semaphore {
 	private LinkedList!Thread m_waiting;
 	private LinkedList!Thread m_signaling;
 
+    @property package LinkedList!Thread Waiting()   { return m_waiting; }
+    @property package LinkedList!Thread Signaling() { return m_signaling; }
+
 	this(int initialCount, int maxCount, string name) in {
 		assert(initialCount > 0);
 		assert(maxCount > 0);
@@ -54,21 +57,13 @@ class Semaphore {
 		delete m_name;
 	}
 
-	@property package void LockInternal() {
-		m_spinLock.WaitOne();
-	}
+    package void LockInternal() {
+        m_spinLock.WaitOne();
+    }
 
-	@property package void UnlockInternal() {
-		m_spinLock.Release();
-	}
-
-	@property package LinkedList!Thread Waiting() {
-		return m_waiting;
-	}
-
-	@property package LinkedList!Thread Signaling() {
-		return m_signaling;
-	}
+	package void UnlockInternal() {
+        m_spinLock.Release();
+    }
 
 	int WaitOne() {
 		int taken;

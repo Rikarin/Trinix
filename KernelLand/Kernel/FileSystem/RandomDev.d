@@ -38,7 +38,7 @@ final class RandomDev : CharNode {
 	
 	override ulong Read(long offset, byte[] data) {
 		foreach (ref x; data) {
-			m_number = (Rand() - Rand2() + Rand3()) * Time.Now;
+			m_number = (Rand1() - Rand2() + Rand3()) * Time.Now;
 			x = cast(byte)(m_number & 0xFF);
 		}
 
@@ -49,15 +49,7 @@ final class RandomDev : CharNode {
 		return 0;
 	}
 
-	private ulong Rand() {
-		return (m_number * 125) % 2796203;
-	}
-
-	private ulong Rand2() {
-		return (m_number * 32719 + 3) % 32749;
-	}
-
-	private ulong Rand3() {
-		return (((m_number * 214013L + 2531011L) >> 16) & 32767);
-	}
+	private ulong Rand1() { return (m_number * 125) % 2796203; }
+	private ulong Rand2() { return (m_number * 32719 + 3) % 32749; }
+	private ulong Rand3() { return (((m_number * 214013L + 2531011L) >> 16) & 32767); }
 }

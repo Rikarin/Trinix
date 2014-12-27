@@ -45,29 +45,29 @@ abstract final class Time {
    
     static void Initialize() {
 		// Disable NMI
-		Port.Write!byte(0x70, Port.Read!byte(0x70) & 0x7F);
+		Port.Write(0x70, Port.Read(0x70) & 0x7F);
 		Port.Cli();
 
 		// Set firing rate
-		Port.Write!byte(0x70, 0x0A);
-		byte val = Port.Read!byte(0x71);
+		Port.Write(0x70, 0x0A);
+		byte val = Port.Read(0x71);
 		val &= 0xF0;
 		val |= TIMER_RATE + 1;
-		Port.Write!byte(0x70, 0x0A);
-		Port.Write!byte(0x71, val);
+		Port.Write(0x70, 0x0A);
+		Port.Write(0x71, val);
 
 		// Enable IRQ8
-		Port.Write!byte(0x70, 0x0B);
-		val = Port.Read!byte(0x71);
-		Port.Write!byte(0x70, 0x0B);
-		Port.Write!byte(0x71, val | 0x40);
+		Port.Write(0x70, 0x0B);
+		val = Port.Read(0x71);
+		Port.Write(0x70, 0x0B);
+		Port.Write(0x71, val | 0x40);
 
 		Port.Sti();
-		Port.Write!byte(0x70, Port.Read!byte(0x70) | 0x80);
+		Port.Write(0x70, Port.Read(0x70) | 0x80);
 
 		DeviceManager.RequestIRQ(&IRQHandler, 8);
-		Port.Write!byte(0x70, 0x0C);
-		Port.Read!byte(0x71);
+		Port.Write(0x70, 0x0C);
+		Port.Read(0x71);
 	}
 
 	@property static long Uptime() {
@@ -117,7 +117,7 @@ abstract final class Time {
 
 		Task.Scheduler(); //TODO: This isnt good... Time.d is RTC not scheduler
 
-		Port.Write!byte(0x70, 0x0C);
-		Port.Read!byte(0x71);
+		Port.Write(0x70, 0x0C);
+		Port.Read(0x71);
 	}
 }

@@ -29,25 +29,13 @@ import VFSManager;
 final class TmpFS : IFileSystem {
 	private DirectoryNode m_rootNode;
 
-	private this() {
-
-	}
-	
-	@property Partition GetPartition() {
-		return null;
-	}
-	
-	@property bool IsWritable() {
-		return true;
-	}
-	
-	@property DirectoryNode RootNode() {
-		return m_rootNode;
-	}
-	
-	bool Unmount() {
-		return true;
-	}
+    @property Partition GetPartition()   { return null; }
+    @property bool IsWritable()          { return true; }
+    @property DirectoryNode RootNode()   { return m_rootNode; }
+    
+    private this()                       { }
+    bool Unmount()                       { return true; }
+    bool LoadContent(DirectoryNode node) { return true; }
 	
 	private ulong Read(TmpFileNode node, long offset, byte[] data) {
 		if (offset >= node.Attributes.Length)
@@ -78,11 +66,7 @@ final class TmpFS : IFileSystem {
 		node.m_data[offset .. end] = data[];
 		return data.length;
 	}
-	
-	bool LoadContent(DirectoryNode node) {
-		return true;
-	}
-	
+
 	FSNode Create(DirectoryNode parent, FileAttributes attributes) {
 		switch (attributes.Type) {
 			case FileType.Directory:

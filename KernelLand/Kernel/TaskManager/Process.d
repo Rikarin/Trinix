@@ -49,31 +49,15 @@ final class Process {
 
 	private List!Resource m_resources;
 
-	@property package LinkedList!Thread Threads() {
-		return m_threads;
-	}
-
-	@property ulong ID() {
-		return m_id;
-	}
-
-	@property ulong UID() {
-		return m_uid;
-	}
-
-	@property ulong GID() {
-		return m_gid;
-	}
-
-	@property Paging PageTable() {
-		return m_paging;
-	}
-
-	@property bool IsKernel() {
-		return m_isKernel;
-	}
-
-
+    @property {
+        ulong ID()             { return m_id; }
+        ulong UID()            { return m_uid; }
+        ulong GID()            { return m_gid; }
+        Paging PageTable()     { return m_paging; }
+        bool IsKernel()        { return m_isKernel; }
+        package auto Threads() { return m_threads; }
+    }
+	
 	package static Process Initialize() {
 		if (Task.ThreadCount)
 			return null;

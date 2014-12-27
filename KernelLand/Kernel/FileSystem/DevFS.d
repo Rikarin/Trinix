@@ -29,29 +29,13 @@ import VFSManager;
 final class DevFS : IFileSystem {
 	private DirectoryNode m_rootNode;
 
-	private this() {
+	@property Partition GetPartition()   { return null; }
+	@property bool IsWritable()          { return true; }
+	@property DirectoryNode RootNode()   { return m_rootNode; }
 
-	}
-	
-	@property Partition GetPartition() {
-		return null;
-	}
-
-	@property bool IsWritable() {
-		return true;
-	}
-
-	@property DirectoryNode RootNode() {
-		return m_rootNode;
-	}
-	
-	bool Unmount() {
-		return true;
-	}
-	
-	bool LoadContent(DirectoryNode node) {
-		return true;
-	}
+    private this()                       { }
+    bool Unmount()                       { return true; }
+	bool LoadContent(DirectoryNode node) { return true; }
 
 	FSNode Create(DirectoryNode parent, FileAttributes attributes) {
 		switch (attributes.Type) {

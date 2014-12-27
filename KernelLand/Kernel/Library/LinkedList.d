@@ -29,20 +29,11 @@ class LinkedList(T) {
 	private long m_count;
 	private long m_version;
 
-	@property long Count() {
-		return m_count;
-	}
-
-	@property LinkedListNode!T First() {
-		return m_head;
-	}
-
-	@property LinkedListNode!T Last() {
-		return m_head is null ? null : m_head._prev;
-	}
+	@property long Count()             { return m_count; }
+	@property LinkedListNode!T First() { return m_head; }
+	@property LinkedListNode!T Last()  { return m_head is null ? null : m_head._prev; }
 
 	this() {
-
 	}
 
 	~this() {

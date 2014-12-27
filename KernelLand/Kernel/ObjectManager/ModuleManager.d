@@ -31,7 +31,7 @@ import Architecture;
 import ObjectManager;
 
 
-enum ModuleMagic = 0xDEADC0DE;
+enum MODULE_MAGIC = 0xDEADC0DE;
 
 enum ModuleResult {
 	Error,
@@ -95,7 +95,7 @@ abstract final class ModuleManager {
 		for (ulong i = cast(ulong)LinkerScript.KernelModules; i < cast(ulong)LinkerScript.KernelModulesEnd;) {
 			ModuleDef* mod = cast(ModuleDef *)i;
 			
-			if (mod.Magic == ModuleMagic) {
+            if (mod.Magic == MODULE_MAGIC) {
                 Log("Name: %s, Identifier: %s", mod.Name, mod.Identifier);
                 Log("Version: %d, Flags: %d", mod.Version, mod.Flags);
 
@@ -116,7 +116,7 @@ abstract final class ModuleManager {
 	}
 
 	static ModuleResult InitModule(ModuleDef mod, string[] args) {
-		if (mod.Magic != ModuleMagic) {
+        if (mod.Magic != MODULE_MAGIC) {
             Log("Error: Wrong module!");
 			return ModuleResult.BadModule;
 		}

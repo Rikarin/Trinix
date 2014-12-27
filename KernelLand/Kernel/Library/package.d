@@ -7,6 +7,7 @@ public import Library.String;
 public import Library.Casters;
 public import Library.Termios;
 public import Library.Bitfield;
+public import Library.Template;
 public import Library.BitArray;
 public import Library.SpinLock;
 public import Library.LinkedList;
