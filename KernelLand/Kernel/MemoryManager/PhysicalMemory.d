@@ -110,6 +110,6 @@ abstract final class PhysicalMemory {
 
     static void AddRegion(RegionInfo info) {
         if (m_regionIterator < MAX_REGIONS)
-            m_regions[m_regionIterator] = info;
+            m_regions[m_regionIterator++] = info;
     }
 }
