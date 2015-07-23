@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
  * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
@@ -57,14 +57,14 @@ abstract final class Task {
 	private __gshared Thread m_idle;
 
     @property {
-        static Thread CurrentThread()                 { return m_currentThread; }
-        static Process CurrentProcess()               { return CurrentThread.ParentProcess;}
-        package static SpinLock ThreadLock()          { return m_spinLock; }
-        package static ulong NextPID()                { return m_nextPID++; }
-        package static ulong NextTID()                { return m_nextTID++; }
-        package static ref Thread IdleTask()          { return m_idle; }
-        package static LinkedList!Thread[] Threads()  { return m_threads; }
-        package static LinkedList!Process Processes() { return m_procs; }
+        static Thread CurrentThread()                 { return m_currentThread;             }
+        static Process CurrentProcess()               { return CurrentThread.ParentProcess; }
+        package static SpinLock ThreadLock()          { return m_spinLock;                  }
+        package static ulong NextPID()                { return m_nextPID++;                 }
+        package static ulong NextTID()                { return m_nextTID++;                 }
+        package static ref Thread IdleTask()          { return m_idle;                      }
+        package static LinkedList!Thread[] Threads()  { return m_threads;                   }
+        package static LinkedList!Process Processes() { return m_procs;                     }
         
         package static size_t ThreadCount() {
             size_t count;
@@ -97,8 +97,8 @@ abstract final class Task {
 
 		void* rsp, rbp;
 		asm {
-			"mov %0, RSP" : "=r"(rsp);
-			"mov %0, RBP" : "=r"(rbp);
+			mov rsp, RSP;
+			mov rbp, RBP;
 		}
 
 		void* rip = _Proc_Read_RIP();
@@ -161,11 +161,11 @@ abstract final class Task {
 
 	private static void SwitchTasks(void* rsp, void* rbp, void* rip) {		
 		asm {
-			"pop RBP"; //Naked
-			"movq RBP, RSI";
-			"movq RSP, RDI";
-			"movq RAX, 0x12341234";
-			"jmp RDX";
+			naked;
+			mov RBP, RSI;
+			mov RSP, RDI;
+			mov RAX, 0x12341234;
+			jmp RDX;
 		}
 	}
 

@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
  * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
@@ -57,6 +57,9 @@ abstract final class TSS {
         GDT.Table.SetSystemSegment((TSS_BASE >> 3), TaskStateSegment.sizeof, cast(v_addr)m_segments[CPU.Identifier],
                                    SystemSegmentType.AvailableTSS, 0, true, false, false);
         
-        asm { "ltr AX" : : "a"(TSS_BASE); }
+		ushort base = TSS_BASE;
+        asm {
+			ltr base;
+		}
 	}
 }

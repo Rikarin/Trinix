@@ -50,35 +50,35 @@ final class Process {
 	private List!Resource m_resources;
 
     @property {
-        ulong ID()             { return m_id; }
-        ulong UID()            { return m_uid; }
-        ulong GID()            { return m_gid; }
-        Paging PageTable()     { return m_paging; }
+        ulong ID()             { return m_id;       }
+        ulong UID()            { return m_uid;      }
+        ulong GID()            { return m_gid;      }
+        Paging PageTable()     { return m_paging;   }
         bool IsKernel()        { return m_isKernel; }
-        package auto Threads() { return m_threads; }
+        package auto Threads() { return m_threads;  }
     }
 	
 	package static Process Initialize() {
 		if (Task.ThreadCount)
 			return null;
 
-		Process process   = new Process();
+		Process process    = new Process();
 		process.m_paging   = VirtualMemory.KernelPaging;
 		process.m_cwd      = VFS.Root;
 		process.m_isKernel = true;
 
         /* Kernel thread */
-		Thread t          = new Thread(process);
-		t.Name            = "Kernel";
-		t.Status          = ThreadStatus.Active;
+		Thread t           = new Thread(process);
+		t.Name             = "Kernel";
+		t.Status           = ThreadStatus.Active;
 		t.SetKernelStack();
 
 		/* Idle task */
-		Task.IdleTask     = new Thread(t);
+		Task.IdleTask      = new Thread(t);
 		with (Task.IdleTask) {
-			Name          = "Idle Task";
-			Priority      = MIN_PRIORITY;
-			Quantum       = 1;
+			Name           = "Idle Task";
+			Priority       = MIN_PRIORITY;
+			Quantum        = 1;
 			Start(&Task.Idle, null);
 		}
 	
@@ -86,9 +86,9 @@ final class Process {
 	}
 
 	private this() {
-		m_id          = Task.NextPID;
-		m_threads     = new LinkedList!Thread();
-		m_resources   = new List!Resource();
+		m_id        = Task.NextPID;
+		m_threads   = new LinkedList!Thread();
+		m_resources = new List!Resource();
 
 		Task.Processes.Add(this);
 	}

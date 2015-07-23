@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
  * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
@@ -258,16 +258,15 @@ final class Thread {
 		*--st = ss;
 
 		asm {
-			"mov RSP, %0" : : "r"(st);
+			mov RSP, st;
+			mov DS, [RSP];
+			add RSP, 8;
+			mov ES, [RSP];
+			add RSP, 8;
+			popq FS;
+			popq GS;
 
-			"mov DS, [RSP]";
-			"add RSP, 8";
-			"mov ES, [RSP]";
-			"add RSP, 8";
-			"popq FS";
-			"popq GS";
-
-			"iretq";
+			iretq;
 		}
 	}
 

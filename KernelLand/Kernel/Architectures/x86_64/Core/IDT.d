@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
  * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
@@ -48,8 +48,8 @@ abstract final class IDT {
         SetInterruptGate(8, &ISRIgnore);
 
         asm {
-            "lidt [RAX]" : : "a"(&m_idtBase);
-            "sti";
+            lidt m_idtBase;
+            sti;
         }
 	}
 
@@ -101,8 +101,18 @@ abstract final class IDT {
 	}
 
 	private static template GenerateISR(ulong num, bool needDummyError = true) {
-        const char[] GenerateISR = `private static void isr` ~ num.stringof[0 .. $ - 2] ~ `(){asm{"pop RBP";` ~ //TODO: q{} syntax
-			(needDummyError ? `"pushq 0";` : ``) ~ `"pushq ` ~ num.stringof[0 .. $ - 2] ~ `";"push RAX";"jmp %0" : : "a"(&ISRCommon);}}`;
+		const char[] GenerateISR = `
+			void isr` ~ num.stringof[0 .. $ - 2] ~ `() {
+				asm {` ~
+					(needDummyError ? `push 0UL;` : ``) ~
+					`push ` ~ num.stringof ~ `;` ~
+					`jmp ISRCommon;` ~
+						`
+				}
+			}
+		`;
+		
+		//TODO: q{} syntax, naked??
 	}
 
 	private static template GenerateISRs(uint start, uint end, bool needDummyError = true) {
@@ -164,58 +174,59 @@ abstract final class IDT {
 
 	private static void ISRIgnore() {
 		asm {
-			"pop RBP"; /* Naked */
-			"nop";
-			"nop";
-			"nop";
-			"iretq";
+			naked;
+			nop;
+			nop;
+			nop;
+			iretq;
 		}
 	}
 	
 	extern(C) private static void ISRCommon() {
 		asm {
-			"pop RBP"; /* Naked */
-			"cli";
+			naked;
+			cli; /* TODO: need this?? */
 
 			/* Save context */
-			"push RBX";
-			"push RCX";
-			"push RDX";
-			"push RSI";
-			"push RDI";
-			"push RBP";
-			"push R8";
-			"push R9";
-			"push R10";
-			"push R11";
-			"push R12";
-			"push R13";
-			"push R14";
-			"push R15";
+			push RAX;
+			push RBX;
+			push RCX;
+			push RDX;
+			push RSI;
+			push RDI;
+			push RBP;
+			push R8;
+			push R9;
+			push R10;
+			push R11;
+			push R12;
+			push R13;
+			push R14;
+			push R15;
 			
 			/* Call dispatcher */
-			"mov RDI, RSP";
-			"call %0" : : "r"(&Dispatch);
+			mov RDI, RSP;
+			call Dispatch;
 			
 			/* Restore context */
-			"pop R15";
-			"pop R14";
-			"pop R13";
-			"pop R12";
-			"pop R11";
-			"pop R10";
-			"pop R9";
-			"pop R8";
-			"pop RBP";
-			"pop RDI";
-			"pop RSI";
-			"pop RDX";
-			"pop RCX";
-			"pop RBX";
-			"pop RAX";
+			pop R15;
+			pop R14;
+			pop R13;
+			pop R12;
+			pop R11;
+			pop R10;
+			pop R9;
+			pop R8;
+			pop RBP;
+			pop RDI;
+			pop RSI;
+			pop RDX;
+			pop RCX;
+			pop RBX;
+			pop RAX;
 
-			"add RSP, 16";
-			"iretq";
+			add RSP, 16;
+			iretq;
 		}
 	}
 }

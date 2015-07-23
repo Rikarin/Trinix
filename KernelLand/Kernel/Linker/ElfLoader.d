@@ -342,7 +342,7 @@ class ElfLoader : BinaryLoader {
 	
 
 	
-	public v_addr Relocate() {
+	public override v_addr Relocate() {
 		if (!m_baseDiff)
 			ParseTables();
 

@@ -229,9 +229,10 @@ class VTY : Resource {
 				param2 = master.Handle;
 				param3 = slave.Handle;
 				return 0;
+				
+			default:
+				return -1;
 		}
-
-		return -1;
 	}
 }
 
@@ -246,7 +247,7 @@ class TTYDev : CharNode {
 		m_attributes.Length = _vty._in.Count;
 	}
 
-	ulong Read(long offset, byte[] data) {
+	override ulong Read(long offset, byte[] data) {
 		_vty._lockIn.WaitOne();
 		scope(exit) _vty._lockIn.Release();
 
@@ -270,7 +271,7 @@ class TTYDev : CharNode {
 		}
 	}
 
-	ulong Write(long offset, byte[] data) {
+	override ulong Write(long offset, byte[] data) {
 		foreach (x; data)
 			_vty.Output(x);
 
@@ -291,7 +292,7 @@ class PTYDev : CharNode {
 		m_attributes.Length = _vty._out.Count;
 	}
 
-	ulong Read(long offset, byte[] data) {
+	override ulong Read(long offset, byte[] data) {
 		long collected;
 
 		while (!collected) {
@@ -304,7 +305,7 @@ class PTYDev : CharNode {
 		return collected;
 	}
 	
-	ulong Write(long offset, byte[] data) {
+	override ulong Write(long offset, byte[] data) {
 		foreach (x; data)
 			_vty.Input(x);
 

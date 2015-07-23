@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
  * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
@@ -43,9 +43,10 @@ abstract final class GDT {
 		m_tables[CPU.Identifier] = new GlobalDescriptorTable();
 		InitTable(CPU.Identifier);
 
+		GDTBase base = m_tables[CPU.Identifier].Base;
         asm {
-            "lgdt [RAX]" : : "a"(&m_tables[CPU.Identifier].Base);
-            "call _CPU_refresh_iretq";
+            lgdt base;
+            call _CPU_refresh_iretq;
         }
 	}
 	

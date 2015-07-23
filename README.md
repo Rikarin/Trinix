@@ -2,13 +2,13 @@
 
 # Trinix #
 Trinix is a hobby operating system written from scratch. OS is written in D language.
-Based on OOP standards and implementing POSIX standards but in better way. Only 64-bit CPU is, was and will be supported.
+Based on OOP standards and implementing modified POSIX standards for the best usage with D. Only x86_64 CPU is supported.
 Development began one beautiful day in January 3 years ago.
-We had (we dont have it now lol) a framework based on .NET-like conventions but better.
+We are working on framework based on .NET naming conventions.
 
 
 # Community #
-You can join us. Just fork, innovate and pull back.
+You can join us. Just fork, innovate and pull request.
 
 Wiki: http://trinix.wikia.com/  
 IRC: `#Trinix` on `Freenode`  
@@ -18,12 +18,7 @@ Please use our [Coding Conventions](https://github.com/Bloodmanovski/Trinix/blob
 
 
 # How to build #
-* CentOS:
-* yum update && yum groupinstall "Development tools"
-* Build cross-compiler `make -C Externals/CrossCompiler all`
-* Build druntime. TODO
-* Build OS. TODO
-* Have a fun!
+TODO!!
 
 
 # Features #
@@ -39,17 +34,11 @@ Please use our [Coding Conventions](https://github.com/Bloodmanovski/Trinix/blob
 * Multitasking with Thread -> Process implementation
 	
 	
-# Hacking druntime #
-* in proxy use our malloc/free/... calls
-* in lifetime add __gshared to some vars
-* add gcc dir and stdvarg from gdc druntime
-	
-	
 # Licence #
-Copyright (c) 2014 Trinix Foundation. All rights reserved.
+Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  
 This file is part of Trinix Operating System and is released under Trinix 
-Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
+Public Source Licence Version 1.0 (the 'Licence'). You may not use this file
 except in compliance with the License. The rights granted to you under the
 License may not be used to create, or enable the creation or redistribution
 of, unlawful or unlicensed copies of an Trinix operating system, or to

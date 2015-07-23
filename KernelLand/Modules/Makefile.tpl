@@ -15,7 +15,7 @@ else
 	FULLNAME := $(NAME)
 endif
 
-DFLAGS += -D _MODULE_NAME_=\"$(FULLNAME)\"
+#DFLAGS += -D _MODULE_NAME_=\"$(FULLNAME)\"
 
 ifneq ($(BUILDTYPE),static)
 	_SUFFIX	:= dyn-$(ARCH)
@@ -66,7 +66,7 @@ endif
 obj_$(_SUFFIX)/%.d.o: %.d
 	@echo --- DD -o $@
 	@$(MKDIR) $(dir $@)
-	@$(DD) $(DFLAGS) -o $@ -c -fmake-mdeps=$@.o.dep $<
+	@$(DD) $(DFLAGS) -of=$@ -c -deps=$@.o.dep $<
 
 	
 -include $(DEPFILES)

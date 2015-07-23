@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
  * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
@@ -36,52 +36,79 @@ private extern(C) extern pure nothrow {
 
 abstract final class Port {
 nothrow:
-
 	static T Read(T = byte)(ushort port) pure {
-		T ret;
+		asm {
+			mov DX, port;
+		}
 
 		static if (isByte!T) {
-			asm { "inb AL, %1" : "=a"(ret) : "dN"(port); }
+			asm {
+				in AL, DX;
+				ret;
+			}
 		} else static if (isShort!T) {
-			asm { "inw AX, %1" : "=a"(ret) : "dN"(port); }
+			asm {
+				in AX, DX;
+				ret;
+			}
 		} else static if (isInt!T) {
-			asm { "inl EAX, %1" : "=a"(ret) : "dN"(port); }
+			asm {
+				in EAX, DX;
+				ret;
+			}
 		}
-		
-		return ret;
 	}
 	
 	static void Write(T = byte)(ushort port, int data) pure {
+		asm {
+			mov EAX, data;
+			mov DX, port;
+		}
+		
 		static if (isByte!T) {
-			asm { "outb %0, AL" : : "dN"(port), "a"(data); }
+			asm {
+				out DX, AL;
+			}
 		} else static if (isShort!T) {
-			asm { "outw %0, AX" : : "dN"(port), "a"(data); }
+			asm {
+				out DX, AX;
+			}
 		} else static if (isInt!T) {
-			asm { "outl %0, EAX" : : "dN"(port), "a"(data); }
+			asm {
+				out DX, EAX;
+			}
 		}
 	}
 
 	static void Cli() pure {
-		asm { "cli"; }
+		asm {
+			cli;
+		}
 	}
 	
 	static void Sti() pure {
-		asm { "sti"; }
+		asm {
+			sti;
+		}
 	}
 
 	static void Halt() pure {
-		asm { "hlt"; }
+		asm {
+			hlt;
+		}
 	}
 	
 	static void SwapGS() {
-		asm { "swapgs"; }
+		asm {
+			swapgs;
+		}
 	}
 
 	static bool GetIntFlag() {
 		ulong flags;
 		asm {
-			"pushfq";
-			"pop RAX" : "=a"(flags);
+			pushfq;
+			pop flags;
 		}
 
 		return (flags & 0x200) == 0x200;
@@ -92,13 +119,23 @@ nothrow:
 		lo = value & 0xFFFFFFFF;
 		hi = value >> 32UL;
 		
-		asm { "wrmsr" : : "d"(hi), "a"(lo), "c"(msr); }
+		asm {
+			mov RDX, hi;
+			mov RAX, lo;
+			mov RCX, msr;
+			wrmsr;
+		}
 	}
 
 	static ulong ReadMSR(uint msr) {
 		uint hi, lo;
 		
-		asm { "rdmsr" : "=d"(hi), "=a"(lo) : "c"(msr); }
+		asm {
+			mov RCX, msr;
+			rdmsr;
+			mov lo, RAX;
+			mov hi, RDX;
+		}
 		
 		ulong ret = hi;
 		ret <<= 32;
@@ -108,23 +145,42 @@ nothrow:
 	}
 	
 	static uint cpuidAX(uint func) {
-		asm { "cpuid" : "+a"(func); }
-		return func;
+		asm {
+			naked;
+			mov EAX, EDI;
+			cpuid;
+			ret;
+		}
 	}
 	
 	static uint cpuidBX(uint func) {
-		asm { "cpuid" : "=b"(func) : "a"(func); }
-		return func;
+		asm {
+			naked;
+			mov EAX, EDI;
+			cpuid;
+			mov EAX, EBX;
+			ret;
+		}
 	}
 	
 	static uint cpuidCX(uint func) {
-		asm { "cpuid" : "=c"(func) : "a"(func); }
-		return func;
+		asm {
+			naked;
+			mov EAX, EDI;
+			cpuid;
+			mov EAX, ECX;
+			ret;
+		}
 	}
 	
 	static uint cpuidDX(uint func) {
-		asm { "cpuid" : "=d"(func) : "a"(func); }
-		return func;
+		asm {
+			naked;
+			mov EAX, EDI;
+			cpuid;
+			mov EAX, EDX;
+			ret;
+		}
 	}
 
 	static void EnableSSE() pure {

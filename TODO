@@ -1,0 +1,11 @@
+Move CrossCompiler to LLVM
+delete v_addr a p_addr
+
+
+import ldc.attribute;
+
+@attribute("section", ".test") struct test {
+	int test42;
+}
+
+pridat logovacie mody

@@ -1,5 +1,5 @@
 #
-# Externals config.mk File
+# Externals config.mk file
 #
 
 -include ../../Makefile.cfg

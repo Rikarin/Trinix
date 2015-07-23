@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
  * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
@@ -61,21 +61,20 @@ void *calloc(long sz, int ba) {
 	return (void *)memset(ret, 0, sz);
 }
 
-void pthread_mutex_lock() { asm ("cli; hlt"); }
-void pthread_mutex_unlock() { asm ("cli; hlt"); }
-void pthread_mutex_init() { asm ("cli; hlt"); }
-void pthread_mutex_destroy() { asm ("cli; hlt"); }
-void _d_monitor_destroy() { asm ("cli; hlt"); }
+void pthread_mutex_lock()      { asm ("cli; hlt"); }
+void pthread_mutex_unlock()    { asm ("cli; hlt"); }
+void pthread_mutex_init()      { asm ("cli; hlt"); }
+void pthread_mutex_destroy()   { asm ("cli; hlt"); }
 
 void program_invocation_name() { asm ("cli; hlt"); }
-void stderr() { asm ("cli; hlt"); }
-void fprintf() { asm ("cli; hlt"); }
-void dl_iterate_phdr() { asm ("cli; hlt"); }
-void __tls_get_addr() { asm ("cli; hlt"); }
+void stderr()                  { asm ("cli; hlt"); }
+void fprintf()                 { asm ("cli; hlt"); }
+void dl_iterate_phdr()         { asm ("cli; hlt"); }
+void __tls_get_addr()          { asm ("cli; hlt"); }
 
-void _memset128ii() { asm ("cli; hlt"); }
+void _memset128ii()            { asm ("cli; hlt"); }
 
-void _Unwind_Resume() { asm ("cli; hlt"); }
-void _Dmodule_ref() { asm ("cli; hlt"); }
-void __gdc_personality_v0() { asm ("cli; hlt"); }
-void abort() { asm ("cli; hlt"); }
+void _Unwind_Resume()          { asm ("cli; hlt"); }
+void _Dmodule_ref()            { asm ("cli; hlt"); }
+void __gdc_personality_v0()    { asm ("cli; hlt"); }
+void abort()                   { asm ("cli; hlt"); }

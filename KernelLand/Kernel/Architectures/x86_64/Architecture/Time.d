@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
  * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
@@ -30,8 +30,8 @@ import ObjectManager;
 
 abstract final class Time {
 	private enum {
-		TIMER_RATE = 14,
-		TIMER_FREQUENCY = 0x8000 >> TIMER_RATE,
+		TIMER_RATE        = 14,
+		TIMER_FREQUENCY   = 0x8000 >> TIMER_RATE,
 		MS_PER_TICK_WHOLE = 1000 / TIMER_FREQUENCY,
 		MS_PER_TICK_FRACT = (0x80000000 * (1000 % TIMER_FREQUENCY)) / TIMER_FREQUENCY
 	}
@@ -67,7 +67,7 @@ abstract final class Time {
 
 		DeviceManager.RequestIRQ(&IRQHandler, 8);
 		Port.Write(0x70, 0x0C);
-		Port.Read(0x71);
+		cast(void)Port.Read(0x71);
 	}
 
 	@property static long Uptime() {
@@ -78,11 +78,7 @@ abstract final class Time {
 		ulong tsc = ReadTSC();
 		tsc -= m_tscAtLastTick;
 		tsc *= MS_PER_TICK_WHOLE;
-
-		if (m_tscPerTick)
-			tsc /= m_tscPerTick;
-		else
-			tsc = 0;
+		tsc  = m_tscPerTick ? tsc / m_tscPerTick : 0;
 
 		return m_timestamp + tsc;
 	}
@@ -91,7 +87,9 @@ abstract final class Time {
 		uint a, d;
 		
 		asm {
-			"rdtsc" : "=a" (a), "=d" (d);
+			rdtsc;
+			mov a, EAX;
+			mov d, EDX;
 		}
 		
 		return (cast(ulong)d << 32) | a;
@@ -118,6 +116,6 @@ abstract final class Time {
 		Task.Scheduler(); //TODO: This isnt good... Time.d is RTC not scheduler
 
 		Port.Write(0x70, 0x0C);
-		Port.Read(0x71);
+		cast(void)Port.Read(0x71);
 	}
 }

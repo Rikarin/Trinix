@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
  * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
@@ -210,9 +210,9 @@ final class Paging {
 			if (other.m_root.Tables[i]) {
 				foreach (j; 0 .. 512) {                 /* PDPT */
 					if (other.m_root.Tables[i].Tables[j]) {
-						foreach (k; 0 .. 512) {         /* PD */
+						foreach (k; 0 .. 512) {         /* PD   */
 							if (other.m_root.Tables[i].Tables[j].Tables[k]) {
-								foreach (m; 0 .. 512) { /* PT */
+								foreach (m; 0 .. 512) { /* PT   */
 									PTE page = other.m_root.Tables[i].Tables[j].Tables[k].Entries[m];
 									if (page.Present) {
 										ulong address = (cast(ulong)i << 39) | (j << 30) | (k << 21) | (m << 12);
@@ -235,9 +235,9 @@ final class Paging {
 			if (m_root.Tables[i]) {
 				foreach (j; 0 .. 512) {                                     /* PDPT */
 					if (m_root.Tables[i].Tables[j]) {
-						foreach (k; 0 .. 512) {                             /* PD */
+						foreach (k; 0 .. 512) {                             /* PD   */
 							if (m_root.Tables[i].Tables[j].Tables[k])
-								delete m_root.Tables[i].Tables[j].Tables[k]; /* PT */
+								delete m_root.Tables[i].Tables[j].Tables[k]; /* PT  */
 						}
 						delete m_root.Tables[i].Tables[j];
 					}
@@ -253,7 +253,8 @@ final class Paging {
 		p_addr addr = GetPhysicalAddress(cast(v_addr)m_root);
 
 		asm {
-			"mov CR3, %0" : : "r"(addr);
+			mov RAX, addr;
+			mov CR3, RAX;
 		}
 	}
 	
@@ -351,8 +352,8 @@ final class Paging {
 
         //TODO: what to do with this?
 		asm {
-			"cli";
-			"hlt";
+			cli;
+			hlt;
 		}
 	}
 }

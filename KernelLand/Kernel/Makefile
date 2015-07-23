@@ -12,11 +12,11 @@ ifeq ($(BUILD_NUM),)
 endif
 
 
-DFLAGS		+= -fdebug -D _MODULE_NAME_=\"Kernel\"
-DFLAGS		+= -IArchitectures/$(ARCHDIR) -I../ -J../../
+#DFLAGS		+= -D _MODULE_NAME_=\"Kernel\"
+# -J../../
+DFLAGS		+= -IArchitectures/$(ARCHDIR) -I../
 CFLAGS		+= -fno-stack-protector
-LDFLAGS		:= -Wl,-T -Wl,Architectures/$(ARCHDIR)/Linker.ld -Wl,-Map -Wl,../Linker.$(ARCH).map
-DRUNTIME	:= $(TRXDIR)/Userspace/tmp/druntime/lib/libdruntime-linux64.a
+LDFLAGS		:= -T Architectures/$(ARCHDIR)/LinkerScript.ld -Map ../Linker.$(ARCH).map
 
 ifeq ($(PLATFORM),default)
 	OBJDIR	:= obj-$(ARCH)/
@@ -28,7 +28,7 @@ else
 	GZBIN	:= ../Trinix.$(ARCH)-$(PLATFORM).gz
 endif
 
-ifeq ($(DEBUG_BUILD),yes)
+ifneq ($(BUILD_TYPE),release)
 	LDFLAGS += -g
 	DFLAGS 	+= -g
 	CFLAGS 	+= -g
@@ -41,7 +41,7 @@ SYMBOLS_SRC   := $(OBJDIR)symbols.s
 
 OBJ := $(A_OBJ)
 #TODO D
-OBJ	+= $(addsuffix .o,$(shell find * -name "*.[c|s]" -not -path "*Architectures*"))
+OBJ	+= $(addsuffix .o,$(shell find * -name "*.[d|c|s]" -not -path "*Architectures*"))
 OBJ := $(filter-out $(BUILDINFO_OBJ), $(OBJ))
 OBJ := $(filter-out $(SYMBOLS_OBJ), $(OBJ))
 OBJ := $(addprefix $(OBJDIR), $(OBJ))
@@ -83,12 +83,11 @@ $(DOCDIR)%.html: %.d
 	@echo --- Generating documentation file $@
 	@$(MKDIR) $(dir $@)
 	@$(DD) $(DFLAGS) -c -fdoc -fdoc-file=$@ $< -o /dev/null
-	
-$(BIN): $(OBJ) $(MODS) $(DRUNTIME) $(shell find * -name "*.d" -not -path "*Architectures*") Architectures/$(ARCHDIR)/Linker.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk $(SYMBOLS_OBJ)
-	@echo --- LD -o $(BIN)
-#$(DD) $(LDFLAGS) -o $(BIN) -femit-templates -Wl,--defsym -Wl,__buildnum=$$(( $(BUILD_NUM) + 1 )) -Wl,-Map -Wl,../Linker.$(ARCH).map $(OBJ) $(MODS)  $(DRUNTIME)
-	
-	@$(DD) $(DFLAGS) $(LDFLAGS) -o $(BIN) $(shell find * -name "*.d" -not -path "*Architectures*") $(OBJ) $(MODS) $(DRUNTIME) $(SYMBOLS_OBJ)
+
+#$(SYMBOLS_OBJ)	
+$(BIN): $(OBJ) $(MODS) Architectures/$(ARCHDIR)/LinkerScript.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
+	@echo --- LD -o $(BIN)	
+	@$(LD) $(LDFLAGS) -o $(BIN) $(OBJ) $(MODS) /llvm/lib/libdruntime-ldc.a
 	@$(OBJDUMP) -d -S $(BIN) > $(BIN).dsm
 	@echo BUILD_NUM = $$(( $(BUILD_NUM) + 1 )) > Makefile.BuildNum.$(ARCH)
 #@$(STRIP) $(BIN)
@@ -97,19 +96,19 @@ $(BIN): $(OBJ) $(MODS) $(DRUNTIME) $(shell find * -name "*.d" -not -path "*Archi
 $(OBJDIR)%.d.o: %.d
 	@echo --- DD -o $@
 	@$(MKDIR) $(dir $@)
-	@$(DD) $(DFLAGS) -o $@ -c -fmake-mdeps=$@.o.dep $<
+	@$(DD) $(DFLAGS) -of=$@ -c -deps=$@.o.dep $<
 	
 $(OBJDIR)%.s.o: %.s
 	@echo --- AS -o $@
 	@$(MKDIR) $(dir $@)
 	@$(AS) $(ASFLAGS) -o $@ $<
-	@$(CC) $(CFLAGS) -M -MT $@ -MP -o $@.o.dep $<
+#@$(CC) $(CFLAGS) -M -MT $@ -MP -o $@.o.dep $<
 	
 $(OBJDIR)%.c.o: %.c
 	@echo --- CC -o $@
 	@$(MKDIR) $(dir $@)
 	@$(CC) $(CFLAGS) -o $@ -c $<
-	@$(CC) $(CFLAGS) -M -MT $@ -MP -o $@.o.dep $<
+#@$(CC) $(CFLAGS) -M -MT $@ -MP -o $@.o.dep $<
 	
 %.xo.$(ARCH):
 	@make -C $* all BUILDTYPE=static
@@ -118,9 +117,9 @@ $(OBJDIR)%.c.o: %.c
 $(BUILDINFO_SRC): $(filter-out $(BUILDINFO_OBJ), $(OBJ)) $(MODS)
 	$(eval _GITHASH=$(shell git log -n 1 | head -n 1 | awk '{print $$2}'))
 	$(eval _GITCHANGED=$(shell git status --porcelain | grep -c '^ M '))
-	@echo "const char gsGitHash[] = \"$(_GITHASH)\";" > $@
+	@echo "const char* gsGitHash   = \"$(_GITHASH)\";" > $@
 	@echo "const int giBuildNumber = $(BUILD_NUM);" >> $@
-	@echo "const char gsBuildInfo[] = \"Trinix v$(TRINIX_VERSION) $(ARCH)-$(PLATFORM)\\\\r\\\\n\"" >> $@
+	@echo "const char* gsBuildInfo = \"Trinix v$(TRINIX_VERSION) $(ARCH)-$(PLATFORM)\\\\r\\\\n\"" >> $@
 	@echo " \"Build $(shell hostname --fqdn):$(BUILD_NUM) Git $(_GITHASH) - $(_GITCHANGED) modified\";" >> $@
 	
 # Compile rule for buildinfo (needs a special one because it's not a general source file)

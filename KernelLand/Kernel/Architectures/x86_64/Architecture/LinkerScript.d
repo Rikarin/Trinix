@@ -1,5 +1,5 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
  * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
@@ -28,22 +28,21 @@ import MemoryManager;
 
 
 private extern(C) extern __gshared {
-    ubyte iKernelBase;
-    ubyte iKernelEnd;
-    ubyte iKernelSymbols;
-    ubyte iKernelSymbolsEnd;
-    
-    ubyte iKernelModules;
-    ubyte iKernelModulesEnd;
+    ubyte __linker_kernel_start;
+    ubyte __linker_kernel_end;
+    ubyte __linker_symbols_start;
+    ubyte __linker_symbols_end;
+    ubyte __linker_modules_start;
+    ubyte __linker_modules_end;
 }
 
 abstract final class LinkerScript {
     @property {
-        static v_addr KernelBase()       { return cast(v_addr)&iKernelBase; }
-        static v_addr KernelEnd()        { return cast(v_addr)&iKernelEnd; }
-        static v_addr KernelSymbols()    { return cast(v_addr)&iKernelSymbols; }
-        static v_addr KernelSymbolsEnd() { return cast(v_addr)&iKernelSymbolsEnd; }
-        static v_addr KernelModules()    { return cast(v_addr)&iKernelModules; }
-        static v_addr KernelModulesEnd() { return cast(v_addr)&iKernelModulesEnd; }
+        static v_addr KernelBase()       { return cast(v_addr)&__linker_kernel_start;  }
+        static v_addr KernelEnd()        { return cast(v_addr)&__linker_kernel_end;    }
+        static v_addr KernelSymbols()    { return cast(v_addr)&__linker_symbols_start; }
+        static v_addr KernelSymbolsEnd() { return cast(v_addr)&__linker_symbols_end;   }
+        static v_addr KernelModules()    { return cast(v_addr)&__linker_modules_start; }
+        static v_addr KernelModulesEnd() { return cast(v_addr)&__linker_modules_end;   }
     }
 }
