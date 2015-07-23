@@ -1,8 +1,8 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
- * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
+ * Public Source Licence Version 1.0 (the 'Licence'). You may not use this file
  * except in compliance with the License. The rights granted to you under the
  * License may not be used to create, or enable the creation or redistribution
  * of, unlawful or unlicensed copies of an Trinix operating system, or to
@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://bit.ly/1wIYh3A and read it before using this file.
+ * https://github.com/Bloodmanovski/Trinix and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -34,14 +34,14 @@ alias p_addr = ulong;
 abstract final class VirtualMemory {
     private __gshared v_addr m_regions = 0xFFFFFFFF_E0000000;
 
-	private __gshared v_addr function(size_t size) m_malloc = &TmpAlloc;
-	private __gshared void function(v_addr ptr) m_free;
+    private __gshared v_addr function(size_t size) m_malloc = &TmpAlloc;
+    private __gshared void function(v_addr ptr) m_free;
 
-	__gshared Paging KernelPaging;
-	__gshared Heap KernelHeap;
+    __gshared Paging KernelPaging;
+    __gshared Heap KernelHeap;
 
-	static void Initialize() {
-		KernelHeap = new Heap(cast(v_addr)PhysicalMemory.AllocPage(1), Heap.MIN_SIZE, Heap.CalculateIndexSize(Heap.MIN_SIZE));
+    static void Initialize() {
+        KernelHeap = new Heap(cast(v_addr)PhysicalMemory.AllocPage(1), Heap.MIN_SIZE, Heap.CalculateIndexSize(Heap.MIN_SIZE));
 
         m_malloc = function(size_t size) {
             return KernelHeap.Alloc(size);
@@ -50,7 +50,7 @@ abstract final class VirtualMemory {
         m_free = function(v_addr ptr) {
             KernelHeap.Free(ptr);
         };
-	}
+    }
 
     static v_addr AllocAlignedBlock(size_t num) {
         if (m_malloc == &TmpAlloc)
@@ -62,19 +62,19 @@ abstract final class VirtualMemory {
         }
     }
 
-	private static v_addr TmpAlloc(size_t size) {
-		return PhysicalMemory.AllocPage(size / 0x1000);
-	}
+    private static v_addr TmpAlloc(size_t size) {
+        return PhysicalMemory.AllocPage(size / 0x1000);
+    }
 }
 
 extern(C) void* malloc(size_t size, int ba) {
-	v_addr ret = VirtualMemory.m_malloc(size);
-	//Log.WriteJSON("MemoryAlloc", "{", "size", size, "ba", ba, "address", cast(ulong)ret, "}");
-	return cast(void *)ret;
+    v_addr ret = VirtualMemory.m_malloc(size);
+    //Log.WriteJSON("MemoryAlloc", "{", "size", size, "ba", ba, "address", cast(ulong)ret, "}");
+    return cast(void *)ret;
 }
 
 extern(C) void free(void* ptr) {
-	//Log.WriteJSON("MemoryFree", cast(ulong)ptr);
+    //Log.WriteJSON("MemoryFree", cast(ulong)ptr);
 
-	VirtualMemory.m_free(cast(v_addr)ptr);
+    VirtualMemory.m_free(cast(v_addr)ptr);
 }

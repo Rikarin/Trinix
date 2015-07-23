@@ -1,8 +1,8 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
- * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
+ * Public Source Licence Version 1.0 (the 'Licence'). You may not use this file
  * except in compliance with the License. The rights granted to you under the
  * License may not be used to create, or enable the creation or redistribution
  * of, unlawful or unlicensed copies of an Trinix operating system, or to
@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://bit.ly/1wIYh3A and read it before using this file.
+ * https://github.com/Bloodmanovski/Trinix and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -57,56 +57,56 @@ abstract final class PhysicalMemory {
     private __gshared RegionInfo[MAX_REGIONS] m_regions;
     private __gshared int m_regionIterator;
 
-	private __gshared ulong m_startMemory;
-	private __gshared BitArray m_frames;
+    private __gshared ulong m_startMemory;
+    private __gshared BitArray m_frames;
 
-	/* Used in Multiboot info for shifting addr to the end of the modules */
-	@property static ref ulong MemoryStart() {
-		return m_startMemory;
-	}
+    /* Used in Multiboot info for shifting addr to the end of the modules */
+    @property static ref ulong MemoryStart() {
+        return m_startMemory;
+    }
 
-	static void Initialize() {
-		m_frames = new BitArray(0x40_000, false); //Hack: treba zvetsit paging tabulky v Boot.s lebo sa kernel potom nevie premapovat pre nedostatok pamete :/
+    static void Initialize() {
+        m_frames = new BitArray(0x40_000, false); //Hack: treba zvetsit paging tabulky v Boot.s lebo sa kernel potom nevie premapovat pre nedostatok pamete :/
 
-		VirtualMemory.KernelPaging = new Paging();
-		for (v_addr i = 0xFFFFFFFF_80000000; i < 0xFFFFFFFF_8A000000; i += Paging.PAGE_SIZE)
-			VirtualMemory.KernelPaging.AllocFrame(i, AccessMode.DefaultUser); //TODO: testing
+        VirtualMemory.KernelPaging = new Paging();
+        for (v_addr i = 0xFFFFFFFF_80000000; i < 0xFFFFFFFF_8A000000; i += Paging.PAGE_SIZE)
+            VirtualMemory.KernelPaging.AllocFrame(i, AccessMode.DefaultUser); //TODO: testing
 
         for (v_addr i = 0xFFFFFFFF_E0000000; i < 0xFFFFFFFF_EA000000; i += Paging.PAGE_SIZE)
             VirtualMemory.KernelPaging.AllocFrame(i, AccessMode.DefaultKernel);
 
         VirtualMemory.KernelPaging.Install();
-	}
+    }
 
-	/* Used by Paging only */
-	package static void AllocFrame(ref PTE page, AccessMode mode) {
-		if (page.Present)
-			return;
-		
-		long index = m_frames.FirstFreeBit();
-		m_frames[index] = true;
-		page.Address = index;
-		page.Mode = mode;
-	}
+    /* Used by Paging only */
+    package static void AllocFrame(ref PTE page, AccessMode mode) {
+        if (page.Present)
+            return;
+        
+        long index = m_frames.FirstFreeBit();
+        m_frames[index] = true;
+        page.Address = index;
+        page.Mode = mode;
+    }
 
-	/* Used by Paging only */
-	package static void FreeFrame(ref PTE page) {
-		if (!page.Present)
-			return;
-		
-		m_frames[page.Address] = false;
-		page.Present = false;
-	}
+    /* Used by Paging only */
+    package static void FreeFrame(ref PTE page) {
+        if (!page.Present)
+            return;
+        
+        m_frames[page.Address] = false;
+        page.Present = false;
+    }
 
-	static v_addr AllocPage(size_t num) {
+    static v_addr AllocPage(size_t num) {
         if (num < 1)
             num = 1;
-			
-		v_addr ret = cast(v_addr)LinkerScript.KernelEnd + m_startMemory;
+            
+        v_addr ret = cast(v_addr)LinkerScript.KernelEnd + m_startMemory;
         m_startMemory += 0x1000 * num;
 
-		return ret;
-	}
+        return ret;
+    }
 
     static void AddRegion(RegionInfo info) {
         if (m_regionIterator < MAX_REGIONS)

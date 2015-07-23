@@ -1,8 +1,8 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
- * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
+ * Public Source Licence Version 1.0 (the 'Licence'). You may not use this file
  * except in compliance with the License. The rights granted to you under the
  * License may not be used to create, or enable the creation or redistribution
  * of, unlawful or unlicensed copies of an Trinix operating system, or to
@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://bit.ly/1wIYh3A and read it before using this file.
+ * https://github.com/Bloodmanovski/Trinix and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -27,60 +27,60 @@ import VFSManager;
 
 
 final class DevFS : IFileSystem {
-	private DirectoryNode m_rootNode;
+    private DirectoryNode m_rootNode;
 
-	@property Partition GetPartition()   { return null; }
-	@property bool IsWritable()          { return true; }
-	@property DirectoryNode RootNode()   { return m_rootNode; }
+    @property Partition GetPartition()   { return null; }
+    @property bool IsWritable()          { return true; }
+    @property DirectoryNode RootNode()   { return m_rootNode; }
 
     private this()                       { }
     bool Unmount()                       { return true; }
-	bool LoadContent(DirectoryNode node) { return true; }
+    bool LoadContent(DirectoryNode node) { return true; }
 
-	FSNode Create(DirectoryNode parent, FileAttributes attributes) {
-		switch (attributes.Type) {
-			case FileType.Directory:
-				return new DirectoryNode(parent, attributes);
+    FSNode Create(DirectoryNode parent, FileAttributes attributes) {
+        switch (attributes.Type) {
+            case FileType.Directory:
+                return new DirectoryNode(parent, attributes);
 
-			default:
-				return null;
-		}
-	}
+            default:
+                return null;
+        }
+    }
 
-	bool Remove(FSNode node) {
-		switch (node.Attributes.Type) {
-			case FileType.Directory:
-				if (!(cast(DirectoryNode)node).Childrens.Count) {
-					delete node;
-					return true;
-				}
-				break;
+    bool Remove(FSNode node) {
+        switch (node.Attributes.Type) {
+            case FileType.Directory:
+                if (!(cast(DirectoryNode)node).Childrens.Count) {
+                    delete node;
+                    return true;
+                }
+                break;
 
-			default:
-				delete node;
-				return true;
-		}
+            default:
+                delete node;
+                return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	static DevFS Mount(DirectoryNode mountpoint) {
-		if (mountpoint is null || !mountpoint.IsMountpointable)
-			return null;
+    static DevFS Mount(DirectoryNode mountpoint) {
+        if (mountpoint is null || !mountpoint.IsMountpointable)
+            return null;
 
-		DevFS ret = new DevFS();
-		ret.m_rootNode = new DirectoryNode(null, FSNode.NewAttributes("/"));
-		ret.m_rootNode.FileSystem = ret;
+        DevFS ret = new DevFS();
+        ret.m_rootNode = new DirectoryNode(null, FSNode.NewAttributes("/"));
+        ret.m_rootNode.FileSystem = ret;
 
-		if (!mountpoint.Mount(ret.m_rootNode)) {
-			delete ret;
-			return null;
-		}
+        if (!mountpoint.Mount(ret.m_rootNode)) {
+            delete ret;
+            return null;
+        }
 
-		return ret;
-	}
+        return ret;
+    }
 
-	bool AddDevice(FSNode dev) {
-		return false;
-	}
+    bool AddDevice(FSNode dev) {
+        return false;
+    }
 }

@@ -1,8 +1,8 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
- * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
+ * Public Source Licence Version 1.0 (the 'Licence'). You may not use this file
  * except in compliance with the License. The rights granted to you under the
  * License may not be used to create, or enable the creation or redistribution
  * of, unlawful or unlicensed copies of an Trinix operating system, or to
@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://bit.ly/1wIYh3A and read it before using this file.
+ * https://github.com/Bloodmanovski/Trinix and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -63,7 +63,7 @@ import SyscallManager;
 
 //==============================================================================
 /* MemoryMap:
-	0xFFFFFFFFE0000000 - 0xFFFFFFFFF0000000 - mapped regions
+    0xFFFFFFFFE0000000 - 0xFFFFFFFFF0000000 - mapped regions
 */
 extern(C) extern const int giBuildNumber;
 extern(C) extern const char* gsGitHash;
@@ -71,7 +71,7 @@ extern(C) extern const char* gsBuildInfo;
 
 extern(C) void KernelMain() {
    // Log("Git Hash: %s", cast(string)gsGitHash);
-	Log("Version: %d", cast(int)giBuildNumber);
+    Log("Version: %d", cast(int)giBuildNumber);
     //Log("Build Info: %s", cast(string)gsBuildInfo[0 .. 5]);
 
     Log("Physical Memory");
@@ -93,29 +93,29 @@ extern(C) void KernelMain() {
     VFS.Initialize();
 
     Log("Remaping PIC");
-	Port.Write(0x20, 0x11);
-	Port.Write(0xA0, 0x11);
-	Port.Write(0x21, 0x20);
-	Port.Write(0xA1, 0x28);
-	Port.Write(0x21, 0x04);
-	Port.Write(0xA1, 0x02);
-	Port.Write(0x21, 0x01);
-	Port.Write(0xA1, 0x01);
-	Port.Write(0x21, 0x00);
-	Port.Write(0xA1, 0x00);
+    Port.Write(0x20, 0x11);
+    Port.Write(0xA0, 0x11);
+    Port.Write(0x21, 0x20);
+    Port.Write(0xA1, 0x28);
+    Port.Write(0x21, 0x04);
+    Port.Write(0xA1, 0x02);
+    Port.Write(0x21, 0x01);
+    Port.Write(0xA1, 0x01);
+    Port.Write(0x21, 0x00);
+    Port.Write(0xA1, 0x00);
 
     Log("Timer");
-	Time.Initialize();
+    Time.Initialize();
 
     Log("Binary Loader");
     BinaryLoader.Initialize();
 
     Log("Module Manager");
-	ModuleManager.Initialize();
-	ModuleManager.LoadBuiltins();
+    ModuleManager.Initialize();
+    ModuleManager.LoadBuiltins();
   //  LoadModules();
 
-	VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
+    VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
               VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");
 
 
@@ -125,9 +125,9 @@ extern(C) void KernelMain() {
    // debug VFS.PrintTree(VFS.Root);
 
 
-	Log("Running, Time = %d", Time.Uptime);
+    Log("Running, Time = %d", Time.Uptime);
 
-	while (true) {
+    while (true) {
        // Log("Running, Time = %d", Time.Uptime);
-	}
+    }
 }

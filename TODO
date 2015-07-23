@@ -9,3 +9,6 @@ import ldc.attribute;
 }
 
 pridat logovacie mody
+
+
+add `-relocation-model=pic` to /cc/ldc/runtime/CMake... D_FLAGS

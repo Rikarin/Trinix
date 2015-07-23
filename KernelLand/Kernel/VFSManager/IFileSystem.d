@@ -1,8 +1,8 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
- * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
+ * Public Source Licence Version 1.0 (the 'Licence'). You may not use this file
  * except in compliance with the License. The rights granted to you under the
  * License may not be used to create, or enable the creation or redistribution
  * of, unlawful or unlicensed copies of an Trinix operating system, or to
@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://bit.ly/1wIYh3A and read it before using this file.
+ * https://github.com/Bloodmanovski/Trinix and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -32,71 +32,71 @@ import VFSManager;
  * 
  */
 interface IFileSystem {
-	/**
-	 * Getter
-	 * 
-	 * Returns:
-	 * 		instance of mounted partition
-	 */
-	@property Partition GetPartition(); 
+    /**
+     * Getter
+     * 
+     * Returns:
+     *      instance of mounted partition
+     */
+    @property Partition GetPartition(); 
 
-	/**
-	 * Getter
-	 * 
-	 * Returns:
-	 * 		true if mounted filesystem is writable
-	 */
-	@property bool IsWritable();
+    /**
+     * Getter
+     * 
+     * Returns:
+     *      true if mounted filesystem is writable
+     */
+    @property bool IsWritable();
 
-	/**
-	 * Getter
-	 * 
-	 * Returns:
-	 * 		object of root directory of the filesystem
-	 */
-	@property DirectoryNode RootNode();
+    /**
+     * Getter
+     * 
+     * Returns:
+     *      object of root directory of the filesystem
+     */
+    @property DirectoryNode RootNode();
 
-	/**
-	 * Unmount the filesystem
-	 * 
-	 * Returns:
-	 * 		true if filesystem was unmounted successfuly
-	 */
-	bool Unmount();
+    /**
+     * Unmount the filesystem
+     * 
+     * Returns:
+     *      true if filesystem was unmounted successfuly
+     */
+    bool Unmount();
 
-	/**
-	 * Load content of directory node and automaticaly add found
-	 * nodes into direcotry node
-	 * 
-	 * Params:
-	 * 		node	=		node of directory what we want to load
-	 * 
-	 * Returns:
-	 * 		true if content was loaded successfuly
-	 */
-	bool LoadContent(DirectoryNode node);
+    /**
+     * Load content of directory node and automaticaly add found
+     * nodes into direcotry node
+     * 
+     * Params:
+     *      node    =       node of directory what we want to load
+     * 
+     * Returns:
+     *      true if content was loaded successfuly
+     */
+    bool LoadContent(DirectoryNode node);
 
-	/**
-	 * Create new node in specific directory
-	 * 
-	 * Params:
-	 * 		parent		=		directory where we want to create a node
-	 * 		attributes	=		attributes of creating node
-	 * 
-	 * Returns:
-	 * 		object of created node
-	 */
-	FSNode Create(DirectoryNode parent, FileAttributes attributes);
+    /**
+     * Create new node in specific directory
+     * 
+     * Params:
+     *      parent      =       directory where we want to create a node
+     *      attributes  =       attributes of creating node
+     * 
+     * Returns:
+     *      object of created node
+     */
+    FSNode Create(DirectoryNode parent, FileAttributes attributes);
 
-	/**
-	 * Remove node from filesystem.
-	 * This will be called only from FSNode.Remove method
-	 * 
-	 * Params:
-	 * 		node	=		node what we want to remove
-	 * 
-	 * Returns:
-	 * 		true if node was removed successfuly
-	 */
-	bool Remove(FSNode node);
+    /**
+     * Remove node from filesystem.
+     * This will be called only from FSNode.Remove method
+     * 
+     * Params:
+     *      node    =       node what we want to remove
+     * 
+     * Returns:
+     *      true if node was removed successfuly
+     */
+    bool Remove(FSNode node);
 }

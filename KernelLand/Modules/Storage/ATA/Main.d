@@ -1,8 +1,8 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
- * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
+ * Public Source Licence Version 1.0 (the 'Licence'). You may not use this file
  * except in compliance with the License. The rights granted to you under the
  * License may not be used to create, or enable the creation or redistribution
  * of, unlawful or unlicensed copies of an Trinix operating system, or to
@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://bit.ly/1wIYh3A and read it before using this file.
+ * https://github.com/Bloodmanovski/Trinix and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -28,18 +28,18 @@ import Modules.Storage.ATA.ATAController;
 
 
 class ATA {
-	private __gshared ATAController[2] _controllers;
+    private __gshared ATAController[2] _controllers;
 
-	static ModuleResult Initialize(string[] args) {
-		_controllers = ATAController.Detect();
+    static ModuleResult Initialize(string[] args) {
+        _controllers = ATAController.Detect();
 
-		return ModuleResult.Successful;
-	}
+        return ModuleResult.Successful;
+    }
 
-	static ModuleResult Finalize() {
-		delete _controllers[0];
-		delete _controllers[1];
+    static ModuleResult Finalize() {
+        delete _controllers[0];
+        delete _controllers[1];
 
-		return ModuleResult.Successful;
-	}
+        return ModuleResult.Successful;
+    }
 }

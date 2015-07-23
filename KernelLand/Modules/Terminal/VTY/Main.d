@@ -1,8 +1,8 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
- * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
+ * Public Source Licence Version 1.0 (the 'Licence'). You may not use this file
  * except in compliance with the License. The rights granted to you under the
  * License may not be used to create, or enable the creation or redistribution
  * of, unlawful or unlicensed copies of an Trinix operating system, or to
@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://bit.ly/1wIYh3A and read it before using this file.
+ * https://github.com/Bloodmanovski/Trinix and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -21,8 +21,8 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  * 
  * TODO:
- * 		o Check if server or clinet doesnt EOF...
- * 		o Check for flags...
+ *      o Check if server or clinet doesnt EOF...
+ *      o Check for flags...
  *      o To Read/Write methods add timeout, checkout for is server connected
  *      o Let user to define his own Termios and pass them to constructor
  *      o Implement static calls
@@ -41,19 +41,19 @@ import Modules.Terminal.VTY.DriverInfo;
 
 
 class VTY : Resource {
-	private static const ResouceCallTable _rcs = {
-		_DriverInfo_Terminal_VTY.Identifier,
-		&StaticCallback
-	};
+    private static const ResouceCallTable _rcs = {
+        _DriverInfo_Terminal_VTY.Identifier,
+        &StaticCallback
+    };
 
-	private PTYDev _master;
-	private TTYDev _slave;
+    private PTYDev _master;
+    private TTYDev _slave;
 
-	private Queue!char _in;
-	private Queue!char _out;
+    private Queue!char _in;
+    private Queue!char _out;
 
-	private Mutex _lockIn;
-	private Termios _termios;
+    private Mutex _lockIn;
+    private Termios _termios;
     private WindowSize _window;
 
     private long _canonBufferLength;
@@ -62,17 +62,17 @@ class VTY : Resource {
     //private Process _controllProcess;
     private Thread _fgThread;
 
-	this() {
-		static const CallTable[] callTable = [
+    this() {
+        static const CallTable[] callTable = [
         ];
 
-		_lockIn = new Mutex();
+        _lockIn = new Mutex();
 
-		_in  = new Queue!char();
-		_out = new Queue!char();
+        _in  = new Queue!char();
+        _out = new Queue!char();
 
-		_master = new PTYDev(this, DeviceManager.DevFS, FSNode.NewAttributes("pty0"));
-		_slave  = new TTYDev(this, DeviceManager.DevFS, FSNode.NewAttributes("tty0"));
+        _master = new PTYDev(this, DeviceManager.DevFS, FSNode.NewAttributes("pty0"));
+        _slave  = new TTYDev(this, DeviceManager.DevFS, FSNode.NewAttributes("tty0"));
 
         _window.Row = 25;
         _window.Col = 80;
@@ -95,37 +95,37 @@ class VTY : Resource {
         _termios.ControlChars[Commands.VSUSP]  = 26; /* ^Z */
         _termios.ControlChars[Commands.VTIME]  = 0;
 
-		super(_DriverInfo_Terminal_VTY, callTable);
-	}
+        super(_DriverInfo_Terminal_VTY, callTable);
+    }
 
-	this(out FSNode master, out FSNode slave) {
-		this();
+    this(out FSNode master, out FSNode slave) {
+        this();
 
-		master = _master;
-		slave  = _slave;
-	}
+        master = _master;
+        slave  = _slave;
+    }
 
-	~this() {
-		delete _in;
-		delete _out;
+    ~this() {
+        delete _in;
+        delete _out;
 
-		delete _master;
-		delete _slave;
-	}
+        delete _master;
+        delete _slave;
+    }
 
-	static ModuleResult Initialize(string[] args) {
-		ResourceManager.AddCallTable(_rcs);
+    static ModuleResult Initialize(string[] args) {
+        ResourceManager.AddCallTable(_rcs);
 
-		return ModuleResult.Successful;
-	}
-	
-	static ModuleResult Finalize() {
-		ResourceManager.RemoveCallTable(_rcs);
+        return ModuleResult.Successful;
+    }
+    
+    static ModuleResult Finalize() {
+        ResourceManager.RemoveCallTable(_rcs);
 
-		return ModuleResult.Successful;
-	}
+        return ModuleResult.Successful;
+    }
 
-	void Input(char c) {
+    void Input(char c) {
         if (_termios.LocalFlags & LocalModes.ICANON) {
             if (c == _termios.ControlChars[Commands.VKILL]) {
                 while (_canonBufferLength > 0) {
@@ -211,104 +211,104 @@ class VTY : Resource {
         } else if (_termios.LocalFlags & LocalModes.ECHO)
             Output(c);
         _in.Enqueue(c);
-  	}
+    }
 
-	void Output(char c) {
+    void Output(char c) {
         if (c == '\n' && (_termios.OutputFlags & OutputModes.ONLCR))
             _out.Enqueue('\r');
 
         _out.Enqueue('\n');
-	}
+    }
 
-	static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
-		switch (param1) {
-			case 1:
-				FSNode master, slave;
-				new VTY(master, slave);
+    static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
+        switch (param1) {
+            case 1:
+                FSNode master, slave;
+                new VTY(master, slave);
 
-				param2 = master.Handle;
-				param3 = slave.Handle;
-				return 0;
-				
-			default:
-				return -1;
-		}
-	}
+                param2 = master.Handle;
+                param3 = slave.Handle;
+                return 0;
+                
+            default:
+                return -1;
+        }
+    }
 }
 
 class TTYDev : CharNode {
-	private VTY _vty;
+    private VTY _vty;
 
-	this(VTY vty, DirectoryNode parent, FileAttributes attributes) {
-		_vty = vty;
+    this(VTY vty, DirectoryNode parent, FileAttributes attributes) {
+        _vty = vty;
 
-		super(parent, attributes);
-		Identifier = "com.modules.Terminal.VTY.TTY";
-		m_attributes.Length = _vty._in.Count;
-	}
+        super(parent, attributes);
+        Identifier = "com.modules.Terminal.VTY.TTY";
+        m_attributes.Length = _vty._in.Count;
+    }
 
-	override ulong Read(long offset, byte[] data) {
-		_vty._lockIn.WaitOne();
-		scope(exit) _vty._lockIn.Release();
+    override ulong Read(long offset, byte[] data) {
+        _vty._lockIn.WaitOne();
+        scope(exit) _vty._lockIn.Release();
 
-		if (_vty._termios.LocalFlags & LocalModes.ICANON) {
-			foreach (ref x; data)
-				x = _vty._in.Dequeue();
+        if (_vty._termios.LocalFlags & LocalModes.ICANON) {
+            foreach (ref x; data)
+                x = _vty._in.Dequeue();
 
-			return data.length;
-		} else {
-			ulong len;
+            return data.length;
+        } else {
+            ulong len;
 
-			if (!_vty._termios.ControlChars[Commands.VMIN])
-				len = _vty._in.Count > data.length ? data.length : _vty._in.Count;
-			else
-				len = _vty._termios.ControlChars[Commands.VMIN] > data.length ? data.length : _vty._termios.ControlChars[Commands.VMIN];
+            if (!_vty._termios.ControlChars[Commands.VMIN])
+                len = _vty._in.Count > data.length ? data.length : _vty._in.Count;
+            else
+                len = _vty._termios.ControlChars[Commands.VMIN] > data.length ? data.length : _vty._termios.ControlChars[Commands.VMIN];
 
-			foreach (ref x; data[0 .. len])
-				x = _vty._in.Dequeue();
+            foreach (ref x; data[0 .. len])
+                x = _vty._in.Dequeue();
 
-			return len;
-		}
-	}
+            return len;
+        }
+    }
 
-	override ulong Write(long offset, byte[] data) {
-		foreach (x; data)
-			_vty.Output(x);
+    override ulong Write(long offset, byte[] data) {
+        foreach (x; data)
+            _vty.Output(x);
 
-		return data.length;
-	}
+        return data.length;
+    }
 }
 
 class PTYDev : CharNode {
-	private VTY _vty;
-	private Mutex _mutex;
+    private VTY _vty;
+    private Mutex _mutex;
 
-	this(VTY vty, DirectoryNode parent, FileAttributes attributes) {
-		_vty   = vty;
-		_mutex = new Mutex();
+    this(VTY vty, DirectoryNode parent, FileAttributes attributes) {
+        _vty   = vty;
+        _mutex = new Mutex();
 
-		super(parent, attributes);
-		Identifier = "com.modules.Terminal.VTY.PTY";
-		m_attributes.Length = _vty._out.Count;
-	}
+        super(parent, attributes);
+        Identifier = "com.modules.Terminal.VTY.PTY";
+        m_attributes.Length = _vty._out.Count;
+    }
 
-	override ulong Read(long offset, byte[] data) {
-		long collected;
+    override ulong Read(long offset, byte[] data) {
+        long collected;
 
-		while (!collected) {
-			_mutex.WaitOne();
-			while (_vty._out.Count > 0 && collected < data.length)
-				data[collected++] = _vty._out.Dequeue();
-			_mutex.Release();
-		}
+        while (!collected) {
+            _mutex.WaitOne();
+            while (_vty._out.Count > 0 && collected < data.length)
+                data[collected++] = _vty._out.Dequeue();
+            _mutex.Release();
+        }
 
-		return collected;
-	}
-	
-	override ulong Write(long offset, byte[] data) {
-		foreach (x; data)
-			_vty.Input(x);
+        return collected;
+    }
+    
+    override ulong Write(long offset, byte[] data) {
+        foreach (x; data)
+            _vty.Input(x);
 
-		return data.length;
-	}
+        return data.length;
+    }
 }

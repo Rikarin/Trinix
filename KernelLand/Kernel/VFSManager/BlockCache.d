@@ -1,8 +1,8 @@
 ﻿/**
- * Copyright (c) 2014 Trinix Foundation. All rights reserved.
+ * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
- * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
+ * Public Source Licence Version 1.0 (the 'Licence'). You may not use this file
  * except in compliance with the License. The rights granted to you under the
  * License may not be used to create, or enable the creation or redistribution
  * of, unlawful or unlicensed copies of an Trinix operating system, or to
@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://bit.ly/1wIYh3A and read it before using this file.
+ * https://github.com/Bloodmanovski/Trinix and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -31,75 +31,75 @@ import ObjectManager;
 
 
 final class BlockCache {
-	private IBlockDevice m_device;
-	private CachedBlock[] m_cache;
+    private IBlockDevice m_device;
+    private CachedBlock[] m_cache;
 
-	private struct CachedBlock {
-		ulong ID;
-		ulong LastUse;
-		bool Dirty;
-		byte[] Data;
-	}
+    private struct CachedBlock {
+        ulong ID;
+        ulong LastUse;
+        bool Dirty;
+        byte[] Data;
+    }
 
-	@property IBlockDevice Device() {
-		return m_device;
-	}
+    @property IBlockDevice Device() {
+        return m_device;
+    }
 
-	this(IBlockDevice device, long size) {
-		m_device = device;
-		/*_cache = new CachedBlock[size];
+    this(IBlockDevice device, long size) {
+        m_device = device;
+        /*_cache = new CachedBlock[size];
 
-		foreach (x; _cache)
-			x.Data = new byte[device.BlockSize];*/
-	}
+        foreach (x; _cache)
+            x.Data = new byte[device.BlockSize];*/
+    }
 
-	~this() {
-	/*	Synchronize();
+    ~this() {
+    /*  Synchronize();
 
-		foreach (x; _cache)
-			delete x.Data;
+        foreach (x; _cache)
+            delete x.Data;
 
-		delete _cache;*/
-	}
+        delete _cache;*/
+    }
 
-	void Synchronize() {
-		foreach (x; m_cache) {
-			if (x.Dirty) {
-				if (m_device.Write(x.ID, x.Data) == x.Data.length)
-					x.Dirty = false;
-			}
-		}
-	}
+    void Synchronize() {
+        foreach (x; m_cache) {
+            if (x.Dirty) {
+                if (m_device.Write(x.ID, x.Data) == x.Data.length)
+                    x.Dirty = false;
+            }
+        }
+    }
 
-	ulong Read(long offset, byte[] data) {
-		/*if (data.length <= _device.BlockSize) {
-			long size = GetCache(offset, data);
-			if (!size)
-				return 0;
+    ulong Read(long offset, byte[] data) {
+        /*if (data.length <= _device.BlockSize) {
+            long size = GetCache(offset, data);
+            if (!size)
+                return 0;
 
-			size = _device.Read(offset, data);
-			if (!size)
-				return 0;
+            size = _device.Read(offset, data);
+            if (!size)
+                return 0;
 
-			SetCache(offset, data);
-			return size;
-		}*/
-	
-		return m_device.Read(offset, data);
-	}
+            SetCache(offset, data);
+            return size;
+        }*/
+    
+        return m_device.Read(offset, data);
+    }
 
-	ulong Write(long offset, byte[] data) {
-		/*if (data.length <= _device.BlockSize) {
-			long size = SetCache(offset, data, true);
+    ulong Write(long offset, byte[] data) {
+        /*if (data.length <= _device.BlockSize) {
+            long size = SetCache(offset, data, true);
 
-			if (!size)
-				size = _device.Write(offset, data);
+            if (!size)
+                size = _device.Write(offset, data);
 
-			return size;
-		}*/
+            return size;
+        }*/
 
-		return m_device.Write(offset, data);
-	}
+        return m_device.Write(offset, data);
+    }
 
     private ulong GetCache(long offset, byte[] data) {
         foreach (x; m_cache) {

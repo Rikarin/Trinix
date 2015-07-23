@@ -2,7 +2,7 @@
  * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
- * Public Source Licence Version 0.1 (the 'Licence'). You may not use this file
+ * Public Source Licence Version 1.0 (the 'Licence'). You may not use this file
  * except in compliance with the License. The rights granted to you under the
  * License may not be used to create, or enable the creation or redistribution
  * of, unlawful or unlicensed copies of an Trinix operating system, or to
@@ -10,7 +10,7 @@
  * of an Trinix operating system software license agreement.
  * 
  * You may obtain a copy of the License at
- * http://bit.ly/1wIYh3A and read it before using this file.
+ * https://github.com/Bloodmanovski/Trinix and read it before using this file.
  * 
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
@@ -38,7 +38,7 @@ abstract final class CPU {
     //TODO: deprecated private __gshared ubyte*[256] m_stacks;
     private __gshared ProcessorInfo[256] m_processorInfo;
 
-    @property static int Identifier()             { return 0; }
+    @property static int Identifier()             { return 0;         }
     @property static TaskStateSegment* TSSTable() { return TSS.Table; }
 
     static void Initialize() {
@@ -65,15 +65,17 @@ abstract final class CPU {
         uint count, temp;
         ulong saveRBX;
         
-		asm {
-			mov saveRBX, RBX;
-		}
-        eax = Port.cpuidAX(0x02);
-        count = eax & 0xFF;
         asm {
-			mov ebx, EBX;
-			mov ecx, ECX;
-			mov edx, EDX;
+            mov saveRBX, RBX;
+        }
+		
+        eax   = Port.cpuidAX(0x02);
+        count = eax & 0xFF;
+		
+        asm {
+            mov ebx, EBX;
+            mov ecx, ECX;
+            mov edx, EDX;
         }
 
         for (uint i = 0; i < count; i++) {
@@ -94,16 +96,16 @@ abstract final class CPU {
                 ExamineRegister(edx);
                 
             eax = Port.cpuidAX(0x02);
-			asm {
-				mov ebx, EBX;
-				mov ecx, ECX;
-				mov edx, EDX;
-			}
+            asm {
+                mov ebx, EBX;
+                mov ecx, ECX;
+                mov edx, EDX;
+            }
         }
         
-		asm {
-			mov RBX, saveRBX;
-		}
+        asm {
+            mov RBX, saveRBX;
+        }
     }
 
     private static void ExamineRegister(uint reg) {
