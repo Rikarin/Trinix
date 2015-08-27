@@ -867,7 +867,7 @@
    <File path="Library\Casters.d" />
    <File path="Library\LibraryLoader.dx" />
    <File path="Library\LinkedList.d" />
-   <File path="Library\List.di" />
+   <File path="Library\List.d" />
    <File path="Library\package.d" />
    <File path="Library\Property.d" />
    <File path="Library\Queue.d" />
