@@ -352,7 +352,7 @@ final class Thread {
         }
 
         m_retStatus = status;
-        m_status = ThreadStatus.Zombie;
+        m_status    = ThreadStatus.Zombie;
         Task.ThreadLock.Release();
 
         m_parent.m_deadChildLock.WaitOne();
@@ -450,7 +450,7 @@ final class Thread {
 
     void Fault(long number) {
         if (m_faultHandler is null) {    /* Panic */
-            Kill(-1);
+            //TODO: fix me pls Kill(-1);
 
             Port.Sti();
             Port.Halt();
@@ -459,7 +459,7 @@ final class Thread {
 
         if (m_curFaultNum) {             /* Double fault */
             Log("Threads: Fault: Double fault...");
-            Kill(-1);
+            //Kill(-1);
 
             Port.Sti();
             Port.Halt();

@@ -106,8 +106,9 @@ extern(C) void KernelMain() {
     Port.Write(0xA1, 0x00);
 
     Log("Timer");
-    while (true) {}
     Time.Initialize();
+    //asm { int 5; }
+    //while (true) {}
 
     Log("Binary Loader");
     BinaryLoader.Initialize();
@@ -130,6 +131,6 @@ extern(C) void KernelMain() {
     Log("Running, Time = %d", Time.Uptime);
 
     while (true) {
-       // Log("Running, Time = %d", Time.Uptime);
+        Log("Running, Time = %d", Time.Uptime);
     }
 }

@@ -35,8 +35,8 @@ private extern(C) extern pure nothrow {
 
 
 abstract final class Port {
-nothrow:
-    static T Read(T = byte)(ushort port) pure {
+    static T Read(T = byte)(ushort port) {
+        T ret;
         asm {
             mov DX, port;
         }
@@ -44,19 +44,21 @@ nothrow:
         static if (isByte!T) {
             asm {
                 in AL, DX;
-                ret;
+                mov ret, AL;
             }
         } else static if (isShort!T) {
             asm {
                 in AX, DX;
-                ret;
+                mov ret, AX;
             }
         } else static if (isInt!T) {
             asm {
                 in EAX, DX;
-                ret;
+                mov ret, EAX;
             }
         }
+
+        return ret;
     }
     
     static void Write(T = byte)(ushort port, int data) pure {
@@ -183,11 +185,11 @@ nothrow:
         }
     }
 
-    static void EnableSSE() pure {
+    static void EnableSSE() {
         _Proc_EnableSSE();
     }
 
-    static void DisableSSE() pure {
+    static void DisableSSE() {
         _Proc_DisableSSE();
     }
 
