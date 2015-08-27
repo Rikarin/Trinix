@@ -57,14 +57,14 @@ abstract final class Task {
     private __gshared Thread m_idle;
 
     @property {
-        static Thread CurrentThread()                 { return m_currentThread;             }
-        static Process CurrentProcess()               { return CurrentThread.ParentProcess; }
-        package static SpinLock ThreadLock()          { return m_spinLock;                  }
-        package static ulong NextPID()                { return m_nextPID++;                 }
-        package static ulong NextTID()                { return m_nextTID++;                 }
-        package static ref Thread IdleTask()          { return m_idle;                      }
-        package static LinkedList!Thread[] Threads()  { return m_threads;                   }
-        package static LinkedList!Process Processes() { return m_procs;                     }
+        static Thread CurrentThread()        { return m_currentThread;             }
+        static Process CurrentProcess()      { return CurrentThread.ParentProcess; }
+        package static SpinLock ThreadLock() { return m_spinLock;                  }
+        package static ulong NextPID()       { return m_nextPID++;                 }
+        package static ulong NextTID()       { return m_nextTID++;                 }
+        package static ref Thread IdleTask() { return m_idle;                      }
+        package static auto Threads()        { return m_threads;                   }
+        package static auto Processes()      { return m_procs;                     }
         
         package static size_t ThreadCount() {
             size_t count;

@@ -27,6 +27,8 @@ import Library;
 import Architecture;
 import MemoryManager;
 
+import Core;
+
 
 enum RegionType {
     Unknown,
@@ -66,16 +68,15 @@ abstract final class PhysicalMemory {
     }
 
     static void Initialize() {
-        m_frames = new BitArray(0x40_000, false); //Hack: treba zvetsit paging tabulky v Boot.s lebo sa kernel potom nevie premapovat pre nedostatok pamete :/
+        m_frames = new BitArray(0x10_000, false); //Hack: treba zvetsit paging tabulky v Boot.s lebo sa kernel potom nevie premapovat pre nedostatok pamete :/
 
-        VirtualMemory.KernelPaging = new Paging();
+        VirtualMemory.KernelPaging = new Paging();        
         for (v_addr i = 0xFFFFFFFF_80000000; i < 0xFFFFFFFF_8A000000; i += Paging.PAGE_SIZE)
             VirtualMemory.KernelPaging.AllocFrame(i, AccessMode.DefaultUser); //TODO: testing
 
-        for (v_addr i = 0xFFFFFFFF_E0000000; i < 0xFFFFFFFF_EA000000; i += Paging.PAGE_SIZE)
-            VirtualMemory.KernelPaging.AllocFrame(i, AccessMode.DefaultKernel);
-
         VirtualMemory.KernelPaging.Install();
+        //for (v_addr i = 0xFFFFFFFF_E0000000; i < 0xFFFFFFFF_EA000000; i += Paging.PAGE_SIZE)
+            //VirtualMemory.KernelPaging.AllocFrame(i, AccessMode.DefaultKernel);
     }
 
     /* Used by Paging only */
@@ -83,10 +84,10 @@ abstract final class PhysicalMemory {
         if (page.Present)
             return;
         
-        long index = m_frames.FirstFreeBit();
+        long index      = m_frames.FirstFreeBit();
         m_frames[index] = true;
-        page.Address = index;
-        page.Mode = mode;
+        page.Address    = index;
+        page.Mode       = mode;
     }
 
     /* Used by Paging only */
@@ -95,14 +96,14 @@ abstract final class PhysicalMemory {
             return;
         
         m_frames[page.Address] = false;
-        page.Present = false;
+        page.Present           = false;
     }
 
     static v_addr AllocPage(size_t num) {
         if (num < 1)
             num = 1;
             
-        v_addr ret = cast(v_addr)LinkerScript.KernelEnd + m_startMemory;
+        v_addr ret     = cast(v_addr)LinkerScript.KernelEnd + m_startMemory;
         m_startMemory += 0x1000 * num;
 
         return ret;

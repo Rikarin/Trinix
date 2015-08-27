@@ -1,0 +1,66 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{002A2DE9-8BB6-484D-9802-7E4AD4084715}") = "Kernel", "KernelLand\Kernel\Kernel.visualdproj", "{788CD353-DD9E-4C07-B20D-2774EDB448FB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{D5097E94-3C40-46D9-A46B-F6F32D4E08B4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Filesystem", "Filesystem", "{ECC22CF4-7EC8-4857-93E7-343892BD7258}"
+EndProject
+Project("{002A2DE9-8BB6-484D-9802-7E4AD4084715}") = "Ext2", "KernelLand\Modules\Filesystem\Ext2\Ext2.visualdproj", "{61FE45B3-8DCD-4387-BB10-A03121480D2D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug DMD|x64 = Debug DMD|x64
+		Debug DMD|x86 = Debug DMD|x86
+		Debug GDC|x64 = Debug GDC|x64
+		Debug GDC|x86 = Debug GDC|x86
+		Release DMD|x64 = Release DMD|x64
+		Release DMD|x86 = Release DMD|x86
+		Release GDC|x64 = Release GDC|x64
+		Release GDC|x86 = Release GDC|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{788CD353-DD9E-4C07-B20D-2774EDB448FB}.Debug DMD|x64.ActiveCfg = Release DMD|x64
+		{788CD353-DD9E-4C07-B20D-2774EDB448FB}.Debug DMD|x64.Build.0 = Release DMD|x64
+		{788CD353-DD9E-4C07-B20D-2774EDB448FB}.Debug DMD|x86.ActiveCfg = Debug DMD|Win32
+		{788CD353-DD9E-4C07-B20D-2774EDB448FB}.Debug DMD|x86.Build.0 = Debug DMD|Win32
+		{788CD353-DD9E-4C07-B20D-2774EDB448FB}.Debug GDC|x64.ActiveCfg = Debug GDC|x64
+		{788CD353-DD9E-4C07-B20D-2774EDB448FB}.Debug GDC|x64.Build.0 = Debug GDC|x64
+		{788CD353-DD9E-4C07-B20D-2774EDB448FB}.Debug GDC|x86.ActiveCfg = Debug GDC|Win32
+		{788CD353-DD9E-4C07-B20D-2774EDB448FB}.Debug GDC|x86.Build.0 = Debug GDC|Win32
+		{788CD353-DD9E-4C07-B20D-2774EDB448FB}.Release DMD|x64.ActiveCfg = Release DMD|x64
+		{788CD353-DD9E-4C07-B20D-2774EDB448FB}.Release DMD|x64.Build.0 = Release DMD|x64
+		{788CD353-DD9E-4C07-B20D-2774EDB448FB}.Release DMD|x86.ActiveCfg = Release DMD|Win32
+		{788CD353-DD9E-4C07-B20D-2774EDB448FB}.Release DMD|x86.Build.0 = Release DMD|Win32
+		{788CD353-DD9E-4C07-B20D-2774EDB448FB}.Release GDC|x64.ActiveCfg = Release GDC|x64
+		{788CD353-DD9E-4C07-B20D-2774EDB448FB}.Release GDC|x64.Build.0 = Release GDC|x64
+		{788CD353-DD9E-4C07-B20D-2774EDB448FB}.Release GDC|x86.ActiveCfg = Release GDC|Win32
+		{788CD353-DD9E-4C07-B20D-2774EDB448FB}.Release GDC|x86.Build.0 = Release GDC|Win32
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D}.Debug DMD|x64.ActiveCfg = Debug DMD|x64
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D}.Debug DMD|x64.Build.0 = Debug DMD|x64
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D}.Debug DMD|x86.ActiveCfg = Debug DMD|Win32
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D}.Debug DMD|x86.Build.0 = Debug DMD|Win32
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D}.Debug GDC|x64.ActiveCfg = Debug GDC|x64
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D}.Debug GDC|x64.Build.0 = Debug GDC|x64
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D}.Debug GDC|x86.ActiveCfg = Debug GDC|Win32
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D}.Debug GDC|x86.Build.0 = Debug GDC|Win32
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D}.Release DMD|x64.ActiveCfg = Release DMD|x64
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D}.Release DMD|x64.Build.0 = Release DMD|x64
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D}.Release DMD|x86.ActiveCfg = Release DMD|Win32
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D}.Release DMD|x86.Build.0 = Release DMD|Win32
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D}.Release GDC|x64.ActiveCfg = Release GDC|x64
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D}.Release GDC|x64.Build.0 = Release GDC|x64
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D}.Release GDC|x86.ActiveCfg = Release GDC|Win32
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D}.Release GDC|x86.Build.0 = Release GDC|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{ECC22CF4-7EC8-4857-93E7-343892BD7258} = {D5097E94-3C40-46D9-A46B-F6F32D4E08B4}
+		{61FE45B3-8DCD-4387-BB10-A03121480D2D} = {ECC22CF4-7EC8-4857-93E7-343892BD7258}
+	EndGlobalSection
+EndGlobal

@@ -124,7 +124,7 @@ final class BitArray {
     }
     
     void Set(long index, bool value) in {
-        assert(index > 0 && index < Count);
+        //assert(index > 0 && index < Count); TODO
     } body {
         if (value)
             m_bits[IndexFromBit(index)] |= (1UL << OffsetFromBit(index));

@@ -1,4 +1,4 @@
-﻿/**
+﻿    /**
  * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
@@ -61,7 +61,6 @@ abstract final class Logger {
 
     static void WriteLine(string format, ...) {
         char[1024] buffer;
-        
         long len = ParseString(buffer, format, _arguments, _argptr);
         Put(buffer[0 .. len]);
         Put(cast(char[])"\n");
@@ -203,7 +202,10 @@ abstract final class Logger {
     
     private static void Scroll() {
         if (m_iterator > 80 * 25) {
-            m_display[0 .. m_iterator - 80] = m_display[80 .. m_iterator];
+			for (int i = 0; i < m_iterator - 80; i++)
+				m_display[i] = m_display[i + 80];
+            //TODO: use this againt m_display[0 .. m_iterator - 80] = m_display[80 .. m_iterator];
+			
             m_display[m_iterator - 80 .. m_iterator] = cast(DisplayChar)0;
             m_iterator -= 80;
         }

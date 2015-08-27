@@ -1,5 +1,6 @@
 [bits 64]
 [global _CPU_refresh_iretq]
+[global _CPU_ret_cr2]
 
 _CPU_refresh_iretq:
 	mov RAX, 0x10
@@ -21,3 +22,7 @@ _CPU_refresh_iretq:
 
 	.r:
 		ret
+
+_CPU_ret_cr2:
+    mov RAX, CR2
+    ret

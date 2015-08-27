@@ -151,6 +151,7 @@ abstract class FSNode : Resource {
     }
 
     /* TODO: Too much memory leaks in one function */
+	/* TODO: make for this stringbuilder */
     string Location() {
         string path;
         FSNode node = this;
@@ -180,6 +181,9 @@ abstract class FSNode : Resource {
      * 
      * Returns:
      *      a valid struct of attributes
+	 *
+	 * TODO:
+	 *     o Move this to the FileAttributes structure
      */
     static FileAttributes NewAttributes(string name, FileType type = FileType.Directory) {
         FileAttributes ret;

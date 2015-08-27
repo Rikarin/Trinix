@@ -58,12 +58,12 @@ abstract final class GDT {
         m_tables[table].SetNull(0);                         /* Null */
 
         m_tables[table].SetCodeSegment(1, false, 0, true);  /* Kernel */
-        m_tables[table].SetDataSegment(2, true, 0);
-
-        m_tables[table].SetDataSegment(3, true, 3);         /* User 64 */
-        m_tables[table].SetCodeSegment(4, true, 3, true);
-
-        m_tables[table].SetDataSegment(5, true, 3);         /* User 32 */
+        m_tables[table].SetDataSegment(2, true,  0);
+                                                 
+        m_tables[table].SetDataSegment(3, true,  3);         /* User 64 */
+        m_tables[table].SetCodeSegment(4, true,  3, true);
+                                                 
+        m_tables[table].SetDataSegment(5, true,  3);         /* User 32 */
     }
     
     private struct GDTBase {

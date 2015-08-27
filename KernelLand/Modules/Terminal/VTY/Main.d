@@ -68,8 +68,8 @@ class VTY : Resource {
 
         _lockIn = new Mutex();
 
-        _in  = new Queue!char();
-        _out = new Queue!char();
+        _in     = new Queue!char();
+        _out    = new Queue!char();
 
         _master = new PTYDev(this, DeviceManager.DevFS, FSNode.NewAttributes("pty0"));
         _slave  = new TTYDev(this, DeviceManager.DevFS, FSNode.NewAttributes("tty0"));

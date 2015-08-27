@@ -35,7 +35,7 @@ import Architectures.x86_64.Core;
 
 abstract final class IDT {
     private __gshared IDTBase m_idtBase;
-    private __gshared InterruptGateDescriptor[256] m_entries;
+    private __gshared InterruptGateDescriptor[50] m_entries;
     
 
     static void Initialize() {
@@ -49,7 +49,6 @@ abstract final class IDT {
 
         asm {
             lidt m_idtBase;
-            sti;
         }
     }
 
@@ -61,13 +60,14 @@ abstract final class IDT {
         SetGate(num, SystemSegmentType.InterruptGate, cast(v_addr)funcPtr, 3, ist);
     }
 
-    private struct IDTBase {
+    align(1) private struct IDTBase {
     align(1):
         ushort Limit;
         ulong  Base;
     }
+	static assert(IDTBase.sizeof == 10);
     
-    private struct InterruptGateDescriptor {
+    align(1) private struct InterruptGateDescriptor {
     align(1):
         ushort         TargetLow;
         ushort         Segment;
@@ -78,6 +78,7 @@ abstract final class IDT {
         
         mixin(Bitfield!(_flags, "ist", 3, "Zero0", 5, "Type", 4, "Zero1", 1, "dpl", 2, "p", 1));
     }
+	static assert(InterruptGateDescriptor.sizeof == 16);
     
     private static void SetGate(uint num, SystemSegmentType gateType, ulong funcPtr, ushort dplFlags, ushort istFlags) {
         with (m_entries[num]) {
@@ -102,8 +103,8 @@ abstract final class IDT {
 
     private static template GenerateISR(ulong num, bool needDummyError = true) {
         const char[] GenerateISR = `
-            void isr` ~ num.stringof[0 .. $ - 2] ~ `() {
-                asm {` ~
+            private static void isr` ~ num.stringof[0 .. $ - 2] ~ `() {
+                asm { naked;` ~
                     (needDummyError ? `push 0UL;` : ``) ~
                     `push ` ~ num.stringof ~ `;` ~
                     `jmp ISRCommon;` ~
@@ -152,11 +153,11 @@ abstract final class IDT {
             Log("RCX = %16x | RDX = %16x", stack.RCX, stack.RDX);
             Log("RDI = %16x | RSI = %16x", stack.RDI, stack.RSI);
             Log("RSP = %16x | RBP = %16x", stack.RSP, stack.RBP);
-            Log(" R8 = %16x |  R9 = %16x", stack.R8, stack.R9);
+            Log(" R8 = %16x |  R9 = %16x", stack.R8,  stack.R9);
             Log("R10 = %16x | R11 = %16x", stack.R10, stack.R11);
             Log("R12 = %16x | R13 = %16x", stack.R12, stack.R13);
             Log("R14 = %16x | R15 = %16x", stack.R14, stack.R15);
-            Log(" CS = %16x |  SS = %16x", stack.CS, stack.SS);
+            Log(" CS = %16x |  SS = %16x", stack.CS,  stack.SS);
             Log("Flags: %16x", stack.Flags);
             Port.Halt();
         } else if (stack.IntNumber < 32)
@@ -178,6 +179,7 @@ abstract final class IDT {
             nop;
             nop;
             nop;
+
             iretq;
         }
     }
@@ -185,7 +187,7 @@ abstract final class IDT {
     extern(C) private static void ISRCommon() {
         asm {
             naked;
-            cli; /* TODO: need this?? */
+            cli; /* pre istotu */
 
             /* Save context */
             push RAX;

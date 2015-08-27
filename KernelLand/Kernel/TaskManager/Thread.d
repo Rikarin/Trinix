@@ -63,12 +63,12 @@ struct IPCMessage {
 }
 
 final class Thread {
-    enum STACK_SIZE              = 0x4000;
-    enum USER_STACK_SIZE         = 0x1000; //* 10
-    enum MIN_PRIORITY            = 10;
-    enum DEFAULT_PRIORITY        = 5;
-    enum DEFAULT_QUANTUM         = 5;
-    private enum THREAD_RETURN   = 0xDEADC0DE; //TODO: deprecated, thread will not return integer anymore!
+    enum STACK_SIZE            = 0x4000;
+    enum USER_STACK_SIZE       = 0x1000; //* 10
+    enum MIN_PRIORITY          = 10;
+    enum DEFAULT_PRIORITY      = 5;
+    enum DEFAULT_QUANTUM       = 5;
+    private enum THREAD_RETURN = 0xDEADC0DE; //TODO: deprecated, thread will not return integer anymore!
 
     private ulong m_id;
     private string m_name;

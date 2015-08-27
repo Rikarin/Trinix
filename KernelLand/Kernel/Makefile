@@ -16,7 +16,7 @@ endif
 # -J../../
 DFLAGS		+= -IArchitectures/$(ARCHDIR) -I../
 CFLAGS		+= -fno-stack-protector
-LDFLAGS		:= -T Architectures/$(ARCHDIR)/LinkerScript.ld -Map ../Linker.$(ARCH).map
+LDFLAGS		:= --script=Architectures/$(ARCHDIR)/LinkerScript.ld -Map=../Linker.$(ARCH).map
 
 ifeq ($(PLATFORM),default)
 	OBJDIR	:= obj-$(ARCH)/
@@ -40,25 +40,24 @@ SYMBOLS_OBJ   := $(OBJDIR)symbols.s.o
 SYMBOLS_SRC   := $(OBJDIR)symbols.s
 
 OBJ := $(A_OBJ)
-#TODO D
-OBJ	+= $(addsuffix .o,$(shell find * -name "*.[d|c|s]" -not -path "*Architectures*"))
+OBJ	+= $(addsuffix .o,$(shell find * -name "*.[c|s]" -not -path "*Architectures*"))
 OBJ := $(filter-out $(BUILDINFO_OBJ), $(OBJ))
 OBJ := $(filter-out $(SYMBOLS_OBJ), $(OBJ))
 OBJ := $(addprefix $(OBJDIR), $(OBJ))
 OBJ += $(BUILDINFO_OBJ)
 
-DEPFILES := $(OBJ:%=%.dep)
-MODS += $(addprefix ../Modules/, $(addsuffix .xo.$(ARCH),$(MODULES)))
+DEPFILES  := $(OBJ:%=%.dep)
+MODS      += $(addprefix ../Modules/, $(addsuffix .xo.$(ARCH),$(MODULES)))
 
-IMPORTDIR	:= ../Import/
-IMPORT		:= $(shell find * -name "*.d")
-IMPORT		:= $(addprefix $(IMPORTDIR), $(IMPORT))
+IMPORTDIR := ../Import/
+IMPORT	  := $(shell find * -name "*.d")
+IMPORT    := $(addprefix $(IMPORTDIR), $(IMPORT))
 
-DOCDIR	:= ../APIdoc/
-DOC		:= $(patsubst %d,%html,$(shell find * -name "*.d"))
-DOC		:= $(addprefix $(DOCDIR), $(DOC))
+DOCDIR	  := ../APIdoc/
+DOC		  := $(patsubst %d,%html,$(shell find * -name "*.d"))
+DOC		  := $(addprefix $(DOCDIR), $(DOC))
 
-.PHONY: all clean install import apidoc
+.PHONY: all clean install import apidoc xaxa
 
 
 all:	$(BIN)
@@ -85,12 +84,12 @@ $(DOCDIR)%.html: %.d
 	@$(DD) $(DFLAGS) -c -fdoc -fdoc-file=$@ $< -o /dev/null
 
 #$(SYMBOLS_OBJ)	
-$(BIN): $(OBJ) $(MODS) Architectures/$(ARCHDIR)/LinkerScript.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
-	@echo --- LD -o $(BIN)	
-	@$(LD) $(LDFLAGS) -o $(BIN) $(OBJ) $(MODS) /llvm/lib/libdruntime-ldc.a
-	@$(OBJDUMP) -d -S $(BIN) > $(BIN).dsm
+$(BIN): $(OBJ) xaxa $(MODS) Architectures/$(ARCHDIR)/LinkerScript.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
+	@echo --- LD -o $(BIN)
+	@$(LD) $(LDFLAGS) -o $(BIN) $(shell find $(OBJDIR) -name "*.[o]") $(MODS) /llvm/lib/libdruntime-ldc.a
+#@$(OBJDUMP) -d -S $(BIN) > $(BIN).dsm
 	@echo BUILD_NUM = $$(( $(BUILD_NUM) + 1 )) > Makefile.BuildNum.$(ARCH)
-#@$(STRIP) $(BIN)
+	@$(STRIP) $(BIN)
 	@$(GZIP) $(GZBIN) $(BIN)
 	
 $(OBJDIR)%.d.o: %.d
@@ -109,6 +108,11 @@ $(OBJDIR)%.c.o: %.c
 	@$(MKDIR) $(dir $@)
 	@$(CC) $(CFLAGS) -o $@ -c $<
 #@$(CC) $(CFLAGS) -M -MT $@ -MP -o $@.o.dep $<
+
+xaxa: $(shell find * -name "*.d" -not -path "*Architectures*")
+	@echo --- DD mrdni vsetko dokopy
+	@$(MKDIR) $(dir $@)
+	@$(DD) $(DFLAGS) -oq -od=$(OBJDIR) -c $(shell find * -name "*.d" -not -path "*Architectures*")
 	
 %.xo.$(ARCH):
 	@make -C $* all BUILDTYPE=static

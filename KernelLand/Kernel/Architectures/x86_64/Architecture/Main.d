@@ -31,11 +31,16 @@ import MemoryManager;
 
 
 extern(C) void ArchMain(uint magic, v_addr info) {
+	/* Initialize SSE for vararg used in Logger */
+	Port.InitializeSSE();
+	Port.EnableSSE();
+	
     Logger.Initialize();
 
     Log("multiboot2");
     Multiboot.ParseHeader(magic, info);
 
+    Log("Initialize CPU");
     CPU.Initialize();
 
     Log("Jumping to [KernelMain]");

@@ -175,7 +175,11 @@ __initial_pd:	; Covers 1 GiB
     dd  __initial_pt_4 - KERNEL_BASE + 3, 0
     dd  __initial_pt_5 - KERNEL_BASE + 3, 0
     dd  __initial_pt_6 - KERNEL_BASE + 3, 0
-	times 506 dq 0
+    dd  __initial_pt_7 - KERNEL_BASE + 3, 0
+    dd  __initial_pt_8 - KERNEL_BASE + 3, 0
+    dd  __initial_pt_9 - KERNEL_BASE + 3, 0
+    ; cuz loos are too mainstream...
+	times 503 dq 0
 
 __initial_stack_pd:
 	dd	_initial_stack_pt - KERNEL_BASE + 3, 0
@@ -222,6 +226,24 @@ __initial_pt_5:    ; 2 MiB
     %endrep
 __initial_pt_6:    ; 2 MiB
     %assign i 2560
+    %rep 512
+    dq  i * 4096 + 0x103
+    %assign i i + 1
+    %endrep
+__initial_pt_7:    ; 2 MiB
+    %assign i 3072
+    %rep 512
+    dq  i * 4096 + 0x103
+    %assign i i + 1
+    %endrep
+__initial_pt_8:    ; 2 MiB
+    %assign i 3584
+    %rep 512
+    dq  i * 4096 + 0x103
+    %assign i i + 1
+    %endrep
+__initial_pt_9:    ; 2 MiB
+    %assign i 4096
     %rep 512
     dq  i * 4096 + 0x103
     %assign i i + 1

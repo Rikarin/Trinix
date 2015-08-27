@@ -54,6 +54,7 @@ module Core.Main;
 
 import Core;
 import Linker;
+import Library;
 import VFSManager;
 import TaskManager;
 import Architecture;
@@ -70,9 +71,9 @@ extern(C) extern const char* gsGitHash;
 extern(C) extern const char* gsBuildInfo;
 
 extern(C) void KernelMain() {
-   // Log("Git Hash: %s", cast(string)gsGitHash);
+    Log("Git Hash: %s", gsGitHash.ToString());
     Log("Version: %d", cast(int)giBuildNumber);
-    //Log("Build Info: %s", cast(string)gsBuildInfo[0 .. 5]);
+    Log("Build Info: %s", gsBuildInfo.ToString());
 
     Log("Physical Memory");
     PhysicalMemory.Initialize();
@@ -105,6 +106,7 @@ extern(C) void KernelMain() {
     Port.Write(0xA1, 0x00);
 
     Log("Timer");
+    while (true) {}
     Time.Initialize();
 
     Log("Binary Loader");

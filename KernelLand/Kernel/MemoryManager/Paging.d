@@ -33,6 +33,7 @@ import Architecture;
 import MemoryManager;
 import ObjectManager;
 
+private extern(C) ulong _CPU_ret_cr2();
 
 alias PageTableEntry!"primary" PTE;
 
@@ -328,7 +329,7 @@ final class Paging {
         if (stack.RIP == Thread.THREAD_RETURN)
             Task.CurrentThread.Exit(stack.RAX);
 
-        debug {
+       // debug { TODO: uncomment me senpai
             Log(`===> Spadlo to -.-"`);
             Log("IRQ = %16x | RIP = %16x", stack.IntNumber, stack.RIP);
             Log("RAX = %16x | RBX = %16x", stack.RAX, stack.RBX);
@@ -340,15 +341,9 @@ final class Paging {
             Log("R12 = %16x | R13 = %16x", stack.R12, stack.R13);
             Log("R14 = %16x | R15 = %16x", stack.R14, stack.R15);
             Log(" CS = %16x |  SS = %16x", stack.CS, stack.SS);
-            
-            ulong cr2;
-            asm {
-                "mov RAX, CR2" : "=a"(cr2);
-            }
-            
-            Log(" CR2 = %16x", cr2);
+            Log(" CR2 = %16x", _CPU_ret_cr2());
             Log("Flags: %16x", stack.Flags);
-        }
+      //  }
 
         //TODO: what to do with this?
         asm {

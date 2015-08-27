@@ -45,6 +45,9 @@ interface IFileSystem {
      * 
      * Returns:
      *      true if mounted filesystem is writable
+	 *
+	 * TODO:
+	 *     o Rename this to 'CanWrite'
      */
     @property bool IsWritable();
 

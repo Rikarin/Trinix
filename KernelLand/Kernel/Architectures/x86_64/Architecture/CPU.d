@@ -42,10 +42,6 @@ abstract final class CPU {
     @property static TaskStateSegment* TSSTable() { return TSS.Table; }
 
     static void Initialize() {
-        Logger.Write("SSE, ");
-        Port.InitializeSSE();
-        Port.EnableSSE();
-
         Logger.Write("GDT, ");
         GDT.Initialize();
 
