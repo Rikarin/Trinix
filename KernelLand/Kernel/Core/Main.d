@@ -42,12 +42,10 @@
  *      o opravit vsetky TODOcka
  *      o Implement multi CPU support
  *      o Implementovat statementy ako @trusted nothrow @safe atd...
- *      o prerobit gdc na bundle
  *      o Exit thready
  *      o Implement GC
  *      o Fix \n in Logger
- *      o define vaddr a paddr aliasy alias vaddr = ulong
- *      o Prepisat vsetky konstanty na ABC_DEF a pouzit m_var namiesto _var
+ *      o v LLVM sa uz da pouzit atributa section
  */
 
 module Core.Main;
@@ -94,21 +92,10 @@ extern(C) void KernelMain() {
     VFS.Initialize();
 
     Log("Remaping PIC");
-    Port.Write(0x20, 0x11);
-    Port.Write(0xA0, 0x11);
-    Port.Write(0x21, 0x20);
-    Port.Write(0xA1, 0x28);
-    Port.Write(0x21, 0x04);
-    Port.Write(0xA1, 0x02);
-    Port.Write(0x21, 0x01);
-    Port.Write(0xA1, 0x01);
-    Port.Write(0x21, 0x00);
-    Port.Write(0xA1, 0x00);
+    RemapPIC();
 
     Log("Timer");
     Time.Initialize();
-    //asm { int 5; }
-    //while (true) {}
 
     Log("Binary Loader");
     BinaryLoader.Initialize();
@@ -116,7 +103,7 @@ extern(C) void KernelMain() {
     Log("Module Manager");
     ModuleManager.Initialize();
     ModuleManager.LoadBuiltins();
-  //  LoadModules();
+    //LoadModules();
 
     VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
               VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");
@@ -127,10 +114,41 @@ extern(C) void KernelMain() {
 
    // debug VFS.PrintTree(VFS.Root);
 
+    new Thread(Task.CurrentThread).Start(&test_lala, null);
+
+
+    /*
+TODO:
+    scheduler nefunguje :(
+    prerobit celu koncepciu procesov a threadov...
+    new Thread(void function() main);
+    new Process(void function() main);
+    izi biznis kamo
+    */
 
     Log("Running, Time = %d", Time.Uptime);
 
     while (true) {
-        Log("Running, Time = %d", Time.Uptime);
+        //Log("Running, Time = %d", Time.Uptime);
+    }
+}
+
+void RemapPIC() {
+    Port.Write(0x20, 0x11);
+    Port.Write(0xA0, 0x11);
+    Port.Write(0x21, 0x20);
+    Port.Write(0xA1, 0x28);
+    Port.Write(0x21, 0x04);
+    Port.Write(0xA1, 0x02);
+    Port.Write(0x21, 0x01);
+    Port.Write(0xA1, 0x01);
+    Port.Write(0x21, 0x00);
+    Port.Write(0xA1, 0x00);
+}
+
+void test_lala() {
+    while (true) {
+        asm {int 13;}
+        Log("TOTO je druha threada");
     }
 }

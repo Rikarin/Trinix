@@ -74,7 +74,7 @@ class Semaphore {
             m_value--;
         } else {
             m_waiting.Add(Task.CurrentThread);
-            taken = cast(int)Task.CurrentThread.Sleep(ThreadStatus.SemaphoreSleep, cast(void *)this, 1, m_spinLock);
+            taken = cast(int)Task.CurrentThread.Sleep(ThreadState.SemaphoreSleep, cast(void *)this, 1, m_spinLock);
             m_spinLock.WaitOne();
         }
 
@@ -102,7 +102,7 @@ class Semaphore {
 
         if (m_maxValue && m_value == m_maxValue) {
             m_signaling.Add(Task.CurrentThread);
-            added = cast(int)Task.CurrentThread.Sleep(ThreadStatus.SemaphoreSleep, cast(void *)this, releaseCount, m_spinLock);
+            added = cast(int)Task.CurrentThread.Sleep(ThreadState.SemaphoreSleep, cast(void *)this, releaseCount, m_spinLock);
             m_spinLock.WaitOne();
         } else {
             added    = (m_maxValue && m_value + releaseCount > m_maxValue) ? m_maxValue - m_value : releaseCount;
@@ -125,7 +125,7 @@ class Semaphore {
     }
 
     package static void ForceWake(Thread thread) {
-        if (thread.Status != ThreadStatus.SemaphoreSleep)
+        if (thread.State != ThreadState.SemaphoreSleep)
             return;
 
         Semaphore semaphore = cast(Semaphore)thread.WaitPointer;

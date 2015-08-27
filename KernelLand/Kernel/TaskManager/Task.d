@@ -37,7 +37,6 @@ struct SSEState {
     ulong Data;
 }
 
-
 struct TaskState {
     void* RIP, RSP, RBP;
     SSEState SSEInt;
@@ -60,8 +59,8 @@ abstract final class Task {
         static Thread CurrentThread()        { return m_currentThread;             }
         static Process CurrentProcess()      { return CurrentThread.ParentProcess; }
         package static SpinLock ThreadLock() { return m_spinLock;                  }
-        package static ulong NextPID()       { return m_nextPID++;                 }
-        package static ulong NextTID()       { return m_nextTID++;                 }
+        package static ulong NextPID()       { return m_nextPID++;                 } //TODO: spinlock
+        package static ulong NextTID()       { return m_nextTID++;                 } //TODO: spinlock
         package static ref Thread IdleTask() { return m_idle;                      }
         package static auto Threads()        { return m_threads;                   }
         package static auto Processes()      { return m_procs;                     }
@@ -84,7 +83,7 @@ abstract final class Task {
         foreach (ref x; m_threads)
             x = new LinkedList!Thread();
 
-        Process proc = Process.Initialize();
+        Process proc    = Process.Initialize();
         m_currentThread = proc.Threads.First.Value;
     }
 
@@ -135,10 +134,10 @@ abstract final class Task {
         ThreadLock.WaitOne();
         scope(exit) ThreadLock.Release();
 
-        if (CurrentThread.Status == ThreadStatus.Active)
+        if (CurrentThread.State == ThreadState.Active)
             Threads[CurrentThread.Priority].Add(CurrentThread);
 
-        Thread next = GetRunnable();
+        Thread next    = GetRunnable();
         next.Remaining = next.Quantum;
         return next;
     }
@@ -147,7 +146,7 @@ abstract final class Task {
         foreach (x; m_threads) {
             if (x.Count) {
                 foreach (y; x) {
-                    if (y.Value.Status == ThreadStatus.Active) {
+                    if (y.Value.State == ThreadState.Active) {
                         Thread ret = y.Value;
                         x.Remove(y);
                         return ret;

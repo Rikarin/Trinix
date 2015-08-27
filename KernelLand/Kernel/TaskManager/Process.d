@@ -69,9 +69,11 @@ final class Process {
 
         /* Kernel thread */
         Thread t           = new Thread(process);
-        t.Name             = "Kernel";
-        t.Status           = ThreadStatus.Active;
-        t.SetKernelStack();
+        with (t) {
+            Name           = "Kernel";
+            State          = ThreadState.Active;
+            SetKernelStack();
+        }
 
         /* Idle task */
         Task.IdleTask      = new Thread(t);

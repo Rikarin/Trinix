@@ -47,7 +47,7 @@ class Mutex {
 
         if (m_owner) {
             m_waiting.Add(Task.CurrentThread);
-            Task.CurrentThread.Sleep(ThreadStatus.MutexSleep, cast(void *)this, 0, m_spinLock);
+            Task.CurrentThread.Sleep(ThreadState.MutexSleep, cast(void *)this, 0, m_spinLock);
         } else {
             m_owner = Task.CurrentThread;
             m_spinLock.Release();
@@ -63,7 +63,7 @@ class Mutex {
             m_owner = m_waiting.First.Value;
             m_waiting.RemoveFirst();
 
-            if (m_owner.Status != ThreadStatus.Active)
+            if (m_owner.State == ThreadState.MutexSleep)
                 m_owner.AddActive();
         } else
             m_owner = null;

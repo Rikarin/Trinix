@@ -32,7 +32,7 @@ import SyscallManager;
 import MemoryManager;
 
 
-enum ThreadStatus {
+enum ThreadState {
     Null,
     Active,
     Sleeping,
@@ -73,7 +73,7 @@ final class Thread {
     private ulong m_id;
     private string m_name;
 
-    private ThreadStatus m_status;
+    private ThreadState m_state;
     private SpinLock m_spinLock;
 
     private Process m_process;
@@ -87,8 +87,9 @@ final class Thread {
     private ulong[] m_userStack;
     private TaskState m_savedState;
 
+    /* Tento shit sa pouziva vtedy ked na threadu vyskoci nejaky exception */
     private long m_curFaultNum;
-    private void* m_faultHandler; //WTF?
+    private void* m_faultHandler; //TODO: pouzit nejaku lepsiu sracku
 
     private SignalType m_pendingSignal;
     private LinkedList!(IPCMessage *) m_messages;
@@ -99,7 +100,7 @@ final class Thread {
 
     private ulong m_eventState;
     private void* m_waitPointer; //WTF??
-    private ulong m_retStatus;
+    private ulong m_retStatus; /* For internal use only! */
 
     private int m_priority;
 
@@ -109,7 +110,7 @@ final class Thread {
     package this(Process process) {
         m_id            = Task.NextTID;
         //_curCPU        = -1;
-        m_status        = ThreadStatus.PreInit;
+        m_state         = ThreadState.PreInit;
         m_process       = process;
         m_name          = "Unnamed Thread";
         m_remaining     = DEFAULT_QUANTUM;
@@ -125,9 +126,8 @@ final class Thread {
 
         m_syscallStack[1] = cast(ulong)m_kernelStack.ptr + STACK_SIZE / 2;
 
-        m_savedState.SSEInt.Header = cast(ulong)new byte[0x20F].ptr;
-        m_savedState.SSEInt.Data   = (m_savedState.SSEInt.Header + 0x0F) & ~0x0F;
-
+        m_savedState.SSEInt.Header     = cast(ulong)new byte[0x20F].ptr;
+        m_savedState.SSEInt.Data       = (m_savedState.SSEInt.Header + 0x0F) & ~0x0F;
         m_savedState.SSESyscall.Header = cast(ulong)new byte[0x20F].ptr;
         m_savedState.SSESyscall.Data   = (m_savedState.SSESyscall.Header + 0x0F) & ~0x0F;
 
@@ -156,7 +156,7 @@ final class Thread {
 
     ~this() {
         RemoveActive();
-        m_status = ThreadStatus.Buried;
+        m_state = ThreadState.Buried;
         m_process.Threads.Remove(this);
 
         if (!m_process.Threads.Count)
@@ -184,18 +184,18 @@ final class Thread {
     }
 
     @property {
-        ulong ID()                 { return m_id; }
-        string Name()              { return m_name; }
-        int Priority()             { return m_priority; }
-        ref int Quantum()          { return m_quantum; }
-        void* WaitPointer()        { return m_waitPointer; }
-        ref int Remaining()        { return m_remaining; }
-        ref ulong RetStatus()      { return m_retStatus; }
-        long CurrentFaultNum()     { return m_curFaultNum; }
-        Process ParentProcess()    { return m_process; }
+        ulong ID()                 { return m_id;           }
+        string Name()              { return m_name;         }
+        int Priority()             { return m_priority;     }
+        ref int Quantum()          { return m_quantum;      }
+        void* WaitPointer()        { return m_waitPointer;  }
+        ref int Remaining()        { return m_remaining;    }
+        ref ulong RetStatus()      { return m_retStatus;    }
+        long CurrentFaultNum()     { return m_curFaultNum;  }
+        Process ParentProcess()    { return m_process;      }
+        ref ThreadState State()    { return m_state;        }
         ref void* FaultHandler()   { return m_faultHandler; }
-        ref ThreadStatus Status()  { return m_status; }
-        ref TaskState SavedState() { return m_savedState; }
+        ref TaskState SavedState() { return m_savedState;   }
         
         void Name(string value) {
             delete m_name;
@@ -215,9 +215,9 @@ final class Thread {
                 Task.Threads[priority].Add(this);
                 m_priority = priority;
                 Task.ThreadLock.Release();
-        } else
-            m_priority = priority;
-        }
+            } else
+                m_priority = priority;
+            }
     }
 
     void Start(void function() entryPoint, string[] args) { //TODO: args...
@@ -225,9 +225,11 @@ final class Thread {
         m_savedState.RIP = cast(void *)&NewThread;
 
         m_kernelStack[0] = cast(ulong)entryPoint;
+        m_state          = ThreadState.Active;
     }
 
     private static void NewThread() {
+        Log("test");
         with (Task.CurrentThread) {
             ParentProcess.PageTable.Install();
             //copy args to user stack
@@ -244,8 +246,7 @@ final class Thread {
 
     private void Run(ulong flags, ulong ip, ushort cs, ushort ss) {
         ulong* st = cast(ulong *)(cast(ulong)m_userStack.ptr + USER_STACK_SIZE);
-        *st = THREAD_RETURN;
-
+        *st   = THREAD_RETURN;
         *--st = ss;
         *--st = cast(ulong)m_userStack.ptr + USER_STACK_SIZE;
         *--st = flags;
@@ -270,7 +271,7 @@ final class Thread {
         }
     }
 
-/*  ulong WaitTID(ulong tid, ref ThreadStatus status) {
+/*  ulong WaitTID(ulong tid, ref ThreadState status) {
         if (tid == -1) {
             ulong events = WaitEvents(ThreadEvent.DeadChild);
             if (events & ThreadEvent.DeadChild) {
@@ -284,8 +285,8 @@ final class Thread {
                     ClearEvent(ThreadEvent.DeadChild);
                 _deadChildLock.Release();
 
-                assert(deadThread._status == ThreadStatus.Zombie);
-                deadThread._status = ThreadStatus.Dead;
+                assert(deadThread._status == ThreadState.Zombie);
+                deadThread._status = ThreadState.Dead;
 
                 ulong ret = deadThread._id;
                 status = deadThread._status;
@@ -328,14 +329,14 @@ final class Thread {
         }
 
         Task.ThreadLock.WaitOne();
-        switch (m_status) {
-            case ThreadStatus.PreInit:
+        switch (m_state) {
+            case ThreadState.PreInit:
                 break;
 
-            case ThreadStatus.Sleeping:
+            case ThreadState.Sleeping:
                 break;
 
-            case ThreadStatus.Active:
+            case ThreadState.Active:
                 if (!isCurrentThread)
                     Task.Threads[m_priority].Remove(this);
 
@@ -343,7 +344,7 @@ final class Thread {
                 m_quantum = 0;
                 break;
 
-            case ThreadStatus.Zombie:
+            case ThreadState.Zombie:
                 Task.ThreadLock.Release();
                 return;
 
@@ -352,7 +353,7 @@ final class Thread {
         }
 
         m_retStatus = status;
-        m_status    = ThreadStatus.Zombie;
+        m_state     = ThreadState.Zombie;
         Task.ThreadLock.Release();
 
         m_parent.m_deadChildLock.WaitOne();
@@ -368,19 +369,19 @@ final class Thread {
         Task.Scheduler();
     }
 
-    void WaitForStatusEnd(ThreadStatus status) {
-        assert(status != ThreadStatus.Active);
-        assert(status != ThreadStatus.Dead);
+    void WaitForStatusEnd(ThreadState status) {
+        assert(status != ThreadState.Active);
+        assert(status != ThreadState.Dead);
 
-        while (m_status == status)
+        while (m_state == status)
             Yield();
     }
 
-    ulong Sleep(ThreadStatus status, void* ptr, ulong num, SpinLock lock) {
+    ulong Sleep(ThreadState status, void* ptr, ulong num, SpinLock lock) {
         RemoveActive();
-        m_status = status;
+        m_state      = status;
         m_waitPointer = ptr;
-        m_retStatus = num;
+        m_retStatus   = num;
 
         if (lock)
             lock.Release();
@@ -395,20 +396,20 @@ final class Thread {
             return;
 
         RemoveActive();
-        m_status = ThreadStatus.Sleeping;
-        WaitForStatusEnd(ThreadStatus.Sleeping);
+        m_state = ThreadState.Sleeping;
+        WaitForStatusEnd(ThreadState.Sleeping);
     }
 
     bool Wake() {
-        switch (m_status) {
-            case ThreadStatus.Active:
+        switch (m_state) {
+            case ThreadState.Active:
                 return false;
 
-            case ThreadStatus.Sleeping:
+            case ThreadState.Sleeping:
                 AddActive();
                 return true;
 
-            case ThreadStatus.SemaphoreSleep:
+            case ThreadState.SemaphoreSleep:
                 Semaphore semaphore = cast(Semaphore)m_waitPointer;
                 semaphore.LockInternal();
                 scope(exit) semaphore.UnlockInternal();
@@ -420,10 +421,10 @@ final class Thread {
                 AddActive();
                 return true;
 
-            case ThreadStatus.Waiting:
+            case ThreadState.Waiting:
                 return false;
 
-            case ThreadStatus.Dead:
+            case ThreadState.Dead:
                 return false;
 
             default:
@@ -438,9 +439,9 @@ final class Thread {
     }
 
     void AddActive() {
-        if (m_status == ThreadStatus.Active || !m_savedState.RIP)
+        if (m_state == ThreadState.Active || !m_savedState.RIP)
             return;
-        m_status = ThreadStatus.Active;
+        m_state = ThreadState.Active;
 
         Task.ThreadLock.WaitOne();
         if (Task.CurrentThread != this)
@@ -495,13 +496,13 @@ final class Thread {
 
         m_eventState |= eventMask;
 
-        switch (m_status) {
-            case ThreadStatus.EventSleep:
+        switch (m_state) {
+            case ThreadState.EventSleep:
                 if (m_retStatus & eventMask)
                     AddActive();
                 break;
 
-            case ThreadStatus.SemaphoreSleep:
+            case ThreadState.SemaphoreSleep:
                 if (eventMask & ThreadEvent.Timer)
                         Semaphore.ForceWake(this);
                 break;
@@ -522,7 +523,7 @@ final class Thread {
         scope(exit) m_spinLock.Release();
 
         if ((m_eventState & eventMask) == 0) {
-            Sleep(ThreadStatus.EventSleep, null, eventMask, m_spinLock);
+            Sleep(ThreadState.EventSleep, null, eventMask, m_spinLock);
             m_spinLock.WaitOne();
         }
 
@@ -537,12 +538,12 @@ final class Thread {
         m_spinLock.WaitOne();
         scope(exit) m_spinLock.Release();
 
-        if (m_status == ThreadStatus.Dead)
+        if (m_state == ThreadState.Dead)
             return false;
 
         IPCMessage* msg = new IPCMessage();
-        msg.Source = Task.CurrentThread;
-        msg.Data[] = data;
+        msg.Source      = Task.CurrentThread;
+        msg.Data[]      = data;
         m_messages.Add(msg);
 
         PostEvent(ThreadEvent.IPCMesage);
@@ -556,8 +557,12 @@ final class Thread {
         m_spinLock.WaitOne();
         scope(exit) m_spinLock.Release();
 
-        source = m_messages.First.Value.Source;
-        data = m_messages.First.Value.Data;
+        with (m_messages.First.Value) {
+            source = Source;
+            data[] = Data;
+
+            delete Data;
+        }
         m_messages.RemoveFirst();
 
         if (m_messages.Count)
