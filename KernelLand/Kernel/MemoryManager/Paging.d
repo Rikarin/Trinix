@@ -326,8 +326,9 @@ final class Paging {
     }
 
     static void PageFaultHandler(ref InterruptStack stack) {
-        if (stack.RIP == Thread.THREAD_RETURN)
-            Task.CurrentThread.Exit(stack.RAX);
+        //if (stack.RIP == Thread.THREAD_RETURN)
+            //Task.CurrentThread.Exit(stack.RAX);
+        //TODO: crt0 will call exit by syscall
 
        // debug { TODO: uncomment me senpai
             Log(`===> Spadlo to -.-"`);

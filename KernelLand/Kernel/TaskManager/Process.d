@@ -26,6 +26,7 @@
 
 module TaskManager.Process;
 
+import Core;
 import Library;
 import VFSManager;
 import TaskManager;
@@ -42,12 +43,11 @@ final class Process {
     private ulong m_gid;
     private bool m_isKernel;
 
-    private Process m_parent;
     package Paging m_paging;
-    private LinkedList!Thread m_threads;
     private DirectoryNode m_cwd;
 
-    private List!Resource m_resources;
+    private LinkedList!Thread m_threads;
+    private List!Resource m_resources; //TODO: look on this
 
     @property {
         ulong ID()             { return m_id;       }
@@ -76,13 +76,13 @@ final class Process {
         }
 
         /* Idle task */
-        Task.IdleTask      = new Thread(t);
+      /*  Task.IdleTask      = new Thread(t);
         with (Task.IdleTask) {
             Name           = "Idle Task";
             Priority       = MIN_PRIORITY;
             Quantum        = 1;
             Start(&Task.Idle, null);
-        }
+        }*/
     
         return process;
     }
@@ -92,25 +92,36 @@ final class Process {
         m_threads   = new LinkedList!Thread();
         m_resources = new List!Resource();
 
+        if (Task.CurrentThread !is null) {
+            m_uid       = Task.CurrentProcess.m_uid;
+            m_gid       = Task.CurrentProcess.m_gid;
+            m_isKernel  = Task.CurrentProcess.m_isKernel;
+            m_paging    = Task.CurrentProcess.m_paging;
+            m_cwd       = Task.CurrentProcess.m_cwd;
+        }
+
         Task.Processes.Add(this);
     }
 
-    /* Clone other._process to this process and ot to this process */
-    this(Thread other) {
+    this(void delegate() ProcessStart) {
         this();
-        m_uid      = other.ParentProcess.m_uid;
-        m_gid      = other.ParentProcess.m_gid;
-        m_isKernel = other.ParentProcess.m_isKernel;
-        m_parent   = other.ParentProcess;
-        m_paging   = new Paging(other.ParentProcess.m_paging);
-        m_cwd      = other.ParentProcess.m_cwd;
+        
+        CopyResources();
+        new Thread(this, ProcessStart);
+    }
 
-        foreach (x; other.ParentProcess.m_resources) {
-            if (x.AttachProcess(this))
-                m_resources.Add(x);
-        }
+    this(void function() ProcessStart) {
+        this();
 
-        new Thread(this, other);
+        CopyResources();
+        new Thread(this, ProcessStart);
+    }
+
+    this(string fileName, string[] arguments) {
+        this();
+        //TODO: load binary file and exec it
+        //Dont copy resources
+        //Copy paging from VirtualMemory.KernelPaging
     }
 
     ~this() {
@@ -127,6 +138,10 @@ final class Process {
         delete m_resources;
     }
 
+    void Start() {
+        m_threads.First.Value.Start();
+    }
+
     package ulong[] AllocUserStack(ulong size = Thread.USER_STACK_SIZE) {
         for (ulong i = 0; i < size; i += Paging.PAGE_SIZE) {
             m_userStack -= Paging.PAGE_SIZE;
@@ -134,5 +149,12 @@ final class Process {
         }
 
         return (cast(ulong *)m_userStack)[0 .. size];
+    }
+
+    private void CopyResources() {
+        foreach (x; Task.CurrentProcess.m_resources) {
+            if (x.AttachProcess(this))
+                m_resources.Add(x);
+        }
     }
 }

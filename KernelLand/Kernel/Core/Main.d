@@ -109,25 +109,22 @@ extern(C) void KernelMain() {
               VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");
 
 
-    import Modules.Terminal.VTY.Main;
+    //import Modules.Terminal.VTY.Main;
    // new VTY();
 
    // debug VFS.PrintTree(VFS.Root);
 
-    new Thread(Task.CurrentThread).Start(&test_lala, null);
+    /* Copy current process into new one */
+    //auto p = new Process(&test_lala);
+    //p.Start();
 
-
-    /*
-TODO:
-    scheduler nefunguje :(
-    prerobit celu koncepciu procesov a threadov...
-    new Thread(void function() main);
-    new Process(void function() main);
-    izi biznis kamo
-    */
+    /* Copy curent thread into new one under the same process */
+    Log("spustam prvu threadu");
+    auto t = new Thread(&test_lala);
+    t.Start();
+    Log("prva threada bola spustena");
 
     Log("Running, Time = %d", Time.Uptime);
-
     while (true) {
         //Log("Running, Time = %d", Time.Uptime);
     }
@@ -148,7 +145,7 @@ void RemapPIC() {
 
 void test_lala() {
     while (true) {
-        asm {int 13;}
-        Log("TOTO je druha threada");
+        //Log("TOTO je druha threada");
+        asm { int 0xF; }
     }
 }

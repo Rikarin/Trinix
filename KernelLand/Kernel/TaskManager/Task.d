@@ -113,8 +113,7 @@ abstract final class Task {
 
     private static void Reschedule() {
         Thread next = GetNextToRun();
-        //Log.WriteLine("Debug: rescheduled: ", next.ID, " priority: ", next.Priority, " name: ", next.Name);
-
+        Log("Rescheduling: %d, priority: %d, name: %s, total: %d", next.ID, next.Priority, next.Name, ThreadCount);
         if (next is null || next == CurrentThread)
             return;
             
@@ -162,9 +161,9 @@ abstract final class Task {
         asm {
             naked;
             mov RBP, RSI;
-            mov RSP, RDI;
+            mov RSP, RDX;
             mov RAX, 0x12341234;
-            jmp RDX;
+            jmp RDI;
         }
     }
 

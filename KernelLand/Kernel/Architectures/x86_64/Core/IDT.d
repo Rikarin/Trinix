@@ -113,7 +113,7 @@ abstract final class IDT {
             }
         `;
         
-        //TODO: q{} syntax, naked??
+        //TODO: q{} syntax
     }
 
     private static template GenerateISRs(uint start, uint end, bool needDummyError = true) {
@@ -146,7 +146,7 @@ abstract final class IDT {
 
         if (stack.IntNumber == 0xE)
             Paging.PageFaultHandler(*stack);
-        else if (stack.IntNumber == 0xD) {
+        else if (stack.IntNumber == 0xD || stack.IntNumber == 0xF) {
             Log(`===> Interrupt -.-"`);
             Log("IRQ = %16x | RIP = %16x", stack.IntNumber, stack.RIP);
             Log("RAX = %16x | RBX = %16x", stack.RAX, stack.RBX);

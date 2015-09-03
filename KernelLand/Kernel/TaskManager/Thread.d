@@ -62,13 +62,14 @@ struct IPCMessage {
     byte[] Data;
 }
 
+
 final class Thread {
     enum STACK_SIZE            = 0x4000;
     enum USER_STACK_SIZE       = 0x1000; //* 10
     enum MIN_PRIORITY          = 10;
     enum DEFAULT_PRIORITY      = 5;
     enum DEFAULT_QUANTUM       = 5;
-    private enum THREAD_RETURN = 0xDEADC0DE; //TODO: deprecated, thread will not return integer anymore!
+    //private enum THREAD_RETURN = 0xDEADC0DE; //TODO: deprecated, thread will not return integer anymore!
 
     private ulong m_id;
     private string m_name;
@@ -77,8 +78,9 @@ final class Thread {
     private SpinLock m_spinLock;
 
     private Process m_process;
-    private Thread m_parent; /* Parent thread in same process */
+    private Thread m_parent;
 
+    //TODO: synchronized list??
     private LinkedList!Thread m_lastDeadChild;
     private Mutex m_deadChildLock;
 
@@ -106,10 +108,9 @@ final class Thread {
 
     //private int _errno; //WAT?
 
-    /* Create new thread for process */
+
     package this(Process process) {
         m_id            = Task.NextTID;
-        //_curCPU        = -1;
         m_state         = ThreadState.PreInit;
         m_process       = process;
         m_name          = "Unnamed Thread";
@@ -134,24 +135,24 @@ final class Thread {
         m_process.Threads.Add(this);
     }
 
-    /* Clone thread from other under same process */
-    this(Thread other) {
-        this(other.m_process, other);
+    this(void delegate() ThreadStart) {
+        this(Task.CurrentProcess);
     }
 
-    /* Clone thread from other to the new process */
-    package this(Process process, Thread other) {
+    this(void function() ThreadStart) {
+        this(Task.CurrentProcess);
+
+        m_kernelStack[0] = cast(ulong)ThreadStart;
+    }
+
+    package this(Process process, void delegate() ThreadStart) {
         this(process);
-        m_name         = other.m_name.dup;
-        m_remaining    = other.m_quantum;
-        m_quantum      = other.m_quantum;
-        m_priority     = other.m_priority;
-        m_faultHandler = other.m_faultHandler;
+    }
 
-        if (process == other.m_process)
-            m_parent = other;
+    package this(Process process, void function() ThreadStart) {
+        this(process);
 
-        Log("Clonned thread %d", m_id);
+        m_kernelStack[0] = cast(ulong)ThreadStart;
     }
 
     ~this() {
@@ -220,19 +221,18 @@ final class Thread {
             }
     }
 
-    void Start(void function() entryPoint, string[] args) { //TODO: args...
+    void Start() {
         m_savedState.RSP = cast(void *)m_kernelStack.ptr + STACK_SIZE;
         m_savedState.RIP = cast(void *)&NewThread;
+        AddActive();
 
-        m_kernelStack[0] = cast(ulong)entryPoint;
-        m_state          = ThreadState.Active;
+        Log("Thread Start");
     }
 
     private static void NewThread() {
-        Log("test");
+        Log("Started NewThread");
         with (Task.CurrentThread) {
             ParentProcess.PageTable.Install();
-            //copy args to user stack
 
             Port.Cli();
             DeviceManager.EOI(0);
@@ -246,18 +246,18 @@ final class Thread {
 
     private void Run(ulong flags, ulong ip, ushort cs, ushort ss) {
         ulong* st = cast(ulong *)(cast(ulong)m_userStack.ptr + USER_STACK_SIZE);
-        *st   = THREAD_RETURN;
-        *--st = ss;
-        *--st = cast(ulong)m_userStack.ptr + USER_STACK_SIZE;
-        *--st = flags;
-        *--st = cs;
-        *--st = ip;
+        *st-- = ss;
+        *st-- = cast(ulong)m_userStack.ptr + USER_STACK_SIZE;
+        *st-- = flags;
+        *st-- = cs;
+        *st-- = ip;
     
-        *--st = ss;
-        *--st = ss;
-        *--st = ss;
-        *--st = ss;
+        *st-- = ss;
+        *st-- = ss;
+        *st-- = ss;
+        *st   = ss;
 
+        Log("xxx");
         asm {
             mov RSP, st;
             mov DS, [RSP];
