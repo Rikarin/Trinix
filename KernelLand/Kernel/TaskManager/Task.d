@@ -113,14 +113,14 @@ abstract final class Task {
 
     private static void Reschedule() {
         Thread next = GetNextToRun();
-        Log("Rescheduling: %d, priority: %d, name: %s, total: %d", next.ID, next.Priority, next.Name, ThreadCount);
+        //Log("Rescheduling: %d, priority: %d, name: %s, total: %d", next.ID, next.Priority, next.Name, ThreadCount);
         if (next is null || next == CurrentThread)
             return;
             
         //CurrentThread.SavedState.IsSSEModified = false;
         //Port.DisableSSE();
 
-        /// Change to next thread
+        // Switch to the next thread
         m_currentThread = next;
         m_currentThread.SetKernelStack();
         m_currentThread.ParentProcess.m_paging.Install();

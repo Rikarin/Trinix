@@ -230,13 +230,11 @@ final class Thread {
     }
 
     private static void NewThread() {
-        Log("Started NewThread");
         with (Task.CurrentThread) {
             ParentProcess.PageTable.Install();
 
             Port.Cli();
             DeviceManager.EOI(0);
-
             if (Task.CurrentThread.ParentProcess.IsKernel)
                 Run(0x202, m_kernelStack[0], 0x08, 0x10);
             else
@@ -257,7 +255,6 @@ final class Thread {
         *st-- = ss;
         *st   = ss;
 
-        Log("xxx");
         asm {
             mov RSP, st;
             mov DS, [RSP];

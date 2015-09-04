@@ -79,10 +79,12 @@ abstract final class DeviceManager {
             m_handlers[intNumber] = handle;
     }
 
+    import Core;
     static void Handler(ref InterruptStack stack) {
         if (stack.IntNumber < 48) {
-            if (m_handlers[stack.IntNumber] !is null)
+            if (m_handlers[stack.IntNumber] !is null) {
                 m_handlers[stack.IntNumber](stack);
+            }
         }
     }
 

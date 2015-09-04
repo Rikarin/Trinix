@@ -23,12 +23,11 @@
 
 module Architecture.Time;
 
-import TaskManager;
 import Architecture;
 import ObjectManager;
 
 
-abstract final class Time {
+final abstract class Time {
     private enum {
         TIMER_RATE        = 14,
         TIMER_FREQUENCY   = 0x8000 >> TIMER_RATE,
@@ -103,7 +102,7 @@ abstract final class Time {
         m_tscAtLastTick = curTSC;
         
         m_ticks++;
-        m_timestamp += MS_PER_TICK_WHOLE;
+        m_timestamp       += MS_PER_TICK_WHOLE;
         m_partMiliseconds += MS_PER_TICK_FRACT;
         if (m_partMiliseconds > 0x80000000) {
             m_timestamp++;
@@ -112,8 +111,6 @@ abstract final class Time {
         }
         
         //TODO: call timers....
-
-        Task.Scheduler(); //TODO: This isnt good... Time.d is RTC not scheduler
 
         Port.Write(0x70, 0x0C);
         cast(void)Port.Read(0x71);

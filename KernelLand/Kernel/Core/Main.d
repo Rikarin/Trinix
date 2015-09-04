@@ -94,7 +94,10 @@ extern(C) void KernelMain() {
     Log("Remaping PIC");
     RemapPIC();
 
-    Log("Timer");
+    Log("Initializing PIT");
+    PIT.Initialize(100);
+
+    Log("RTC Timer");
     Time.Initialize();
 
     Log("Binary Loader");
@@ -145,7 +148,6 @@ void RemapPIC() {
 
 void test_lala() {
     while (true) {
-        //Log("TOTO je druha threada");
-        asm { int 0xF; }
+       // asm { syscall; }
     }
 }
