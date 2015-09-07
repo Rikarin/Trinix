@@ -30,7 +30,7 @@ import MemoryManager;
 
 final class Heap {
     enum MAGIC    = 0xDEADC0DE;
-    enum MIN_SIZE = 0x200000;
+    enum MIN_SIZE = 0x600_0000;
 
     private ulong m_start;
     private ulong m_end;
@@ -80,7 +80,7 @@ final class Heap {
 
         Header* header = m_index.Data[i];
         Footer* footer = cast(Footer *)(cast(ulong)header + header.Size - Footer.sizeof);
-        header.IsHole = false;
+        header.IsHole  = false;
         RemoveFromIndex(header);
 
         if (header.Size > (newSize + Header.sizeof + Footer.sizeof)) {

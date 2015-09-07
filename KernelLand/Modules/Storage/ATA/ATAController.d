@@ -31,10 +31,10 @@ import Modules.Storage.ATA.ATADrive;
 
 
 class ATAController {
-    private uint _base;
-    private ubyte _number;
-    private ATADrive[2] _drives;
-    private Mutex _mutex;
+    private uint m_base;
+    private ubyte m_number;
+    private ATADrive[2] m_drives;
+    private Mutex m_mutex;
 
     package enum Base {
         Bus1 = 0x1F0,
@@ -59,38 +59,38 @@ class ATAController {
     }
 
     package void Lock() {
-        _mutex.WaitOne();
+        m_mutex.WaitOne();
     }
 
     package void Unlock() {
-        _mutex.Release();
+        m_mutex.Release();
     }
 
     package T Read(T)(short port) {
-        return cast(T)Architecture.Port.Read!T(cast(short)(_base + port));
+        return cast(T)Architecture.Port.Read!T(cast(short)(m_base + port));
     }
 
     package void Write(T)(short port, T value) {
-        Architecture.Port.Write!T(cast(short)(_base + port), value);
+        Architecture.Port.Write!T(cast(short)(m_base + port), value);
     }
 
     private this(uint base, ubyte number) {
-        _mutex  = new Mutex();
-        _base   = base;
-        _number = number;
+        m_mutex  = new Mutex();
+        m_base   = base;
+        m_number = number;
 
         Identity(false);
         Identity(true);
     }
 
     ~this() {
-        delete _drives[0];
-        delete _drives[1];
-        delete _mutex;
+        delete m_drives[0];
+        delete m_drives[1];
+        delete m_mutex;
     }
 
     private void Identity(bool isSlave) {
-        if (_drives[isSlave ? 1 : 0])
+        if (m_drives[isSlave ? 1 : 0])
             return;
 
         Write!byte(Port.DriveSelect, cast(byte)(isSlave ? 0xB0 : 0xA0));
@@ -112,7 +112,7 @@ class ATAController {
 
         uint blocks = (data[61] << 16) | data[60];
         if (blocks)
-            _drives[isSlave ? 1 : 0] = new ATADrive(this, isSlave, blocks, data);
+            m_drives[isSlave ? 1 : 0] = new ATADrive(this, isSlave, blocks, data);
         else
             delete data;
     }
@@ -123,7 +123,7 @@ class ATAController {
         c[1] = new ATAController(Base.Bus2, 1);
 
         foreach (x; c) {
-            foreach (y; x._drives) {
+            foreach (y; x.m_drives) {
                 if (y !is null)
                     Partition.ReadTable(y);
             }

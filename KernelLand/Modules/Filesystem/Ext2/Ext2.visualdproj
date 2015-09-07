@@ -824,6 +824,7 @@
   <File path="Ext2FileNode.d" />
   <File path="Ext2Filesystem.d" />
   <File path="Ext2PipeNode.d" />
+  <File path="Main.d" />
   <File path="package.d" />
  </Folder>
 </DProject>

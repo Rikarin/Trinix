@@ -84,8 +84,8 @@ class DirectoryNode : FSNode {
     }
 
     this(DirectoryNode parent, FileAttributes fileAttributes) {
-        m_childrens  = new LinkedList!FSNode();
-        m_attributes = fileAttributes;
+        m_childrens       = new LinkedList!FSNode();
+        m_attributes      = fileAttributes;
         m_attributes.Type = FileType.Directory;
 
         if (parent)
@@ -106,7 +106,7 @@ class DirectoryNode : FSNode {
     }
 
     void Unmount() {
-        m_attributes.Type = FileType.Directory;
+        m_attributes.Type  = FileType.Directory;
         m_mounted.m_parent = null;
 
         delete m_mounted;
@@ -115,8 +115,8 @@ class DirectoryNode : FSNode {
 
     bool Mount(DirectoryNode childRoot) {
         if (IsMountpointable && childRoot.m_parent is null) {
-            m_mounted = childRoot;
-            m_attributes.Type = FileType.Mountpoint;
+            m_mounted          = childRoot;
+            m_attributes.Type  = FileType.Mountpoint;
             childRoot.m_parent = this;
 
             return true;
@@ -150,7 +150,7 @@ class DirectoryNode : FSNode {
     }
 
     private bool LoadContent() {
-        if (m_mounted)
+        if (m_mounted) //TODO: i think this is not needed
             return m_mounted.LoadContent();
 
         if (IsLoaded || m_fileSystem is null)

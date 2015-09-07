@@ -29,13 +29,13 @@ import Modules.Storage.ATA.ATAController;
 
 
 class ATADrive : IBlockDevice {
-    private ATAController _controller;
-    private bool _isSlave;
-    private uint _blockCount;
-    private short[] _data;
+    private ATAController m_controller;
+    private bool m_isSlave;
+    private uint m_blockCount;
+    private short[] m_data;
 
     @property long Blocks() {
-        return _blockCount;
+        return m_blockCount;
     }
 
     @property int BlockSize() {
@@ -43,10 +43,10 @@ class ATADrive : IBlockDevice {
     }
 
     package this(ATAController controlller, bool isSlave, uint blockCount, short[] data) {
-        _controller = controlller;
-        _isSlave    = isSlave;
-        _blockCount = blockCount;
-        _data       = data;
+        m_controller = controlller;
+        m_isSlave    = isSlave;
+        m_blockCount = blockCount;
+        m_data       = data;
     }
 
     ~this() {
@@ -56,32 +56,34 @@ class ATADrive : IBlockDevice {
                 delete x.Value;
         }
 
-        delete _data;
+        delete m_data;
     }
 
     ulong Read(long offset, byte[] data) {
-        ulong blockCount = data.length / BlockSize + ((data.length % BlockSize) != 0);
+        ulong blockCount = data.length / BlockSize + ((data.length % BlockSize) != 0 ? 1 : 0);
 
         if (offset + blockCount >= Blocks)
             return 0;
         
-        _controller.Lock();
+        m_controller.Lock();
+        scope(exit) m_controller.Unlock();
+
         CmdCommon(offset, cast(byte)blockCount);
-        _controller.Write!byte(ATAController.Port.Command, ATAController.Cmd.Read);
-        while (!(_controller.Read!byte(ATAController.Port.Command) & 0x08)) { }
+        m_controller.Write!byte(ATAController.Port.Command, ATAController.Cmd.Read);
+        while (!(m_controller.Read!byte(ATAController.Port.Command) & 0x08)) { }
         
-        for (long i; i < data.length;) {
-            short tmp = _controller.Read!short(ATAController.Port.Data);
+        long i;
+        while (i < data.length) {
+            short tmp = m_controller.Read!short(ATAController.Port.Data);
             data[i++] = cast(byte)(tmp & 0xFF);
             data[i++] = tmp >> 8;
         }
 
-        /* flush buffer */
-        for (ulong i = 0; i < BlockSize; i++)
-            _controller.Read!short(ATAController.Port.Data);
-        
-        _controller.Unlock();
-        return data.length;
+        //TODO: this is not needed for now
+        //for (; i < blockCount; i += 2)
+            //m_controller.Read!short(ATAController.Port.Data);
+
+        return i;
     }
 
     ulong Write(long offset, byte[] data) {
@@ -90,28 +92,27 @@ class ATADrive : IBlockDevice {
         if (offset + blockCount > Blocks)
             return 0;
         
-        _controller.Lock();
+        m_controller.Lock();
+        scope(exit) m_controller.Unlock();
+
         CmdCommon(offset, cast(byte)blockCount);
-        _controller.Write!byte(ATAController.Port.Command, ATAController.Cmd.Write);
-        while (!(_controller.Read!byte(ATAController.Port.Command) & 0x08)) { }
+        m_controller.Write!byte(ATAController.Port.Command, ATAController.Cmd.Write);
+        while (!(m_controller.Read!byte(ATAController.Port.Command) & 0x08)) { }
         
         for (long i; i < data.length;)
-            _controller.Write!short(ATAController.Port.Data, cast(byte)(data[i++] | (data[i++] << 8)));
+            m_controller.Write!short(ATAController.Port.Data, cast(byte)(data[i++] | (data[i++] << 8)));
 
-        //TODO flush buffer?
-        
-        _controller.Unlock();
         return data.length;
     }
 
     private void CmdCommon(ulong offset, byte count) {
-        _controller.Write!byte(ATAController.Port.FeaturesError, 0);
-        _controller.Write!byte(ATAController.Port.SectCount, count);
+        m_controller.Write!byte(ATAController.Port.FeaturesError, 0);
+        m_controller.Write!byte(ATAController.Port.SectCount, count);
         
-        _controller.Write!byte(ATAController.Port.Partial1, cast(byte)(offset & 0xFF));
-        _controller.Write!byte(ATAController.Port.Partial2, cast(byte)((offset >> 8) & 0xFF));
-        _controller.Write!byte(ATAController.Port.Partial3, cast(byte)((offset >> 16) & 0xFF));
+        m_controller.Write!byte(ATAController.Port.Partial1, cast(byte)(offset & 0xFF));
+        m_controller.Write!byte(ATAController.Port.Partial2, cast(byte)((offset >> 8) & 0xFF));
+        m_controller.Write!byte(ATAController.Port.Partial3, cast(byte)((offset >> 16) & 0xFF));
         
-        _controller.Write!byte(ATAController.Port.DriveSelect, cast(byte)(0xE0 | (_isSlave ? 0x10 : 0) | ((offset >> 24) & 0x0F)));
+        m_controller.Write!byte(ATAController.Port.DriveSelect, cast(byte)(0xE0 | (m_isSlave ? 0x10 : 0) | ((offset >> 24) & 0x0F)));
     }
 }

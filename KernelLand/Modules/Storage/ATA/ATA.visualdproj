@@ -1,5 +1,5 @@
 <DProject>
- <ProjectGuid>{788CD353-DD9E-4C07-B20D-2774EDB448FB}</ProjectGuid>
+ <ProjectGuid>{2492D486-D64D-45B9-BC32-2E4B5690F534}</ProjectGuid>
  <Config name="Debug DMD" platform="Win32">
   <obj>0</obj>
   <link>0</link>
@@ -248,7 +248,7 @@
   <pic>0</pic>
   <cov>0</cov>
   <nofloat>0</nofloat>
-  <Dversion>2</Dversion>
+  <Dversion>2.043</Dversion>
   <ignoreUnsupportedPragmas>0</ignoreUnsupportedPragmas>
   <allinst>0</allinst>
   <stackStomp>0</stackStomp>
@@ -618,7 +618,7 @@
   <lib>0</lib>
   <subsystem>0</subsystem>
   <multiobj>0</multiobj>
-  <singleFileCompilation>3</singleFileCompilation>
+  <singleFileCompilation>0</singleFileCompilation>
   <oneobj>0</oneobj>
   <mscoff>0</mscoff>
   <trace>0</trace>
@@ -656,15 +656,15 @@
   <pic>0</pic>
   <cov>0</cov>
   <nofloat>0</nofloat>
-  <Dversion>2</Dversion>
+  <Dversion>2.043</Dversion>
   <ignoreUnsupportedPragmas>0</ignoreUnsupportedPragmas>
   <allinst>0</allinst>
   <stackStomp>0</stackStomp>
   <compiler>1</compiler>
-  <otherDMD>1</otherDMD>
-  <cccmd />
+  <otherDMD>0</otherDMD>
+  <cccmd>$(CC) -c</cccmd>
   <ccTransOpt>1</ccTransOpt>
-  <program />
+  <program>$(DMDInstallDir)windows\bin\dmd.exe</program>
   <imppath />
   <fileImppath />
   <outdir>$(ConfigurationName) $(PlatformName)</outdir>
@@ -710,7 +710,7 @@
   <cRuntime>1</cRuntime>
   <privatePhobos>0</privatePhobos>
   <additionalOptions />
-  <preBuildCommand>../../Tools/CM.bat make</preBuildCommand>
+  <preBuildCommand />
   <postBuildCommand />
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep</filesToClean>
  </Config>
@@ -816,115 +816,10 @@
   <postBuildCommand />
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep</filesToClean>
  </Config>
- <Folder name="Kernel">
-  <Folder name="Architectures">
-   <Folder name="x86_64">
-    <Folder name="Architecture">
-     <File path="Architectures\x86_64\Architecture\CPU.d" />
-     <File path="Architectures\x86_64\Architecture\CPU.s" />
-     <File path="Architectures\x86_64\Architecture\LinkerScript.d" />
-     <File path="Architectures\x86_64\Architecture\Main.d" />
-     <File path="Architectures\x86_64\Architecture\package.d" />
-     <File path="Architectures\x86_64\Architecture\Port.d" />
-     <File path="Architectures\x86_64\Architecture\Time.d" />
-    </Folder>
-    <Folder name="Boot">
-     <File path="Architectures\x86_64\Boot\Boot.s" />
-     <File path="Architectures\x86_64\Boot\Load.s" />
-    </Folder>
-    <Folder name="Core">
-     <File path="Architectures\x86_64\Core\GDT.d" />
-     <File path="Architectures\x86_64\Core\IDT.d" />
-     <File path="Architectures\x86_64\Core\InterruptStackType.d" />
-     <File path="Architectures\x86_64\Core\InterruptType.d" />
-     <File path="Architectures\x86_64\Core\package.d" />
-     <File path="Architectures\x86_64\Core\SystemSegmentType.d" />
-     <File path="Architectures\x86_64\Core\TSS.d" />
-    </Folder>
-    <File path="Architectures\x86_64\LinkerScript.ld" />
-    <File path="Architectures\x86_64\Makefile" />
-   </Folder>
-  </Folder>
-  <Folder name="Core">
-   <File path="Core\Logger.d" />
-   <File path="Core\Main.d" />
-   <File path="Core\Multiboot.d" />
-   <File path="Core\package.d" />
-   <File path="Core\PIT.d" />
-   <File path="Core\Runtime.c" />
-  </Folder>
-  <Folder name="FileSystem">
-   <File path="FileSystem\DevFS.d" />
-   <File path="FileSystem\NullDev.d" />
-   <File path="FileSystem\package.d" />
-   <File path="FileSystem\RandomDev.d" />
-   <File path="FileSystem\TmpFS.d" />
-   <File path="FileSystem\ZeroDev.d" />
-  </Folder>
-  <Folder name="Library">
-   <File path="Library\Array.d" />
-   <File path="Library\BitArray.d" />
-   <File path="Library\Bitfield.d" />
-   <File path="Library\Casters.d" />
-   <File path="Library\LibraryLoader.dx" />
-   <File path="Library\LinkedList.d" />
-   <File path="Library\List.d" />
-   <File path="Library\package.d" />
-   <File path="Library\Property.d" />
-   <File path="Library\Queue.d" />
-   <File path="Library\SpinLock.d" />
-   <File path="Library\String.d" />
-   <File path="Library\Template.d" />
-   <File path="Library\Termios.d" />
-  </Folder>
-  <Folder name="Linker">
-   <File path="Linker\BinaryLoader.d" />
-   <File path="Linker\ElfLoader.d" />
-   <File path="Linker\package.d" />
-  </Folder>
-  <Folder name="MemoryManager">
-   <File path="MemoryManager\Heap.d" />
-   <File path="MemoryManager\package.d" />
-   <File path="MemoryManager\Paging.d" />
-   <File path="MemoryManager\PhysicalMemory.d" />
-   <File path="MemoryManager\VirtualMemory.d" />
-  </Folder>
-  <Folder name="ObjectManager">
-   <File path="ObjectManager\DeviceManager.d" />
-   <File path="ObjectManager\IBlockDevice.d" />
-   <File path="ObjectManager\ModuleManager.d" />
-   <File path="ObjectManager\package.d" />
-  </Folder>
-  <Folder name="SyscallManager">
-   <File path="SyscallManager\package.d" />
-   <File path="SyscallManager\Resource.d" />
-   <File path="SyscallManager\ResourceManager.d" />
-   <File path="SyscallManager\SyscallHandler.d" />
-  </Folder>
-  <Folder name="TaskManager">
-   <File path="TaskManager\Mutex.d" />
-   <File path="TaskManager\package.d" />
-   <File path="TaskManager\Process.d" />
-   <File path="TaskManager\Process.s" />
-   <File path="TaskManager\Semaphore.d" />
-   <File path="TaskManager\SignalType.d" />
-   <File path="TaskManager\Task.d" />
-   <File path="TaskManager\Thread.d" />
-  </Folder>
-  <Folder name="VFSManager">
-   <File path="VFSManager\BlockCache.d" />
-   <File path="VFSManager\BlockNode.d" />
-   <File path="VFSManager\CharNode.d" />
-   <File path="VFSManager\DirectoryNode.d" />
-   <File path="VFSManager\FileAttributes.d" />
-   <File path="VFSManager\FileNode.d" />
-   <File path="VFSManager\FSNode.d" />
-   <File path="VFSManager\IFileSystem.d" />
-   <File path="VFSManager\MemoryNode.d" />
-   <File path="VFSManager\package.d" />
-   <File path="VFSManager\Partition.d" />
-   <File path="VFSManager\PipeNode.d" />
-   <File path="VFSManager\VFS.d" />
-  </Folder>
+ <Folder name="ATA">
+  <File path="ATAController.d" />
+  <File path="ATADrive.d" />
+  <File path="DriverInfo.d" />
+  <File path="Main.d" />
  </Folder>
 </DProject>

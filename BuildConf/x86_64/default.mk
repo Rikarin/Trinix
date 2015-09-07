@@ -1,6 +1,6 @@
-# Statically linked into Kernel
+# Staticaly linked into Kernel
 MODULES += Storage/ATA
-#MODULES += Filesystem/Ext2
+MODULES += Filesystem/Ext2
 #MODULES += Input/PS2KeyboardMouse Input/Keyboard Input/Mouse
 
 #MODULES += Terminal/VTY

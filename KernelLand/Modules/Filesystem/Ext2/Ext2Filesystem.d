@@ -31,12 +31,12 @@ import Modules.Filesystem.Ext2;
 
 
 final class Ext2Filesystem : IFileSystem {
-    private Ext2DirectoryNode _rootNode;
-    private Partition _partition;
-    private Superblock _superblock;
-    private Group[] _groups;
-    private bool _groupsDirty;
-    private bool _superblockDirty;
+    private Ext2DirectoryNode m_rootNode;
+    private Partition m_partition;
+    private Superblock m_superblock;
+    private Group[] m_groups;
+    private bool m_groupsDirty;
+    private bool m_superblockDirty;
 
     private struct Superblock {
     align(1):
@@ -163,15 +163,15 @@ final class Ext2Filesystem : IFileSystem {
     }
 
     @property uint BlockSize() {
-        return 1024 << _superblock.BlockSize;
+        return 1024 << m_superblock.BlockSize;
     }
 
     @property uint NumGroups() {
-        return (_superblock.NumInodes / _superblock.InodesPerGroup) + (_superblock.NumInodes % _superblock.InodesPerGroup != 0);
+        return (m_superblock.NumInodes / m_superblock.InodesPerGroup) + (m_superblock.NumInodes % m_superblock.InodesPerGroup != 0);
     }
 
     @property override Partition GetPartition() {
-        return _partition;
+        return m_partition;
     }
 
     @property bool IsWritable() {
@@ -179,19 +179,19 @@ final class Ext2Filesystem : IFileSystem {
     }
 
     @property DirectoryNode RootNode() {
-        return _rootNode;
+        return m_rootNode;
     }
 
     private this(Partition partition) {
-        _partition = partition;
-        _partition.Read(2, (cast(byte *)&_superblock)[0 .. Superblock.sizeof]);
+        m_partition = partition;
+        m_partition.Read(2, (cast(byte *)&m_superblock)[0 .. Superblock.sizeof]);
 
-        _groups = new Group[NumGroups];
-        ReadBlocks(BlockSize == 1024 ? 2 : 1, (cast(byte *)_groups.ptr)[0 .. NumGroups * Group.sizeof]);
+        m_groups = new Group[NumGroups];
+        ReadBlocks(BlockSize == 1024 ? 2 : 1, (cast(byte *)m_groups.ptr)[0 .. NumGroups * Group.sizeof]);
     }
 
     ~this() {
-        delete _groups;
+        delete m_groups;
     }
 
     override bool Unmount() {
@@ -204,20 +204,22 @@ final class Ext2Filesystem : IFileSystem {
         if (edir is null)
             return false;
 
-        byte[] data = new byte[edir._inode.SizeLow];
+        byte[] data = new byte[edir.m_inode.SizeLow];
         scope (exit) delete data;
 
-        ReadData(edir._inode, data);
+        ReadData(edir.m_inode, data);
         node.IsLoaded = true;
 
         DirInfo* dirinfo = cast(DirInfo *)data.ptr;
-        while (cast(ulong)dirinfo < (cast(ulong)data.ptr + edir._inode.SizeLow)) {
+        while (cast(ulong)dirinfo < (cast(ulong)data.ptr + edir.m_inode.SizeLow)) {
             if (!dirinfo.RecordLength)
                 return false;
 
-            if(cast(ulong)dirinfo >= cast(ulong)data.ptr + edir._inode.SizeLow)
+            if(cast(ulong)dirinfo >= cast(ulong)data.ptr + edir.m_inode.SizeLow)
                 continue;
 
+            import Core;
+            //Log("type %d", dirinfo.FileType);
             switch (dirinfo.FileType) {
                 case DirFileType.File:
                     new Ext2FileNode(dirinfo.Inode, node, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
@@ -230,7 +232,7 @@ final class Ext2Filesystem : IFileSystem {
                     new Ext2DirectoryNode(dirinfo.Inode, node, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
                     break;
                     
-                case DirFileType.BlockDevice:
+              /*  case DirFileType.BlockDevice:
                     new Ext2BlockNode(dirinfo.Inode, node, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
                     break;
 
@@ -240,7 +242,7 @@ final class Ext2Filesystem : IFileSystem {
 
                 case DirFileType.FIFO:
                     new Ext2PipeNode(dirinfo.Inode, node, FSNode.NewAttributes("" ~ cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength]));
-                    break;
+                    break;*/
 
                 default:
             }
@@ -269,7 +271,7 @@ final class Ext2Filesystem : IFileSystem {
             numBlocks++;
 
         uint[] blockList = GetBlocks(inode, null);
-        byte[] blocks = new byte[numBlocks * BlockSize];
+        byte[] blocks    = new byte[numBlocks * BlockSize];
 
         for (int i = 0; i < startBlock + numBlocks && blockList[i]; i++)
             ReadBlocks(blockList[i], blocks[i * numBlocks * BlockSize .. i * numBlocks * BlockSize + BlockSize]);
@@ -297,7 +299,7 @@ final class Ext2Filesystem : IFileSystem {
             numBlocks++;
         
         uint[] blockList = GetBlocks(inode, null);
-        byte[] blocks = new byte[numBlocks * BlockSize];
+        byte[] blocks    = new byte[numBlocks * BlockSize];
         ReadBlocks(blockList[startBlock], blocks[0 .. blockOffset]);
         blocks[blockOffset .. blockOffset + length] = data[];
 
@@ -326,7 +328,7 @@ final class Ext2Filesystem : IFileSystem {
     }
     
     
-    static Ext2Filesystem Mount(DirectoryNode mountpoint, Partition partition) {
+    static IFileSystem Mount(DirectoryNode mountpoint, Partition partition) {
         if (partition is null || mountpoint is null || !mountpoint.IsMountpointable)
             return null;
 
@@ -334,11 +336,11 @@ final class Ext2Filesystem : IFileSystem {
             return null;
 
         auto ret = new Ext2Filesystem(partition);
-        ret._rootNode = new Ext2DirectoryNode(0, null, FSNode.NewAttributes("/"));
-        ret._rootNode.FileSystem = ret;
-        ret.ReadInode(ret._rootNode._inode, 2);
+        ret.m_rootNode = new Ext2DirectoryNode(0, null, FSNode.NewAttributes("/"));
+        ret.m_rootNode.FileSystem = ret;
+        ret.ReadInode(ret.m_rootNode.m_inode, 2);
 
-        if (!mountpoint.Mount(ret._rootNode)) {
+        if (!mountpoint.Mount(ret.m_rootNode)) {
             delete ret;
             return null;
         }
@@ -388,43 +390,43 @@ final class Ext2Filesystem : IFileSystem {
     }
 
     private ulong ReadBlocks(long offset, byte[] data) {
-        return _partition.Read(offset * BlockSize / _partition.BlockSize, data);
+        return m_partition.Read(offset * BlockSize / m_partition.BlockSize, data);
     }
 
     private ulong WriteBlocks(long offset, byte[] data) {
-        return _partition.Write(offset * BlockSize / _partition.BlockSize, data);
+        return m_partition.Write(offset * BlockSize / m_partition.BlockSize, data);
     }
 
     /*private ulong ReadGroupBlocks(int group, long offset, byte[] data) {
         if (group > NumGroups)
             return 0;
         
-        if (offset + data.length > _superblock.BlocksPerGroup)
+        if (offset + data.length > m_superblock.BlocksPerGroup)
             return 0;
         
-        return ReadBlocks(offset + group * _superblock.BlocksPerGroup, data);
+        return ReadBlocks(offset + group * m_superblock.BlocksPerGroup, data);
     }
 
     private ulong WriteGroupBlocks(int group, long offset, byte[] data) {
         if (group > NumGroups)
             return 0;
 
-        if (offset + data.length > _superblock.BlocksPerGroup)
+        if (offset + data.length > m_superblock.BlocksPerGroup)
             return 0;
         
-        return WriteBlocks(offset + group * _superblock.BlocksPerGroup, data);
+        return WriteBlocks(offset + group * m_superblock.BlocksPerGroup, data);
     }*/
 
     package bool ReadInode(ref Inode inode, int number) {
-        if (number > _superblock.NumInodes)
+        if (number > m_superblock.NumInodes)
             return false;
 
-        long group = (number - 1) / _superblock.InodesPerGroup;
-        long offset = (number - 1) % _superblock.InodesPerGroup;
+        long group = (number - 1) / m_superblock.InodesPerGroup;
+        long offset = (number - 1) % m_superblock.InodesPerGroup;
 
-        long inodeBlock = (offset * _superblock.InodeSize) / BlockSize;
-        long inodeOffset = (offset * _superblock.InodeSize) % BlockSize;
-        inodeBlock += _groups[group].InodeTable;
+        long inodeBlock = (offset * m_superblock.InodeSize) / BlockSize;
+        long inodeOffset = (offset * m_superblock.InodeSize) % BlockSize;
+        inodeBlock += m_groups[group].InodeTable;
 
         byte[] buffer = new byte[2 * BlockSize];
         scope(exit) delete buffer;
@@ -437,15 +439,15 @@ final class Ext2Filesystem : IFileSystem {
     }
 
     private bool WriteInode(Inode inode, int number) {
-        if (number > _superblock.NumInodes)
+        if (number > m_superblock.NumInodes)
             return false;
         
-        long group = (number - 1) / _superblock.InodesPerGroup;
-        long offset = (number - 1) % _superblock.InodesPerGroup;
+        long group = (number - 1) / m_superblock.InodesPerGroup;
+        long offset = (number - 1) % m_superblock.InodesPerGroup;
         
-        long inodeBlock = (offset * _superblock.InodeSize) / BlockSize;
-        long inodeOffset = (offset * _superblock.InodeSize) % BlockSize;
-        inodeBlock += _groups[group].InodeTable;
+        long inodeBlock = (offset * m_superblock.InodeSize) / BlockSize;
+        long inodeOffset = (offset * m_superblock.InodeSize) % BlockSize;
+        inodeBlock += m_groups[group].InodeTable;
 
         byte[] buffer = new byte[2 * BlockSize];
         scope(exit) delete buffer;
@@ -462,29 +464,29 @@ final class Ext2Filesystem : IFileSystem {
         if (block <= 0)
             return;
 
-        uint group = block / _superblock.BlocksPerGroup;
+        uint group = block / m_superblock.BlocksPerGroup;
 
         byte[] blockBitmap = new byte[BlockSize];
         scope(exit) delete blockBitmap;
 
-        if (!ReadBlocks(_groups[group].BlockBitmap, blockBitmap))
+        if (!ReadBlocks(m_groups[group].BlockBitmap, blockBitmap))
             return;
 
-        int i = block % _superblock.BlocksPerGroup - 1;
+        int i = block % m_superblock.BlocksPerGroup - 1;
         blockBitmap[i / 8] &= ~(1 << (i & 7));
-        if (!WriteBlocks(_groups[group].BlockBitmap, blockBitmap))
+        if (!WriteBlocks(m_groups[group].BlockBitmap, blockBitmap))
             return;
 
-        _groups[group].UnallocatedBlocks++;
-        _groupsDirty = true;
+        m_groups[group].UnallocatedBlocks++;
+        m_groupsDirty = true;
     }
 
     private uint AllocBlock(uint group) {
         if (group > NumGroups)
             return 0;
 
-        if (!_groups[group].UnallocatedBlocks)
-            for (group = 0; group < NumGroups && !_groups[group].UnallocatedBlocks; group++) {}
+        if (!m_groups[group].UnallocatedBlocks)
+            for (group = 0; group < NumGroups && !m_groups[group].UnallocatedBlocks; group++) {}
 
         if (group == NumGroups)
             return 0;
@@ -492,26 +494,26 @@ final class Ext2Filesystem : IFileSystem {
         byte[] blockBitmap = new byte[BlockSize];
         scope(exit) delete blockBitmap;
 
-        if (!ReadBlocks(_groups[group].BlockBitmap, blockBitmap))
+        if (!ReadBlocks(m_groups[group].BlockBitmap, blockBitmap))
             return 0;
 
-        ulong i = 4 + _superblock.InodesPerGroup * Inode.sizeof / BlockSize + 1;
-        while (blockBitmap[i / 8] & (1 << (i & 7)) && i < _superblock.BlocksPerGroup)
+        ulong i = 4 + m_superblock.InodesPerGroup * Inode.sizeof / BlockSize + 1;
+        while (blockBitmap[i / 8] & (1 << (i & 7)) && i < m_superblock.BlocksPerGroup)
             i++;
 
-        if (i == _superblock.BlocksPerGroup)
+        if (i == m_superblock.BlocksPerGroup)
             return 0;
 
         blockBitmap[i / 8] |= 1 << (i & 7);
-        _groups[group].UnallocatedBlocks--;
-        _groupsDirty = true;
-        _superblock.NumFreeBlocks--;
-        _superblockDirty = true;
+        m_groups[group].UnallocatedBlocks--;
+        m_groupsDirty = true;
+        m_superblock.NumFreeBlocks--;
+        m_superblockDirty = true;
 
-        if (!WriteBlocks(_groups[group].BlockBitmap, blockBitmap))
+        if (!WriteBlocks(m_groups[group].BlockBitmap, blockBitmap))
             return 0;
 
-        return _superblock.BlocksPerGroup * group + 1;
+        return m_superblock.BlocksPerGroup * group + 1;
     }
 
     private ulong CountIndirect(ulong size) {

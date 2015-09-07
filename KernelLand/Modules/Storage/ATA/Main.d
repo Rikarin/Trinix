@@ -28,17 +28,17 @@ import Modules.Storage.ATA.ATAController;
 
 
 class ATA {
-    private __gshared ATAController[2] _controllers;
+    private __gshared ATAController[2] m_controllers;
 
     static ModuleResult Initialize(string[] args) {
-        _controllers = ATAController.Detect();
+        m_controllers = ATAController.Detect();
 
         return ModuleResult.Successful;
     }
 
     static ModuleResult Finalize() {
-        delete _controllers[0];
-        delete _controllers[1];
+        delete m_controllers[0];
+        delete m_controllers[1];
 
         return ModuleResult.Successful;
     }

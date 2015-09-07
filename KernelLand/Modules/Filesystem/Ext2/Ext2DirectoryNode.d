@@ -28,24 +28,24 @@ import Modules.Filesystem.Ext2;
 
 
 final class Ext2DirectoryNode : DirectoryNode {
-    package Ext2Filesystem.Inode _inode;
-    private bool _loadedAttribs;
+    package Ext2Filesystem.Inode m_inode;
+    private bool m_loadedAttribs;
     
     this(int inode, DirectoryNode parent, FileAttributes attributes) {
         if (parent !is null && parent.FileSystem !is null)
-            (cast(Ext2Filesystem)parent.FileSystem).ReadInode(_inode, inode);
+            (cast(Ext2Filesystem)parent.FileSystem).ReadInode(m_inode, inode);
         
         super(parent, attributes);
     }
     
     @property override FileAttributes Attributes() {
-        if (!_loadedAttribs && FileSystem !is null) {
-            auto attribs = (cast(Ext2Filesystem)FileSystem).GetAttributes(_inode);
+        if (!m_loadedAttribs && FileSystem !is null) {
+            auto attribs = (cast(Ext2Filesystem)FileSystem).GetAttributes(m_inode);
             attribs.Name = m_attributes.Name;
             attribs.Type = m_attributes.Type;
 
             m_attributes = attribs;
-            _loadedAttribs = true;
+            m_loadedAttribs = true;
         }
         
         return m_attributes;

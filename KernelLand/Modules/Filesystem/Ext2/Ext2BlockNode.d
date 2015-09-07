@@ -28,8 +28,8 @@ import Modules.Filesystem.Ext2;
 
 
 final class Ext2BlockNode : BlockNode {
-    private Ext2Filesystem.Inode _inode;
-    private bool _loadedAttribs;
+    private Ext2Filesystem.Inode m_inode;
+    private bool m_loadedAttribs;
 
     @property override long Blocks() {
         return -1; //TODO
@@ -41,19 +41,19 @@ final class Ext2BlockNode : BlockNode {
     
     this(int inode, DirectoryNode parent, FileAttributes attributes) {
         if (parent !is null && parent.FileSystem !is null)
-            (cast(Ext2Filesystem)parent.FileSystem).ReadInode(_inode, inode);
+            (cast(Ext2Filesystem)parent.FileSystem).ReadInode(m_inode, inode);
         
         super(parent, attributes);
     }
 
     @property override FileAttributes Attributes() {
-        if (!_loadedAttribs && _parent !is null && _parent.FileSystem !is null) {
-            auto attribs = (cast(Ext2Filesystem)_parent.FileSystem).GetAttributes(_inode);
+        if (!m_loadedAttribs && m_parent !is null && m_parent.FileSystem !is null) {
+            auto attribs = (cast(Ext2Filesystem)m_parent.FileSystem).GetAttributes(m_inode);
             attribs.Name = m_attributes.Name;
             attribs.Type = m_attributes.Type;
 
             m_attributes = attribs;
-            _loadedAttribs = true;
+            m_loadedAttribs = true;
         }
         
         return m_attributes;
@@ -64,16 +64,16 @@ final class Ext2BlockNode : BlockNode {
     }
     
     override ulong Read(long offset, byte[] data) {
-        if (_parent is null || _parent.FileSystem is null)
+        if (m_parent is null || m_parent.FileSystem is null)
             return 0;
         
-        return (cast(Ext2Filesystem)_parent.FileSystem).Read(_inode, offset, data);
+        return (cast(Ext2Filesystem)m_parent.FileSystem).Read(m_inode, offset, data);
     }
     
     override ulong Write(long offset, byte[] data) {
-        if (_parent is null || _parent.FileSystem is null)
+        if (m_parent is null || m_parent.FileSystem is null)
             return 0;
         
-        return (cast(Ext2Filesystem)_parent.FileSystem).Write(_inode, offset, data);
+        return (cast(Ext2Filesystem)m_parent.FileSystem).Write(m_inode, offset, data);
     }
 }

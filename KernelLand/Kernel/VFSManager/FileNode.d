@@ -29,6 +29,8 @@ import VFSManager;
 abstract class FileNode : FSNode {
     this(DirectoryNode parent, FileAttributes fileAttributes) {
         m_attributes      = fileAttributes;
+        import Core;
+        Log("new file node: %s", fileAttributes.Name);
         m_attributes.Type = FileType.File;
 
         super(parent);

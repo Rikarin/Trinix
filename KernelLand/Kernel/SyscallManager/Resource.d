@@ -150,6 +150,7 @@ abstract class Resource {
 
     protected ~this() {
         delete m_mutex;
+        delete m_processes;
         delete m_callTables;
 
         ResourceManager.Unregister(this);

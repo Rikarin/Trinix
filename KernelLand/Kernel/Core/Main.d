@@ -24,16 +24,13 @@
  *      o dokoncit VFS., co tam este chyba?... file..., syscally, static cally,
  *        acl,...
  *      o Dokoncit write/create/remove - spravit Ext2 driver!!!!
- *      o Multitasking a synchronizacne prvky, asi rwlock ci jak
- *      o eventy, syscally, shared memory
- *      o kontrolu parametrov pri syscalloch
+ *      o eventy, syscally, shared memory, rwlock, skontrolovat mutex/semafor
+ *      o kontrolu parametrov pri syscalloch (adresu atd)
  *      o ACLka do syscallov?
  *      o debugovat Heap... Obcas to pada na expande...
  *      o spravit to iste jak je pre VFS.AddDriver ci co ale pre Node zariadenia.
  *      o Aby sa z modulu dali pridat veci ako je pipe, pty, vty, atd...
  *      o documentation, documentation, documentation, ...
- *      o IMPORTANT: interfacovat syscally na konretne volania. tj. kazdy syscall
- *        moze mat uplne ine parametre
  *      o dokoncit keyboard a mouse driver.
  *      o spravit driver na PCI, pipedev, serial port...
  *      o parse command line
@@ -45,7 +42,6 @@
  *      o Exit thready
  *      o Implement GC
  *      o Fix \n in Logger
- *      o v LLVM sa uz da pouzit atributa section
  */
 
 module Core.Main;
@@ -115,7 +111,7 @@ extern(C) void KernelMain() {
     //import Modules.Terminal.VTY.Main;
    // new VTY();
 
-   // debug VFS.PrintTree(VFS.Root);
+    debug VFS.PrintTree(VFS.Root);
 
     /* Copy current process into new one */
     //auto p = new Process(&test_lala);
@@ -151,3 +147,8 @@ void test_lala() {
        // asm { syscall; }
     }
 }
+
+
+//TODO: niekede sa mi pri reade z EXTcka deadlokuje spinlock/mutex
+//ono sa to deadlokuje asi ked scheduler vymiena thready a nieco si allokuje a popritom
+//nieco uz allokoval iny proces..

@@ -30,7 +30,7 @@ endif
 
 ifneq ($(BUILD_TYPE),release)
 	LDFLAGS += -g
-	DFLAGS 	+= -g
+	DFLAGS 	+= -g -d-debug=
 	CFLAGS 	+= -g
 endif
 

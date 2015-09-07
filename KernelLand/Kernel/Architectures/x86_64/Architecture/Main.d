@@ -50,6 +50,7 @@ extern(C) void ArchMain(uint magic, v_addr info) {
 void LoadModules() {
     new DirectoryNode(DeviceManager.DevFS, FSNode.NewAttributes("BootModules"));
 
+    Log("Multiboot modules count: %d", Multiboot.ModulesCount);
     foreach (tmp; Multiboot.Modules[0 .. Multiboot.ModulesCount]) {
         char* str    = &tmp.String;
         ulong addr   = tmp.ModStart | LinkerScript.KernelBase;
