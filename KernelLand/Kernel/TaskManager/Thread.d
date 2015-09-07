@@ -105,6 +105,7 @@ final class Thread {
     private ulong m_retStatus; /* For internal use only! */
 
     private int m_priority;
+    private LinkedListNode!Thread m_node;
 
     //private int _errno; //WAT?
 
@@ -122,6 +123,7 @@ final class Thread {
         m_lastDeadChild = new LinkedList!Thread();
         m_deadChildLock = new Mutex();
         m_messages      = new LinkedList!(IPCMessage *)();
+        m_node          = new LinkedListNode!Thread(this);
         m_kernelStack   = new ulong[STACK_SIZE];
         m_userStack     = new ulong[USER_STACK_SIZE];//TODO: ParentProcess.AllocUserStack();
 
@@ -164,6 +166,7 @@ final class Thread {
             delete m_process;
 
         delete m_name;
+        delete m_node;
         delete m_spinLock;
         delete m_deadChildLock;
         delete m_messages;
@@ -187,6 +190,7 @@ final class Thread {
     @property {
         ulong ID()                 { return m_id;           }
         string Name()              { return m_name;         }
+        ref auto Node()            { return m_node;         }
         int Priority()             { return m_priority;     }
         ref int Quantum()          { return m_quantum;      }
         void* WaitPointer()        { return m_waitPointer;  }
@@ -204,21 +208,14 @@ final class Thread {
         }
         
         void Priority(int priority) {
-            if (priority < 0 || priority > MIN_PRIORITY)
+            if (priority < 0)
+                priority = 0;
+
+            if (priority > MIN_PRIORITY)
                 priority = MIN_PRIORITY;
             
-            if (priority == m_priority)
-                return;
-            
-            if (this != Task.CurrentThread) {
-                Task.ThreadLock.WaitOne();
-                Task.Threads[m_priority].Remove(this);
-                Task.Threads[priority].Add(this);
-                m_priority = priority;
-                Task.ThreadLock.Release();
-            } else
-                m_priority = priority;
-            }
+            m_priority = priority;
+        }
     }
 
     void Start() {
@@ -230,6 +227,8 @@ final class Thread {
     }
 
     private static void NewThread() {
+        asm {syscall;}
+        //Log("started new thread man");
         with (Task.CurrentThread) {
             ParentProcess.PageTable.Install();
 
@@ -335,7 +334,7 @@ final class Thread {
 
             case ThreadState.Active:
                 if (!isCurrentThread)
-                    Task.Threads[m_priority].Remove(this);
+                    Task.Threads.Remove(m_node);
 
                 m_remaining = 0;
                 m_quantum = 0;
@@ -376,7 +375,7 @@ final class Thread {
 
     ulong Sleep(ThreadState status, void* ptr, ulong num, SpinLock lock) {
         RemoveActive();
-        m_state      = status;
+        m_state       = status;
         m_waitPointer = ptr;
         m_retStatus   = num;
 
@@ -431,7 +430,7 @@ final class Thread {
 
     void RemoveActive() {
         Task.ThreadLock.WaitOne();
-        Task.Threads[m_priority].Remove(this);
+        Task.Threads.Remove(m_node);
         Task.ThreadLock.Release();
     }
 
@@ -442,7 +441,7 @@ final class Thread {
 
         Task.ThreadLock.WaitOne();
         if (Task.CurrentThread != this)
-            Task.Threads[m_priority].Add(this);
+            Task.Threads.AddLast(m_node);
         Task.ThreadLock.Release();
     }
 

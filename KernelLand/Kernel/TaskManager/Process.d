@@ -74,15 +74,6 @@ final class Process {
             State          = ThreadState.Active;
             SetKernelStack();
         }
-
-        /* Idle task */
-      /*  Task.IdleTask      = new Thread(t);
-        with (Task.IdleTask) {
-            Name           = "Idle Task";
-            Priority       = MIN_PRIORITY;
-            Quantum        = 1;
-            Start(&Task.Idle, null);
-        }*/
     
         return process;
     }

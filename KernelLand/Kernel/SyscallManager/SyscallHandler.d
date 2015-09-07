@@ -58,20 +58,19 @@ abstract final class SyscallHandler {
     }
 
     static void SyscallDispatcher(SyscallStack* stack) {
-        Port.SaveSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
+      /*  Port.SaveSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
         VirtualMemory.KernelPaging.Install();
 
-        with (stack)
-            RAX = ResourceManager.CallResource(R9, R8, RDI, RSI, RDX, RBX, RAX);
+        //with (stack)
+            //RAX = ResourceManager.CallResource(R9, R8, RDI, RSI, RDX, RBX, RAX);
 
         Task.CurrentProcess.PageTable.Install();
-        Port.RestoreSSE(Task.CurrentThread.SavedState.SSESyscall.Data);
+        Port.RestoreSSE(Task.CurrentThread.SavedState.SSESyscall.Data); TODO*/
     }
 
     extern(C) private static void SyscallCommon() {
         asm {
             naked;
-
             swapgs;
             mov [GS:0], RSP;
             mov RSP, [GS:8];

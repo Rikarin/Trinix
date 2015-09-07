@@ -184,6 +184,8 @@ final class LinkedList(T) {
 
         if (node) {
             InternalRemoveNode(node);
+            delete node;
+
             return true;
         }
 
@@ -234,10 +236,10 @@ final class LinkedList(T) {
     }
 
     private void InternalInsertNodeBefore(LinkedListNode!T node, LinkedListNode!T newNode) {
-        newNode.m_next    = node;
-        newNode.m_prev    = node.m_prev;
+        newNode.m_next     = node;
+        newNode.m_prev     = node.m_prev;
         node.m_prev.m_next = newNode;
-        node.m_prev       = newNode;            
+        node.m_prev        = newNode;            
         m_version++;
         m_count++;
     }
@@ -267,7 +269,6 @@ final class LinkedList(T) {
         }
 
         node.Invalidate();
-        delete node;
         m_count--;
         m_version++;
     }

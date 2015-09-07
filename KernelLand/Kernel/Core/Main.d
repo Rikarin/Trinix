@@ -125,7 +125,7 @@ extern(C) void KernelMain() {
 
     Log("Running, Time = %d", Time.Uptime);
     while (true) {
-        //Log("Running, Time = %d", Time.Uptime);
+   //     Log("Running, Time = %d", Time.Uptime);
     }
 }
 
@@ -144,11 +144,7 @@ void RemapPIC() {
 
 void test_lala() {
     while (true) {
-       // asm { syscall; }
+        //Log("test");
+        //asm { int 16; }
     }
 }
-
-
-//TODO: niekede sa mi pri reade z EXTcka deadlokuje spinlock/mutex
-//ono sa to deadlokuje asi ked scheduler vymiena thready a nieco si allokuje a popritom
-//nieco uz allokoval iny proces..

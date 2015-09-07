@@ -51,9 +51,9 @@ abstract final class Task {
 
     private __gshared SpinLock m_spinLock;
     private __gshared LinkedList!Process m_procs;
-    private __gshared LinkedList!Thread[] m_threads;
+    private __gshared LinkedList!Thread m_threads;
     private __gshared Thread m_currentThread;
-    private __gshared Thread m_idle;
+
 
     @property {
         static Thread CurrentThread()        { return m_currentThread;             }
@@ -61,30 +61,34 @@ abstract final class Task {
         package static SpinLock ThreadLock() { return m_spinLock;                  }
         package static ulong NextPID()       { return m_nextPID++;                 } //TODO: spinlock
         package static ulong NextTID()       { return m_nextTID++;                 } //TODO: spinlock
-        package static ref Thread IdleTask() { return m_idle;                      }
         package static auto Threads()        { return m_threads;                   }
         package static auto Processes()      { return m_procs;                     }
-        
-        package static size_t ThreadCount() {
-            size_t count;
-            foreach (x; m_threads)
-                if (x !is null)
-                    count += x.Count;
-            
-            return count;
-        }
+        package static size_t ThreadCount()  { return m_threads.Count;             }
     }
 
     static void Initialize() {
         m_spinLock = new SpinLock();
         m_procs    = new LinkedList!Process();
-        m_threads  = new LinkedList!Thread[Thread.MIN_PRIORITY + 1];
-
-        foreach (ref x; m_threads)
-            x = new LinkedList!Thread();
+        m_threads  = new LinkedList!Thread();
 
         Process proc    = Process.Initialize();
         m_currentThread = proc.Threads.First.Value;
+
+        //TODO: init idle process here...
+        /* Idle task */
+        /*  Task.IdleTask      = new Thread(t);
+        with (Task.IdleTask) {
+        Name           = "Idle Task";
+        Priority       = MIN_PRIORITY;
+        Quantum        = 1;
+        Start(&Task.Idle, null);
+        }*/
+    }
+
+    static void Finalize() {
+        delete m_threads;
+        delete m_procs;
+        delete m_spinLock;
     }
 
     static void Scheduler() {
@@ -120,7 +124,7 @@ abstract final class Task {
         //CurrentThread.SavedState.IsSSEModified = false;
         //Port.DisableSSE();
 
-        // Switch to the next thread
+        /* Switch to the next thread */
         m_currentThread = next;
         m_currentThread.SetKernelStack();
         m_currentThread.ParentProcess.m_paging.Install();
@@ -130,31 +134,33 @@ abstract final class Task {
     }
 
     private static Thread GetNextToRun() {
-        ThreadLock.WaitOne();
-        scope(exit) ThreadLock.Release();
-
-        if (CurrentThread.State == ThreadState.Active)
-            Threads[CurrentThread.Priority].Add(CurrentThread);
+        m_spinLock.WaitOne();
+        scope(exit) m_spinLock.Release();
 
         Thread next    = GetRunnable();
         next.Remaining = next.Quantum;
+
+        if (next is CurrentThread)
+            return CurrentThread;
+
+        if (CurrentThread.State == ThreadState.Active)
+            m_threads.AddLast(CurrentThread.Node);
+
         return next;
     }
 
     private static Thread GetRunnable() {
-        foreach (x; m_threads) {
-            if (x.Count) {
-                foreach (y; x) {
-                    if (y.Value.State == ThreadState.Active) {
-                        Thread ret = y.Value;
-                        x.Remove(y);
-                        return ret;
-                    }
+        for (int i = 0; i < Thread.MIN_PRIORITY; i++) {
+            foreach (x; m_threads) {
+                if (x.Value.Priority == i && x.Value.State == ThreadState.Active) {
+                    auto ret = x.Value;
+                    m_threads.Remove(x);
+                    return ret;
                 }
             }
         }
 
-        return m_idle;
+        return CurrentThread;
     }
 
     private static void SwitchTasks(void* rsp, void* rbp, void* rip) {      
@@ -169,7 +175,7 @@ abstract final class Task {
 
     package static void CallFaultHandler(Thread thread) {
         Log("Threads: Fault %d", thread.CurrentFaultNum);
-        thread.Kill(-1);
+        //TODO: thread.Kill(-1);
         
         Port.Sti();
         Port.Halt();
