@@ -142,9 +142,29 @@ void RemapPIC() {
     Port.Write(0xA1, 0x00);
 }
 
+void test_vararg(string abc, ...) {
+
+}
+
 void test_lala() {
+    asm {
+        //STMXCSR RAX;
+        //cli;
+        //hlt;
+    }
+    //Logger.Put(cast(char[])"test 123");
+    //Logger.Write("lalalalaa");
+    test_vararg("llaa");
+
     while (true) {
+
+/*        asm {
+            mov R14, 0xFAFAFAFABBB;
+            cli;
+            hlt;
+        }*/
+
         //Log("test");
-        //asm { int 16; }
+       // asm { int 16; }
     }
 }

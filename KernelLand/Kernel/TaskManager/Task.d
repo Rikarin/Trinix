@@ -33,15 +33,25 @@ extern(C) private void* _Proc_Read_RIP();
 
 
 struct SSEState {
-    ulong Header;
-    ulong Data;
+    byte[] Data;
+
+    void Create() {
+        Data = new byte[0x20F];
+    }
+
+    void Save() {
+        Port.SaveSSE(((cast(ulong)Data.ptr) + 0x0F) & ~0x0F);
+    }
+
+    void Load() {
+        Port.RestoreSSE(((cast(ulong)Data.ptr) + 0x0F) & ~0x0F);
+    }
 }
 
 struct TaskState {
     void* RIP, RSP, RBP;
     SSEState SSEInt;
     SSEState SSESyscall;
-    bool IsSSEModified;
 }
 
 
@@ -117,14 +127,12 @@ abstract final class Task {
 
     private static void Reschedule() {
         Thread next = GetNextToRun();
-        //Log("Rescheduling: %d, priority: %d, name: %s, total: %d", next.ID, next.Priority, next.Name, ThreadCount);
+       // Log("Rescheduling: %d, priority: %d, name: %s, total: %d", next.ID, next.Priority, next.Name, ThreadCount);
         if (next is null || next == CurrentThread)
             return;
-            
-        //CurrentThread.SavedState.IsSSEModified = false;
-        //Port.DisableSSE();
 
         /* Switch to the next thread */
+        Port.EnableSSE();
         m_currentThread = next;
         m_currentThread.SetKernelStack();
         m_currentThread.ParentProcess.m_paging.Install();

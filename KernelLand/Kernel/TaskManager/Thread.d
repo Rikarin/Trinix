@@ -111,29 +111,25 @@ final class Thread {
 
 
     package this(Process process) {
-        m_id            = Task.NextTID;
-        m_state         = ThreadState.PreInit;
-        m_process       = process;
-        m_name          = "Unnamed Thread";
-        m_remaining     = DEFAULT_QUANTUM;
-        m_quantum       = DEFAULT_QUANTUM;
-        m_priority      = DEFAULT_PRIORITY;
-
-        m_spinLock      = new SpinLock();
-        m_lastDeadChild = new LinkedList!Thread();
-        m_deadChildLock = new Mutex();
-        m_messages      = new LinkedList!(IPCMessage *)();
-        m_node          = new LinkedListNode!Thread(this);
-        m_kernelStack   = new ulong[STACK_SIZE];
-        m_userStack     = new ulong[USER_STACK_SIZE];//TODO: ParentProcess.AllocUserStack();
-
+        m_id              = Task.NextTID;
+        m_state           = ThreadState.PreInit;
+        m_process         = process;
+        m_name            = "Unnamed Thread";
+        m_remaining       = DEFAULT_QUANTUM;
+        m_quantum         = DEFAULT_QUANTUM;
+        m_priority        = DEFAULT_PRIORITY;
+                          
+        m_spinLock        = new SpinLock();
+        m_lastDeadChild   = new LinkedList!Thread();
+        m_deadChildLock   = new Mutex();
+        m_messages        = new LinkedList!(IPCMessage *)();
+        m_node            = new LinkedListNode!Thread(this);
+        m_kernelStack     = new ulong[STACK_SIZE];
+        m_userStack       = new ulong[USER_STACK_SIZE];//TODO: ParentProcess.AllocUserStack();
         m_syscallStack[1] = cast(ulong)m_kernelStack.ptr + STACK_SIZE / 2;
 
-        m_savedState.SSEInt.Header     = cast(ulong)new byte[0x20F].ptr;
-        m_savedState.SSEInt.Data       = (m_savedState.SSEInt.Header + 0x0F) & ~0x0F;
-        m_savedState.SSESyscall.Header = cast(ulong)new byte[0x20F].ptr;
-        m_savedState.SSESyscall.Data   = (m_savedState.SSESyscall.Header + 0x0F) & ~0x0F;
-
+        m_savedState.SSEInt.Create();
+        m_savedState.SSESyscall.Create();
         m_process.Threads.Add(this);
     }
 
@@ -171,12 +167,8 @@ final class Thread {
         delete m_deadChildLock;
         delete m_messages;
         delete m_kernelStack;
-
-        ulong* sse = cast(ulong *)m_savedState.SSEInt.Header;
-        delete sse;
-
-        sse = cast(ulong *)m_savedState.SSESyscall.Header;
-        delete sse;
+        delete m_savedState.SSEInt.Data;
+        delete m_savedState.SSESyscall.Data;
     }
 
     package void SetKernelStack() {
@@ -223,17 +215,14 @@ final class Thread {
         m_savedState.RIP = cast(void *)&NewThread;
         AddActive();
 
-        Log("Thread Start");
+        Log("Thread Start %x", cast(ulong)m_savedState.RSP);
     }
 
     private static void NewThread() {
-        asm {syscall;}
-        //Log("started new thread man");
         with (Task.CurrentThread) {
-            ParentProcess.PageTable.Install();
-
             Port.Cli();
             DeviceManager.EOI(0);
+
             if (Task.CurrentThread.ParentProcess.IsKernel)
                 Run(0x202, m_kernelStack[0], 0x08, 0x10);
             else
