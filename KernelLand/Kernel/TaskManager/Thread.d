@@ -219,6 +219,8 @@ final class Thread {
     }
 
     private static void NewThread() {
+        Log("new thread lalala, number");
+
         with (Task.CurrentThread) {
             Port.Cli();
             DeviceManager.EOI(0);

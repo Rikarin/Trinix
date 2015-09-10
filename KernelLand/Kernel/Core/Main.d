@@ -111,7 +111,7 @@ extern(C) void KernelMain() {
     //import Modules.Terminal.VTY.Main;
    // new VTY();
 
-    debug VFS.PrintTree(VFS.Root);
+   // debug VFS.PrintTree(VFS.Root);
 
     /* Copy current process into new one */
     //auto p = new Process(&test_lala);
@@ -148,13 +148,15 @@ void test_vararg(string abc, ...) {
 
 void test_lala() {
     asm {
+        //int 16;
+        //syscall;
         //STMXCSR RAX;
         //cli;
         //hlt;
     }
     //Logger.Put(cast(char[])"test 123");
     //Logger.Write("lalalalaa");
-    test_vararg("llaa");
+ //   test_vararg("llaa");
 
     while (true) {
 

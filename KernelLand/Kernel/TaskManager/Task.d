@@ -132,7 +132,6 @@ abstract final class Task {
             return;
 
         /* Switch to the next thread */
-        Port.EnableSSE();
         m_currentThread = next;
         m_currentThread.SetKernelStack();
         m_currentThread.ParentProcess.m_paging.Install();
