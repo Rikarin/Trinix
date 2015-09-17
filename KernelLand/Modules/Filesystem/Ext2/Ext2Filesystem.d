@@ -218,8 +218,6 @@ final class Ext2Filesystem : IFileSystem {
             if(cast(ulong)dirinfo >= cast(ulong)data.ptr + edir.m_inode.SizeLow)
                 continue;
 
-            import Core;
-            //Log("type %d", dirinfo.FileType);
             switch (dirinfo.FileType) {
                 case DirFileType.File:
                     new Ext2FileNode(dirinfo.Inode, node, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
@@ -232,7 +230,7 @@ final class Ext2Filesystem : IFileSystem {
                     new Ext2DirectoryNode(dirinfo.Inode, node, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
                     break;
                     
-              /*  case DirFileType.BlockDevice:
+                case DirFileType.BlockDevice:
                     new Ext2BlockNode(dirinfo.Inode, node, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
                     break;
 
@@ -242,7 +240,7 @@ final class Ext2Filesystem : IFileSystem {
 
                 case DirFileType.FIFO:
                     new Ext2PipeNode(dirinfo.Inode, node, FSNode.NewAttributes("" ~ cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength]));
-                    break;*/
+                    break;
 
                 default:
             }

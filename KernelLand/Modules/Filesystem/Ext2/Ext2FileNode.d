@@ -34,8 +34,8 @@ final class Ext2FileNode : FileNode {
     this(int inode, DirectoryNode parent, FileAttributes attributes) {
         if (parent !is null && parent.FileSystem !is null)
             (cast(Ext2Filesystem)parent.FileSystem).ReadInode(m_inode, inode);
-        
-        super(null, attributes);
+
+        super(parent, attributes);
     }
     
     @property override FileAttributes Attributes() {

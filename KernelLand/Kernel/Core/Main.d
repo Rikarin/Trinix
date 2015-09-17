@@ -100,18 +100,18 @@ extern(C) void KernelMain() {
    // BinaryLoader.Initialize();
 
     Log("Module Manager");
-   // ModuleManager.Initialize();
-   // ModuleManager.LoadBuiltins();
+    ModuleManager.Initialize();
+    ModuleManager.LoadBuiltins();
     //LoadModules();
 
-  //  VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
-  //            VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");
+    VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
+              VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");
 
 
     //import Modules.Terminal.VTY.Main;
    // new VTY();
 
-  //  debug VFS.PrintTree(VFS.Root);
+    debug VFS.PrintTree(VFS.Root);
 
     /* Copy current process into new one */
     //auto p = new Process(&test_lala);

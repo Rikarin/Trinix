@@ -32,7 +32,6 @@ class ATA {
     private __gshared ATAController[2] m_controllers;
 
     static ModuleResult Initialize(string[] args) {
-        Log("ATA driver is loading...");
         m_controllers = ATAController.Detect();
 
         return ModuleResult.Successful;

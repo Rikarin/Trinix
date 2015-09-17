@@ -37,7 +37,6 @@ class Ext2 {
 	};
 
 	static ModuleResult Initialize(string[] args) {	
-        Log("Ext2 driver is loading...");
 		VFS.AddDriver(info);
 
 		return ModuleResult.Successful;
