@@ -23,6 +23,7 @@
 
 module Modules.Filesystem.Ext2.Main;
 
+import Core;
 import VFSManager;
 import ObjectManager;
 import Modules.Filesystem.Ext2;
@@ -35,7 +36,8 @@ class Ext2 {
         Mount: &Ext2Filesystem.Mount
 	};
 
-	static ModuleResult Initialize(string[] args) {		
+	static ModuleResult Initialize(string[] args) {	
+        Log("Ext2 driver is loading...");
 		VFS.AddDriver(info);
 
 		return ModuleResult.Successful;

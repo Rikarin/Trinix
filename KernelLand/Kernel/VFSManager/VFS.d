@@ -132,6 +132,7 @@ abstract final class VFS {
         if (m_drivers.Contains(driver))
             return;
 
+        Log("Adding driver %s", driver.Name);
         m_drivers.Add(driver);
     }
 

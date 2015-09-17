@@ -97,21 +97,21 @@ extern(C) void KernelMain() {
     Time.Initialize();
 
     Log("Binary Loader");
-    BinaryLoader.Initialize();
+   // BinaryLoader.Initialize();
 
     Log("Module Manager");
-    ModuleManager.Initialize();
-    ModuleManager.LoadBuiltins();
+   // ModuleManager.Initialize();
+   // ModuleManager.LoadBuiltins();
     //LoadModules();
 
-    VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
-              VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");
+  //  VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
+  //            VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");
 
 
     //import Modules.Terminal.VTY.Main;
    // new VTY();
 
-   // debug VFS.PrintTree(VFS.Root);
+  //  debug VFS.PrintTree(VFS.Root);
 
     /* Copy current process into new one */
     //auto p = new Process(&test_lala);
@@ -142,31 +142,12 @@ void RemapPIC() {
     Port.Write(0xA1, 0x00);
 }
 
-void test_vararg(string abc, ...) {
-
-}
-
 void test_lala() {
-    asm {
-        //int 16;
-        //syscall;
-        //STMXCSR RAX;
-        //cli;
-        //hlt;
-    }
-    //Logger.Put(cast(char[])"test 123");
-    //Logger.Write("lalalalaa");
- //   test_vararg("llaa");
+    Log("The new thread %d", Task.CurrentThread.ID);
 
     while (true) {
-
-/*        asm {
-            mov R14, 0xFAFAFAFABBB;
-            cli;
-            hlt;
-        }*/
-
-        //Log("test");
-       // asm { int 16; }
+        asm {
+            //syscall;
+        }
     }
 }

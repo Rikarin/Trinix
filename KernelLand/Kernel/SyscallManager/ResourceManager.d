@@ -120,8 +120,10 @@ abstract final class ResourceManager {
     package static long CallResource(long resource, long id, long param1, long param2, long param3, long param4, long param5) {
         Log("Syscall ===>");
         Log(" - Resource = %16x | ID = %16x", resource, id);
-        Log(" - Param1 = %16x   | Param2 = %16x | Param3 = %16x", param1, param2, param3);
-        Log(" - Param4 = %16x   | Param5 = %16x", param4, param5);
+        Log(" - Param1 = %16x   | Param2 = %16x", param1, param2);
+        Log(" - Param3 = %16x   | Param4 = %16x", param3, param4);
+        Log(" - Param5 = %16x", param5);
+        Log("");
 
         if (resource == 0xFFFFFFFF_FFFFFFFF) {
             ResouceCallTable table = GetCallTable(cast(string)((cast(char *)id)[0 .. param1]));

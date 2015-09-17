@@ -127,7 +127,7 @@ abstract final class Task {
 
     private static void Reschedule() {
         Thread next = GetNextToRun();
-       // Log("Rescheduling: %d, priority: %d, name: %s, total: %d", next.ID, next.Priority, next.Name, ThreadCount);
+        //Log("Rescheduling: %d, priority: %d, name: %s, total: %d", next.ID, next.Priority, next.Name, ThreadCount);
         if (next is null || next == CurrentThread)
             return;
 
@@ -189,7 +189,7 @@ abstract final class Task {
         return;
     }
 
-    package static void Idle() { //This is idle task
+    package static void Idle() {
         while (true)
             Port.Halt();
     }

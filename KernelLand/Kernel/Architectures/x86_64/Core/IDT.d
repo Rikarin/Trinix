@@ -146,7 +146,7 @@ abstract final class IDT {
 
         if (stack.IntNumber == 0xE)
             Paging.PageFaultHandler(*stack);
-        else if (stack.IntNumber == 0xD || stack.IntNumber == 0xF) {
+        else if (stack.IntNumber < 32) {
             Log(`===> Interrupt -.-"`);
             Log("IRQ = %16x | RIP = %16x", stack.IntNumber, stack.RIP);
             Log("RAX = %16x | RBX = %16x", stack.RAX, stack.RBX);
@@ -158,10 +158,11 @@ abstract final class IDT {
             Log("R12 = %16x | R13 = %16x", stack.R12, stack.R13);
             Log("R14 = %16x | R15 = %16x", stack.R14, stack.R15);
             Log(" CS = %16x |  SS = %16x", stack.CS,  stack.SS);
+            Log("Error: %16x", stack.ErrorCode);
             Log("Flags: %16x", stack.Flags);
             Port.Halt();
         } else if (stack.IntNumber < 32)
-            Task.CurrentThread.Fault(stack.IntNumber);
+            Task.CurrentThread.Fault(stack.IntNumber); //TODO: call with stack param
         else
             DeviceManager.Handler(*stack);
 

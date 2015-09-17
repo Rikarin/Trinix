@@ -64,8 +64,8 @@ struct IPCMessage {
 
 
 final class Thread {
-    enum STACK_SIZE            = 0x4000;
-    enum USER_STACK_SIZE       = 0x1000; //* 10
+    enum STACK_SIZE            = 0x32000;
+    enum USER_STACK_SIZE       = 0x32000;
     enum MIN_PRIORITY          = 10;
     enum DEFAULT_PRIORITY      = 5;
     enum DEFAULT_QUANTUM       = 5;
@@ -124,8 +124,8 @@ final class Thread {
         m_deadChildLock   = new Mutex();
         m_messages        = new LinkedList!(IPCMessage *)();
         m_node            = new LinkedListNode!Thread(this);
-        m_kernelStack     = new ulong[STACK_SIZE];
-        m_userStack       = new ulong[USER_STACK_SIZE];//TODO: ParentProcess.AllocUserStack();
+        m_kernelStack     = new ulong[STACK_SIZE / 8];
+        m_userStack       = new ulong[USER_STACK_SIZE / 8];//TODO: ParentProcess.AllocUserStack();
         m_syscallStack[1] = cast(ulong)m_kernelStack.ptr + STACK_SIZE / 2;
 
         m_savedState.SSEInt.Create();
@@ -219,8 +219,6 @@ final class Thread {
     }
 
     private static void NewThread() {
-        Log("new thread lalala, number");
-
         with (Task.CurrentThread) {
             Port.Cli();
             DeviceManager.EOI(0);
