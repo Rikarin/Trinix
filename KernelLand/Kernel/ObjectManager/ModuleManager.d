@@ -96,13 +96,15 @@ abstract final class ModuleManager {
             ModuleDef* mod = cast(ModuleDef *)i;
             
             if (mod.Magic == MODULE_MAGIC) {
-                Log("Name: %s, Identifier: %s", mod.Name, mod.Identifier);
-                Log("Version: %d, Flags: %d", mod.Version, mod.Flags);
+                Log("Name: %s", mod.Name);
+                Log(" - Identifier: %s", mod.Identifier);
+                Log(" - Version: %d", mod.Version);
+                Log(" - Flags: %d", mod.Flags);
 
                 if (mod.Dependencies) {
-                    Log("Dependencies: ");
+                    Log(" - Dependencies: ");
                     foreach (x; mod.Dependencies)
-                        Log(" - Name: %s", x.Name);
+                        Log("    - %s", x.Name);
                 }
 
                 m_builtinModules.Add(*mod);

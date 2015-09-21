@@ -42,6 +42,7 @@
  *      o Exit thready
  *      o Implement GC
  *      o Fix \n in Logger
+ *      o Make debug log like Debug.Log(LOG_WARNING, "some text");
  */
 
 module Core.Main;
@@ -111,17 +112,18 @@ extern(C) void KernelMain() {
     //import Modules.Terminal.VTY.Main;
    // new VTY();
 
-    debug VFS.PrintTree(VFS.Root);
+    //debug VFS.PrintTree(VFS.Root);
 
+ //   Log("spustam prvy proces");
     /* Copy current process into new one */
-    //auto p = new Process(&test_lala);
-    //p.Start();
+  //  auto p = new Process(&test_lala);
+  //  p.Start();
 
     /* Copy curent thread into new one under the same process */
-    Log("spustam prvu threadu");
-    auto t = new Thread(&test_lala);
-    t.Start();
-    Log("prva threada bola spustena");
+    //Log("spustam prvu threadu");
+    //auto t = new Thread(&test_lala);
+    //t.Start();
+  //  Log("prva threada bola spustena");
 
     Log("Running, Time = %d", Time.Uptime);
     while (true) {
@@ -144,6 +146,7 @@ void RemapPIC() {
 
 void test_lala() {
     Log("The new thread %d", Task.CurrentThread.ID);
+    Log("The new process %d", Task.CurrentProcess.ID);
 
     while (true) {
         asm {

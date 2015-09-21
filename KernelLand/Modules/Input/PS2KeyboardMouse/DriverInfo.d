@@ -35,7 +35,7 @@ extern(C) const ModuleDef _DriverInfo_Input_PS2KeyboardMouse = {
     Architecture: ModuleArch.x86_64,
     Flags: 0x00,
     Version: 0x01,
-    Name: "PS2 Keyboard/Mouse Input Module",
+    Name: "PS2 Input Module",
     Identifier: "com.modules.Input.PS2KeyboardMouse",
     Initialize: &PS2KeyboardMouse.Initialize
 };
@@ -49,6 +49,7 @@ extern(C) const ModuleDef _DriverInfo_Input_PS2Keyboard = {
     Name: "PS2 Keyboard Input Module",
     Identifier: "com.modules.Input.PS2Keyboard",
     Initialize: &PS2Keyboard.Initialize,
+    Finalize: &PS2Keyboard.Finalize,
     Dependencies: [
         {"com.modules.Input.PS2KeyboardMouse", []},
         {"com.modules.Input.Keyboard", []}
@@ -64,6 +65,7 @@ extern(C) const ModuleDef _DriverInfo_Input_PS2Mouse = {
     Name: "PS2 Mouse Input Module",
     Identifier: "com.modules.Input.PS2Mouse",
     Initialize: &PS2Mouse.Initialize,
+    Finalize: &PS2Mouse.Finalize,
     Dependencies: [
         {"com.modules.Input.PS2KeyboardMouse", []},
         {"com.modules.Input.Mouse", []}

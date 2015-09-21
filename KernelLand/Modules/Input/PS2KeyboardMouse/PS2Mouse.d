@@ -25,52 +25,65 @@ module Modules.Input.PS2KeyboardMouse.PS2Mouse;
 
 import ObjectManager;
 
+import Modules.Input.Mouse;
+
 
 static class PS2Mouse {
-    private enum Sensitivity = 1;
+    private enum {
+        SENSITIVITY = 1,
+        NUM_AXIES   = 2,
+        NUM_BUTTONS = 5
+    }
+
     package __gshared void function() EnableMouse;
 
-    private __gshared byte[4] _bytes;
-    private __gshared int _cycle;
+    private __gshared byte[4] m_bytes;
+    private __gshared int m_cycle;
+    private __gshared Mouse m_mouse;
 
     static ModuleResult Initialize(string[] args) {
-        //TODO: in mouse module call function "create instance"
-        //gpPS2Mouse_Handle = Mouse_Register("PS2Mouse", NUM_AXIES, NUM_BUTTONS);
+        m_mouse = Mouse.CreateInstance("PS2Mouse", NUM_AXIES, NUM_BUTTONS);
         EnableMouse();
 
         return ModuleResult.Successful;
     }
 
+    static ModuleResult Finalize() {
+        delete m_mouse;
+
+        return ModuleResult.Successful;
+    }
+
     package static void Handler(byte code) {
-        _bytes[_cycle] = code;
+        m_bytes[m_cycle] = code;
 
-        if (!_cycle && !(_bytes[0] & 0x08))
+        if (!m_cycle && !(m_bytes[0] & 0x08))
             return;
 
-        if (++_cycle < 3)
+        if (++m_cycle < 3)
             return;
 
-        _cycle = 0;
-        if (_bytes[0] & 0xC0)
+        m_cycle = 0;
+        if (m_bytes[0] & 0xC0)
             return;
             
-        if (_bytes[0] & 0x10)
-            _bytes[1] = cast(byte)-(256 - _bytes[1]);
+        if (m_bytes[0] & 0x10)
+            m_bytes[1] = cast(byte)-(256 - m_bytes[1]);
             
-        if (_bytes[0] & 0x10)
-            _bytes[2] = cast(byte)-(256 - _bytes[2]);
-        _bytes[2] = -_bytes[2];
+        if (m_bytes[0] & 0x10)
+            m_bytes[2] = cast(byte)-(256 - m_bytes[2]);
+        m_bytes[2] = -m_bytes[2];
 
-        byte[2] b;
-        b[0] = _bytes[1] * Sensitivity;
-        b[1] = _bytes[2] * Sensitivity;
+        int[2] b;
+        b[0] = m_bytes[1] * SENSITIVITY;
+        b[1] = m_bytes[2] * SENSITIVITY;
 
         // Apply scaling
         // TODO: Apply a form of curve to the mouse movement (dx*log(dx), dx^k?)
         // TODO: Independent sensitivities?
         // TODO: Disable acceleration via a flag?
 
-        // TODO: Scroll wheel?  
-        //Mouse_HandleEvent(gpPS2Mouse_Handle, (flags & 7), d_accel);
+        // TODO: Scroll wheel?
+        m_mouse.HandleEvent(m_bytes[0] & 7, b);
     }
 }

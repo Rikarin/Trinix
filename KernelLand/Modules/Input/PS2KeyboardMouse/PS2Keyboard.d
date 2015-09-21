@@ -23,17 +23,27 @@
 
 module Modules.Input.PS2KeyboardMouse.PS2Keyboard;
 
+import Diagnostics;
 import ObjectManager;
+
+import Modules.Input.Keyboard;
+import Modules.Input.PS2KeyboardMouse;
 
 
 static class PS2Keyboard {
-    private __gshared bool _up;
-    private __gshared int _layer;
-
+    private __gshared bool m_up;
+    private __gshared int m_layer;
+    private __gshared Keyboard m_kb;
 
     static ModuleResult Initialize(string[] args) {
-        //TODO: in keyboard module call function "create instance"
-        //gPS2Kb_Info = Keyboard_CreateInstance(KEYSYM_RIGHTGUI, "PS2Keyboard");
+        m_kb = Keyboard.CreateInstance("PS2Keyboard", Keysyms.KEYSYM_RIGHTGUI);
+
+        return ModuleResult.Successful;
+    }
+
+    static ModuleResult Finalize() {
+        delete m_kb;
+
         return ModuleResult.Successful;
     }
 
@@ -42,25 +52,37 @@ static class PS2Keyboard {
             return;
 
         if (code == 0xE0) {
-            _layer = 1;
+            m_layer = 1;
             return;
         }
 
         if (code == 0xE1) {
-            _layer = 2;
+            m_layer = 2;
             return;
         }
 
         if (code & 0x80) {
             code &= 0x7F;
-            _up = true;
+            m_up = true;
         }
 
-        //TODO: call Keyboard module... + some shit
+        int hidCode = GP101ToHID[m_layer][code];
+        if (!hidCode) {
+            Debugger.Log(LogLevel.Error, "PS2Keyboard", "Unknown code %d at layer %d", code, m_layer);
+        } else if (hidCode == -1) {
+            /* Fake shift (ignored) */
+        } else {
+            if (m_up)
+                m_kb.HandleEvent((1 << 31) | hidCode);
+            else
+                m_kb.HandleEvent((0 << 31) | hidCode);
+        }
+
+        m_up    = 0;
+        m_layer = 0;
     }
 
     package static void UpdateLED() {
-        import Core;
-        Log.WriteLine("TODO: Fix Keyboard LEDs..."); //TODO
+        Debugger.Log(LogLevel.Notice, "PS2Keyboard", "LED is not implemented yet!");
     }
 }

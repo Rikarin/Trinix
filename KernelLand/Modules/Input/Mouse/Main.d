@@ -29,15 +29,28 @@ import ObjectManager;
 
 static class Mouse {
     static ModuleResult Initialize(string[] args) {
-        DeviceManager.DevFS.Create(FSNode.NewAttributes("mouse"));
+       // DeviceManager.DevFS.Create(FSNode.NewAttributes("mouse"));
 
         return ModuleResult.Successful;
     }
 
     static ModuleResult Finalize() {
-        auto del = DeviceManager.DevFS["mouse"];
-        delete del;
+       // auto del = DeviceManager.DevFS["mouse"];
+        //delete del;
 
         return ModuleResult.Successful;
+    }
+
+    ~this() { //remove instance
+
+    }
+
+    static Mouse CreateInstance(string identifier, int numButtons, int numAxis) {
+        return new Mouse();
+    }
+
+    static void HandleEvent(int buttonState, int[] axisDeltas) {
+        import Core;
+        Log("mouse moved buttons = %d, x = %d, y = %d", buttonState, axisDeltas[0], axisDeltas[1]);
     }
 }

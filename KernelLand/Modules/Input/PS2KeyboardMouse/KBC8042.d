@@ -29,12 +29,11 @@ import Modules.Input.PS2KeyboardMouse.PS2Mouse;
 import Modules.Input.PS2KeyboardMouse.PS2Keyboard;
 
 
-static class KBC8042 {
+static abstract class KBC8042 {
     package static void Initialize() {
         DeviceManager.RequestIRQ(&KeyboardHandler, 1);
         DeviceManager.RequestIRQ(&MouseHandler, 12);
 
-        //some hacks...
         byte tmp = Port.Read(0x61);
         Port.Write(0x61, tmp | 0x80);
         Port.Write(0x61, tmp & 0x7F);
@@ -42,10 +41,10 @@ static class KBC8042 {
     }
 
     package static void SetLED(byte state) {
-        while (Port.Read(0x64) & 2) {}
+        while (Port.Read(0x64) & 2) { }
         Port.Write(0x60, 0xED);
 
-        while (Port.Read(0x64) & 2) {}
+        while (Port.Read(0x64) & 2) { }
         Port.Write(0x60, state);
     }
 
@@ -59,26 +58,25 @@ static class KBC8042 {
         SendDataAlt(0x60);
         SendData(status);
 
-        //TODO: SendMouseCommand(0xF6); ???
-        // Enable packets
+        /* Enable packets */
         SendMouseCommand(cast(byte)0xF4);
     }
 
     private static void SendDataAlt(byte data) {
         int timeout = 100000;
-        while (timeout-- && Port.Read(0x64) & 2) {}
+        while (timeout-- && Port.Read(0x64) & 2) { }
         Port.Write(0x64, data);
     }
 
     private static void SendData(byte data) {
         int timeout = 100000;
-        while (timeout-- && Port.Read(0x64) & 2) {}
+        while (timeout-- && Port.Read(0x64) & 2) { }
         Port.Write(0x60, data);
     }
 
     private static byte ReadData() {
         int timeout = 100000;
-        while (timeout-- && !(Port.Read(0x64) & 1)) {}
+        while (timeout-- && !(Port.Read(0x64) & 1)) { }
         return Port.Read(0x60);
     }
 
