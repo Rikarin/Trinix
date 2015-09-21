@@ -113,7 +113,7 @@ abstract final class Logger {
         ptr += nWidth;
     }
 
-    private static long ParseString(char[] buffer, string format, TypeInfo[] _arguments, va_list _argptr) {
+    static long ParseString(char[] buffer, string format, TypeInfo[] _arguments, va_list _argptr) {
         int ptr, a;
 
         for (int i = 0, j = 0; i < format.length; i++) {
@@ -204,7 +204,6 @@ abstract final class Logger {
         if (m_iterator > 80 * 25) {
 			for (int i = 0; i < m_iterator - 80; i++)
 				m_display[i] = m_display[i + 80];
-            //TODO: use this againt m_display[0 .. m_iterator - 80] = m_display[80 .. m_iterator];
 			
             m_display[m_iterator - 80 .. m_iterator] = cast(DisplayChar)0;
             m_iterator -= 80;
@@ -234,146 +233,3 @@ abstract final class Logger {
 }
 
 alias Log = Logger.WriteLine;
-
-
-/*
-abstract final class Log {
-    private __gshared int _iterator;
-    private __gshared int _padding;
-
-
-    static void WriteJSON(T...)(T args) {
-        bool first;
-        foreach (x; args) {
-            alias A = typeof(x);
-
-            static if (is(A == string)) {
-                if (x == "{" || x == "[" || x == "}" || x == "]") {
-                    if (_padding && (x == "}" || x == "]"))
-                        _padding--;
-
-                    version (LogUserFriendly)
-                        if (!first)
-                            foreach (i; 0 .. _padding * 4)
-                                Write(" ");
-
-                    Write(x);
-
-                    version (LogUserFriendly)
-                        NewLine();
-
-                    if (x == "{" || x == "[")
-                        _padding++;
-                    continue;
-                }
-            } else static if (is(A == char)) {
-                if (x == '{' || x == '[' || x == '}' || x == ']') {
-                    if (_padding && (x == '}' || x == ']'))
-                        _padding--;
-
-                    version (LogUserFriendly)
-                        if (!first)
-                            foreach (i; 0 .. _padding * 4)
-                                Write(" ");
-
-                    Write(x);
-
-                    version (LogUserFriendly)
-                        NewLine();
-
-                    if (x == '{' || x == '[')
-                        _padding++;
-                    continue;
-                }
-            }
-
-            if (!first) {
-                version (LogUserFriendly)
-                    foreach (i; 0 .. _padding * 4)
-                        Write(" ");
-
-                Write("\"", x, "\": ");
-                first = true;
-            } else {
-                Write("\"", x, "\",");
-
-                version (LogUserFriendly)
-                    NewLine();
-                first = false;
-            }
-        }
-    }
-
-    static void Write(T...)(T args) {
-        foreach (x; args) {
-            alias A = typeof(x);
-
-            static if (is(A == struct) || is(A == class) || is(A == union) || is(A == interface))
-                ParseBlock(x);
-            else static if (is(A == string) || is(A == const char[]) || is(A == char[]))
-                Put(cast(string)x);
-            else static if (is(A == char))
-                Put(cast(string)(cast(char *)&x)[0 .. 1]);
-            else static if (is(A == long)  || is(A == ulong)  || is(A == int)  || is(A == uint) ||
-                            is(A == short) || is(A == ushort) || is(A == byte) || is(A == ubyte))
-                PrintNum(x);
-            else static if (is(A == enum))
-                PrintNum(cast(ulong)x);
-            else static if (is(A == bool))
-                Put(x ? "True" : "False");
-            else static if (is(typeof({ foreach(elem; T.init) {} }))) {
-                Write('[', x[0]);
-                foreach (y; x[1 .. $])
-                    Write(", ", y);
-                Put("]");
-            } else
-                Write("Unknown Type: ", A.stringof);
-        }
-    }
-
-    private static void ParseBlock(T)(T args) {
-        auto values = args.tupleof;
-
-        WriteJSON('{');
-        foreach (index, value; values)
-            WriteJSON(T.tupleof[index].stringof, value);
-        WriteJSON('}');
-    }
-
-    private abstract final static class SerialPort {
-        private enum port = 0x3F8;
-        
-        private static void Open() {
-            Port.Write!ubyte(cast(short)(port + 1), 0x00);
-            Port.Write!ubyte(cast(short)(port + 3), 0x80);
-            Port.Write!ubyte(cast(short)(port + 0), 0x03);
-            Port.Write!ubyte(cast(short)(port + 1), 0x00);
-            Port.Write!ubyte(cast(short)(port + 3), 0x03);
-            Port.Write!ubyte(cast(short)(port + 2), 0xC7);
-            Port.Write!ubyte(cast(short)(port + 4), 0x0B);
-        }
-        
-        private static bool Recieved() {
-            return (Port.Read!ubyte(cast(short)(port + 5)) & 1) != 0;
-        }
-        
-        private static bool IsTransmitEmpty() {
-            return (Port.Read(cast(short)(port + 5)) & 0x20) != 0;
-        }
-        
-        private static void Write(char c) {
-            while (!IsTransmitEmpty()) {}
-            Port.Write!ubyte(port, c);
-        }
-        
-        private static void Write(string text) {
-            foreach (x; text)
-                Write(x);
-        }
-        
-        private static char Read() {
-            return Recieved() ? Port.Read!ubyte(port) : 0;
-        }
-    }
-}
-*/

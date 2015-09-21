@@ -43,7 +43,8 @@
  *      o Implement GC
  *      o Fix \n in Logger
  *      o Make debug log like Debug.Log(LOG_WARNING, "some text");
- *      o Fix memory leak in FSNody by StringWriter
+ *      o Fix memory leak in FSNode by StringWriter
+ *      o Make debugger soft in C#
  */
 
 module Core.Main;
@@ -106,8 +107,8 @@ extern(C) void KernelMain() {
     ModuleManager.LoadBuiltins();
     //LoadModules();
 
-    VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
-              VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");
+  //  VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
+    //          VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");
 
 
     //import Modules.Terminal.VTY.Main;

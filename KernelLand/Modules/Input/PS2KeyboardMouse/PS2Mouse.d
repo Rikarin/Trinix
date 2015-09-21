@@ -26,6 +26,7 @@ module Modules.Input.PS2KeyboardMouse.PS2Mouse;
 import ObjectManager;
 
 import Modules.Input.Mouse;
+import Modules.Input.PS2KeyboardMouse;
 
 
 static class PS2Mouse {
@@ -42,7 +43,7 @@ static class PS2Mouse {
     private __gshared Mouse m_mouse;
 
     static ModuleResult Initialize(string[] args) {
-        m_mouse = Mouse.CreateInstance("PS2Mouse", NUM_AXIES, NUM_BUTTONS);
+        m_mouse = new Mouse("PS2Mouse", _DriverInfo_Input_PS2Mouse.Version, NUM_AXIES, NUM_BUTTONS);
         EnableMouse();
 
         return ModuleResult.Successful;

@@ -51,7 +51,7 @@ abstract final class VFS {
 
         DeviceManager.DevFS = new DirectoryNode(system, FSNode.NewAttributes("Devices"));
         DevFS.Mount(DeviceManager.DevFS);
-        TmpFS.Mount(new DirectoryNode(system, FSNode.NewAttributes("Temporary")));
+        TmpFS.Mount(new DirectoryNode(system, FSNode.NewAttributes("Temp")));
 
         new NullDev(DeviceManager.DevFS, "null");
         new ZeroDev(DeviceManager.DevFS, "zero");
@@ -156,7 +156,7 @@ abstract final class VFS {
         return drv.Mount(mountpoint, partition);
     }
 
-    /* TODO: implenet flags... */
+    /* TODO: implement flags... */
     static void MapIn(FSNode node, v_addr start, size_t length, ulong offset) {
         for (v_addr i = start; i < start + length; i += Paging.PAGE_SIZE)
             VirtualMemory.KernelPaging.AllocFrame(i, AccessMode.DefaultKernel);

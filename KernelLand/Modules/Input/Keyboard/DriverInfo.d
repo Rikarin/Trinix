@@ -34,5 +34,5 @@ extern(C) const ModuleDef _DriverInfo_Input_Keyboard = {
     Flags: 0x00,
     Version: 0x01,
     Name: "Keyboard Input Module",
-    Identifier: "com.modules.Input.Keyboard",
+    Identifier: "com.modules.Input.Keyboard"
 };

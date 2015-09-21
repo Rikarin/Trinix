@@ -25,6 +25,8 @@ module Diagnostics.Debugger;
 
 static import Core.Logger;
 
+import core.vararg;
+
 
 enum LogLevel {
     Emergency = 1,    /* System is unusable */
@@ -60,9 +62,11 @@ static abstract class Debugger {
                 level /= 2;
             } while (level);
 
-            Core.Logger.Log("[ %s ] - %s: %s", m_logLevelNames[l], category, message);
+            char[256] buffer;
+            long len = Core.Logger.Logger.ParseString(buffer, message, _arguments, _argptr);
+            Core.Logger.Logger.WriteLine("[ %s ] - %s: %s", m_logLevelNames[l], category, cast(string)buffer[0 .. len]);
+
             //TODO: do something useful
-            //TODO: move ParseString here and let the Log take varargs
             //TODO: send messages via COM port to the debugger
         }
     }

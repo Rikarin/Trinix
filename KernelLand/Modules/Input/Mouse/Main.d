@@ -23,34 +23,23 @@
 
 module Modules.Input.Mouse.Main;
 
-import VFSManager;
 import ObjectManager;
+import SyscallManager;
+
+import Modules.Input.Mouse;
 
 
-static class Mouse {
-    static ModuleResult Initialize(string[] args) {
-       // DeviceManager.DevFS.Create(FSNode.NewAttributes("mouse"));
+static class Mouse : Resource {
+    this(string identifier, int ver, int numButtons, int numAxis) {
+        static const CallTable[] callTable = [
 
-        return ModuleResult.Successful;
-    }
+        ];
 
-    static ModuleResult Finalize() {
-       // auto del = DeviceManager.DevFS["mouse"];
-        //delete del;
-
-        return ModuleResult.Successful;
-    }
-
-    ~this() { //remove instance
-
-    }
-
-    static Mouse CreateInstance(string identifier, int numButtons, int numAxis) {
-        return new Mouse();
+        super(DeviceType.Input, identifier, ver, callTable);
     }
 
     static void HandleEvent(int buttonState, int[] axisDeltas) {
         import Core;
-        Log("mouse moved buttons = %d, x = %d, y = %d", buttonState, axisDeltas[0], axisDeltas[1]);
+        Log("mouse moved! buttons = %d, x = %d, y = %d", buttonState, axisDeltas[0], axisDeltas[1]);
     }
 }

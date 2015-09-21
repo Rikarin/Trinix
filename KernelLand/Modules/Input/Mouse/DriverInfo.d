@@ -34,7 +34,5 @@ extern(C) const ModuleDef _DriverInfo_Input_Mouse = {
     Flags: 0x00,
     Version: 0x01,
     Name: "Mouse Input Module",
-    Identifier: "com.modules.Input.Mouse",
-    Initialize: &Mouse.Initialize,
-    Finalize: &Mouse.Finalize
+    Identifier: "com.modules.Input.Mouse"
 };

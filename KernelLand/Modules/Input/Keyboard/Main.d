@@ -38,11 +38,7 @@ class Keyboard : Resource {
         ];
 
         super(DeviceType.Input, identifier, ver, callTable);
-        Debugger.Log(LogLevel.Info, "Keyboard", "Keyboard %s (version=%d) was registered", identifier, ver);
-    }
-
-    ~this() { //remove instance
-
+        Debugger.Log(LogLevel.Info, "Keyboard", "%s (version: %d) was registered", identifier, ver);
     }
 
     void HandleEvent(int hidCode) {
