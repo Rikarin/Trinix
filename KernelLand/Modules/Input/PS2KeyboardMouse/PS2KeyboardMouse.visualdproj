@@ -819,7 +819,9 @@
  <Folder name="PS2KeyboardMouse">
   <File path="DriverInfo.d" />
   <File path="KBC8042.d" />
+  <File path="KeyboardTransTab.d" />
   <File path="Main.d" />
+  <File path="package.d" />
   <File path="PS2Keyboard.d" />
   <File path="PS2Mouse.d" />
  </Folder>

@@ -818,6 +818,7 @@
  </Config>
  <Folder name="Keyboard">
   <File path="DriverInfo.d" />
+  <File path="Keysyms.d" />
   <File path="Main.d" />
   <File path="package.d" />
  </Folder>

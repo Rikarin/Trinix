@@ -861,6 +861,10 @@
    <File path="FileSystem\TmpFS.d" />
    <File path="FileSystem\ZeroDev.d" />
   </Folder>
+  <Folder name="Diagnostics">
+   <File path="Diagnostics\Debugger.d" />
+   <File path="Diagnostics\package.d" />
+  </Folder>
   <Folder name="Library">
    <File path="Library\Array.d" />
    <File path="Library\BitArray.d" />
