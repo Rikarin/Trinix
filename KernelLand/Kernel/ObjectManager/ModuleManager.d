@@ -153,7 +153,7 @@ abstract final class ModuleManager {
             InitModule(dep.Value, x.Args);
         }
 
-        ModuleResult ret = mod.Initialize(args);
+        ModuleResult ret = mod.Initialize !is null ? mod.Initialize(args) : ModuleResult.Successful;
         m_loadingModules.Remove(mod);
 
         if (ret != ModuleResult.Successful) {

@@ -35,6 +35,4 @@ extern(C) const ModuleDef _DriverInfo_Input_Keyboard = {
     Version: 0x01,
     Name: "Keyboard Input Module",
     Identifier: "com.modules.Input.Keyboard",
-    Initialize: &Keyboard.Initialize,
-    Finalize: &Keyboard.Finalize
 };

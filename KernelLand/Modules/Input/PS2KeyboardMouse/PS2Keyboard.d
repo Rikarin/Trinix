@@ -36,7 +36,7 @@ static class PS2Keyboard {
     private __gshared Keyboard m_kb;
 
     static ModuleResult Initialize(string[] args) {
-        m_kb = Keyboard.CreateInstance("PS2Keyboard", Keysyms.KEYSYM_RIGHTGUI);
+        m_kb = new Keyboard("PS2Keyboard", _DriverInfo_Input_PS2Keyboard.Version, Keysyms.KEYSYM_RIGHTGUI);
 
         return ModuleResult.Successful;
     }

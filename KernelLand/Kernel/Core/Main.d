@@ -31,7 +31,7 @@
  *      o spravit to iste jak je pre VFS.AddDriver ci co ale pre Node zariadenia.
  *      o Aby sa z modulu dali pridat veci ako je pipe, pty, vty, atd...
  *      o documentation, documentation, documentation, ...
- *      o dokoncit keyboard a mouse driver.
+ *   -- o dokoncit keyboard a mouse driver.
  *      o spravit driver na PCI, pipedev, serial port...
  *      o parse command line
  *      o framework bundle automatic creator
@@ -43,6 +43,7 @@
  *      o Implement GC
  *      o Fix \n in Logger
  *      o Make debug log like Debug.Log(LOG_WARNING, "some text");
+ *      o Fix memory leak in FSNody by StringWriter
  */
 
 module Core.Main;

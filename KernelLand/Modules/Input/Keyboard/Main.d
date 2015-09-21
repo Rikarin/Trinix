@@ -24,6 +24,7 @@
 module Modules.Input.Keyboard.Main;
 
 import Core;
+import Diagnostics;
 import ObjectManager;
 import SyscallManager;
 
@@ -31,47 +32,20 @@ import Modules.Input.Keyboard;
 
 
 class Keyboard : Resource {
-  /*  package static const ResouceCallTable m_rcs = {
-        "com.modules.Input.Keyboard",
-        &StaticCallback
-    };
-    For static calls.
-    Need to by registered by ResourceManager.AddCallTable(FSNode.m_rcs);
-    */
-
-
-    protected this() {
+    this(string identifier, long ver, int maxSym) {
         static const CallTable[] callTable = [
         
         ];
 
-        super(_DriverInfo_Input_Keyboard, callTable);
+        super(DeviceType.Input, identifier, ver, callTable);
+        Debugger.Log(LogLevel.Info, "Keyboard", "Keyboard %s (version=%d) was registered", identifier, ver);
     }
 
     ~this() { //remove instance
 
     }
 
-
-    static ModuleResult Initialize(string[] args) {
-        Log("TODO Keyboard init");
-        return ModuleResult.Successful;
-    }
-    
-    static ModuleResult Finalize() {
-        Log("TODO Keyboard fin");
-        return ModuleResult.Error;
-    }
-
-    static Keyboard CreateInstance(string identifier, int maxSym) {
-        return new Keyboard();
-    }
-
     void HandleEvent(int hidCode) {
         Log("Hit %d", hidCode);
     }
-
-   /* static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
-        return -1;
-    }*/
 }
