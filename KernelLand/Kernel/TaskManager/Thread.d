@@ -25,6 +25,7 @@ module TaskManager.Thread;
 
 import Core;
 import Library;
+import Diagnostics;
 import TaskManager;
 import Architecture;
 import ObjectManager;
@@ -64,12 +65,11 @@ struct IPCMessage {
 
 
 final class Thread {
-    enum STACK_SIZE            = 0x32000;
-    enum USER_STACK_SIZE       = 0x32000;
-    enum MIN_PRIORITY          = 10;
-    enum DEFAULT_PRIORITY      = 5;
-    enum DEFAULT_QUANTUM       = 5;
-    //private enum THREAD_RETURN = 0xDEADC0DE; //TODO: deprecated, thread will not return integer anymore!
+    enum STACK_SIZE       = 0x32000;
+    enum USER_STACK_SIZE  = 0x32000;
+    enum MIN_PRIORITY     = 10;
+    enum DEFAULT_PRIORITY = 5;
+    enum DEFAULT_QUANTUM  = 5;
 
     private ulong m_id;
     private string m_name;
@@ -84,21 +84,24 @@ final class Thread {
     private LinkedList!Thread m_lastDeadChild;
     private Mutex m_deadChildLock;
 
+    /* Stacks */
     private ulong[] m_kernelStack;
     private ulong[2] m_syscallStack;
     private ulong[] m_userStack;
     private TaskState m_savedState;
 
-    /* Tento shit sa pouziva vtedy ked na threadu vyskoci nejaky exception */
+    /* Exception handler */
     private long m_curFaultNum;
-    private void* m_faultHandler; //TODO: pouzit nejaku lepsiu sracku
+    private void* m_faultHandler;
 
-    private SignalType m_pendingSignal;
-    private LinkedList!(IPCMessage *) m_messages;
-
+    /* CPU quantum */
     private int m_quantum;
     private int m_remaining;
     //package int _curCPU;
+
+    /* IPC */
+    private SignalType m_pendingSignal;
+    private LinkedList!(IPCMessage *) m_messages;
 
     private ulong m_eventState;
     private void* m_waitPointer; //WTF??
@@ -135,16 +138,21 @@ final class Thread {
 
     this(void delegate() ThreadStart) {
         this(Task.CurrentProcess);
+
+        m_parent = Task.CurrentThread;
     }
 
     this(void function() ThreadStart) {
         this(Task.CurrentProcess);
 
+        m_parent         = Task.CurrentThread;
         m_kernelStack[0] = cast(ulong)ThreadStart;
     }
 
     package this(Process process, void delegate() ThreadStart) {
         this(process);
+
+        //TODO
     }
 
     package this(Process process, void function() ThreadStart) {
@@ -215,7 +223,7 @@ final class Thread {
         m_savedState.RIP = cast(void *)&NewThread;
         AddActive();
 
-        Log("Thread Start %x", cast(ulong)m_savedState.RSP);
+        Debugger.Log(LogLevel.Debug, "Thread", "Start at %x", cast(ulong)m_savedState.RSP);
     }
 
     private static void NewThread() {
@@ -256,6 +264,7 @@ final class Thread {
         }
     }
 
+    /* WTF is this??? ... */
 /*  ulong WaitTID(ulong tid, ref ThreadState status) {
         if (tid == -1) {
             ulong events = WaitEvents(ThreadEvent.DeadChild);
@@ -326,7 +335,7 @@ final class Thread {
                     Task.Threads.Remove(m_node);
 
                 m_remaining = 0;
-                m_quantum = 0;
+                m_quantum   = 0;
                 break;
 
             case ThreadState.Zombie:
@@ -334,7 +343,7 @@ final class Thread {
                 return;
 
             default:
-                Log("Threads: Kill - unsupported thread status");
+                Debugger.Log(LogLevel.Emergency, "Thread", "Threads: Kill - unsupported thread state %d", cast(long)m_state);
         }
 
         m_retStatus = status;
@@ -436,20 +445,13 @@ final class Thread {
 
     void Fault(long number) {
         if (m_faultHandler is null) {    /* Panic */
-            //TODO: fix me pls Kill(-1);
-
-            Port.Sti();
-            Port.Halt();
-            return;
+            Debugger.Log(LogLevel.Debug, "Thread", "Panic was thrown in thread #%d", m_id);
+            Kill(-1);
         }
 
         if (m_curFaultNum) {             /* Double fault */
-            Log("Threads: Fault: Double fault...");
-            //Kill(-1);
-
-            Port.Sti();
-            Port.Halt();
-            return;
+            Debugger.Log(LogLevel.Debug, "Thread", "Double fault was thrown in thread #%d", m_id);
+            Kill(-1);
         }
 
         m_curFaultNum = number;
@@ -457,12 +459,10 @@ final class Thread {
     }
 
     void SegFault(void* address) {
-        Log("Threads: Fault: segment fault...");
+        Debugger.Log(LogLevel.Debug, "Thread", "Segment fault was thrown in thread #%d at address: %x", m_id, cast(ulong)address);
+        //TODO: dump memory MM_DumpTables
         Fault(1);
     }
-
-
-
 
     /* Signals */
     void PostSignal(SignalType signal) {
@@ -470,9 +470,6 @@ final class Thread {
         PostEvent(ThreadEvent.signal);
     }
     //TODO
-
-
-
 
     /* Events */
     void PostEvent(ulong eventMask) {

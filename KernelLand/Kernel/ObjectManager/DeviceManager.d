@@ -94,4 +94,20 @@ abstract final class DeviceManager {
         
         Port.Write(0x20, 0x20);
     }
+
+    static void DumpStack(ref InterruptStack stack) {
+        Log(`===> Interrupt -.-"`);
+        Log("IRQ = %16x | RIP = %16x", stack.IntNumber, stack.RIP);
+        Log("RAX = %16x | RBX = %16x", stack.RAX, stack.RBX);
+        Log("RCX = %16x | RDX = %16x", stack.RCX, stack.RDX);
+        Log("RDI = %16x | RSI = %16x", stack.RDI, stack.RSI);
+        Log("RSP = %16x | RBP = %16x", stack.RSP, stack.RBP);
+        Log(" R8 = %16x |  R9 = %16x", stack.R8,  stack.R9);
+        Log("R10 = %16x | R11 = %16x", stack.R10, stack.R11);
+        Log("R12 = %16x | R13 = %16x", stack.R12, stack.R13);
+        Log("R14 = %16x | R15 = %16x", stack.R14, stack.R15);
+        Log(" CS = %16x |  SS = %16x", stack.CS,  stack.SS);
+        Log("Error: %16x", stack.ErrorCode);
+        Log("Flags: %16x", stack.Flags);
+    }
 }

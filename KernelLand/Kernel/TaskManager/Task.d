@@ -25,6 +25,7 @@ module TaskManager.Task;
 
 import Core; //TODO: logs...
 import Library;
+import Diagnostics;
 import TaskManager;
 import Architecture;
 import ObjectManager;
@@ -84,15 +85,14 @@ abstract final class Task {
         Process proc    = Process.Initialize();
         m_currentThread = proc.Threads.First.Value;
 
-        //TODO: init idle process here...
         /* Idle task */
-        /*  Task.IdleTask      = new Thread(t);
-        with (Task.IdleTask) {
-        Name           = "Idle Task";
-        Priority       = MIN_PRIORITY;
-        Quantum        = 1;
-        Start(&Task.Idle, null);
-        }*/
+        Thread idle  = new Thread(&Task.Idle);
+        with (idle) {
+            Name     = "Idle Task";
+            Priority = MIN_PRIORITY;
+            Quantum  = 1;
+            Start();
+        }
     }
 
     static void Finalize() {
@@ -181,12 +181,8 @@ abstract final class Task {
     }
 
     package static void CallFaultHandler(Thread thread) {
-        Log("Threads: Fault %d", thread.CurrentFaultNum);
-        //TODO: thread.Kill(-1);
-        
-        Port.Sti();
-        Port.Halt();
-        return;
+        Debugger.Log(LogLevel.Debug, "Task", "Thread fault %d in thread %d", thread.CurrentFaultNum, thread.ID);
+        thread.Kill(-42); //TODO: call the handler saved in m_faultHandler
     }
 
     package static void Idle() {

@@ -55,9 +55,9 @@ abstract class Resource {
         }
     }
 
-    @property long Handle()           { return m_id; }
-    @property ref DeviceType Type()   { return m_type; }
-    @property ref long Version()      { return m_version; }
+    @property long Handle()           { return m_id;         }
+    @property ref DeviceType Type()   { return m_type;       }
+    @property ref long Version()      { return m_version;    }
     @property ref string Identifier() { return m_identifier; }
 
     // Called from ResourceManager

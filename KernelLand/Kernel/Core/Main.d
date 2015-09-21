@@ -24,7 +24,7 @@
  *      o dokoncit VFS., co tam este chyba?... file..., syscally, static cally,
  *        acl,...
  *      o Dokoncit write/create/remove - spravit Ext2 driver!!!!
- *      o eventy, syscally, shared memory, rwlock, skontrolovat mutex/semafor
+ *      o syscally, shared memory, rwlock, skontrolovat mutex/semafor
  *      o kontrolu parametrov pri syscalloch (adresu atd)
  *      o ACLka do syscallov?
  *      o debugovat Heap... Obcas to pada na expande...
@@ -32,19 +32,20 @@
  *      o Aby sa z modulu dali pridat veci ako je pipe, pty, vty, atd...
  *      o documentation, documentation, documentation, ...
  *   -- o dokoncit keyboard a mouse driver.
- *      o spravit driver na PCI, pipedev, serial port...
+ *      o spravit driver na PCI, pipedev, serial port, ACPI...
  *      o parse command line
  *      o framework bundle automatic creator
  *      o Pridat nejaky protector ktory nedovoli allocovat ine bloky pamete okrem Free
  *      o opravit vsetky TODOcka
  *      o Implement multi CPU support
  *      o Implementovat statementy ako @trusted nothrow @safe atd...
- *      o Exit thready
+ *      o Exit thread - crt0 will call syscall(exit) at the end
  *      o Implement GC
  *      o Fix \n in Logger
- *      o Make debug log like Debug.Log(LOG_WARNING, "some text");
  *      o Fix memory leak in FSNode by StringWriter
  *      o Make debugger soft in C#
+ *      o Every resource should have their own ACL-need type
+ *        and every process must have access right for the specific ACL type to use it
  */
 
 module Core.Main;
@@ -122,10 +123,10 @@ extern(C) void KernelMain() {
   //  p.Start();
 
     /* Copy curent thread into new one under the same process */
-    //Log("spustam prvu threadu");
-    //auto t = new Thread(&test_lala);
-    //t.Start();
-  //  Log("prva threada bola spustena");
+    Log("spustam prvu threadu");
+    auto t = new Thread(&test_lala);
+    t.Start();
+    Log("prva threada bola spustena");
 
     Log("Running, Time = %d", Time.Uptime);
     while (true) {
