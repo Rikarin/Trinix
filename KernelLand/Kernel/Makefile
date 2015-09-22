@@ -53,16 +53,13 @@ IMPORTDIR := ../Import/
 IMPORT	  := $(shell find * -name "*.d")
 IMPORT    := $(addprefix $(IMPORTDIR), $(IMPORT))
 
-DOCDIR	  := ../APIdoc/
-DOC		  := $(patsubst %d,%html,$(shell find * -name "*.d"))
-DOC		  := $(addprefix $(DOCDIR), $(DOC))
+DOCFLAGS  := -D -Dd=../APIdoc/
 
-.PHONY: all clean install import apidoc xaxa
+.PHONY: all clean install import xaxa
 
 
 all:	$(BIN)
 import: $(IMPORT)
-apidoc: $(DOC)
 
 clean:
 	@$(RM) $(BIN) $(GZBIN) $(OBJDIR) $(BIN).dsm ../Linker.$(ARCH).map
@@ -76,12 +73,6 @@ $(IMPORTDIR)%.d: %.d
 	@echo --- Generating import $@
 	@$(MKDIR) $(dir $@)
 	@$(DD) $(DFLAGS) -c -fintfc -fintfc-file=$@ $< -o /dev/null
-	
-	
-$(DOCDIR)%.html: %.d
-	@echo --- Generating documentation file $@
-	@$(MKDIR) $(dir $@)
-	@$(DD) $(DFLAGS) -c -fdoc -fdoc-file=$@ $< -o /dev/null
 
 #$(SYMBOLS_OBJ)	
 $(BIN): $(OBJ) xaxa $(MODS) Architectures/$(ARCHDIR)/LinkerScript.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk

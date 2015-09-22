@@ -7,4 +7,4 @@ before_install:
  - sudo apt-get install -qq nasm
 
 script:
- - "make install"
+ - "make -C KernelLand/Kernel install"

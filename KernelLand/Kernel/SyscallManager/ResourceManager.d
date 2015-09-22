@@ -115,6 +115,11 @@ abstract final class ResourceManager {
      *      resource    =       id of resource or ~0UL when is called static
      *                          call table
      *      id          =       param of resource or id of static call entry
+     *      param1      =       TODO
+     *      param2      =       TODO
+     *      param3      =       TODO
+     *      param4      =       TODO
+     *      param5      =       TODO
      * TODO
      */
     package static long CallResource(long resource, long id, long param1, long param2, long param3, long param4, long param5) {
