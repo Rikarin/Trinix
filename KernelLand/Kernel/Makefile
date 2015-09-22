@@ -86,7 +86,7 @@ $(DOCDIR)%.html: %.d
 #$(SYMBOLS_OBJ)	
 $(BIN): $(OBJ) xaxa $(MODS) Architectures/$(ARCHDIR)/LinkerScript.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
 	@echo --- LD -o $(BIN)
-	@$(LD) $(LDFLAGS) -o $(BIN) $(shell find $(OBJDIR) -name "*.[o]") $(MODS) /llvm/lib/libdruntime-ldc.a
+	@$(LD) $(LDFLAGS) -o $(BIN) $(shell find $(OBJDIR) -name "*.[o]") $(MODS) ../libdruntime-ldc.a
 #@$(OBJDUMP) -d -S $(BIN) > $(BIN).dsm
 	@echo BUILD_NUM = $$(( $(BUILD_NUM) + 1 )) > Makefile.BuildNum.$(ARCH)
 	@$(STRIP) $(BIN)
