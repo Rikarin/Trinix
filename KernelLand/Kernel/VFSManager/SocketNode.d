@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
@@ -21,37 +21,16 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module Modules.FileSystem.Ext2.Ext2DirectoryNode;
+module VFSManager.SocketNode;
 
 import VFSManager;
-import Modules.FileSystem.Ext2;
 
 
-final class Ext2DirectoryNode : DirectoryNode {
-    package DiskNode m_node;
-    private bool m_loadedAttribs;
+abstract class SocketNode : FSNode {
+    this(DirectoryNode parent, FileAttributes fileAttributes) {
+        m_attributes      = fileAttributes;
+        m_attributes.Type = FileType.Socket;
 
-    @property auto Node() { return m_node; }
-    
-    this(int inode, DirectoryNode parent, FileAttributes attributes) {
-        m_node = DiskNode(parent, inode);
-        super(parent, attributes);
-    }
-    
-    @property override FileAttributes Attributes() {
-        if (!m_loadedAttribs && FileSystem !is null) {
-            auto attribs = (cast(Ext2FileSystem)FileSystem).GetAttributes(Node.Inode);
-            attribs.Name = m_attributes.Name;
-            attribs.Type = m_attributes.Type;
-
-            m_attributes    = attribs;
-            m_loadedAttribs = true;
-        }
-        
-        return m_attributes;
-    }
-    
-    @property override void Attributes(FileAttributes value) {
-        m_attributes = value; //TODO
+        super(parent);
     }
 }

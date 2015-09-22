@@ -44,7 +44,7 @@ enum DeviceType {
     Disk,
     Input,
     Network,
-    Filesystem
+    FileSystem
 }
 
 enum DeviceCommonCall {

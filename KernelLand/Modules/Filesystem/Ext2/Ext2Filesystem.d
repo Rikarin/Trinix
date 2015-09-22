@@ -21,16 +21,46 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module Modules.Filesystem.Ext2.Ext2Filesystem;
+module Modules.FileSystem.Ext2.Ext2FileSystem;
 
 import Core;
 import Library;
 import VFSManager;
 import ObjectManager;
-import Modules.Filesystem.Ext2;
+import Modules.FileSystem.Ext2;
 
 
-final class Ext2Filesystem : IFileSystem {
+struct DiskNode {
+    private int m_inode;
+    private Ext2FileSystem m_fs;
+
+    @property package int Number() {
+        return m_inode;
+    }
+
+    @property package auto Inode() {
+        Ext2FileSystem.Inode ret;
+
+        if (m_fs !is null)
+            m_fs.ReadInode(ret, m_inode);
+
+        return ret;
+    }
+
+    @property package void Inode(Ext2FileSystem.Inode node) {
+        if (m_fs !is null)
+            m_fs.WriteInode(node, m_inode);
+    }
+
+    package this(DirectoryNode parent, int node) {
+        if (parent !is null)
+            m_fs = cast(Ext2FileSystem)parent.FileSystem;
+
+        m_inode = node;
+    }
+}
+
+final class Ext2FileSystem : IFileSystem {
     private Ext2DirectoryNode m_rootNode;
     private Partition m_partition;
     private Superblock m_superblock;
@@ -162,25 +192,11 @@ final class Ext2Filesystem : IFileSystem {
         Socket      = 0xC000
     }
 
-    @property uint BlockSize() {
-        return 1024 << m_superblock.BlockSize;
-    }
-
-    @property uint NumGroups() {
-        return (m_superblock.NumInodes / m_superblock.InodesPerGroup) + (m_superblock.NumInodes % m_superblock.InodesPerGroup != 0);
-    }
-
-    @property override Partition GetPartition() {
-        return m_partition;
-    }
-
-    @property bool IsWritable() {
-        return true;
-    }
-
-    @property DirectoryNode RootNode() {
-        return m_rootNode;
-    }
+    @property uint BlockSize()                  { return 1024 << m_superblock.BlockSize; }
+    @property uint NumGroups()                  { return (m_superblock.NumInodes / m_superblock.InodesPerGroup) + (m_superblock.NumInodes % m_superblock.InodesPerGroup != 0); }
+    @property override Partition GetPartition() { return m_partition; }
+    @property bool IsWritable()                 { return true;        }
+    @property DirectoryNode RootNode()          { return m_rootNode;  }
 
     private this(Partition partition) {
         m_partition = partition;
@@ -206,7 +222,7 @@ final class Ext2Filesystem : IFileSystem {
         if (edir is null)
             return false;
 
-        Inode dirNode = edir.Inode;
+        Inode dirNode = edir.Node.Inode;
         byte[] data = new byte[dirNode.SizeLow];
         scope (exit) delete data;
 
@@ -323,13 +339,6 @@ final class Ext2Filesystem : IFileSystem {
         return length;
     }
 
-
-    //TODO: implement Socket and Symlink
-
-    //TODO: pridat jeste InodeNumber() do vsech nodu...
-    //why?
-
-
     override FSNode Create(DirectoryNode parent, FileAttributes fileAttributes) {
         //ext2_mkdir
         //TODO: ext2_touch
@@ -337,45 +346,49 @@ final class Ext2Filesystem : IFileSystem {
         return null; 
     }
 
-    override bool Remove(FSNode node) { //ext2_rmdir
-    /*    Inode* inode;
+    override bool Remove(FSNode node) {
+        DiskNode diskNode;
 
         if ((cast(Ext2BlockNode)node) !is null)
-            inode = (cast(Ext2BlockNode)node).m_inode;
+            diskNode = (cast(Ext2BlockNode)node).Node;
         else if ((cast(Ext2CharNode)node) !is null)
-            inode = (cast(Ext2CharNode)node).m_inode;
+            diskNode = (cast(Ext2CharNode)node).Node;
         else if ((cast(Ext2DirectoryNode)node) !is null)
-            inode = (cast(Ext2DirectoryNode)node).m_inode;
+            diskNode = (cast(Ext2DirectoryNode)node).Node;
         else if ((cast(Ext2FileNode)node) !is null)
-            inode = (cast(Ext2FileNode)node).m_inode;
+            diskNode = (cast(Ext2FileNode)node).Node;
         else if ((cast(Ext2PipeNode)node) !is null)
-            inode = (cast(Ext2PipeNode)node).m_inode;
+            diskNode = (cast(Ext2PipeNode)node).Node;
         else
             return false;
 
+        /* If its not empty dir node */
         if ((cast(Ext2DirectoryNode)node) !is null) {
             if ((cast(DirectoryNode)node).Childrens.Count)
                 return false;
         }
 
+        /* its root dir */
         if ((cast(Ext2DirectoryNode)node.Parent) is null)
             return false;
-*/
+
         /* Decrease parent link count */
-        auto parent = (cast(Ext2DirectoryNode)node.Parent).Inode;
+        auto parent = (cast(Ext2DirectoryNode)node.Parent).Node.Inode;
         parent.LinkCount--;
-        (cast(Ext2DirectoryNode)node.Parent).Inode = parent;
+        (cast(Ext2DirectoryNode)node.Parent).Node.Inode = parent;
 
         /* Decrease target link count */
-        //auto target = 
+        Inode ino = diskNode.Inode;
+        ino.LinkCount--;
+        diskNode.Inode = ino;
 
-        //TODO
+        Unlink(diskNode, (cast(Ext2DirectoryNode)node.Parent).Node);
 
-        //Inode n;
+        uint group = diskNode.Number / m_superblock.InodesPerGroup;
+        m_groups[group].NumDir--;
+        m_groupsDirty = true;
 
-        //uint group = 
-
-        return false; //TODO: ext2_rmdir
+        return true;
     }
 
     static bool Detect(Partition partition) {
@@ -391,10 +404,10 @@ final class Ext2Filesystem : IFileSystem {
         if (!Detect(partition))
             return null;
 
-        auto ret                  = new Ext2Filesystem(partition);
+        auto ret                  = new Ext2FileSystem(partition);
         ret.m_rootNode            = new Ext2DirectoryNode(0, null, FSNode.NewAttributes("/"));
         ret.m_rootNode.FileSystem = ret;
-        ret.m_rootNode.m_inode    = 2;
+        ret.m_rootNode.m_node     = DiskNode(ret.m_rootNode, 2);
 
         if (!mountpoint.Mount(ret.m_rootNode)) {
             delete ret;
@@ -402,6 +415,10 @@ final class Ext2Filesystem : IFileSystem {
         }
         
         return ret;
+    }
+
+    static void Create(Partition partition) {
+        //TODO: hook_create
     }
 
     package FileAttributes GetAttributes(Inode inode) {
@@ -752,11 +769,14 @@ final class Ext2Filesystem : IFileSystem {
         return readcount;
     }
 
-    private int Link(ref Inode node, ref Inode dir, string name) {
+    private int Link(DiskNode node, DiskNode dir, string name) {
+        
+
+
         return 42; //TODO
     }
 
-    private int Unlink(ref Inode node, ref Inode dir) {
+    private int Unlink(DiskNode node, DiskNode dir) {
         return 42;//TODO
     }
 }

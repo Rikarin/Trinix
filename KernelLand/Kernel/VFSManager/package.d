@@ -9,6 +9,8 @@ public import VFSManager.BlockNode;
 public import VFSManager.Partition;
 public import VFSManager.BlockCache;
 public import VFSManager.MemoryNode;
+public import VFSManager.SocketNode;
 public import VFSManager.IFileSystem;
+public import VFSManager.SymLinkNode;
 public import VFSManager.DirectoryNode;
 public import VFSManager.FileAttributes;

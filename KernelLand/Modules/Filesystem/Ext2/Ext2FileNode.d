@@ -21,39 +21,26 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module Modules.Filesystem.Ext2.Ext2FileNode;
+module Modules.FileSystem.Ext2.Ext2FileNode;
 
 import VFSManager;
-import Modules.Filesystem.Ext2;
+import Modules.FileSystem.Ext2;
 
 
 final class Ext2FileNode : FileNode {
-    private int m_inode;
+    private DiskNode m_node;
     private bool m_loadedAttribs;
 
+    @property auto Node() { return m_node; }
 
-    @property package auto Inode() {
-        Ext2Filesystem.Inode ret;
-
-        if (m_parent !is null && m_parent.FileSystem !is null)
-            (cast(Ext2Filesystem)m_parent.FileSystem).ReadInode(ret, m_inode);
-
-        return ret;
-    }
-
-    @property package void Inode(Ext2Filesystem.Inode node) {
-        if (m_parent !is null && m_parent.FileSystem !is null)
-            (cast(Ext2Filesystem)m_parent.FileSystem).WriteInode(node, m_inode);
-    }
-    
     this(int inode, DirectoryNode parent, FileAttributes attributes) {
-        m_inode = inode;
+        m_node = DiskNode(parent, inode);
         super(parent, attributes);
     }
     
     @property override FileAttributes Attributes() {
         if (!m_loadedAttribs && m_parent !is null && m_parent.FileSystem !is null) {
-            auto attribs = (cast(Ext2Filesystem)m_parent.FileSystem).GetAttributes(Inode);
+            auto attribs = (cast(Ext2FileSystem)m_parent.FileSystem).GetAttributes(Node.Inode);
             attribs.Name = m_attributes.Name;
             attribs.Type = m_attributes.Type;
 
@@ -67,21 +54,21 @@ final class Ext2FileNode : FileNode {
     @property override void Attributes(FileAttributes value) {
         m_attributes = value;
 
-        if (m_parent !is null && m_parent.FileSystem !is null)
-            (cast(Ext2Filesystem)m_parent.FileSystem).SetAttributes(m_inode, m_attributes);
+        //if (m_parent !is null && m_parent.FileSystem !is null)
+            //(cast(Ext2FileSystem)m_parent.FileSystem).SetAttributes(Node., m_attributes);
     }
     
     override ulong Read(long offset, byte[] data) {
         if (m_parent is null || m_parent.FileSystem is null)
             return 0;
         
-        return (cast(Ext2Filesystem)m_parent.FileSystem).Read(Inode, offset, data);
+        return (cast(Ext2FileSystem)m_parent.FileSystem).Read(Node.Inode, offset, data);
     }
     
     override ulong Write(long offset, byte[] data) {
         if (m_parent is null || m_parent.FileSystem is null)
             return 0;
         
-        return (cast(Ext2Filesystem)m_parent.FileSystem).Write(Inode, offset, data);
+        return (cast(Ext2FileSystem)m_parent.FileSystem).Write(Node.Inode, offset, data);
     }
 }

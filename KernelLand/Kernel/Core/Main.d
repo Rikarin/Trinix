@@ -46,6 +46,7 @@
  *      o Make debugger soft in C#
  *      o Every resource should have their own ACL-need type
  *        and every process must have access right for the specific ACL type to use it
+ *      o FSDriver.Create() will format specific partition
  */
 
 module Core.Main;

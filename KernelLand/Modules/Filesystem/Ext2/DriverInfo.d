@@ -21,20 +21,20 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module Modules.Filesystem.Ext2.DriverInfo;
+module Modules.FileSystem.Ext2.DriverInfo;
 
 import ObjectManager;
-import Modules.Filesystem.Ext2;
+import Modules.FileSystem.Ext2;
 
 
-extern(C) const ModuleDef _DriverInfo_Filesystem_Ext2 = {
+extern(C) const ModuleDef _DriverInfo_FileSystem_Ext2 = {
     Magic: MODULE_MAGIC,
-    Type: DeviceType.Filesystem,
+    Type: DeviceType.FileSystem,
     Architecture: ModuleArch.x86_64,
     Flags: 0x00,
     Version: 0x01,
-    Name: "Ext2 Filesystem Module",
-    Identifier: "com.modules.Filesystem.Ext2",
+    Name: "Ext2 FileSystem Module",
+    Identifier: "com.modules.FileSystem.Ext2",
     Initialize: &Ext2.Initialize,
     Finalize: &Ext2.Finalize
 };

@@ -61,7 +61,6 @@ enum AccessMode : uint {
     AvailableMask   = Writable | AllocOnAccess | Executable | User | MapOnce | CopyOnWrite | Global
 }
 
-
 struct PageTableEntry(string T) {
 align(1):
     private ulong m_pml;
@@ -147,7 +146,6 @@ align(1):
     }
 }
 
-
 struct PageLevel(ubyte L) {
 align(1):
     alias L Level;
@@ -192,7 +190,6 @@ align(1):
         private PageLevel!(L - 1)*[512] Tables;
     }
 }
-
 
 final class Paging {
     enum PAGE_SIZE = 0x1000;
@@ -331,7 +328,7 @@ final class Paging {
         //TODO: crt0 will call exit by syscall
 
        // debug { TODO: uncomment me senpai
-        /*    Log(`===> Spadlo to -.-"`);
+            Log(`===> Spadlo to -.-"`);
             Log("IRQ = %16x | RIP = %16x", stack.IntNumber, stack.RIP);
             Log("RAX = %16x | RBX = %16x", stack.RAX, stack.RBX);
             Log("RCX = %16x | RDX = %16x", stack.RCX, stack.RDX);
@@ -343,12 +340,11 @@ final class Paging {
             Log("R14 = %16x | R15 = %16x", stack.R14, stack.R15);
             Log(" CS = %16x |  SS = %16x", stack.CS, stack.SS);
             Log(" CR2 = %16x", _CPU_ret_cr2());
-            Log("Flags: %16x", stack.Flags);*/
-      //  }
+            Log("Flags: %16x", stack.Flags);
+        //}
 
         //TODO: what to do with this?
         asm {
-            mov R14, 0x424242;
             cli;
             hlt;
         }

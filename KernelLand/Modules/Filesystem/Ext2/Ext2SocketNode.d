@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
@@ -21,25 +21,23 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module Modules.FileSystem.Ext2.Ext2BlockNode;
+module Modules.FileSystem.Ext2.Ext2SocketNode;
 
 import VFSManager;
 import Modules.FileSystem.Ext2;
 
 
-final class Ext2BlockNode : BlockNode {
+final class Ext2SocketNode : SocketNode {
     private DiskNode m_node;
     private bool m_loadedAttribs;
 
-    @property override long Blocks()    { return -1;     }
-    @property override long BlockSize() { return -1;     }
-    @property auto Node()               { return m_node; }
-
-    this(int inode, DirectoryNode parent, FileAttributes attributes) {
+    @property auto Node() { return m_node; }
+    
+    this(int inode, DirectoryNode parent, FileAttributes attributes) {      
         m_node = DiskNode(parent, inode);
         super(parent, attributes);
     }
-
+    
     @property override FileAttributes Attributes() {
         if (!m_loadedAttribs && m_parent !is null && m_parent.FileSystem !is null) {
             auto attribs = (cast(Ext2FileSystem)m_parent.FileSystem).GetAttributes(Node.Inode);

@@ -36,8 +36,8 @@ struct FSDriver {
     string Name;
     bool function(Partition partition) Detect;
     IFileSystem function(DirectoryNode mountpoint, Partition partition) Mount;
+    void function(Partition partition) Create;
 }
-
 
 abstract final class VFS {
     __gshared DirectoryNode Root;
@@ -93,9 +93,7 @@ abstract final class VFS {
             foreach (i; 0 .. p)
                 Logger.Write(" ");
             
-            Logger.Write("- ");
-            Logger.Write(x.Value.Attributes.Name);
-            
+            Logger.Write("- %s ", x.Value.Attributes.Name);
             switch (x.Value.Attributes.Type) {
                 case FileType.Directory:
                     Logger.Write("(D)");

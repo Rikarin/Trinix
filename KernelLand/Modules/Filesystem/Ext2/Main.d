@@ -21,19 +21,20 @@
 *      Matsumoto Satoshi <satoshi@gshost.eu>
 */
 
-module Modules.Filesystem.Ext2.Main;
+module Modules.FileSystem.Ext2.Main;
 
 import Core;
 import VFSManager;
 import ObjectManager;
-import Modules.Filesystem.Ext2;
+import Modules.FileSystem.Ext2;
 
 
 class Ext2 {
 	private static const FSDriver info = {
         Name: "ext2",
-        Detect: &Ext2Filesystem.Detect,
-        Mount: &Ext2Filesystem.Mount
+        Detect: &Ext2FileSystem.Detect,
+        Mount: &Ext2FileSystem.Mount,
+        Create: &Ext2FileSystem.Create
 	};
 
 	static ModuleResult Initialize(string[] args) {	
