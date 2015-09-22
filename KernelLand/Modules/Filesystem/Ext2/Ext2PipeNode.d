@@ -28,23 +28,36 @@ import Modules.Filesystem.Ext2;
 
 
 final class Ext2PipeNode : PipeNode {
-    private Ext2Filesystem.Inode m_inode;
+    private int m_inode;
     private bool m_loadedAttribs;
+
+
+    @property package auto Inode() {
+        Ext2Filesystem.Inode ret;
+
+        if (m_parent !is null && m_parent.FileSystem !is null)
+            (cast(Ext2Filesystem)m_parent.FileSystem).ReadInode(ret, m_inode);
+
+        return ret;
+    }
+
+    @property package void Inode(Ext2Filesystem.Inode node) {
+        if (m_parent !is null && m_parent.FileSystem !is null)
+            (cast(Ext2Filesystem)m_parent.FileSystem).WriteInode(node, m_inode);
+    }
     
-    this(int inode, DirectoryNode parent, FileAttributes attributes) {
-        if (parent !is null && parent.FileSystem !is null)
-            (cast(Ext2Filesystem)parent.FileSystem).ReadInode(m_inode, inode);
-        
+    this(int inode, DirectoryNode parent, FileAttributes attributes) {      
+        m_inode = inode;
         super(parent, attributes);
     }
     
     @property override FileAttributes Attributes() {
         if (!m_loadedAttribs && m_parent !is null && m_parent.FileSystem !is null) {
-            auto attribs = (cast(Ext2Filesystem)m_parent.FileSystem).GetAttributes(m_inode);
+            auto attribs = (cast(Ext2Filesystem)m_parent.FileSystem).GetAttributes(Inode);
             attribs.Name = m_attributes.Name;
             attribs.Type = m_attributes.Type;
 
-            m_attributes = attribs;
+            m_attributes    = attribs;
             m_loadedAttribs = true;
         }
         
@@ -59,13 +72,13 @@ final class Ext2PipeNode : PipeNode {
         if (m_parent is null || m_parent.FileSystem is null)
             return 0;
         
-        return (cast(Ext2Filesystem)m_parent.FileSystem).Read(m_inode, offset, data);
+        return (cast(Ext2Filesystem)m_parent.FileSystem).Read(Inode, offset, data);
     }
     
     override ulong Write(long offset, byte[] data) {
         if (m_parent is null || m_parent.FileSystem is null)
             return 0;
         
-        return (cast(Ext2Filesystem)m_parent.FileSystem).Write(m_inode, offset, data);
+        return (cast(Ext2Filesystem)m_parent.FileSystem).Write(Inode, offset, data);
     }
 }

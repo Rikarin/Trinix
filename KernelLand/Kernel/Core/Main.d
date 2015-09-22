@@ -108,14 +108,13 @@ extern(C) void KernelMain() {
     ModuleManager.LoadBuiltins();
     //LoadModules();
 
-  //  VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
-    //          VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");
-
+    VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
+              VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");
 
     //import Modules.Terminal.VTY.Main;
    // new VTY();
 
-    //debug VFS.PrintTree(VFS.Root);
+    debug VFS.PrintTree(VFS.Root);
 
  //   Log("spustam prvy proces");
     /* Copy current process into new one */
@@ -123,10 +122,10 @@ extern(C) void KernelMain() {
   //  p.Start();
 
     /* Copy curent thread into new one under the same process */
-    Log("spustam prvu threadu");
-    auto t = new Thread(&test_lala);
-    t.Start();
-    Log("prva threada bola spustena");
+   // Log("spustam prvu threadu");
+  //  auto t = new Thread(&test_lala);
+  //  t.Start();
+  //  Log("prva threada bola spustena");
 
     Log("Running, Time = %d", Time.Uptime);
     while (true) {
