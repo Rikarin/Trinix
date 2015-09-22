@@ -1,0 +1,4 @@
+language: d
+compiler: ldc
+script:
+ - "make install"
