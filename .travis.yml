@@ -1,4 +1,6 @@
 language: d
-compiler: ldc
+d:
+ - ldc
+ 
 script:
  - "make install"
