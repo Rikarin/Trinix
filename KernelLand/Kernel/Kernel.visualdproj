@@ -853,6 +853,10 @@
    <File path="Core\PIT.d" />
    <File path="Core\Runtime.c" />
   </Folder>
+  <Folder name="Diagnostics">
+   <File path="Diagnostics\Debugger.d" />
+   <File path="Diagnostics\package.d" />
+  </Folder>
   <Folder name="FileSystem">
    <File path="FileSystem\DevFS.d" />
    <File path="FileSystem\NullDev.d" />
@@ -860,10 +864,6 @@
    <File path="FileSystem\RandomDev.d" />
    <File path="FileSystem\TmpFS.d" />
    <File path="FileSystem\ZeroDev.d" />
-  </Folder>
-  <Folder name="Diagnostics">
-   <File path="Diagnostics\Debugger.d" />
-   <File path="Diagnostics\package.d" />
   </Folder>
   <Folder name="Library">
    <File path="Library\Array.d" />
@@ -928,6 +928,8 @@
    <File path="VFSManager\package.d" />
    <File path="VFSManager\Partition.d" />
    <File path="VFSManager\PipeNode.d" />
+   <File path="VFSManager\SocketNode.d" />
+   <File path="VFSManager\SymLinkNode.d" />
    <File path="VFSManager\VFS.d" />
   </Folder>
  </Folder>

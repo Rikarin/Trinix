@@ -207,8 +207,14 @@ final class Ext2FileSystem : IFileSystem {
     }
 
     ~this() {
+        if (m_superblockDirty) {
+            m_partition.Write(2, (cast(byte *)&m_superblock)[0 .. Superblock.sizeof]);
+        }
 
-        //TODO: hook_close
+        if (m_groupsDirty) {
+            ReadBlocks(BlockSize == 1024 ? 2 : 1, (cast(byte *)m_groups.ptr)[0 .. NumGroups * Group.sizeof]);
+        }
+
         delete m_groups;
     }
 
@@ -770,9 +776,6 @@ final class Ext2FileSystem : IFileSystem {
     }
 
     private int Link(DiskNode node, DiskNode dir, string name) {
-        
-
-
         return 42; //TODO
     }
 

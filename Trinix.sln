@@ -7,7 +7,7 @@ Project("{002A2DE9-8BB6-484D-9802-7E4AD4084715}") = "Kernel", "KernelLand\Kernel
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{D5097E94-3C40-46D9-A46B-F6F32D4E08B4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Filesystem", "Filesystem", "{ECC22CF4-7EC8-4857-93E7-343892BD7258}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileSystem", "FileSystem", "{ECC22CF4-7EC8-4857-93E7-343892BD7258}"
 EndProject
 Project("{002A2DE9-8BB6-484D-9802-7E4AD4084715}") = "Ext2", "KernelLand\Modules\Filesystem\Ext2\Ext2.visualdproj", "{61FE45B3-8DCD-4387-BB10-A03121480D2D}"
 EndProject

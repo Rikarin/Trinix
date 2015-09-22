@@ -822,8 +822,10 @@
   <File path="Ext2CharNode.d" />
   <File path="Ext2DirectoryNode.d" />
   <File path="Ext2FileNode.d" />
-  <File path="Ext2Filesystem.d" />
+  <File path="Ext2FileSystem.d" />
   <File path="Ext2PipeNode.d" />
+  <File path="Ext2SocketNode.d" />
+  <File path="Ext2SymLinkNode.d" />
   <File path="Main.d" />
   <File path="package.d" />
  </Folder>
