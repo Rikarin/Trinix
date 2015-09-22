@@ -1,4 +1,4 @@
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Bloodmanovski/Trinix?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Build Status](https://travis-ci.org/Bloodmanovski/Trinix.svg)](https://travis-ci.org/Bloodmanovski/Trinix) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Bloodmanovski/Trinix?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 # Trinix #
 Trinix is a hobby operating system written from scratch. OS is written in D language.
