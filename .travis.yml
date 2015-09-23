@@ -7,7 +7,7 @@ before_install:
  - sudo apt-get install -qq nasm
  
 install:
- - wget -q -O - "http://bit.ly/Doveralls" | bash
+ - wget -O doveralls https://github.com/ColdenCullen/doveralls/releases/download/v1.1.5/doveralls_linux_travis
 
 script:
  - "make -C KernelLand/Kernel install"
