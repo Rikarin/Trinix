@@ -26,6 +26,7 @@ module Modules.FileSystem.Ext2.Ext2FileSystem;
 import Core;
 import Library;
 import VFSManager;
+import Architecture;
 import ObjectManager;
 import Modules.FileSystem.Ext2;
 
@@ -38,7 +39,7 @@ struct DiskNode {
         return m_inode;
     }
 
-    @property package auto Inode() {
+    @property package auto Node() {
         Ext2FileSystem.Inode ret;
 
         if (m_fs !is null)
@@ -47,7 +48,7 @@ struct DiskNode {
         return ret;
     }
 
-    @property package void Inode(Ext2FileSystem.Inode node) {
+    @property package void Node(Ext2FileSystem.Inode node) {
         if (m_fs !is null)
             m_fs.WriteInode(node, m_inode);
     }
@@ -228,7 +229,7 @@ final class Ext2FileSystem : IFileSystem {
         if (edir is null)
             return false;
 
-        Inode dirNode = edir.Node.Inode;
+        Inode dirNode = edir.Node.Node;
         byte[] data = new byte[dirNode.SizeLow];
         scope (exit) delete data;
 
@@ -346,10 +347,64 @@ final class Ext2FileSystem : IFileSystem {
     }
 
     override FSNode Create(DirectoryNode parent, FileAttributes fileAttributes) {
-        //ext2_mkdir
-        //TODO: ext2_touch
+        int node = Touch((cast(Ext2DirectoryNode)parent).Node, fileAttributes);
 
-        return null; 
+        switch (fileAttributes.Type) {
+            case FileType.File:
+                return new Ext2FileNode(node, parent, fileAttributes);
+
+            case FileType.Directory:
+                DiskNode node2 = DiskNode(parent, node);
+                Link(node2, (cast(Ext2DirectoryNode)parent).Node, fileAttributes.Name);
+
+                /* Increase link count */
+                Inode ino = node2.Node;
+                ino.LinkCount++;
+                node2.Node = ino;
+
+                /* increase directory count */
+                uint group = node2.Number / m_superblock.InodesPerGroup;
+                m_groups[group].NumDir++;
+                m_groupsDirty = true;
+
+                /* Link . */
+                byte[] dBuf = new byte[BlockSize];
+                DirInfo* di = cast(DirInfo *)dBuf;
+                scope(exit) delete dBuf;
+
+                di.Inode        = node2.Number;
+                di.RecordLength = cast(ushort)BlockSize;
+                di.Name[0 .. 1] = ".";
+                di.NameLength   = 1;
+                di.FileType     = DirFileType.Directory;
+                Write(node2.Node, 0, dBuf);
+
+                /* Link .. */
+                Link((cast(Ext2DirectoryNode)parent).Node, node2, "..");
+
+                return new Ext2DirectoryNode(node2.Number, parent, fileAttributes);
+
+            case FileType.CharDevice:
+                return new Ext2CharNode(node, parent, fileAttributes);
+
+            case FileType.BlockDevice:
+                return new Ext2BlockNode(node, parent, fileAttributes);
+
+            case FileType.Pipe:
+                return new Ext2PipeNode(node, parent, fileAttributes);
+
+            case FileType.SymLink:
+                return new Ext2SymLinkNode(node, parent, fileAttributes);
+
+            case FileType.Mountpoint:
+                return null;
+
+            case FileType.Socket:
+                return new Ext2SocketNode(node, parent, fileAttributes);
+               
+            default:
+                return null;
+        }
     }
 
     override bool Remove(FSNode node) {
@@ -379,14 +434,14 @@ final class Ext2FileSystem : IFileSystem {
             return false;
 
         /* Decrease parent link count */
-        auto parent = (cast(Ext2DirectoryNode)node.Parent).Node.Inode;
+        auto parent = (cast(Ext2DirectoryNode)node.Parent).Node.Node;
         parent.LinkCount--;
-        (cast(Ext2DirectoryNode)node.Parent).Node.Inode = parent;
+        (cast(Ext2DirectoryNode)node.Parent).Node.Node = parent;
 
         /* Decrease target link count */
-        Inode ino = diskNode.Inode;
+        Inode ino = diskNode.Node;
         ino.LinkCount--;
-        diskNode.Inode = ino;
+        diskNode.Node = ino;
 
         Unlink(diskNode, (cast(Ext2DirectoryNode)node.Parent).Node);
 
@@ -461,8 +516,11 @@ final class Ext2FileSystem : IFileSystem {
         return fa;
     }
     
-    package void SetAttributes(int num, FileAttributes fileAttributes) {
-        //TODO: do this via touch??
+    package void SetAttributes(DiskNode node, FileAttributes fileAttributes) {
+//        Inode ino = node.Inode;
+
+        //TODO: just rewrite Inode... easy biznis kamo xDD
+        //Jak ale resiznut ten nod?
     }
 
     package bool ReadInode(ref Inode inode, int number) {
@@ -592,11 +650,11 @@ final class Ext2FileSystem : IFileSystem {
         return cast(uint)i + m_superblock.BlocksPerGroup * group + 1;
     }
 
-    private ulong CountIndirect(ulong size) {
+    private uint CountIndirect(ulong size) {
         ulong numBlocks        = size / BlockSize;
         ulong blockPerIndirect = BlockSize / uint.sizeof;
         ulong block            = 12;
-        ulong ret;
+        uint ret;
 
         /* Indirect */
         if (block < numBlocks) {
@@ -695,8 +753,8 @@ final class Ext2FileSystem : IFileSystem {
         return totalSetCount;
     }
 
-    private uint[] GetBlocks(ref Inode node, uint[] indirects) {
-        int numBlocks = node.SizeLow / BlockSize + ((node.SizeLow % BlockSize) != 0);
+    private uint[] GetBlocks(Inode node, uint[] indirects) {
+        int numBlocks    = node.SizeLow / BlockSize + ((node.SizeLow % BlockSize) != 0);
         uint[] blockList = new uint[numBlocks + 1];
 
         if (indirects)
@@ -775,11 +833,237 @@ final class Ext2FileSystem : IFileSystem {
         return readcount;
     }
 
-    private int Link(DiskNode node, DiskNode dir, string name) {
-        return 42; //TODO
+    private void Link(DiskNode node, DiskNode dir, string name) {
+        Inode iino = node.Node;
+        iino.LinkCount++;
+        node.Node = iino;
+
+        Inode dino  = dir.Node;
+        byte[] dBuf = new byte[dino.SizeLow + BlockSize];
+        DirInfo* di = cast(DirInfo *)dBuf.ptr;
+        scope(exit) delete dBuf;
+        Read(dino, 0, dBuf);
+
+        /* Find last dir entry */
+        DirInfo* next    = di;
+        DirInfo* current = di;
+        while (cast(ulong)next < (cast(ulong)current + dino.SizeLow)) {
+            current = next;
+            next    = cast(DirInfo *)(cast(ulong)current + current.RecordLength);
+        }
+
+        current.RecordLength = cast(ushort)(cast(ulong)current.Name.ptr + current.NameLength + 1 - cast(ulong)current);
+        if (current.RecordLength < 12)
+            current.RecordLength = 12;
+
+        current.RecordLength += current.RecordLength % 4 ? 4 - current.RecordLength % 4 : 0;
+        next = cast(DirInfo *)(cast(ulong)current + current.RecordLength);
+
+        next.Inode = node.Number;
+        next.Name[0 .. name.length] = name[];
+        next.NameLength = cast(ubyte)name.length;
+
+        next.FileType = 
+            (((iino.Type & InodeType.FIFO)        == InodeType.FIFO)        ? DirFileType.FIFO        : 0) +
+            (((iino.Type & InodeType.CharDevice)  == InodeType.CharDevice)  ? DirFileType.CharDevice  : 0) +
+            (((iino.Type & InodeType.Directory)   == InodeType.Directory)   ? DirFileType.Directory   : 0) +
+            (((iino.Type & InodeType.BlockDevice) == InodeType.BlockDevice) ? DirFileType.BlockDevice : 0) +
+            (((iino.Type & InodeType.File)        == InodeType.File)        ? DirFileType.File        : 0) +
+            (((iino.Type & InodeType.SymLink)     == InodeType.SymLink)     ? DirFileType.SymLink     : 0) +
+            (((iino.Type & InodeType.Socket)      == InodeType.Socket)      ? DirFileType.Socket      : 0);
+
+        next.RecordLength = cast(ushort)(cast(ulong)next.Name.ptr + next.NameLength + 1 - cast(ulong)next);
+        if (next.RecordLength < 12)
+            next.RecordLength = 12;
+
+        if ((cast(ulong)next + next.RecordLength - cast(ulong)di) > dino.SizeLow) {
+            uint[] blocks  = GetBlocks(dino, null);
+            uint[] blocks2 = new uint[dino.SizeLow / BlockSize + 1];
+
+            int s = dino.SizeLow / BlockSize;
+            blocks2[0 .. s] = blocks[0 .. s];
+            blocks2[s]      = AllocBlock(node.Number / m_superblock.InodesPerGroup);
+            SetBlocks(dino, blocks2, node.Number / m_superblock.InodesPerGroup, null);
+
+            dino.SizeLow += BlockSize;
+            dir.Node      = dino;
+
+            delete blocks;
+            delete blocks2;
+        }
+
+        next.RecordLength = cast(ushort)(dino.SizeLow - (cast(ulong)next - cast(ulong)di));
+        Write(dino, 0, dBuf[0 .. dino.SizeLow]);
     }
 
-    private int Unlink(DiskNode node, DiskNode dir) {
-        return 42;//TODO
+    private void Unlink(DiskNode node, DiskNode dir) {
+        Inode dino = dir.Node;
+
+        byte[] dBuf = new byte[dino.SizeLow];
+        DirInfo* di = cast(DirInfo *)dBuf.ptr;
+        scope(exit) delete dBuf;
+        ReadData(dino, dBuf);
+
+        DirInfo* p  = di;
+        DirInfo* p2 = di;
+        int num = node.Number;
+        while (num && cast(ulong)p2 < (cast(ulong)di + dino.SizeLow)) {
+            p  = p2;
+            p2 = cast(DirInfo *)(cast(ulong)p2 + p2.RecordLength);
+            num--;
+        }
+
+        p.RecordLength += p2.RecordLength;
+        Write(dino, 0, dBuf);
+
+        Inode iino = node.Node;
+        iino.LinkCount--;
+
+        /* Delete node */
+        if (iino.LinkCount < 1) {
+            iino.DTime = cast(uint)Time.Now;
+
+            uint indirectNum = CountIndirect(iino.SizeLow);
+            uint[] iBlocks   = new uint[indirectNum + 1];
+            uint[] blocks    = GetBlocks(iino, iBlocks);
+
+            for (int i = 0; blocks[i]; i++)
+                FreeBlock(blocks[i]);
+
+            for (int i = 1; i <= indirectNum; i++)
+                FreeBlock(iBlocks[i]);
+
+            delete blocks;
+            delete iBlocks;
+
+            uint group = node.Number / m_superblock.InodesPerGroup;
+            uint it    = node.Number % m_superblock.InodesPerGroup - 1;
+            byte[] ibm = new byte[BlockSize];
+
+            ReadBlocks(m_groups[group].InodeBitmap, ibm);
+            ibm[it / 8] &= ~(1 << (it & 7));
+            WriteBlocks(m_groups[group].InodeBitmap, ibm);
+            
+            delete ibm;
+            m_groups[group].UnallocatedInodes++;
+            m_groupsDirty = true;
+        }
+
+        node.Node = iino;
+    }
+
+    private int Touch(DiskNode parent, FileAttributes fileAttributes) {
+        if (!m_superblock.NumFreeInodes)
+            return 0;
+
+        uint blockNeeded    = cast(uint)(fileAttributes.Length / BlockSize);
+        uint indirectBlocks = CountIndirect(fileAttributes.Length);
+        
+        if (fileAttributes.Length % BlockSize)
+            blockNeeded++;
+
+        if (m_superblock.NumFreeBlocks < blockNeeded)
+            return 0;
+
+        int group = -1;
+        for (int i = 0; i < m_groups.length; i++) {
+            if (m_groups[i].UnallocatedInodes) {
+                if (m_groups[i].UnallocatedBlocks >= blockNeeded) {
+                    group = i;
+                    break;
+                }
+            }
+        }
+
+        if (group == -1) {
+            for (int i = 0; i < m_groups.length; i++) {
+                if (m_groups[i].UnallocatedInodes) {
+                    group = i;
+                    break;
+                }
+            }
+        }
+
+        if (group == -1)
+            return 0;
+
+        /* Allocate inode */
+        byte[] inodeBitmap = new byte[BlockSize];
+        scope(exit) delete inodeBitmap;
+        ReadBlocks(m_groups[group].InodeBitmap, inodeBitmap);
+
+        uint inoNum = group == 0 ? m_superblock.FirstInode : 0;
+        while (inoNum < m_superblock.InodesPerGroup) {
+            if (!(inodeBitmap[inoNum / 8] % (1 << (inoNum & 7))))
+                break;
+
+            inoNum++;
+        }
+
+        if (inoNum == m_superblock.InodesPerGroup)
+            return 0;
+
+        inodeBitmap[inoNum / 8] |= 1 << (inoNum & 7);
+        m_groups[group].UnallocatedInodes--;
+        m_groupsDirty = true;
+
+        inoNum += m_superblock.InodesPerGroup * group;
+        inoNum++;
+
+        Inode* ino = new Inode;
+        scope(exit) delete ino;
+        ReadInode(*ino, inoNum);
+
+        if (fileAttributes.Type == FileType.Pipe)
+            ino.Type = InodeType.FIFO;
+        else if (fileAttributes.Type == FileType.CharDevice)
+            ino.Type = InodeType.CharDevice;
+        else if (fileAttributes.Type == FileType.Directory)
+            ino.Type = InodeType.Directory;
+        else if (fileAttributes.Type == FileType.BlockDevice)
+            ino.Type = InodeType.BlockDevice;
+        else if (fileAttributes.Type == FileType.File)
+            ino.Type = InodeType.File;
+        else if (fileAttributes.Type == FileType.SymLink)
+            ino.Type = InodeType.SymLink;
+        else if (fileAttributes.Type == FileType.Socket)
+            ino.Type = InodeType.Socket;
+        else
+            ino.Type = 0;
+        
+        ino.Type              |= fileAttributes.Permissions & 0x1FF; /* 0777 */
+        ino.UID                = 0;
+        ino.GID                = 0;
+        ino.SizeLow            = cast(uint)fileAttributes.Length;
+        ino.ATime              = cast(uint)fileAttributes.AccessTime;
+        ino.CTime              = cast(uint)fileAttributes.ModifyTime;
+        ino.MTime              = cast(uint)fileAttributes.CreateTime;
+        ino.LinkCount          = 0;
+        ino.DiskSectors        = cast(uint)((blockNeeded + indirectBlocks) * BlockSize / m_partition.BlockSize);
+        ino.Flags              = 0;
+        ino.OSVal1             = 0;
+        ino.Indirect           = 0;
+        ino.Dindirect          = 0;
+        ino.Tindirect          = 0;
+        ino.Generation         = 0;
+        ino.ExtendedAttributes = 0;
+        ino.SizeHigh           = 0;
+        ino.Direct[]           = 0;
+        ino.OSVal2[]           = 0;
+
+        uint[] blocks   = new uint[blockNeeded + 1];
+        uint[] indirect = new uint[indirectBlocks + 1];
+        
+        for (int i = 0; i < blockNeeded; i++)
+            blocks[i] = AllocBlock(group);
+
+        for (int i = 1; i <= indirectBlocks; i++)
+            indirect[i] = AllocBlock(group);
+
+        SetBlocks(*ino, blocks, group, indirect);
+        WriteBlocks(m_groups[group].InodeBitmap, inodeBitmap);
+        WriteInode(*ino, inoNum);
+
+        return inoNum;
     }
 }

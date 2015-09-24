@@ -39,33 +39,36 @@ final class Ext2PipeNode : PipeNode {
     }
     
     @property override FileAttributes Attributes() {
-        if (!m_loadedAttribs && m_parent !is null && m_parent.FileSystem !is null) {
+      /*  if (!m_loadedAttribs && m_parent !is null && m_parent.FileSystem !is null) {
             auto attribs = (cast(Ext2FileSystem)m_parent.FileSystem).GetAttributes(Node.Inode);
             attribs.Name = m_attributes.Name;
             attribs.Type = m_attributes.Type;
 
             m_attributes    = attribs;
             m_loadedAttribs = true;
-        }
+        }*/
         
         return m_attributes;
     }
     
     @property override void Attributes(FileAttributes value) {
-        m_attributes = value; //TODO
+        m_attributes = value;
+
+        if (m_parent !is null && m_parent.FileSystem !is null)
+            (cast(Ext2FileSystem)m_parent.FileSystem).SetAttributes(Node, m_attributes);
     }
     
     override ulong Read(long offset, byte[] data) {
         if (m_parent is null || m_parent.FileSystem is null)
             return 0;
         
-        return (cast(Ext2FileSystem)m_parent.FileSystem).Read(Node.Inode, offset, data);
+        return (cast(Ext2FileSystem)m_parent.FileSystem).Read(Node.Node, offset, data);
     }
     
     override ulong Write(long offset, byte[] data) {
         if (m_parent is null || m_parent.FileSystem is null)
             return 0;
         
-        return (cast(Ext2FileSystem)m_parent.FileSystem).Write(Node.Inode, offset, data);
+        return (cast(Ext2FileSystem)m_parent.FileSystem).Write(Node.Node, offset, data);
     }
 }

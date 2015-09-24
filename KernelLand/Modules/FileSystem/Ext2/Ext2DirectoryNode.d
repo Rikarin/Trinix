@@ -39,19 +39,22 @@ final class Ext2DirectoryNode : DirectoryNode {
     }
     
     @property override FileAttributes Attributes() {
-        if (!m_loadedAttribs && FileSystem !is null) {
+     /*   if (!m_loadedAttribs && FileSystem !is null) {
             auto attribs = (cast(Ext2FileSystem)FileSystem).GetAttributes(Node.Inode);
             attribs.Name = m_attributes.Name;
             attribs.Type = m_attributes.Type;
 
             m_attributes    = attribs;
             m_loadedAttribs = true;
-        }
+        }*/
         
         return m_attributes;
     }
     
     @property override void Attributes(FileAttributes value) {
-        m_attributes = value; //TODO
+        m_attributes = value;
+
+        if (m_parent !is null && m_parent.FileSystem !is null)
+            (cast(Ext2FileSystem)m_parent.FileSystem).SetAttributes(Node, m_attributes);
     }
 }
