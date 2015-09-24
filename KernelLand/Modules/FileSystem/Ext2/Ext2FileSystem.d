@@ -19,6 +19,10 @@
  * 
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
+ *
+ * TODO:
+ *      o Create(Partition partition)
+ *      o SetAttributes(DiskNode node, FileAttributes fileAttributes)
  */
 
 module Modules.FileSystem.Ext2.Ext2FileSystem;

@@ -21,22 +21,11 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  * 
  * TODO:
- *      o dokoncit VFS., co tam este chyba?... file..., syscally, static cally,
- *        acl,...
- *      o Dokoncit write/create/remove - spravit Ext2 driver!!!!
- *      o syscally, shared memory, rwlock, skontrolovat mutex/semafor
- *      o kontrolu parametrov pri syscalloch (adresu atd)
- *      o ACLka do syscallov?
- *      o debugovat Heap... Obcas to pada na expande...
- *      o spravit to iste jak je pre VFS.AddDriver ci co ale pre Node zariadenia.
- *      o Aby sa z modulu dali pridat veci ako je pipe, pty, vty, atd...
- *      o documentation, documentation, documentation, ...
- *   -- o dokoncit keyboard a mouse driver.
- *      o spravit driver na PCI, pipedev, serial port, ACPI...
+ *      o VFS
+ *      o IPC: SharedMemory (like Mutex), RWLock, Syscalls
+ *      o Syscall: ACL (for resources), params check (address, etc.)
  *      o parse command line
  *      o framework bundle automatic creator
- *      o Pridat nejaky protector ktory nedovoli allocovat ine bloky pamete okrem Free
- *      o opravit vsetky TODOcka
  *      o Implement multi CPU support
  *      o Implementovat statementy ako @trusted nothrow @safe atd...
  *      o Exit thread - crt0 will call syscall(exit) at the end
@@ -44,9 +33,20 @@
  *      o Fix \n in Logger
  *      o Fix memory leak in FSNode by StringWriter
  *      o Make debugger soft in C#
- *      o Every resource should have their own ACL-need type
- *        and every process must have access right for the specific ACL type to use it
  *      o FSDriver.Create() will format specific partition
+ *      o Dynamic module loader
+ *      o ELF parser, binary loader
+ *      o GUI compositor
+ *
+ * DRIVERS:
+ *      o Keyboard
+ *      o Mouse
+ *      o PCI
+ *      o ACPI
+ *      o AHCI
+ *      o PipeDev
+ *      o Serial/Parallel
+ *      o VTY
  */
 
 module Core.Main;
