@@ -20,20 +20,26 @@ Please use our [Coding Conventions](https://github.com/Bloodmanovski/Trinix/blob
 
 
 # How to build #
-TODO!!
+* Use CentOS
+* Install Development Tools
+* Install LLVM/LDC compiler and GNU/Binutils
+* call 'make image' then 'make install'
+* Voila, you have an img
 
 
 # Features #
 * GRUB Multiboot 2 bootloader
-* GDT, IDT, TSS tables for 64-bit mode
-* Cache info from CPU
-* PIC, PIT, RTC timers
+* x86_64 support
+* GDT, IDT, TSS tables
+* CPU cache info
+* PIC, PIT, RTC timer
 * PML4 Paging, Virtual/Physical Memory Manager, Heap
-* Statically compiled Module loader
-* Resource/Syscall Manager using to manage syscall dynamically
-* VFS Manager with `Ext2` readonly filesystem. Basic `dev` devices like null, zero, ...
-* Synchonization primitives Spinlocks, Mutexex, Semapthores, Signals, Events, Messages, Shared Memnory, ...
-* Multitasking with Thread -> Process implementation
+* Static module loader
+* Resource/Syscall Manager
+* VFS Manager
+* IPC: Spinlock, Mutex, Semapthore, Signal, Event, Message
+* Preemtive multitasking
+* Modules: Ext2, Keyboard, Mouse, PS2 Keyboard/Mouse, ATA
 	
 	
 # Licence #
