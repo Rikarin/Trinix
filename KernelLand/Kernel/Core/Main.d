@@ -37,6 +37,7 @@
  *      o Dynamic module loader
  *      o ELF parser, binary loader
  *      o GUI compositor
+ *      o Library: StringBuilder(20%)
  *
  * DRIVERS:
  *      o Keyboard

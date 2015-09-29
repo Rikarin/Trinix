@@ -32,7 +32,7 @@ import MemoryManager;
 
 extern(C) void ArchMain(uint magic, v_addr info) {
 	/* Initialize SSE for vararg used in Logger */
-    //TODO: thisi s not needed now
+    //TODO: this is not needed now
 	Port.InitializeSSE();
 	Port.EnableSSE();
 	

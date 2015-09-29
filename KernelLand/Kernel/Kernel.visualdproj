@@ -878,6 +878,7 @@
    <File path="Library\Queue.d" />
    <File path="Library\SpinLock.d" />
    <File path="Library\String.d" />
+   <File path="Library\StringBuilder.d" />
    <File path="Library\Template.d" />
    <File path="Library\Termios.d" />
   </Folder>

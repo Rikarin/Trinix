@@ -131,7 +131,7 @@ abstract final class ResourceManager {
         Log("");
 
         if (resource == 0xFFFFFFFF_FFFFFFFF) {
-            ResouceCallTable table = GetCallTable(cast(string)((cast(char *)id)[0 .. param1]));
+            ResouceCallTable table = GetCallTable((cast(const char *)id).ToString());
             if (table is cast(ResouceCallTable)null)
                 return -1;
 

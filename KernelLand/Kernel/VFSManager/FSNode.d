@@ -23,6 +23,7 @@
 
 module VFSManager.FSNode;
 
+import Library;
 import VFSManager;
 import TaskManager;
 import Architecture;
@@ -150,25 +151,22 @@ abstract class FSNode : Resource {
         return m_parent.FileSystem.Remove(this);
     }
 
-    /* TODO: Too much memory leaks in one function */
-	/* TODO: make for this stringbuilder */
     string Location() {
-        string path;
-        FSNode node = this;
+        scope auto sb = new StringBuilder();
+        FSNode node   = this;
 
         while (node !is null) {
-            string t = "/" ~ node.Attributes.Name;
-            if (t != "//") {
-                t = t ~ path;
-                path = t;
+            if (node.Attributes.Name != "/") {
+                sb.Insert(0, node.Attributes.Name);
+                sb.Insert(0, "/");
             }
             node = node.Parent;
         }
 
-        if (path is null)
+        if (!sb.Length)
             return "/";
 
-        return path;
+        return sb.ToString();
     }
 
     /**
