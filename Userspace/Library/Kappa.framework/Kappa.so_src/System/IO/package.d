@@ -27,6 +27,7 @@ TODO:
     Task
     CancellationToken
     WaitHandle
+    Exceptions
 
 */
 

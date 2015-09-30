@@ -23,17 +23,18 @@
 
 module System.Runtime.SafeHandle;
 
+import System.Runtime;
+
 
 abstract class SafeHandle {
     protected long m_handle;
-
 
     protected this(int handle) {
         m_handle = handle;
     }
 
     ~this() {
-        Syscall(5); //Close. TODO: use struct for call
+        Syscall(SyscallType.Close);
     }
 
     protected long Syscall(long id, long param1 = 0, long param2 = 0, long param3 = 0, long param4 = 0, long param5 = 0) {
@@ -65,5 +66,20 @@ abstract class SafeHandle {
         }
 
         return resource;
+    }
+
+    protected class SafeMethodCall {
+        private long m_id;
+
+        this(string identifier) {
+            m_id = Syscall(SyscallType.Translate, cast(long)identifier.ptr);
+
+            if (m_id == SyscallReturn.Error)
+            {} // TODO: throw an exception
+        }
+
+        long Call(long param1 = 0, long param2 = 0, long param3 = 0, long param4 = 0, long param5 = 0) {
+            return Syscall(m_id, param0, param1, param2, param3, param4, param5);
+        }
     }
 }

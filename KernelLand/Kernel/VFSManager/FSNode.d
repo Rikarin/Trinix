@@ -36,8 +36,10 @@ import SyscallManager;
  * 
  */
 abstract class FSNode : Resource {
+    private enum IDENTIFIER = "com.trinix.VFSManager.FSNode";
+
     package static const ResouceCallTable m_rcs = {
-        "com.trinix.VFSManager.FSNode",
+        IDENTIFIER,
         &StaticCallback
     };
 
@@ -52,8 +54,9 @@ abstract class FSNode : Resource {
      *                      null if is freestanding
      */
     protected this(DirectoryNode parent) {
-        static const CallTable[] callTable = [
-            {0, ".Attributes", 0, null} /* Syscall_Attrbutes */
+        CallTable[] callTable = [
+            { ".GetAttributes", 1, Callback1: &Syscall_GetAttributes },
+            { ".SetAttributes", 1, Callback1: &Syscall_SetAttributes }
         ];
 
         if (parent !is null) {
@@ -61,7 +64,7 @@ abstract class FSNode : Resource {
             parent.Childrens.Add(this);
         }
 
-        super(DeviceType.Disk, "com.trinix.VFSManager.FSNode", 0x01, callTable);
+        super(DeviceType.Disk, IDENTIFIER, 0x01, callTable);
     }
 
     /**
@@ -198,6 +201,23 @@ abstract class FSNode : Resource {
         return ret;
     }
 
+/* ================= SYSCALLS ================= */
+    private long Syscall_GetAttributes(long param1) {
+        if (!IsValidAddress(param1))
+            return SyscallReturn.Error;
+
+        *(cast(FileAttributes *)param1) = Attributes;
+        return SyscallReturn.Successful;
+    }
+
+    private long Syscall_SetAttributes(long param1) {
+        if (!IsValidAddress(param1))
+            return SyscallReturn.Error;
+
+        Attributes = *(cast(FileAttributes *)param1);
+        return SyscallReturn.Successful;
+    }
+
     /**
      * Callback used by userspace apps for obtaining instance of speciffic classes
      * by calling this static syscall
@@ -213,6 +233,15 @@ abstract class FSNode : Resource {
      *      -1              on failure
      */
     static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
-        return -1;
+        switch (param1) {
+            case 0:
+                auto name = (cast(char *)param2).ToString();
+                //TODO: return handle of the new FileNode
+                break;
+
+            default:
+        }
+
+        return SyscallReturn.Error;
     }
 }
