@@ -35,6 +35,7 @@ align(1):
     ulong RIP, CS, Flags, RSP, SS;
 }
 
+/* TODO: move this to the framework */
 enum DeviceType {
     Null,
     Misc,
@@ -47,6 +48,7 @@ enum DeviceType {
     FileSystem
 }
 
+/* TODO: move this to the framework */
 enum DeviceCommonCall {
     // Return DeviceType
     Type,
@@ -62,7 +64,10 @@ enum DeviceCommonCall {
     Lookup,
 
     // Translate unique identifier of each call to his ID
-    Translate
+    Translate,
+
+    /* Close handle for this process */
+    Close
 }
 
 abstract final class DeviceManager {

@@ -133,6 +133,27 @@ final class Process {
         m_threads.First.Value.Start();
     }
 
+    bool AttachResource(Resource resource) {
+        if (m_resources.Contains(resource))
+            return false;
+
+        if (!resource.AttachProcess(this))
+            return false;
+
+        m_resources.Add(resource);
+        return true;
+    }
+
+    bool DetachResource(Resource resource) {
+        if (!m_resources.Remove(resource))
+            return false;
+
+        if (resource.DetachProcess(this))
+            delete resource;
+
+        return true;
+    }
+
     package ulong[] AllocUserStack(ulong size = Thread.USER_STACK_SIZE) {
         for (ulong i = 0; i < size; i += Paging.PAGE_SIZE) {
             m_userStack -= Paging.PAGE_SIZE;

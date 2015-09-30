@@ -53,7 +53,7 @@ abstract class FSNode : Resource {
      */
     protected this(DirectoryNode parent) {
         static const CallTable[] callTable = [
-            {0, ".Attributes", 0, null}
+            {0, ".Attributes", 0, null} /* Syscall_Attrbutes */
         ];
 
         if (parent !is null) {

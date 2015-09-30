@@ -60,20 +60,19 @@ abstract class Resource {
     @property ref long Version()      { return m_version;    }
     @property ref string Identifier() { return m_identifier; }
 
-    // Called from ResourceManager
     package long Call(long id, long param1, long param2, long param3, long param4, long param5) {
-        switch (id) {
-            case 0:
+        switch (cast(DeviceCommonCall)id) {
+            case DeviceCommonCall.Type:
                 return m_type;
 
-            case 1:
+            case DeviceCommonCall.Identifier:
                 (cast(char *)param1)[0 .. m_identifier.length] = m_identifier[0 .. $];
                 return param1;
 
-            case 2:
+            case DeviceCommonCall.Version:
                 return m_version;
 
-            case 3:
+            case DeviceCommonCall.Lookup:
                 long ret;
                 foreach_reverse (x; m_callTables) {
                     if (ret == param2)
@@ -83,11 +82,16 @@ abstract class Resource {
                 }
                 return ret;
 
-            case 4:
+            case DeviceCommonCall.Translate:
                 foreach_reverse (x; m_callTables)
                     if ((cast(char *)param1)[0 .. param2] == x.Value.Identifier)
                         return x.Value.ID;
                 return -1;
+
+            case DeviceCommonCall.Close:
+                if (Task.CurrentProcess.DetachResource(this))
+                    return 1;
+                return 0;
 
             default:
         }
@@ -157,6 +161,7 @@ abstract class Resource {
     }
 
     /* returns true if process was attached. check for ACL TODO */
+    /*TODO: package(TaskManager.Process)*/
     bool AttachProcess(Process process) {
         if (m_processes.Contains(process))
             return false;
@@ -166,6 +171,7 @@ abstract class Resource {
     }
 
     /* returns true if we can delete this instance. implement protection against removing FSNodes etc.TODO */
+    /* TODO: package(TaskManager.Process)*/
     bool DetachProcess(Process process) {
         m_processes.Remove(process);
 

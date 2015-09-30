@@ -31,9 +31,6 @@
  *      o Exit thread - crt0 will call syscall(exit) at the end
  *      o Implement GC
  *      o Fix \n in Logger
- *      o Fix memory leak in FSNode by StringWriter
- *      o Make debugger soft in C#
- *      o FSDriver.Create() will format specific partition
  *      o Dynamic module loader
  *      o ELF parser, binary loader
  *      o GUI compositor
@@ -116,7 +113,7 @@ extern(C) void KernelMain() {
     //import Modules.Terminal.VTY.Main;
    // new VTY();
 
-    debug VFS.PrintTree(VFS.Root);
+   // debug VFS.PrintTree(VFS.Root);
 
  //   Log("spustam prvy proces");
     /* Copy current process into new one */
