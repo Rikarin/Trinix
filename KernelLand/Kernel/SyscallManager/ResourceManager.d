@@ -133,14 +133,14 @@ abstract final class ResourceManager {
         if (resource == 0xFFFFFFFF_FFFFFFFF) {
             ResouceCallTable table = GetCallTable((cast(const char *)id).ToString());
             if (table is cast(ResouceCallTable)null)
-                return -1;
+                return SyscallReturn.Error;
 
             return table.Callback(param1, param2, param3, param4, param5);
         } else if (resource < m_resources.Count && m_resources[resource] !is null)
             return m_resources[resource].Call(id, param1, param2, param3, param4, param5);
 
         Log("Error: Bad call");
-        return -1;
+        return SyscallReturn.Error;
     }
 
     static bool AddCallTable(const ResouceCallTable callTable) {

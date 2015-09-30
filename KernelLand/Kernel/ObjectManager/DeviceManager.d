@@ -48,7 +48,12 @@ enum DeviceType {
     FileSystem
 }
 
-/* TODO: move this to the framework */
+enum SyscallReturn {
+    Error      = -1,
+    Successful = 0,
+}
+
+/* TODO: use System.Resource.SyscallType against this */
 enum DeviceCommonCall {
     // Return DeviceType
     Type,
@@ -67,7 +72,10 @@ enum DeviceCommonCall {
     Translate,
 
     /* Close handle for this process */
-    Close
+    Close,
+
+    /* Syscall */
+    Call
 }
 
 abstract final class DeviceManager {

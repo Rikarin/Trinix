@@ -26,13 +26,14 @@ module SyscallManager.Resource;
 import Core;
 import Library;
 import TaskManager;
+import Architecture;
 import ObjectManager;
 import SyscallManager;
 
 
 abstract class Resource {
     private Mutex m_mutex;
-    private LinkedList!(CallTable *) m_callTables;
+    private LinkedList!CallTable m_callTables;
     private LinkedList!Process m_processes;
 
     private long m_id;
@@ -41,7 +42,6 @@ abstract class Resource {
     private string m_identifier;
 
     protected struct CallTable {
-        long ID;
         string Identifier;
         long Params;
 
@@ -53,6 +53,8 @@ abstract class Resource {
             long delegate(long, long, long, long) Callback4;
             long delegate(long, long, long, long, long) Callback5;
         }
+
+        private long ID;
     }
 
     @property long Handle()           { return m_id;         }
@@ -86,7 +88,7 @@ abstract class Resource {
                 foreach_reverse (x; m_callTables)
                     if ((cast(char *)param1)[0 .. param2] == x.Value.Identifier)
                         return x.Value.ID;
-                return -1;
+                return SyscallReturn.Error;
 
             case DeviceCommonCall.Close:
                 if (Task.CurrentProcess.DetachResource(this))
@@ -101,7 +103,7 @@ abstract class Resource {
             
         if (!m_processes.Contains(Task.CurrentProcess)) {
             Log("Process %d tried to use resource without attaching them first", Task.CurrentProcess.ID);
-            return -1;
+            return SyscallReturn.Error;
         }
 
         foreach_reverse (x; m_callTables) {
@@ -120,16 +122,17 @@ abstract class Resource {
                     case 5:
                         return x.Value.Callback5(param1, param2, param3, param4, param5);
                     default:
-                        return -1;
+                        //TODO: ERROR, bad param num in calltable??
+                        return SyscallReturn.Error;
                 }
             }
         }
 
-        return -1;
+        return SyscallReturn.Error;
     }
 
     protected this(DeviceType type, string identifier, long ver, const CallTable[] callTables) {
-        m_callTables = new LinkedList!(CallTable *)();
+        m_callTables = new LinkedList!CallTable();
         m_processes  = new LinkedList!Process();
         m_mutex      = new Mutex();
         m_type       = type;
@@ -141,7 +144,7 @@ abstract class Resource {
     }
 
     protected this(const ModuleDef info, const CallTable[] callTables) {
-        m_callTables = new LinkedList!(CallTable *)();
+        m_callTables = new LinkedList!CallTable();
         m_processes  = new LinkedList!Process();
         m_mutex      = new Mutex();
         m_type       = info.Type;
@@ -182,8 +185,27 @@ abstract class Resource {
     }
 
     protected void AddCallTables(const CallTable[] callTables) {
-        foreach (x; callTables)
-            if (!m_callTables.Contains(cast(CallTable *)&x))
-                m_callTables.Add(cast(CallTable *)&x);
+        long highestID = DeviceCommonCall.Call;
+
+        foreach (x; m_callTables) {
+            if (x.Value.ID > highestID)
+                highestID = x.Value.ID;
+        }
+
+        foreach (x; callTables) {
+            CallTable c = x;
+            c.ID = highestID++;
+            m_callTables.Add(c);
+        }
+    }
+
+    static bool IsValidAddress(long address) {
+        if (!address)
+            return false;
+
+        if (address >= LinkerScript.KernelBase)
+            return false;
+
+        return true;
     }
 }
