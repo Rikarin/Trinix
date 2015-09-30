@@ -21,30 +21,28 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  * 
  * TODO:
- *      o VFS
+ *      o VFS: check, syscalls
  *      o IPC: SharedMemory (like Mutex), RWLock, Syscalls
- *      o Syscall: ACL (for resources), params check (address, etc.)
  *      o parse command line
- *      o framework bundle automatic creator
- *      o Implement multi CPU support
- *      o Implementovat statementy ako @trusted nothrow @safe atd...
  *      o Exit thread - crt0 will call syscall(exit) at the end
- *      o Implement GC
  *      o Fix \n in Logger
  *      o Dynamic module loader
  *      o ELF parser, binary loader
  *      o GUI compositor
  *      o Library: StringBuilder(20%)
+ *      o Compile Kappa framework and link it with Kernel
+ *      o Move things from Library to Kappa framework
  *
  * DRIVERS:
  *      o Keyboard
  *      o Mouse
  *      o PCI
- *      o ACPI
- *      o AHCI
  *      o PipeDev
  *      o Serial/Parallel
  *      o VTY
+ *
+ * NEXT SESSION:
+ *      o BinaryLoader/ELF loader...
  */
 
 module Core.Main;
