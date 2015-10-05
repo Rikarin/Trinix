@@ -1,6 +1,11 @@
 [![Build Status](https://travis-ci.org/Bloodmanovski/Trinix.svg)](https://travis-ci.org/Bloodmanovski/Trinix)
 [![Coverage Status](https://coveralls.io/repos/Bloodmanovski/Trinix/badge.svg?branch=master&service=github)](https://coveralls.io/github/Bloodmanovski/Trinix?branch=master)
+[![Licence](https://img.shields.io/badge/Licence-TPSL-blue.svg)](https://github.com/Bloodmanovski/Trinix/blob/master/LICENCE)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Bloodmanovski/Trinix?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
+[![Donate](https://img.shields.io/badge/Bitcoin-Donate-blue.svg)](https://www.coinbase.com/checkouts/ac2ed28efccef2466352283006ef450c)
+[![Pull Request](http://githubbadges.herokuapp.com/Bloodmanovski/Trinix/pulls)](https://github.com/Bloodmanovski/Trinix/issues)
+[![Issues](http://githubbadges.herokuapp.com/Bloodmanovski/Trinix/issues)](https://github.com/Bloodmanovski/Trinix/pulls)
 
 # Trinix #
 Trinix is a hobby operating system written from scratch. OS is written in D language.
