@@ -37,6 +37,7 @@ extern(C) void ArchMain(uint magic, v_addr info) {
 	Port.EnableSSE();
 	
     Logger.Initialize();
+    Log("Cau amigo!");
 
     Log("multiboot2");
     Multiboot.ParseHeader(magic, info);

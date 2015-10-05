@@ -68,10 +68,6 @@
     <None Include="ObjectManager\IBlockDevice.d" />
     <None Include="ObjectManager\ModuleManager.d" />
     <None Include="ObjectManager\package.d" />
-    <None Include="SyscallManager\Resource.d" />
-    <None Include="SyscallManager\ResourceManager.d" />
-    <None Include="SyscallManager\SyscallHandler.d" />
-    <None Include="SyscallManager\package.d" />
     <None Include="TaskManager\Mutex.d" />
     <None Include="TaskManager\Process.d" />
     <None Include="TaskManager\Process.s" />
@@ -95,5 +91,13 @@
     <None Include="VFSManager\SymLinkNode.d" />
     <None Include="VFSManager\VFS.d" />
     <None Include="VFSManager\package.d" />
+    <None Include="ObjectManager\Resource.d" />
+    <None Include="ObjectManager\ResourceManager.d" />
+    <None Include="Architectures\x86_64\Core\SyscallHandler.d" />
+    <None Include="Library\Dictionary.d" />
+    <None Include="Library\File.d" />
+    <None Include="TaskManager\EventWaitHandle.d" />
+    <None Include="TaskManager\ReaderWriterLock.d" />
+    <None Include="TaskManager\SharedMemory.d" />
   </ItemGroup>
 </Project>

@@ -37,7 +37,7 @@
  *      o PipeDev
  *      o Serial/Parallel
  *      o VTY
- *      o VGA driver
+ *      o VGA driver (needs PCI)
  *
  * NEXT SESSION:
  *      o BinaryLoader/ELF loader...

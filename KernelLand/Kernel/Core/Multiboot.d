@@ -280,6 +280,7 @@ abstract final class Multiboot {
                             color = 0xFFFFFFFF;
                             break;
                     }
+
                     break;
 
                 case MultibootTagType.ElfSections:
@@ -313,6 +314,7 @@ abstract final class Multiboot {
                     break;
                     
                 default:
+                    Log("Multiboot2 Error tag type");
                     break;
             }
         }
