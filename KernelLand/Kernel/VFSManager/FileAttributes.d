@@ -23,10 +23,13 @@
 
 module VFSManager.FileAttributes;
 
+import TaskManager;
+import Architecture;
+
 
 /**
- * Type of node.
- * Used in FileAttributes.
+ * Type of node
+ * Used in FileAttributes
  * 
  */
 enum FileType {
@@ -73,4 +76,20 @@ struct FileAttributes {
     ulong AccessTime;
     ulong CreateTime;
     ulong ModifyTime;
+
+    static FileAttributes opCall(string name, FileType type = FileType.Directory) {
+        FileAttributes ret;
+
+        ret.Name        = name;
+        ret.Type        = type;
+        ret.Permissions = FilePermissions.UserRead  | FilePermissions.UserWrite 
+                        | FilePermissions.GroupRead | FilePermissions.OtherRead;
+        ret.UID         = Process.Current.UID;
+        ret.GID         = Process.Current.GID;
+        ret.AccessTime  = Time.Now;
+        ret.ModifyTime  = ret.AccessTime;
+        ret.CreateTime  = ret.AccessTime;
+        
+        return ret;
+    }
 }

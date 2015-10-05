@@ -55,12 +55,12 @@ abstract final class VFS {
     static void Initialize() {
         m_drivers = new LinkedList!FSDriver();
 
-        Root = new DirectoryNode(null, FSNode.NewAttributes("/"));
-        DirectoryNode system = new DirectoryNode(Root, FSNode.NewAttributes("System"));
+        Root = new DirectoryNode(null, FileAttributes("/"));
+        DirectoryNode system = new DirectoryNode(Root, FileAttributes("System"));
 
-        DeviceManager.DevFS = new DirectoryNode(system, FSNode.NewAttributes("Devices"));
+        DeviceManager.DevFS = new DirectoryNode(system, FileAttributes("Devices"));
         DevFS.Mount(DeviceManager.DevFS);
-        TmpFS.Mount(new DirectoryNode(system, FSNode.NewAttributes("Temp")));
+        TmpFS.Mount(new DirectoryNode(system, FileAttributes("Temp")));
 
         new NullDev(DeviceManager.DevFS, "null");
         new ZeroDev(DeviceManager.DevFS, "zero");
@@ -193,7 +193,7 @@ abstract final class VFS {
                     return SyscallReturn.Error;
 
                 auto name    = (cast(char *)param2).ToString();
-                auto attribs = FSNode.NewAttributes(name, cast(FileType)param3);
+                auto attribs = FileAttributes(name, cast(FileType)param3);
                 auto node    = Process.Current.WorkingDirectory.Create(attribs);
 
                 if (node is null)

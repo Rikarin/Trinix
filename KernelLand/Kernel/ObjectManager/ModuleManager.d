@@ -176,7 +176,7 @@ abstract final class ModuleManager {
 
     static bool LoadMemory(byte[] buffer, string args) {
         MemoryNode node = new MemoryNode(buffer, VFS.Find!DirectoryNode("BootModules", DeviceManager.DevFS),
-                                         FSNode.NewAttributes("mem" ~ m_number));
+                                         FileAttributes("mem" ~ m_number));
         m_number++;
 
         return LoadFile(node, args);

@@ -179,35 +179,6 @@ abstract class FSNode : Resource {
         return false;
     }
 
-    /**
-     * Create a basic structure of new file sttributes with UID and GID of
-     * current running process, current time and 644 permissions.
-     * 
-     * Params:
-     *      name    =       name of node used this attriutes
-     *      type    =       type of node like file, directory, pipe, etc.
-     * 
-     * Returns:
-     *      a valid struct of attributes
-	 *
-	 * TODO:
-	 *     o Move this to the FileAttributes structure
-     */
-    static FileAttributes NewAttributes(string name, FileType type = FileType.Directory) {
-        FileAttributes ret;
-        ret.Name        = name;
-        ret.Type        = type;
-        ret.Permissions = FilePermissions.UserRead  | FilePermissions.UserWrite 
-                        | FilePermissions.GroupRead | FilePermissions.OtherRead;
-        ret.UID         = Process.Current.UID;
-        ret.GID         = Process.Current.GID;
-        ret.AccessTime  = Time.Now;
-        ret.ModifyTime  = ret.AccessTime;
-        ret.CreateTime  = ret.AccessTime;
-
-        return ret;
-    }
-
 /* ============================= START SYSCALL ============================= */
     private long Syscall_GetAttributes(long attribPtr) {
         if (!IsValidAddress(attribPtr))

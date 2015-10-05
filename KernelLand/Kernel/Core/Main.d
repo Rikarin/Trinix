@@ -30,7 +30,6 @@
  *      o Compile Kappa framework and link it with Kernel
  *      o Move things from Library to Kappa framework
  *      o Merge ObjectManager and SyscallManager
- *      o Move FSNode.NewAttributes to the FileAttributes.Default()
  *
  * DRIVERS:
  *      o Keyboard
@@ -104,7 +103,7 @@ extern(C) void KernelMain() {
     ModuleManager.LoadBuiltins();
     //LoadModules();
 
-    VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
+    VFS.Mount(new DirectoryNode(VFS.Root, FileAttributes("ext2")), 
               VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");
 
     //import Modules.Terminal.VTY.Main;

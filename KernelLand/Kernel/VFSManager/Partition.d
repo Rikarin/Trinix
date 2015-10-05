@@ -98,7 +98,7 @@ final class Partition : BlockNode {
 
     static void ReadTable(IBlockDevice device) {
         string name = NextDiskName;
-        new Partition(device, 0, device.Blocks, DeviceManager.DevFS, FSNode.NewAttributes(name));
+        new Partition(device, 0, device.Blocks, DeviceManager.DevFS, FileAttributes(name));
 
         byte[512] mbr;
         if (device.Read(0, mbr) != 512)
@@ -107,7 +107,7 @@ final class Partition : BlockNode {
         MBREntry* entry = cast(MBREntry *)(cast(ulong)mbr.ptr + 0x1BE);
         foreach (i, x; entry[0 .. 4]) {
             if ((x.Bootable == 0 || x.Bootable == 0x80) && x.ID && x.StartLBA < device.Blocks && x.Size < device.Blocks)
-                new Partition(device, x.StartLBA, x.Size, DeviceManager.DevFS, FSNode.NewAttributes(name ~ 's' ~ cast(char)('1' + i)));
+                new Partition(device, x.StartLBA, x.Size, DeviceManager.DevFS, FileAttributes(name ~ 's' ~ cast(char)('1' + i)));
         }
     }
 }

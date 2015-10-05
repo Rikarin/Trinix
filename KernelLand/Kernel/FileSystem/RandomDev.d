@@ -31,7 +31,7 @@ final class RandomDev : CharNode {
     private __gshared ulong m_number;
 
     this(DirectoryNode parent, string name) {
-        super(parent, NewAttributes(name));
+        super(parent, FileAttributes(name));
 
         m_attributes.Length = 1024;
     }

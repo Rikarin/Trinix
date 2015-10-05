@@ -250,26 +250,26 @@ final class Ext2FileSystem : IFileSystem {
 
             switch (dirinfo.FileType) {
                 case DirFileType.File:
-                    new Ext2FileNode(dirinfo.Inode, node, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
+                    new Ext2FileNode(dirinfo.Inode, node, FileAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
                     break;
                     
                 case DirFileType.Directory:
                     if (dirinfo.Name.ptr[0 .. dirinfo.NameLength] == "." || dirinfo.Name.ptr[0 .. dirinfo.NameLength] == "..")
                         break;
                     
-                    new Ext2DirectoryNode(dirinfo.Inode, node, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
+                    new Ext2DirectoryNode(dirinfo.Inode, node, FileAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
                     break;
                     
                 case DirFileType.BlockDevice:
-                    new Ext2BlockNode(dirinfo.Inode, node, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
+                    new Ext2BlockNode(dirinfo.Inode, node, FileAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
                     break;
 
                 case DirFileType.CharDevice:
-                    new Ext2CharNode(dirinfo.Inode, node, FSNode.NewAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
+                    new Ext2CharNode(dirinfo.Inode, node, FileAttributes(cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength].dup));
                     break;
 
                 case DirFileType.FIFO:
-                    new Ext2PipeNode(dirinfo.Inode, node, FSNode.NewAttributes("" ~ cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength]));
+                    new Ext2PipeNode(dirinfo.Inode, node, FileAttributes("" ~ cast(string)dirinfo.Name.ptr[0 .. dirinfo.NameLength]));
                     break;
 
                 default:
@@ -470,7 +470,7 @@ final class Ext2FileSystem : IFileSystem {
             return null;
 
         auto ret                  = new Ext2FileSystem(partition);
-        ret.m_rootNode            = new Ext2DirectoryNode(0, null, FSNode.NewAttributes("/"));
+        ret.m_rootNode            = new Ext2DirectoryNode(0, null, FileAttributes("/"));
         ret.m_rootNode.FileSystem = ret;
         ret.m_rootNode.m_node     = DiskNode(ret.m_rootNode, 2);
 

@@ -49,7 +49,7 @@ extern(C) void ArchMain(uint magic, v_addr info) {
 }
 
 void LoadModules() {
-    new DirectoryNode(DeviceManager.DevFS, FSNode.NewAttributes("BootModules"));
+    new DirectoryNode(DeviceManager.DevFS, FileAttributes("BootModules"));
 
     Log("Multiboot modules count: %d", Multiboot.ModulesCount);
     foreach (tmp; Multiboot.Modules[0 .. Multiboot.ModulesCount]) {

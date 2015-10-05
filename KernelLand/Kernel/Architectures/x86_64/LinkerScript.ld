@@ -79,7 +79,7 @@ SECTIONS {
     }
 
     .tbss : AT(ADDR(.tbss) - __linker_kernel_start) {
-        *(.tbss)
+        *(.tbss .tbss.*)
     }
 
     __linker_kernel_end = (. + 0xFFF) & 0xFFFFFFFFFFFFF000;

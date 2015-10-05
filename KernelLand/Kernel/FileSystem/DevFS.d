@@ -69,7 +69,7 @@ final class DevFS : IFileSystem {
             return null;
 
         DevFS ret = new DevFS();
-        ret.m_rootNode = new DirectoryNode(null, FSNode.NewAttributes("/"));
+        ret.m_rootNode = new DirectoryNode(null, FileAttributes("/"));
         ret.m_rootNode.FileSystem = ret;
 
         if (!mountpoint.Mount(ret.m_rootNode)) {
