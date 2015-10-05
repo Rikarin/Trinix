@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Default</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ItemType>GenericProject</ItemType>
+    <ProjectGuid>{95334AE0-8FF5-4824-A1E1-91183A627D46}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Default|AnyCPU' ">
+    <OutputPath>.</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="Architectures\x86_64\LinkerScript.ld" />
+    <None Include="Architectures\x86_64\Architecture\CPU.d" />
+    <None Include="Architectures\x86_64\Architecture\CPU.s" />
+    <None Include="Architectures\x86_64\Architecture\LinkerScript.d" />
+    <None Include="Architectures\x86_64\Architecture\Main.d" />
+    <None Include="Architectures\x86_64\Architecture\Port.d" />
+    <None Include="Architectures\x86_64\Architecture\Time.d" />
+    <None Include="Architectures\x86_64\Architecture\package.d" />
+    <None Include="Architectures\x86_64\Boot\Boot.s" />
+    <None Include="Architectures\x86_64\Boot\Load.s" />
+    <None Include="Architectures\x86_64\Core\GDT.d" />
+    <None Include="Architectures\x86_64\Core\IDT.d" />
+    <None Include="Architectures\x86_64\Core\InterruptStackType.d" />
+    <None Include="Architectures\x86_64\Core\InterruptType.d" />
+    <None Include="Architectures\x86_64\Core\SystemSegmentType.d" />
+    <None Include="Architectures\x86_64\Core\TSS.d" />
+    <None Include="Architectures\x86_64\Core\package.d" />
+    <None Include="Core\Logger.d" />
+    <None Include="Core\Main.d" />
+    <None Include="Core\Multiboot.d" />
+    <None Include="Core\PIT.d" />
+    <None Include="Core\Runtime.c" />
+    <None Include="Core\package.d" />
+    <None Include="Diagnostics\Debugger.d" />
+    <None Include="Diagnostics\package.d" />
+    <None Include="FileSystem\DevFS.d" />
+    <None Include="FileSystem\NullDev.d" />
+    <None Include="FileSystem\RandomDev.d" />
+    <None Include="FileSystem\TmpFS.d" />
+    <None Include="FileSystem\ZeroDev.d" />
+    <None Include="FileSystem\package.d" />
+    <None Include="Library\Array.d" />
+    <None Include="Library\BitArray.d" />
+    <None Include="Library\Bitfield.d" />
+    <None Include="Library\Casters.d" />
+    <None Include="Library\LibraryLoader.dx" />
+    <None Include="Library\LinkedList.d" />
+    <None Include="Library\List.d" />
+    <None Include="Library\Property.d" />
+    <None Include="Library\Queue.d" />
+    <None Include="Library\SpinLock.d" />
+    <None Include="Library\String.d" />
+    <None Include="Library\StringBuilder.d" />
+    <None Include="Library\Template.d" />
+    <None Include="Library\Termios.d" />
+    <None Include="Library\package.d" />
+    <None Include="Linker\BinaryLoader.d" />
+    <None Include="Linker\ElfLoader.d" />
+    <None Include="Linker\package.d" />
+    <None Include="MemoryManager\Heap.d" />
+    <None Include="MemoryManager\Paging.d" />
+    <None Include="MemoryManager\PhysicalMemory.d" />
+    <None Include="MemoryManager\VirtualMemory.d" />
+    <None Include="MemoryManager\package.d" />
+    <None Include="ObjectManager\DeviceManager.d" />
+    <None Include="ObjectManager\IBlockDevice.d" />
+    <None Include="ObjectManager\ModuleManager.d" />
+    <None Include="ObjectManager\package.d" />
+    <None Include="SyscallManager\Resource.d" />
+    <None Include="SyscallManager\ResourceManager.d" />
+    <None Include="SyscallManager\SyscallHandler.d" />
+    <None Include="SyscallManager\package.d" />
+    <None Include="TaskManager\Mutex.d" />
+    <None Include="TaskManager\Process.d" />
+    <None Include="TaskManager\Process.s" />
+    <None Include="TaskManager\Semaphore.d" />
+    <None Include="TaskManager\SignalType.d" />
+    <None Include="TaskManager\Task.d" />
+    <None Include="TaskManager\Thread.d" />
+    <None Include="TaskManager\package.d" />
+    <None Include="VFSManager\BlockCache.d" />
+    <None Include="VFSManager\BlockNode.d" />
+    <None Include="VFSManager\CharNode.d" />
+    <None Include="VFSManager\DirectoryNode.d" />
+    <None Include="VFSManager\FSNode.d" />
+    <None Include="VFSManager\FileAttributes.d" />
+    <None Include="VFSManager\FileNode.d" />
+    <None Include="VFSManager\IFileSystem.d" />
+    <None Include="VFSManager\MemoryNode.d" />
+    <None Include="VFSManager\Partition.d" />
+    <None Include="VFSManager\PipeNode.d" />
+    <None Include="VFSManager\SocketNode.d" />
+    <None Include="VFSManager\SymLinkNode.d" />
+    <None Include="VFSManager\VFS.d" />
+    <None Include="VFSManager\package.d" />
+  </ItemGroup>
+</Project>
