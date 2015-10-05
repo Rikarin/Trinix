@@ -19,6 +19,10 @@
  * 
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
+ *
+ * TODO:
+ *      o Syscalls: exit, get (id, name), set name, sleep, wait, send/recv messages
+ *                  signal, yield
  */
 
 module TaskManager.Thread;
@@ -29,7 +33,6 @@ import Diagnostics;
 import TaskManager;
 import Architecture;
 import ObjectManager;
-import SyscallManager;
 import MemoryManager;
 
 
@@ -64,7 +67,10 @@ struct IPCMessage {
 }
 
 
-final class Thread {
+final class Thread : Resource {
+    private enum IDENTIFIER = "com.trinix.TaskManager.Thread";
+
+    enum THREAD_RETURN    = 0xDEADC0DE;
     enum STACK_SIZE       = 0x32000;
     enum USER_STACK_SIZE  = 0x32000;
     enum MIN_PRIORITY     = 10;
@@ -72,8 +78,6 @@ final class Thread {
     enum DEFAULT_QUANTUM  = 5;
 
     private ulong m_id;
-    private string m_name;
-
     private ThreadState m_state;
     private SpinLock m_spinLock;
 
@@ -112,12 +116,14 @@ final class Thread {
 
     //private int _errno; //WAT?
 
-
     package this(Process process) {
+        CallTable[] callTable = [
+
+        ];
+
         m_id              = Task.NextTID;
         m_state           = ThreadState.PreInit;
         m_process         = process;
-        m_name            = "Unnamed Thread";
         m_remaining       = DEFAULT_QUANTUM;
         m_quantum         = DEFAULT_QUANTUM;
         m_priority        = DEFAULT_PRIORITY;
@@ -134,18 +140,20 @@ final class Thread {
         m_savedState.SSEInt.Create();
         m_savedState.SSESyscall.Create();
         m_process.Threads.Add(this);
+
+        super(DeviceType.Task, IDENTIFIER, 0x01, callTable);
     }
 
     this(void delegate() ThreadStart) {
-        this(Task.CurrentProcess);
+        this(Process.Current);
 
-        m_parent = Task.CurrentThread;
+        m_parent = Current;
     }
 
     this(void function() ThreadStart) {
-        this(Task.CurrentProcess);
+        this(Process.Current);
 
-        m_parent         = Task.CurrentThread;
+        m_parent         = Current;
         m_kernelStack[0] = cast(ulong)ThreadStart;
     }
 
@@ -169,7 +177,6 @@ final class Thread {
         if (!m_process.Threads.Count)
             delete m_process;
 
-        delete m_name;
         delete m_node;
         delete m_spinLock;
         delete m_deadChildLock;
@@ -188,25 +195,28 @@ final class Thread {
     }
 
     @property {
-        ulong ID()                 { return m_id;           }
-        string Name()              { return m_name;         }
-        ref auto Node()            { return m_node;         }
-        int Priority()             { return m_priority;     }
-        ref int Quantum()          { return m_quantum;      }
-        void* WaitPointer()        { return m_waitPointer;  }
-        ref int Remaining()        { return m_remaining;    }
-        ref ulong RetStatus()      { return m_retStatus;    }
-        long CurrentFaultNum()     { return m_curFaultNum;  }
-        Process ParentProcess()    { return m_process;      }
-        ref ThreadState State()    { return m_state;        }
-        ref void* FaultHandler()   { return m_faultHandler; }
-        ref TaskState SavedState() { return m_savedState;   }
+        static auto Current()            { return Task.m_currentThread; }
+        ulong ID()                       { return m_id;                 }
+        int Priority()                   { return m_priority;           }
+        ref auto Node()                  { return m_node;               }
+        ref int Quantum()                { return m_quantum;            }
+        void* WaitPointer()              { return m_waitPointer;        }
+        ref int Remaining()              { return m_remaining;          }
+        ref ulong RetStatus()            { return m_retStatus;          }
+        long CurrentFaultNum()           { return m_curFaultNum;        }
+        Process ParentProcess()          { return m_process;            }
+        ref ThreadState State()          { return m_state;              }
+        ref void* FaultHandler()         { return m_faultHandler;       }
+        ref TaskState SavedState()       { return m_savedState;         }
+        override bool Name(string value) { return super.Name(value);    }
         
-        void Name(string value) {
-            delete m_name;
-            m_name = value;
+        override string Name() {
+            if (super.Name is null)
+                return "Unnamed Thread";
+
+            return super.Name;
         }
-        
+
         void Priority(int priority) {
             if (priority < 0)
                 priority = 0;
@@ -227,11 +237,11 @@ final class Thread {
     }
 
     private static void NewThread() {
-        with (Task.CurrentThread) {
+        with (Current) {
             Port.Cli();
             DeviceManager.EOI(0);
 
-            if (Task.CurrentThread.ParentProcess.IsKernel)
+            if (ParentProcess.IsKernel)
                 Run(0x202, m_kernelStack[0], 0x08, 0x10);
             else
                 Run(0x202, m_kernelStack[0], 0x1B, 0x23);
@@ -312,7 +322,7 @@ final class Thread {
     }
 
     void Kill(ulong status) {
-        bool isCurrentThread = this == Task.CurrentThread;
+        bool isCurrentThread = this == Current;
 
         m_spinLock.WaitOne();
         scope(exit) m_spinLock.Release();
@@ -356,11 +366,7 @@ final class Thread {
 
         if (isCurrentThread)
             while (true)
-                Yield();
-    }
-
-    void Yield() {
-        Task.Scheduler();
+                Task.Yield();
     }
 
     void WaitForStatusEnd(ThreadState status) {
@@ -368,7 +374,7 @@ final class Thread {
         assert(status != ThreadState.Dead);
 
         while (m_state == status)
-            Yield();
+            Task.Yield();
     }
 
     ulong Sleep(ThreadState status, void* ptr, ulong num, SpinLock lock) {
@@ -438,7 +444,7 @@ final class Thread {
         m_state = ThreadState.Active;
 
         Task.ThreadLock.WaitOne();
-        if (Task.CurrentThread != this)
+        if (Current != this)
             Task.Threads.AddLast(m_node);
         Task.ThreadLock.Release();
     }
@@ -524,7 +530,7 @@ final class Thread {
             return false;
 
         IPCMessage* msg = new IPCMessage();
-        msg.Source      = Task.CurrentThread;
+        msg.Source      = Current;
         msg.Data[]      = data;
         m_messages.Add(msg);
 

@@ -95,7 +95,7 @@ final class TmpFS : IFileSystem {
             return null;
         
         TmpFS ret = new TmpFS();
-        ret.m_rootNode = new DirectoryNode(null, FSNode.NewAttributes("/"));
+        ret.m_rootNode = new DirectoryNode(null, FileAttributes("/"));
         ret.m_rootNode.FileSystem = ret;
         
         if (!mountpoint.Mount(ret.m_rootNode)) {

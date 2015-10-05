@@ -25,9 +25,12 @@ module TaskManager.Semaphore;
 
 import Library;
 import TaskManager;
+import ObjectManager;
 
 
-class Semaphore {
+class Semaphore : Resource {
+    private enum IDENTIFIER = "com.trinix.TaskManager.Semaphore";
+
     private string m_name;
     private int m_value;
     private int m_maxValue;
@@ -42,12 +45,18 @@ class Semaphore {
         assert(initialCount > 0);
         assert(maxCount > 0);
     } body {
+        CallTable[] callTable = [
+
+        ];
+
         m_value     = initialCount;
         m_maxValue  = maxCount;
         m_name      = name;
         m_spinLock  = new SpinLock();
         m_waiting   = new LinkedList!Thread();
         m_signaling = new LinkedList!Thread();
+
+        super(DeviceType.IPC, IDENTIFIER, 0x01, callTable);
     }
     
     ~this() {
@@ -65,16 +74,16 @@ class Semaphore {
         m_spinLock.Release();
     }
 
-    int WaitOne() {
-        int taken;
+    long WaitOne() {
+        long taken;
         m_spinLock.WaitOne();
 
         if (m_value > 0) {
             taken = 1;
             m_value--;
         } else {
-            m_waiting.Add(Task.CurrentThread);
-            taken = cast(int)Task.CurrentThread.Sleep(ThreadState.SemaphoreSleep, cast(void *)this, 1, m_spinLock);
+            m_waiting.Add(Thread.Current);
+            taken = Thread.Current.Sleep(ThreadState.SemaphoreSleep, cast(void *)this, 1, m_spinLock);
             m_spinLock.WaitOne();
         }
 
@@ -94,15 +103,15 @@ class Semaphore {
         return -1;
     }
 
-    int Release(int releaseCount) in {
+    long Release(int releaseCount) in {
         assert(releaseCount >= 0);
     } body {
         m_spinLock.WaitOne();
-        int added;
+        long added;
 
         if (m_maxValue && m_value == m_maxValue) {
-            m_signaling.Add(Task.CurrentThread);
-            added = cast(int)Task.CurrentThread.Sleep(ThreadState.SemaphoreSleep, cast(void *)this, releaseCount, m_spinLock);
+            m_signaling.Add(Thread.Current);
+            added = Thread.Current.Sleep(ThreadState.SemaphoreSleep, cast(void *)this, releaseCount, m_spinLock);
             m_spinLock.WaitOne();
         } else {
             added    = (m_maxValue && m_value + releaseCount > m_maxValue) ? m_maxValue - m_value : releaseCount;

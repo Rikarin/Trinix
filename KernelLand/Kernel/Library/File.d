@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
@@ -21,26 +21,30 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module Modules.Input.Keyboard.Main;
+module Library.File;
 
-import Core;
-import Diagnostics;
-import ObjectManager;
-
-import Modules.Input.Keyboard;
+import VFSManager;
 
 
-class Keyboard : Resource {
-    this(string identifier, long ver, int maxSym) {
-        static const CallTable[] callTable = [
-        
-        ];
+class File {
+    FSNode m_node;
+    long m_pos;
 
-        super(DeviceType.Input, identifier, ver, callTable);
-        Debugger.Log(LogLevel.Info, "Keyboard", "%s (version: %d) was registered", identifier, ver);
+    this(FSNode node) {
+        m_node = node;
     }
 
-    void HandleEvent(int hidCode) {
-        Log("Hit %d", hidCode);
+    @property ref long Position() { return m_pos; }
+
+    long Read(byte[] buffer) {
+        long len = m_node.Read(m_pos, buffer);
+        m_pos   += len;
+        
+        return len;
+    }
+
+    void Write(byte[] buffer) {
+        long len = m_node.Write(m_pos, buffer);
+        m_pos   += len;
     }
 }

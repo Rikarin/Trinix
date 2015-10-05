@@ -24,7 +24,6 @@
 module Modules.Input.Mouse.Main;
 
 import ObjectManager;
-import SyscallManager;
 
 import Modules.Input.Mouse;
 

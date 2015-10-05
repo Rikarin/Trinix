@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
@@ -21,26 +21,20 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module Modules.Input.Keyboard.Main;
+module TaskManager.ReaderWriterLock;
 
-import Core;
-import Diagnostics;
 import ObjectManager;
 
-import Modules.Input.Keyboard;
+
+class ReaderWriterLock : Resource {
+    private enum IDENTIFIER = "com.trinix.TaskManager.ReaderWriterLock";
 
 
-class Keyboard : Resource {
-    this(string identifier, long ver, int maxSym) {
-        static const CallTable[] callTable = [
-        
+    this() {
+        CallTable[] callTable = [
+
         ];
 
-        super(DeviceType.Input, identifier, ver, callTable);
-        Debugger.Log(LogLevel.Info, "Keyboard", "%s (version: %d) was registered", identifier, ver);
-    }
-
-    void HandleEvent(int hidCode) {
-        Log("Hit %d", hidCode);
+        super(DeviceType.IPC, IDENTIFIER, 0x01, callTable);
     }
 }

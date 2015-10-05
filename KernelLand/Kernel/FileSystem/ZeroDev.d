@@ -28,7 +28,7 @@ import VFSManager;
 
 final class ZeroDev : CharNode {
     this(DirectoryNode parent, string name) {
-        super(parent, NewAttributes(name));
+        super(parent, FileAttributes(name));
     }
     
     override ulong Read(long offset, byte[] data) {

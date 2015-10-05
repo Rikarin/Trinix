@@ -19,6 +19,9 @@
  * 
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
+ *
+ * TODO:
+ *      Syscalls: symlink, mount
  */
 
 module VFSManager.VFS;
@@ -27,10 +30,12 @@ import Core;
 import Library;
 import FileSystem;
 import VFSManager;
+import TaskManager;
 import ObjectManager;
 import MemoryManager;
-import SyscallManager;
 
+import System.Runtime;
+    
 
 struct FSDriver {
     string Name;
@@ -40,24 +45,27 @@ struct FSDriver {
 }
 
 abstract final class VFS {
+    private enum IDENTIFIER = "com.trinix.VFSManager";
+
     __gshared DirectoryNode Root;
     private __gshared LinkedList!FSDriver m_drivers;
+
 
     static void Initialize() {
         m_drivers = new LinkedList!FSDriver();
 
-        Root = new DirectoryNode(null, FSNode.NewAttributes("/"));
-        DirectoryNode system = new DirectoryNode(Root, FSNode.NewAttributes("System"));
+        Root = new DirectoryNode(null, FileAttributes("/"));
+        DirectoryNode system = new DirectoryNode(Root, FileAttributes("System"));
 
-        DeviceManager.DevFS = new DirectoryNode(system, FSNode.NewAttributes("Devices"));
+        DeviceManager.DevFS = new DirectoryNode(system, FileAttributes("Devices"));
         DevFS.Mount(DeviceManager.DevFS);
-        TmpFS.Mount(new DirectoryNode(system, FSNode.NewAttributes("Temp")));
+        TmpFS.Mount(new DirectoryNode(system, FileAttributes("Temp")));
 
         new NullDev(DeviceManager.DevFS, "null");
         new ZeroDev(DeviceManager.DevFS, "zero");
         new RandomDev(DeviceManager.DevFS, "random");
 
-        ResourceManager.AddCallTable(FSNode.m_rcs);
+        ResourceManager.AddCallTable(IDENTIFIER, &StaticCallback);
     }
 
     static void Finalize() {
@@ -160,5 +168,58 @@ abstract final class VFS {
             VirtualMemory.KernelPaging.AllocFrame(i, AccessMode.DefaultKernel);
 
         node.Read(offset, (cast(byte *)start)[0 .. length]);
+    }
+
+
+    /**
+    * Callback used by userspace apps for obtaining instance of speciffic
+    * classes by calling this static syscall
+    * 
+    * Params:
+    *      param1  =       TODO
+    *      param2  =       TODO
+    *      param3  =       TODO
+    *      param4  =       TODO
+    *      param5  =       TODO
+    * 
+    * Returns:
+    *      SyscallReturn.Error     on failure
+    */
+    static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
+        switch (param1) {
+            case FileHandle.StaticCommands.Create:
+                if (!Resource.IsValidAddress(param2))
+                    return SyscallReturn.Error;
+
+                auto name    = (cast(char *)param2).ToString();
+                auto attribs = FileAttributes(name, cast(FileType)param3);
+                auto node    = Process.Current.WorkingDirectory.Create(attribs);
+
+                if (node is null)
+                    return SyscallReturn.Error;
+
+                if (cast(DirectoryNode)node !is null)
+                    return SyscallReturn.Successful;
+
+                Process.Current.AttachResource(node);
+                return node.Handle;
+
+            case FileHandle.StaticCommands.Open:
+                if (!Resource.IsValidAddress(param2))
+                    return SyscallReturn.Error;
+
+                auto name  = (cast(char *)param2).ToString();
+                auto found = VFS.Find!FSNode(name, Process.Current.WorkingDirectory);
+
+                if (found is null || cast(DirectoryNode)found !is null)
+                    return SyscallReturn.Error;
+
+                Process.Current.AttachResource(found);
+                return found.Handle;
+
+            default:
+        }
+
+        return SyscallReturn.Error;
     }
 }

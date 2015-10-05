@@ -28,9 +28,18 @@ import System.Runtime;
 
 class FileHandle : SafeHandle {
     private enum IDENTIFIER = "com.trinix.VFSManager.FSNode";
+	
+	enum StaticCommands {
+		Create,
+		Open
+	}
+	
+	private this() {
+	
+	}
 
     static FileHandle CreateFile(string fileName) {
-        return new FileHandle(StaticSyscall(cast(long)IDENTIFIER.ptr, 0, cast(long)fileName.ptr));
+        return Create!FileHandle(IDENTIFIER, StaticSyscall("com.trinix.VFSManager", StaticCommands.Create, cast(long)fileName.ptr, FileType.File));
     }
 
     alias FileAttributes = int;

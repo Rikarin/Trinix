@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
@@ -21,26 +21,52 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module Modules.Input.Keyboard.Main;
+module Library.Dictionary;
 
-import Core;
-import Diagnostics;
-import ObjectManager;
-
-import Modules.Input.Keyboard;
+import Library;
 
 
-class Keyboard : Resource {
-    this(string identifier, long ver, int maxSym) {
-        static const CallTable[] callTable = [
-        
-        ];
+class Dictionary(TKey, TValue) {
+    List!TKey m_keys;
+    List!TValue m_values;
 
-        super(DeviceType.Input, identifier, ver, callTable);
-        Debugger.Log(LogLevel.Info, "Keyboard", "%s (version: %d) was registered", identifier, ver);
+
+    this() {
+        m_keys   = new List!TKey();
+        m_values = new List!TValue();
     }
 
-    void HandleEvent(int hidCode) {
-        Log("Hit %d", hidCode);
+    ~this() {
+        delete m_keys;
+        delete m_values;
+    }
+
+    TValue opIndex(TKey key) {
+        long index = m_keys.IndexOf(key);
+        if (index == -1)
+            return cast(TValue)0;
+
+        return m_values[index];
+    }
+
+    void opIndexAssign(TValue value, TKey key) {
+        long index = m_keys.IndexOf(key);
+
+        if (index == -1) {
+            m_keys.Add(key);
+            m_values.Add(value);
+        } else {
+            m_values[index] = value;
+        }
+    }
+
+    bool Remove(TKey key) {
+        long index = m_keys.IndexOf(key);
+        if (index == -1)
+            return false;
+
+        m_keys.RemoveAt(index);
+        m_values.RemoveAt(index);
+        return true;
     }
 }

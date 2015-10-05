@@ -211,8 +211,11 @@
    <File path="System\IO\Stream.d" />
   </Folder>
   <Folder name="Runtime">
+   <File path="System\Runtime\FileHandle.d" />
    <File path="System\Runtime\package.d" />
    <File path="System\Runtime\SafeHandle.d" />
+   <File path="System\Runtime\SyscallReturn.d" />
+   <File path="System\Runtime\SyscallType.d" />
   </Folder>
   <File path="System\AsyncCallback.d" />
   <File path="System\IAsyncResult.d" />

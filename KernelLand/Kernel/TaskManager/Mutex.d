@@ -25,16 +25,25 @@ module TaskManager.Mutex;
 
 import Library;
 import TaskManager;
+import ObjectManager;
 
 
-class Mutex {
+class Mutex : Resource {
+    private enum IDENTIFIER = "com.trinix.TaskManager.Mutex";
+
     private SpinLock m_spinLock;
     private LinkedList!Thread m_waiting;
     private Thread m_owner;
 
     this() {
+        CallTable[] callTable = [
+
+        ];
+
         m_spinLock = new SpinLock();
         m_waiting  = new LinkedList!Thread();
+
+        super(DeviceType.IPC, IDENTIFIER, 0x01, callTable);
     }
 
     ~this() {
@@ -46,10 +55,10 @@ class Mutex {
         m_spinLock.WaitOne();
 
         if (m_owner) {
-            m_waiting.Add(Task.CurrentThread);
-            Task.CurrentThread.Sleep(ThreadState.MutexSleep, cast(void *)this, 0, m_spinLock);
+            m_waiting.Add(Thread.Current);
+            Thread.Current.Sleep(ThreadState.MutexSleep, cast(void *)this, 0, m_spinLock);
         } else {
-            m_owner = Task.CurrentThread;
+            m_owner = Thread.Current;
             m_spinLock.Release();
         }
 

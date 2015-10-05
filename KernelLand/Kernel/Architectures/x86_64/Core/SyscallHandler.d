@@ -21,13 +21,12 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module SyscallManager.SyscallHandler;
+module Architectures.x86_64.Core.SyscallHandler;
 
 import TaskManager;
 import Architecture;
 import ObjectManager;
 import MemoryManager;
-import SyscallManager;
 
 
 struct SyscallStack {
@@ -58,14 +57,14 @@ abstract final class SyscallHandler {
     }
 
     static void SyscallDispatcher(SyscallStack* stack) {
-        Task.CurrentThread.SavedState.SSESyscall.Save();
+        Thread.Current.SavedState.SSESyscall.Save();
         VirtualMemory.KernelPaging.Install();
 
         with (stack)
             RAX = ResourceManager.CallResource(R9, R8, RDI, RSI, RDX, RBX, RAX);
 
-        Task.CurrentProcess.PageTable.Install();
-        Task.CurrentThread.SavedState.SSESyscall.Load();
+        Process.Current.PageTable.Install();
+        Thread.Current.SavedState.SSESyscall.Load();
     }
 
     extern(C) private static void SyscallCommon() {

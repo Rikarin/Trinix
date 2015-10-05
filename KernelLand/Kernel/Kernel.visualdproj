@@ -870,6 +870,8 @@
    <File path="Library\BitArray.d" />
    <File path="Library\Bitfield.d" />
    <File path="Library\Casters.d" />
+   <File path="Library\Dictionary.d" />
+   <File path="Library\File.d" />
    <File path="Library\LibraryLoader.dx" />
    <File path="Library\LinkedList.d" />
    <File path="Library\List.d" />
@@ -907,11 +909,14 @@
    <File path="SyscallManager\SyscallHandler.d" />
   </Folder>
   <Folder name="TaskManager">
+   <File path="TaskManager\EventWaitHandle.d" />
    <File path="TaskManager\Mutex.d" />
    <File path="TaskManager\package.d" />
    <File path="TaskManager\Process.d" />
    <File path="TaskManager\Process.s" />
+   <File path="TaskManager\ReaderWriterLock.d" />
    <File path="TaskManager\Semaphore.d" />
+   <File path="TaskManager\SharedMemory.d" />
    <File path="TaskManager\SignalType.d" />
    <File path="TaskManager\Task.d" />
    <File path="TaskManager\Thread.d" />

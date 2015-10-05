@@ -21,10 +21,7 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  * 
  * TODO:
- *      o VFS: check, syscalls
- *      o IPC: SharedMemory (like Mutex), RWLock, Syscalls
  *      o parse command line
- *      o Exit thread - crt0 will call syscall(exit) at the end
  *      o Fix \n in Logger
  *      o Dynamic module loader
  *      o ELF parser, binary loader
@@ -55,7 +52,6 @@ import TaskManager;
 import Architecture;
 import MemoryManager;
 import ObjectManager;
-import SyscallManager;
 
 //==============================================================================
 /* MemoryMap:
@@ -105,7 +101,7 @@ extern(C) void KernelMain() {
     ModuleManager.LoadBuiltins();
     //LoadModules();
 
-    VFS.Mount(new DirectoryNode(VFS.Root, FSNode.NewAttributes("ext2")), 
+    VFS.Mount(new DirectoryNode(VFS.Root, FileAttributes("ext2")), 
               VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");
 
     //import Modules.Terminal.VTY.Main;
@@ -144,8 +140,8 @@ void RemapPIC() {
 }
 
 void test_lala() {
-    Log("The new thread %d", Task.CurrentThread.ID);
-    Log("The new process %d", Task.CurrentProcess.ID);
+    Log("The new thread %d", Thread.Current.ID);
+    Log("The new process %d", Process.Current.ID);
 
     while (true) {
         asm {

@@ -22,6 +22,7 @@
  * 
  * TODO:
  *      o Signal handler
+ *      o Syscalls: sbrk, get(id, uid, gid, resources, childs, cwd)
  */
 
 module TaskManager.Process;
@@ -32,10 +33,11 @@ import VFSManager;
 import TaskManager;
 import Architecture;
 import MemoryManager;
-import SyscallManager;
+import ObjectManager;
 
 
-final class Process {
+final class Process : Resource {
+    private enum IDENTIFIER = "com.trinix.TaskManager.Process";
     private v_addr m_userStack = 0xFFFFFFFF_80000000;
 
     private ulong m_id;
@@ -50,12 +52,14 @@ final class Process {
     private List!Resource m_resources; //TODO: look on this
 
     @property {
-        ulong ID()             { return m_id;       }
-        ulong UID()            { return m_uid;      }
-        ulong GID()            { return m_gid;      }
-        Paging PageTable()     { return m_paging;   }
-        bool IsKernel()        { return m_isKernel; }
-        package auto Threads() { return m_threads;  }
+        static auto Current()   { return Task.m_currentThread.ParentProcess; }
+        ulong ID()              { return m_id;       }
+        ulong UID()             { return m_uid;      }
+        ulong GID()             { return m_gid;      }
+        bool IsKernel()         { return m_isKernel; }
+        Paging PageTable()      { return m_paging;   }
+        package auto Threads()  { return m_threads;  }
+        auto WorkingDirectory() { return m_cwd;      }
     }
     
     package static Process Initialize() {
@@ -79,19 +83,24 @@ final class Process {
     }
 
     private this() {
+        CallTable[] callTable = [
+
+        ];
+
         m_id        = Task.NextPID;
         m_threads   = new LinkedList!Thread();
         m_resources = new List!Resource();
 
-        if (Task.CurrentThread !is null) {
-            m_uid       = Task.CurrentProcess.m_uid;
-            m_gid       = Task.CurrentProcess.m_gid;
-            m_isKernel  = Task.CurrentProcess.m_isKernel;
-            m_paging    = Task.CurrentProcess.m_paging;
-            m_cwd       = Task.CurrentProcess.m_cwd;
+        if (Thread.Current !is null) {
+            m_uid       = Process.Current.m_uid;
+            m_gid       = Process.Current.m_gid;
+            m_isKernel  = Process.Current.m_isKernel;
+            m_paging    = Process.Current.m_paging;
+            m_cwd       = Process.Current.m_cwd;
         }
 
         Task.Processes.Add(this);
+        super(DeviceType.Task, IDENTIFIER, 0x01, callTable);
     }
 
     this(void delegate() ProcessStart) {
@@ -164,7 +173,7 @@ final class Process {
     }
 
     private void CopyResources() {
-        foreach (x; Task.CurrentProcess.m_resources) {
+        foreach (x; Current.m_resources) {
             if (x.AttachProcess(this))
                 m_resources.Add(x);
         }
