@@ -43,6 +43,8 @@ enum DeviceType {
     Video,
     Audio,
     Disk,
+    Task,
+    IPC,
     Input,
     Network,
     FileSystem

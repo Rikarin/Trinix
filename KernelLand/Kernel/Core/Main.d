@@ -21,10 +21,7 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  * 
  * TODO:
- *      o VFS: check, syscalls
- *      o IPC: SharedMemory (like Mutex), RWLock, Syscalls
  *      o parse command line
- *      o Exit thread - crt0 will call syscall(exit) at the end
  *      o Fix \n in Logger
  *      o Dynamic module loader
  *      o ELF parser, binary loader

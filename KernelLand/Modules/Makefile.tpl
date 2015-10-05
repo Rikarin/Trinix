@@ -60,7 +60,7 @@ $(BIN): $(OBJ)
 else
 $(BIN): %.xo.$(ARCH): $(OBJ)
 	@echo --- LD -o $@
-	@$(LD) -T $(TRXDIR)/KernelLand/Modules/link.ld -r -o $@ $(OBJ)
+	@$(LD) --script=$(TRXDIR)/KernelLand/Modules/link.ld -r -o $@ $(OBJ)
 endif
 	
 obj_$(_SUFFIX)/%.d.o: %.d

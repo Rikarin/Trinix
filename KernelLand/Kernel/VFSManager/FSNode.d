@@ -19,6 +19,9 @@
  * 
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
+ *
+ * TODO:
+ *      o Add syscalls for remove, childresns, location
  */
 
 module VFSManager.FSNode;
@@ -38,11 +41,6 @@ import SyscallManager;
 abstract class FSNode : Resource {
     private enum IDENTIFIER = "com.trinix.VFSManager.FSNode";
 
-    package static const ResouceCallTable m_rcs = {
-        IDENTIFIER,
-        &StaticCallback
-    };
-
     package DirectoryNode m_parent;
     protected FileAttributes m_attributes;
 
@@ -55,8 +53,10 @@ abstract class FSNode : Resource {
      */
     protected this(DirectoryNode parent) {
         CallTable[] callTable = [
+            { ".Read",          3, Callback3: &Syscall_Read          },
+            { ".Write",         3, Callback3: &Syscall_Write         },
             { ".GetAttributes", 1, Callback1: &Syscall_GetAttributes },
-            { ".SetAttributes", 1, Callback1: &Syscall_SetAttributes }
+            { ".SetAttributes", 1, Callback1: &Syscall_SetAttributes },
         ];
 
         if (parent !is null) {
@@ -172,9 +172,14 @@ abstract class FSNode : Resource {
         return sb.ToString();
     }
 
+    override bool DetachProcess(Process process) {
+        super.DetachProcess(process);
+        return false;
+    }
+
     /**
-     * Create a basic structure of new file sttributes with UID and GID of current
-     * running process, current time and 644 permissions.
+     * Create a basic structure of new file sttributes with UID and GID of
+     * current running process, current time and 644 permissions.
      * 
      * Params:
      *      name    =       name of node used this attriutes
@@ -201,47 +206,35 @@ abstract class FSNode : Resource {
         return ret;
     }
 
-/* ================= SYSCALLS ================= */
-    private long Syscall_GetAttributes(long param1) {
-        if (!IsValidAddress(param1))
+/* ============================= START SYSCALL ============================= */
+    private long Syscall_GetAttributes(long attribPtr) {
+        if (!IsValidAddress(attribPtr))
             return SyscallReturn.Error;
 
-        *(cast(FileAttributes *)param1) = Attributes;
+        *(cast(FileAttributes *)attribPtr) = Attributes;
         return SyscallReturn.Successful;
     }
 
-    private long Syscall_SetAttributes(long param1) {
-        if (!IsValidAddress(param1))
+    private long Syscall_SetAttributes(long attribPtr) {
+        if (!IsValidAddress(attribPtr))
             return SyscallReturn.Error;
 
-        Attributes = *(cast(FileAttributes *)param1);
+        Attributes = *(cast(FileAttributes *)attribPtr);
         return SyscallReturn.Successful;
     }
 
-    /**
-     * Callback used by userspace apps for obtaining instance of speciffic classes
-     * by calling this static syscall
-     * 
-     * Params:
-     *      param1  =       TODO
-     *      param2  =       TODO
-     *      param3  =       TODO
-     *      param4  =       TODO
-     *      param5  =       TODO
-     * 
-     * Returns:
-     *      -1              on failure
-     */
-    static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
-        switch (param1) {
-            case 0:
-                auto name = (cast(char *)param2).ToString();
-                //TODO: return handle of the new FileNode
-                break;
+    private long Syscall_Read(long offset, long bufferPtr, long length) {
+        if (!IsValidAddress(bufferPtr))
+            return SyscallReturn.Error;
 
-            default:
-        }
-
-        return SyscallReturn.Error;
+        return Read(offset, (cast(byte *)bufferPtr)[0 .. length]);
     }
+
+    private long Syscall_Write(long offset, long bufferPtr, long length) {
+        if (!IsValidAddress(bufferPtr))
+            return SyscallReturn.Error;
+
+        return Write(offset, (cast(byte *)bufferPtr)[0 .. length]);
+    }
+/* ============================== END SYSCALL ============================== */
 }

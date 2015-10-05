@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
@@ -21,65 +21,20 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module TaskManager.Mutex;
+module TaskManager.EventWaitHandle;
 
-import Library;
-import TaskManager;
+import SyscallManager;
 
 
-class Mutex : Resource {
-    private enum IDENTIFIER = "com.trinix.TaskManager.Mutex";
+class EventWaitHandle : Resource {
+    private enum IDENTIFIER = "com.trinix.TaskManager.EventWaitHandle";
 
-    private SpinLock m_spinLock;
-    private LinkedList!Thread m_waiting;
-    private Thread m_owner;
 
     this() {
         CallTable[] callTable = [
 
         ];
 
-        m_spinLock = new SpinLock();
-        m_waiting  = new LinkedList!Thread();
-
         super(DeviceType.IPC, IDENTIFIER, 0x01, callTable);
-    }
-
-    ~this() {
-        delete m_spinLock;
-        delete m_waiting;
-    }
-
-    bool WaitOne() {
-        m_spinLock.WaitOne();
-
-        if (m_owner) {
-            m_waiting.Add(Task.CurrentThread);
-            Task.CurrentThread.Sleep(ThreadState.MutexSleep, cast(void *)this, 0, m_spinLock);
-        } else {
-            m_owner = Task.CurrentThread;
-            m_spinLock.Release();
-        }
-
-        return true;
-    }
-
-    void Release() {
-        m_spinLock.WaitOne();
-
-        if (m_waiting.Count) {
-            m_owner = m_waiting.First.Value;
-            m_waiting.RemoveFirst();
-
-            if (m_owner.State == ThreadState.MutexSleep)
-                m_owner.AddActive();
-        } else
-            m_owner = null;
-
-        m_spinLock.Release();
-    }
-
-    bool IsLocked() {
-        return m_owner !is null;
     }
 }

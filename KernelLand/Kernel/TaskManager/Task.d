@@ -19,6 +19,9 @@
  * 
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
+ *
+ * TODO:
+ *      o Syscalls: create (mutex, spinlock, rwlock, semaphore, process, thread, shared memory)
  */
 
 module TaskManager.Task;
@@ -57,24 +60,24 @@ struct TaskState {
 
 
 abstract final class Task {
+    private enum IDENTIFIER = "com.trinix.TaskManager";
+
     private __gshared ulong m_nextPID = 1;
     private __gshared ulong m_nextTID = 1;
 
     private __gshared SpinLock m_spinLock;
     private __gshared LinkedList!Process m_procs;
     private __gshared LinkedList!Thread m_threads;
-    private __gshared Thread m_currentThread;
+    package __gshared Thread m_currentThread;
 
 
     @property {
-        static Thread CurrentThread()        { return m_currentThread;             }
-        static Process CurrentProcess()      { return CurrentThread.ParentProcess; }
-        package static SpinLock ThreadLock() { return m_spinLock;                  }
-        package static ulong NextPID()       { return m_nextPID++;                 } //TODO: spinlock
-        package static ulong NextTID()       { return m_nextTID++;                 } //TODO: spinlock
-        package static auto Threads()        { return m_threads;                   }
-        package static auto Processes()      { return m_procs;                     }
-        package static size_t ThreadCount()  { return m_threads.Count;             }
+        package static SpinLock ThreadLock() { return m_spinLock;      }
+        package static ulong NextPID()       { return m_nextPID++;     } //TODO: spinlock
+        package static ulong NextTID()       { return m_nextTID++;     } //TODO: spinlock
+        package static auto Threads()        { return m_threads;       }
+        package static auto Processes()      { return m_procs;         }
+        package static size_t ThreadCount()  { return m_threads.Count; }
     }
 
     static void Initialize() {
@@ -93,6 +96,8 @@ abstract final class Task {
             Quantum  = 1;
             Start();
         }
+
+        ResourceManager.AddCallTable(IDENTIFIER, &StaticCallback);
     }
 
     static void Finalize() {
@@ -188,5 +193,24 @@ abstract final class Task {
     package static void Idle() {
         while (true)
             Port.Halt();
+    }
+
+
+    /**
+    * Callback used by userspace apps for obtaining instance of speciffic
+    * classes by calling this static syscall
+    * 
+    * Params:
+    *      param1  =       TODO
+    *      param2  =       TODO
+    *      param3  =       TODO
+    *      param4  =       TODO
+    *      param5  =       TODO
+    * 
+    * Returns:
+    *      SyscallReturn.Error     on failure
+    */
+    static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
+        return SyscallReturn.Error;
     }
 }

@@ -25,9 +25,12 @@ module TaskManager.Semaphore;
 
 import Library;
 import TaskManager;
+import SyscallManager;
 
 
-class Semaphore {
+class Semaphore : Resource {
+    private enum IDENTIFIER = "com.trinix.TaskManager.Semaphore";
+
     private string m_name;
     private int m_value;
     private int m_maxValue;
@@ -42,12 +45,18 @@ class Semaphore {
         assert(initialCount > 0);
         assert(maxCount > 0);
     } body {
+        CallTable[] callTable = [
+
+        ];
+
         m_value     = initialCount;
         m_maxValue  = maxCount;
         m_name      = name;
         m_spinLock  = new SpinLock();
         m_waiting   = new LinkedList!Thread();
         m_signaling = new LinkedList!Thread();
+
+        super(DeviceType.IPC, IDENTIFIER, 0x01, callTable);
     }
     
     ~this() {

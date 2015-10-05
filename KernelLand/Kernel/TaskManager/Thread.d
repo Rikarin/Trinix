@@ -19,6 +19,10 @@
  * 
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
+ *
+ * TODO:
+ *      o Syscalls: exit, get (id, name), set name, sleep, wait, send/recv messages
+ *                  signal, yield
  */
 
 module TaskManager.Thread;
@@ -64,7 +68,10 @@ struct IPCMessage {
 }
 
 
-final class Thread {
+final class Thread : Resource {
+    private enum IDENTIFIER = "com.trinix.TaskManager.Thread";
+
+    enum THREAD_RETURN    = 0xDEADC0DE;
     enum STACK_SIZE       = 0x32000;
     enum USER_STACK_SIZE  = 0x32000;
     enum MIN_PRIORITY     = 10;
@@ -72,7 +79,7 @@ final class Thread {
     enum DEFAULT_QUANTUM  = 5;
 
     private ulong m_id;
-    private string m_name;
+    //private string m_name; TODO: use name from Resource
 
     private ThreadState m_state;
     private SpinLock m_spinLock;
@@ -112,8 +119,11 @@ final class Thread {
 
     //private int _errno; //WAT?
 
-
     package this(Process process) {
+        CallTable[] callTable = [
+
+        ];
+
         m_id              = Task.NextTID;
         m_state           = ThreadState.PreInit;
         m_process         = process;
@@ -134,6 +144,8 @@ final class Thread {
         m_savedState.SSEInt.Create();
         m_savedState.SSESyscall.Create();
         m_process.Threads.Add(this);
+
+        super(DeviceType.Task, IDENTIFIER, 0x01, callTable);
     }
 
     this(void delegate() ThreadStart) {
@@ -188,6 +200,7 @@ final class Thread {
     }
 
     @property {
+        static auto Current()      { return Task.m_currentThread; }
         ulong ID()                 { return m_id;           }
         string Name()              { return m_name;         }
         ref auto Node()            { return m_node;         }
@@ -359,9 +372,9 @@ final class Thread {
                 Yield();
     }
 
-    void Yield() {
+    /*void Yield() {
         Task.Scheduler();
-    }
+    }*/
 
     void WaitForStatusEnd(ThreadState status) {
         assert(status != ThreadState.Active);

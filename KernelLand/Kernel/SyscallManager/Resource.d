@@ -32,11 +32,12 @@ import SyscallManager;
 
 
 abstract class Resource {
-    private Mutex m_mutex;
+    private Mutex m_mutex; //TODO: need i this??
     private LinkedList!CallTable m_callTables;
     private LinkedList!Process m_processes;
 
     private long m_id;
+    private string m_name;
     private DeviceType m_type;
     private long m_version;
     private string m_identifier;
@@ -57,101 +58,44 @@ abstract class Resource {
         private long ID;
     }
 
-    @property long Handle()           { return m_id;         }
-    @property ref DeviceType Type()   { return m_type;       }
-    @property ref long Version()      { return m_version;    }
-    @property ref string Identifier() { return m_identifier; }
+    @property {
+        string Name()           { return m_name;       }
+        long Handle()           { return m_id;         }
+        ref long Version()      { return m_version;    }
+        ref DeviceType Type()   { return m_type;       }
+        ref string Identifier() { return m_identifier; }
 
-    package long Call(long id, long param1, long param2, long param3, long param4, long param5) {
-        switch (cast(DeviceCommonCall)id) {
-            case DeviceCommonCall.Type:
-                return m_type;
+        bool Name(string value) {
+            //TODO: check if name already exists in ResourceManager.m_resources;
 
-            case DeviceCommonCall.Identifier:
-                (cast(char *)param1)[0 .. m_identifier.length] = m_identifier[0 .. $];
-                return param1;
-
-            case DeviceCommonCall.Version:
-                return m_version;
-
-            case DeviceCommonCall.Lookup:
-                long ret;
-                foreach_reverse (x; m_callTables) {
-                    if (ret == param2)
-                        return ret;
-
-                    (cast(char **)param1)[ret++][0 .. x.Value.Identifier.length] = x.Value.Identifier[0 .. $];
-                }
-                return ret;
-
-            case DeviceCommonCall.Translate:
-                foreach_reverse (x; m_callTables)
-                    if ((cast(char *)param1)[0 .. param2] == x.Value.Identifier)
-                        return x.Value.ID;
-                return SyscallReturn.Error;
-
-            case DeviceCommonCall.Close:
-                if (Task.CurrentProcess.DetachResource(this))
-                    return 1;
-                return 0;
-
-            default:
+            delete m_name;
+            m_name = value.dup;
+            return true;
         }
-
-        m_mutex.WaitOne();
-        scope(exit) m_mutex.Release();
-            
-        if (!m_processes.Contains(Task.CurrentProcess)) {
-            Log("Process %d tried to use resource without attaching them first", Task.CurrentProcess.ID);
-            return SyscallReturn.Error;
-        }
-
-        foreach_reverse (x; m_callTables) {
-            if (x.Value.ID == id) {
-                switch (x.Value.Params) {
-                    case 0:
-                        return x.Value.Callback0();
-                    case 1:
-                        return x.Value.Callback1(param1);
-                    case 2:
-                        return x.Value.Callback2(param1, param2);
-                    case 3:
-                        return x.Value.Callback3(param1, param2, param3);
-                    case 4:
-                        return x.Value.Callback4(param1, param2, param3, param4);
-                    case 5:
-                        return x.Value.Callback5(param1, param2, param3, param4, param5);
-                    default:
-                        //TODO: ERROR, bad param num in calltable??
-                        return SyscallReturn.Error;
-                }
-            }
-        }
-
-        return SyscallReturn.Error;
     }
 
-    protected this(DeviceType type, string identifier, long ver, const CallTable[] callTables) {
+    private this() {
         m_callTables = new LinkedList!CallTable();
         m_processes  = new LinkedList!Process();
         m_mutex      = new Mutex();
+        m_id         = ResourceManager.Register(this);
+    }
+
+    protected this(DeviceType type, string identifier, long ver, const CallTable[] callTables) {
         m_type       = type;
         m_identifier = identifier;
         m_version    = ver;
-        m_id         = ResourceManager.Register(this);
 
+        this();
         AddCallTables(callTables);
     }
 
     protected this(const ModuleDef info, const CallTable[] callTables) {
-        m_callTables = new LinkedList!CallTable();
-        m_processes  = new LinkedList!Process();
-        m_mutex      = new Mutex();
         m_type       = info.Type;
         m_identifier = info.Identifier;
         m_version    = info.Version;
-        m_id         = ResourceManager.Register(this);
         
+        this();
         AddCallTables(callTables);
     }
 
@@ -159,6 +103,7 @@ abstract class Resource {
         delete m_mutex;
         delete m_processes;
         delete m_callTables;
+        delete m_name;
 
         ResourceManager.Unregister(this);
     }
@@ -207,5 +152,74 @@ abstract class Resource {
             return false;
 
         return true;
+    }
+
+    package long Call(long id, long param1, long param2, long param3, long param4, long param5) {
+        switch (cast(DeviceCommonCall)id) {
+            case DeviceCommonCall.Type:
+                return m_type;
+
+            case DeviceCommonCall.Identifier:
+                (cast(char *)param1)[0 .. m_identifier.length] = m_identifier[0 .. $];
+                return m_identifier.length;
+
+            case DeviceCommonCall.Version:
+                return m_version;
+
+            case DeviceCommonCall.Lookup:
+                long ret;
+                foreach_reverse (x; m_callTables) {
+                    if (ret == param2)
+                        return ret;
+
+                    (cast(char **)param1)[ret++][0 .. x.Value.Identifier.length] = x.Value.Identifier[0 .. $];
+                }
+                return ret;
+
+            case DeviceCommonCall.Translate:
+                foreach_reverse (x; m_callTables)
+                    if ((cast(char *)param1)[0 .. param2] == x.Value.Identifier)
+                        return x.Value.ID;
+                return SyscallReturn.Error;
+
+            case DeviceCommonCall.Close:
+                if (Task.CurrentProcess.DetachResource(this))
+                    return 1;
+                return 0;
+
+            default:
+        }
+
+        m_mutex.WaitOne();
+        scope(exit) m_mutex.Release();
+
+        if (!m_processes.Contains(Task.CurrentProcess)) {
+            Log("Process %d tried to use resource without attaching them first", Task.CurrentProcess.ID);
+            return SyscallReturn.Error;
+        }
+
+        foreach_reverse (x; m_callTables) {
+            if (x.Value.ID == id) {
+                switch (x.Value.Params) {
+                    case 0:
+                        return x.Value.Callback0();
+                    case 1:
+                        return x.Value.Callback1(param1);
+                    case 2:
+                        return x.Value.Callback2(param1, param2);
+                    case 3:
+                        return x.Value.Callback3(param1, param2, param3);
+                    case 4:
+                        return x.Value.Callback4(param1, param2, param3, param4);
+                    case 5:
+                        return x.Value.Callback5(param1, param2, param3, param4, param5);
+                    default:
+                        //TODO: ERROR, bad param num in calltable??
+                        return SyscallReturn.Error;
+                }
+            }
+        }
+
+        return SyscallReturn.Error;
     }
 }
