@@ -37,6 +37,7 @@
  *      o PipeDev
  *      o Serial/Parallel
  *      o VTY
+ *      o VGA driver
  *
  * NEXT SESSION:
  *      o BinaryLoader/ELF loader...
@@ -103,9 +104,6 @@ extern(C) void KernelMain() {
 
     VFS.Mount(new DirectoryNode(VFS.Root, FileAttributes("ext2")), 
               VFS.Find!Partition("/System/Devices/disk0s1"), "ext2");
-
-    //import Modules.Terminal.VTY.Main;
-   // new VTY();
 
    // debug VFS.PrintTree(VFS.Root);
 
