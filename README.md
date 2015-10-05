@@ -37,7 +37,7 @@ Please use our [Coding Conventions](https://github.com/Bloodmanovski/Trinix/blob
 * Static module loader
 * Resource/Syscall Manager
 * VFS Manager
-* IPC: Spinlock, Mutex, Semapthore, Signal, Event, Message
+* IPC: Spinlock, Mutex, Semaphore, Signal, Event, Message, Reader Writer Lock, Shared Memory
 * Preemtive multitasking
 * Modules: Ext2, Keyboard, Mouse, PS2 Keyboard/Mouse, ATA
 	

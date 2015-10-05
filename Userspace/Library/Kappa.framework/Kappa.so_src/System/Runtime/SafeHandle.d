@@ -29,20 +29,30 @@ import System.Runtime;
 abstract class SafeHandle {
     protected long m_handle;
 
-    protected this(int handle) {
+    private this(int handle) {
         m_handle = handle;
     }
 
     ~this() {
         Syscall(SyscallType.Close);
     }
+	
+	protected T Create(T)(string identifier, int handler) {
+		char[256] ident;
+		long length = DoSyscall(handle, SyscallType.Identifier, cast(long)ident.ptr), 0, 0, 0, 0);
+		
+		if (length == SyscallReturn.Error || identifier != ident[0 .. length])
+			return null;
+			
+		return new T(handle);
+	}
 
     protected long Syscall(long id, long param1 = 0, long param2 = 0, long param3 = 0, long param4 = 0, long param5 = 0) {
         return DoSyscall(m_handle, id, param1, param2, param3, param4, param5);
     }
 
-    protected static SafeHandle StaticSyscall(long id, long param1 = 0, long param2 = 0, long param3 = 0, long param4 = 0, long param5 = 0) {
-        return DoSyscall(0xFFFFFFFF_FFFFFFFF, id, param1, param2, param3, param4, param5);
+    protected static SafeHandle StaticSyscall(string ident, long param1 = 0, long param2 = 0, long param3 = 0, long param4 = 0, long param5 = 0) {
+        return DoSyscall(0xFFFFFFFF_FFFFFFFF, ident.ptr, param1, param2, param3, param4, param5);
     }
 
     /**

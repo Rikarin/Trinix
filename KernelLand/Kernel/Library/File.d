@@ -21,31 +21,30 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module System.FileHandle;
+module Library.File;
 
-import System.Runtime;
+import VFSManager;
 
 
-class FileHandle : SafeHandle {
-    private enum IDENTIFIER = "com.trinix.VFSManager.FSNode";
-	
-	enum StaticCommands {
-		Create,
-		Open
-	}
+class File {
+    FSNode m_node;
+    long m_pos;
 
-    static FileHandle CreateFile(string fileName) {
-        return Create!FileHandle(IDENTIFIER, StaticSyscall("com.trinix.VFSManager", StaticCommands.Create, cast(long)fileName.ptr, FileType.File));
+    this(FSNode node) {
+        m_node = node;
     }
 
-    alias FileAttributes = int;
-    FileAttributes Attributes() {
-        static const auto getAttribs = SafeMethodCall("com.trinix.VFSManager.FSNode.GetAttributes");
+    @property ref long Position() { return m_pos; }
 
-        FileAttributes attribs;
-        if (getAttribs.Call(cast(long)&attribs) == SyscallReturn.Error)
-            return null;
+    long Read(byte[] buffer) {
+        long len = m_node.Read(m_pos, buffer);
+        m_pos   += len;
+        
+        return len;
+    }
 
-        return attribs;
+    void Write(byte[] buffer) {
+        long len = m_node.Write(m_pos, buffer);
+        m_pos   += len;
     }
 }

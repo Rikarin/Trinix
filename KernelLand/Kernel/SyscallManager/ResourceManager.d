@@ -30,20 +30,7 @@ import SyscallManager;
 import VFSManager;
 
 
-/**
- * Definition of static call table
- * 
- * Identifier is a unique string where is defined full path to
- * registred class like com.trinix.VFSManager.FSNode where com is predefined
- * constant, trinix/modules defines if class is part of kernel or module,
- * VFSManager is part of package's name and FSNode is name of class
- * 
- * Callback is a callback defined in each class providing statc syscall
- */
-struct ResouceCallTable {
-    string Identifier;
-    long function(long, long, long, long, long) Callback;
-}
+alias long function(long, long, long, long, long) StaticSyscallCallback;
 
 /**
  * This static class is a manager for every instance of Resource class.
@@ -51,7 +38,7 @@ struct ResouceCallTable {
  * 
  */
 abstract final class ResourceManager {
-    private __gshared LinkedList!ResouceCallTable m_callTables;
+    private __gshared Dictionary!(string, StaticSyscallCallback) m_callTables;
     private __gshared List!Resource m_resources;
 
     /**
@@ -131,11 +118,11 @@ abstract final class ResourceManager {
         Log("");
 
         if (resource == 0xFFFFFFFF_FFFFFFFF) {
-            ResouceCallTable table = GetCallTable((cast(const char *)id).ToString());
-            if (table is cast(ResouceCallTable)null)
+            auto callback = m_callTables[(cast(const char *)id).ToString()];
+            if (callback is null)
                 return SyscallReturn.Error;
 
-            return table.Callback(param1, param2, param3, param4, param5);
+            return callback(param1, param2, param3, param4, param5);
         } else if (resource < m_resources.Count && m_resources[resource] !is null)
             return m_resources[resource].Call(id, param1, param2, param3, param4, param5);
 
@@ -143,24 +130,11 @@ abstract final class ResourceManager {
         return SyscallReturn.Error;
     }
 
-    static bool AddCallTable(const ResouceCallTable callTable) {
-        if (m_callTables.Contains(callTable))
-            return false;
-
-        m_callTables.Add(callTable);
-        return true;
+    static void AddCallTable(string identifier, StaticSyscallCallback callback) {
+        m_callTables[identifier] = callback;
     }
 
-    static bool RemoveCallTable(const ResouceCallTable callTable) {
-        if (!m_callTables.Contains(callTable))
-            return false;
-
-        m_callTables.Remove(callTable);
-        return true;
-    }
-
-    static ResouceCallTable GetCallTable(string identifier) {
-        auto table = Array.Find(m_callTables, (LinkedListNode!ResouceCallTable o) => o.Value.Identifier == identifier);
-        return table !is null ? table.Value : cast(ResouceCallTable)null;
+    static bool RemoveCallTable(string identifier) {
+        return m_callTables.Remove(identifier);
     }
 }

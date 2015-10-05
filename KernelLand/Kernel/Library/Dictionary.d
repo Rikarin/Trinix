@@ -21,31 +21,52 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module System.FileHandle;
+module Library.Dictionary;
 
-import System.Runtime;
+import Library;
 
 
-class FileHandle : SafeHandle {
-    private enum IDENTIFIER = "com.trinix.VFSManager.FSNode";
-	
-	enum StaticCommands {
-		Create,
-		Open
-	}
+class Dictionary(TKey, TValue) {
+    List!TKey m_keys;
+    List!TValue m_values;
 
-    static FileHandle CreateFile(string fileName) {
-        return Create!FileHandle(IDENTIFIER, StaticSyscall("com.trinix.VFSManager", StaticCommands.Create, cast(long)fileName.ptr, FileType.File));
+
+    this() {
+        m_keys   = new List!TKey();
+        m_values = new List!TValue();
     }
 
-    alias FileAttributes = int;
-    FileAttributes Attributes() {
-        static const auto getAttribs = SafeMethodCall("com.trinix.VFSManager.FSNode.GetAttributes");
+    ~this() {
+        delete m_keys;
+        delete m_values;
+    }
 
-        FileAttributes attribs;
-        if (getAttribs.Call(cast(long)&attribs) == SyscallReturn.Error)
-            return null;
+    TValue opIndex(TKey key) {
+        long index = m_keys.IndexOf(key);
+        if (index == -1)
+            return cast(TValue)0;
 
-        return attribs;
+        return m_values[index];
+    }
+
+    void opIndexAssign(TKey key, TValue value) {
+        long index = m_keys.IndexOf(key);
+
+        if (index == -1) {
+            m_keys.Add(key);
+            m_values.Add(value);
+        } else {
+            m_values[index] = value;
+        }
+    }
+
+    bool Remove(TKey key) {
+        long index = m_keys.IndexOf(key);
+        if (index == -1)
+            return false;
+
+        m_keys.RemoveAt(index);
+        m_values.RemoveAt(idnex);
+        return true;
     }
 }
