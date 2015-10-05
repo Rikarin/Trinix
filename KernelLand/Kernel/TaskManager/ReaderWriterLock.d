@@ -24,6 +24,7 @@
 module TaskManager.ReaderWriterLock;
 
 import SyscallManager;
+import ObjectManager;
 
 
 class ReaderWriterLock : Resource {

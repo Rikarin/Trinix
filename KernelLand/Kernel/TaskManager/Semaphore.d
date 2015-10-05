@@ -26,6 +26,7 @@ module TaskManager.Semaphore;
 import Library;
 import TaskManager;
 import SyscallManager;
+import ObjectManager;
 
 
 class Semaphore : Resource {
@@ -74,16 +75,16 @@ class Semaphore : Resource {
         m_spinLock.Release();
     }
 
-    int WaitOne() {
-        int taken;
+    long WaitOne() {
+        long taken;
         m_spinLock.WaitOne();
 
         if (m_value > 0) {
             taken = 1;
             m_value--;
         } else {
-            m_waiting.Add(Task.CurrentThread);
-            taken = cast(int)Task.CurrentThread.Sleep(ThreadState.SemaphoreSleep, cast(void *)this, 1, m_spinLock);
+            m_waiting.Add(Thread.Current);
+            taken = Thread.Current.Sleep(ThreadState.SemaphoreSleep, cast(void *)this, 1, m_spinLock);
             m_spinLock.WaitOne();
         }
 
@@ -103,15 +104,15 @@ class Semaphore : Resource {
         return -1;
     }
 
-    int Release(int releaseCount) in {
+    long Release(int releaseCount) in {
         assert(releaseCount >= 0);
     } body {
         m_spinLock.WaitOne();
-        int added;
+        long added;
 
         if (m_maxValue && m_value == m_maxValue) {
-            m_signaling.Add(Task.CurrentThread);
-            added = cast(int)Task.CurrentThread.Sleep(ThreadState.SemaphoreSleep, cast(void *)this, releaseCount, m_spinLock);
+            m_signaling.Add(Thread.Current);
+            added = Thread.Current.Sleep(ThreadState.SemaphoreSleep, cast(void *)this, releaseCount, m_spinLock);
             m_spinLock.WaitOne();
         } else {
             added    = (m_maxValue && m_value + releaseCount > m_maxValue) ? m_maxValue - m_value : releaseCount;

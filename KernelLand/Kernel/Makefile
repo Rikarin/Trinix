@@ -14,7 +14,7 @@ endif
 
 #DFLAGS		+= -D _MODULE_NAME_=\"Kernel\"
 # -J../../
-DFLAGS		+= -IArchitectures/$(ARCHDIR) -I../
+DFLAGS		+= -IArchitectures/$(ARCHDIR) -I../ -I$(TRXDIR)/Userspace/Library/Kappa.framework/Kappa.so_src
 CFLAGS		+= -fno-stack-protector
 LDFLAGS		:= --script=Architectures/$(ARCHDIR)/LinkerScript.ld -Map=../Linker.$(ARCH).map
 

@@ -30,10 +30,13 @@ import Core;
 import Library;
 import FileSystem;
 import VFSManager;
+import TaskManager;
 import ObjectManager;
 import MemoryManager;
 import SyscallManager;
 
+import System.Runtime;
+    
 
 struct FSDriver {
     string Name;
@@ -185,12 +188,12 @@ abstract final class VFS {
     */
     static long StaticCallback(long param1, long param2, long param3, long param4, long param5) {
         switch (param1) {
-            case FileHandle.StatiCommands.Create:
-                if (!IsValidAddress(param2))
+            case FileHandle.StaticCommands.Create:
+                if (!Resource.IsValidAddress(param2))
                     return SyscallReturn.Error;
 
                 auto name    = (cast(char *)param2).ToString();
-                auto attribs = NewAttributes(name, cast(FileType)param3);
+                auto attribs = FSNode.NewAttributes(name, cast(FileType)param3);
                 auto node    = Process.Current.WorkingDirectory.Create(attribs);
 
                 if (node is null)
@@ -202,14 +205,14 @@ abstract final class VFS {
                 Process.Current.AttachResource(node);
                 return node.Handle;
 
-            case FileHandle.StatiCommands.Open:
-                if (!IsValidAddress(param2))
+            case FileHandle.StaticCommands.Open:
+                if (!Resource.IsValidAddress(param2))
                     return SyscallReturn.Error;
 
                 auto name  = (cast(char *)param2).ToString();
                 auto found = VFS.Find!FSNode(name, Process.Current.WorkingDirectory);
 
-                if (node is null || cast(DirectoryNode)found !is null)
+                if (found is null || cast(DirectoryNode)found !is null)
                     return SyscallReturn.Error;
 
                 Process.Current.AttachResource(found);

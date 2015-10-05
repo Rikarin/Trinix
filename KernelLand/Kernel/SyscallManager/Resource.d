@@ -30,9 +30,11 @@ import Architecture;
 import ObjectManager;
 import SyscallManager;
 
+import System.Runtime;
+
 
 abstract class Resource {
-    private Mutex m_mutex; //TODO: need i this??
+   // private Mutex m_mutex; //TODO: need i this??
     private LinkedList!CallTable m_callTables;
     private LinkedList!Process m_processes;
 
@@ -77,7 +79,7 @@ abstract class Resource {
     private this() {
         m_callTables = new LinkedList!CallTable();
         m_processes  = new LinkedList!Process();
-        m_mutex      = new Mutex();
+        //m_mutex      = new Mutex();
         m_id         = ResourceManager.Register(this);
     }
 
@@ -100,7 +102,7 @@ abstract class Resource {
     }
 
     protected ~this() {
-        delete m_mutex;
+       // delete m_mutex;
         delete m_processes;
         delete m_callTables;
         delete m_name;
@@ -130,7 +132,7 @@ abstract class Resource {
     }
 
     protected void AddCallTables(const CallTable[] callTables) {
-        long highestID = DeviceCommonCall.Call;
+        long highestID = SyscallType.Call;
 
         foreach (x; m_callTables) {
             if (x.Value.ID > highestID)
@@ -155,18 +157,18 @@ abstract class Resource {
     }
 
     package long Call(long id, long param1, long param2, long param3, long param4, long param5) {
-        switch (cast(DeviceCommonCall)id) {
-            case DeviceCommonCall.Type:
+        switch (cast(SyscallType)id) {
+            case SyscallType.Type:
                 return m_type;
 
-            case DeviceCommonCall.Identifier:
+            case SyscallType.Identifier:
                 (cast(char *)param1)[0 .. m_identifier.length] = m_identifier[0 .. $];
                 return m_identifier.length;
 
-            case DeviceCommonCall.Version:
+            case SyscallType.Version:
                 return m_version;
 
-            case DeviceCommonCall.Lookup:
+            case SyscallType.Lookup:
                 long ret;
                 foreach_reverse (x; m_callTables) {
                     if (ret == param2)
@@ -176,25 +178,25 @@ abstract class Resource {
                 }
                 return ret;
 
-            case DeviceCommonCall.Translate:
+            case SyscallType.Translate:
                 foreach_reverse (x; m_callTables)
                     if ((cast(char *)param1)[0 .. param2] == x.Value.Identifier)
                         return x.Value.ID;
                 return SyscallReturn.Error;
 
-            case DeviceCommonCall.Close:
-                if (Task.CurrentProcess.DetachResource(this))
+            case SyscallType.Close:
+                if (Process.Current.DetachResource(this))
                     return 1;
                 return 0;
 
             default:
         }
 
-        m_mutex.WaitOne();
-        scope(exit) m_mutex.Release();
+     //   m_mutex.WaitOne();
+     //   scope(exit) m_mutex.Release();
 
-        if (!m_processes.Contains(Task.CurrentProcess)) {
-            Log("Process %d tried to use resource without attaching them first", Task.CurrentProcess.ID);
+        if (!m_processes.Contains(Process.Current)) {
+            Log("Process %d tried to use resource without attaching them first", Process.Current.ID);
             return SyscallReturn.Error;
         }
 

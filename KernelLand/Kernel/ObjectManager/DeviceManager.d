@@ -50,35 +50,6 @@ enum DeviceType {
     FileSystem
 }
 
-enum SyscallReturn {
-    Error      = -1,
-    Successful = 0,
-}
-
-/* TODO: use System.Resource.SyscallType against this */
-enum DeviceCommonCall {
-    // Return DeviceType
-    Type,
-
-    // Return unique identifier for each method
-    // eg. "com.trinix.VFSManager.FSNode"
-    Identifier,
-
-    // Return 8-digits (2 major, 2 minor, 4 patch) version 
-    Version,
-
-    // Return array of found lookups
-    Lookup,
-
-    // Translate unique identifier of each call to his ID
-    Translate,
-
-    /* Close handle for this process */
-    Close,
-
-    /* Syscall */
-    Call
-}
 
 abstract final class DeviceManager {
     private __gshared void function(ref InterruptStack stack) m_handlers[48];

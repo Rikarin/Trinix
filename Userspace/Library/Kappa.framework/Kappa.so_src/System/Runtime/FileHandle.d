@@ -33,6 +33,10 @@ class FileHandle : SafeHandle {
 		Create,
 		Open
 	}
+	
+	private this() {
+	
+	}
 
     static FileHandle CreateFile(string fileName) {
         return Create!FileHandle(IDENTIFIER, StaticSyscall("com.trinix.VFSManager", StaticCommands.Create, cast(long)fileName.ptr, FileType.File));

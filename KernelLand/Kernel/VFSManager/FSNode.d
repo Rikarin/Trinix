@@ -33,6 +33,8 @@ import Architecture;
 import ObjectManager;
 import SyscallManager;
 
+import System.Runtime;
+
 
 /**
  * Base Node of the virtual file system
@@ -197,8 +199,8 @@ abstract class FSNode : Resource {
         ret.Type        = type;
         ret.Permissions = FilePermissions.UserRead  | FilePermissions.UserWrite 
                         | FilePermissions.GroupRead | FilePermissions.OtherRead;
-        ret.UID         = Task.CurrentProcess.UID;
-        ret.GID         = Task.CurrentProcess.GID;
+        ret.UID         = Process.Current.UID;
+        ret.GID         = Process.Current.GID;
         ret.AccessTime  = Time.Now;
         ret.ModifyTime  = ret.AccessTime;
         ret.CreateTime  = ret.AccessTime;

@@ -32,6 +32,9 @@ import Diagnostics;
 import TaskManager;
 import Architecture;
 import ObjectManager;
+import SyscallManager;
+
+import System.Runtime;
 
 extern(C) private void* _Proc_Read_RIP();
 
@@ -106,11 +109,13 @@ abstract final class Task {
         delete m_spinLock;
     }
 
-    static void Scheduler() {
+
+
+    static void Yield() {
         if (m_spinLock.IsLocked)
             return;
     
-        if (CurrentThread.Remaining--)
+        if (Thread.Current.Remaining--)
             return;
 
         void* rsp, rbp;
@@ -123,9 +128,9 @@ abstract final class Task {
         if (cast(ulong)rip == 0x12341234UL)
             return;
 
-        CurrentThread.SavedState.RIP = rip;
-        CurrentThread.SavedState.RSP = rsp;
-        CurrentThread.SavedState.RBP = rbp;
+        Thread.Current.SavedState.RIP = rip;
+        Thread.Current.SavedState.RSP = rsp;
+        Thread.Current.SavedState.RBP = rbp;
 
         Reschedule();
     }
@@ -133,15 +138,15 @@ abstract final class Task {
     private static void Reschedule() {
         Thread next = GetNextToRun();
         //Log("Rescheduling: %d, priority: %d, name: %s, total: %d", next.ID, next.Priority, next.Name, ThreadCount);
-        if (next is null || next == CurrentThread)
+        if (next is null || next == Thread.Current)
             return;
 
         /* Switch to the next thread */
         m_currentThread = next;
-        m_currentThread.SetKernelStack();
-        m_currentThread.ParentProcess.m_paging.Install();
+        Thread.Current.SetKernelStack();
+        Thread.Current.ParentProcess.m_paging.Install();
 
-        with (CurrentThread.SavedState)
+        with (Thread.Current.SavedState)
             SwitchTasks(RSP, RBP, RIP);
     }
 
@@ -152,11 +157,11 @@ abstract final class Task {
         Thread next    = GetRunnable();
         next.Remaining = next.Quantum;
 
-        if (next is CurrentThread)
-            return CurrentThread;
+        if (next is Thread.Current)
+            return Thread.Current;
 
-        if (CurrentThread.State == ThreadState.Active)
-            m_threads.AddLast(CurrentThread.Node);
+        if (Thread.Current.State == ThreadState.Active)
+            m_threads.AddLast(Thread.Current.Node);
 
         return next;
     }
@@ -172,7 +177,7 @@ abstract final class Task {
             }
         }
 
-        return CurrentThread;
+        return Thread.Current;
     }
 
     private static void SwitchTasks(void* rsp, void* rbp, void* rip) {      

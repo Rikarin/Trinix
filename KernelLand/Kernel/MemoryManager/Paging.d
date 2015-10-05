@@ -324,7 +324,7 @@ final class Paging {
 
     static void PageFaultHandler(ref InterruptStack stack) {
         if (stack.RIP == Thread.THREAD_RETURN)
-            Task.CurrentThread.Exit(stack.RAX);
+            Thread.Current.Exit(stack.RAX);
 
        // debug { TODO: uncomment me senpai
             Log(`===> Spadlo to -.-"`);

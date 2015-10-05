@@ -58,14 +58,14 @@ abstract final class SyscallHandler {
     }
 
     static void SyscallDispatcher(SyscallStack* stack) {
-        Task.CurrentThread.SavedState.SSESyscall.Save();
+        Thread.Current.SavedState.SSESyscall.Save();
         VirtualMemory.KernelPaging.Install();
 
         with (stack)
             RAX = ResourceManager.CallResource(R9, R8, RDI, RSI, RDX, RBX, RAX);
 
-        Task.CurrentProcess.PageTable.Install();
-        Task.CurrentThread.SavedState.SSESyscall.Load();
+        Process.Current.PageTable.Install();
+        Thread.Current.SavedState.SSESyscall.Load();
     }
 
     extern(C) private static void SyscallCommon() {

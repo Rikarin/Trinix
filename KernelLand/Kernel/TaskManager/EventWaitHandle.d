@@ -23,6 +23,7 @@
 
 module TaskManager.EventWaitHandle;
 
+import ObjectManager;
 import SyscallManager;
 
 

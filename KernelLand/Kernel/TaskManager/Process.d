@@ -33,6 +33,7 @@ import VFSManager;
 import TaskManager;
 import Architecture;
 import MemoryManager;
+import ObjectManager;
 import SyscallManager;
 
 
@@ -91,12 +92,12 @@ final class Process : Resource {
         m_threads   = new LinkedList!Thread();
         m_resources = new List!Resource();
 
-        if (Task.CurrentThread !is null) {
-            m_uid       = Task.CurrentProcess.m_uid;
-            m_gid       = Task.CurrentProcess.m_gid;
-            m_isKernel  = Task.CurrentProcess.m_isKernel;
-            m_paging    = Task.CurrentProcess.m_paging;
-            m_cwd       = Task.CurrentProcess.m_cwd;
+        if (Thread.Current !is null) {
+            m_uid       = Process.Current.m_uid;
+            m_gid       = Process.Current.m_gid;
+            m_isKernel  = Process.Current.m_isKernel;
+            m_paging    = Process.Current.m_paging;
+            m_cwd       = Process.Current.m_cwd;
         }
 
         Task.Processes.Add(this);
@@ -173,7 +174,7 @@ final class Process : Resource {
     }
 
     private void CopyResources() {
-        foreach (x; Task.CurrentProcess.m_resources) {
+        foreach (x; Current.m_resources) {
             if (x.AttachProcess(this))
                 m_resources.Add(x);
         }

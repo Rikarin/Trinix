@@ -7,7 +7,7 @@ _DFLAGS := $(DFLAGS)
 -include $(dir $(lastword $(MAKEFILE_LIST)))../Makefile.cfg
 
 
-DFLAGS := -I$(TRXDIR)/KernelLand/Kernel -I$(TRXDIR)/KernelLand/Kernel/Architectures/$(ARCHDIR) -I$(TRXDIR)/KernelLand
+DFLAGS := -I$(TRXDIR)/KernelLand/Kernel -I$(TRXDIR)/KernelLand/Kernel/Architectures/$(ARCHDIR) -I$(TRXDIR)/KernelLand -I$(TRXDIR)/Userspace/Library/Kappa.framework/Kappa.so_src
 
 ifneq ($(CATEGORY),)
 	FULLNAME := $(CATEGORY)_$(NAME)

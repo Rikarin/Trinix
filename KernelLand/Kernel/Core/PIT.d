@@ -50,6 +50,6 @@ final abstract class PIT {
     }
 
     private static void IRQHandler(ref InterruptStack stack) {
-        Task.Scheduler();
+        Task.Yield();
     }
 }

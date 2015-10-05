@@ -25,6 +25,8 @@ module TaskManager.Mutex;
 
 import Library;
 import TaskManager;
+import ObjectManager;
+import SyscallManager;
 
 
 class Mutex : Resource {
@@ -54,10 +56,10 @@ class Mutex : Resource {
         m_spinLock.WaitOne();
 
         if (m_owner) {
-            m_waiting.Add(Task.CurrentThread);
-            Task.CurrentThread.Sleep(ThreadState.MutexSleep, cast(void *)this, 0, m_spinLock);
+            m_waiting.Add(Thread.Current);
+            Thread.Current.Sleep(ThreadState.MutexSleep, cast(void *)this, 0, m_spinLock);
         } else {
-            m_owner = Task.CurrentThread;
+            m_owner = Thread.Current;
             m_spinLock.Release();
         }
 

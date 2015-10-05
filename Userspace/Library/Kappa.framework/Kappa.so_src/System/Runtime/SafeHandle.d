@@ -39,7 +39,7 @@ abstract class SafeHandle {
 	
 	protected T Create(T)(string identifier, int handler) {
 		char[256] ident;
-		long length = DoSyscall(handle, SyscallType.Identifier, cast(long)ident.ptr), 0, 0, 0, 0);
+		long length = DoSyscall(handle, SyscallType.Identifier, cast(long)ident.ptr, 0, 0, 0, 0);
 		
 		if (length == SyscallReturn.Error || identifier != ident[0 .. length])
 			return null;

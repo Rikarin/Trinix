@@ -29,6 +29,8 @@
  *      o Library: StringBuilder(20%)
  *      o Compile Kappa framework and link it with Kernel
  *      o Move things from Library to Kappa framework
+ *      o Merge ObjectManager and SyscallManager
+ *      o Move FSNode.NewAttributes to the FileAttributes.Default()
  *
  * DRIVERS:
  *      o Keyboard
@@ -141,8 +143,8 @@ void RemapPIC() {
 }
 
 void test_lala() {
-    Log("The new thread %d", Task.CurrentThread.ID);
-    Log("The new process %d", Task.CurrentProcess.ID);
+    Log("The new thread %d", Thread.Current.ID);
+    Log("The new process %d", Process.Current.ID);
 
     while (true) {
         asm {

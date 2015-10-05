@@ -142,17 +142,17 @@ abstract final class IDT {
     mixin(GenerateISRs!(15, 49));
     
     private static void Dispatch(InterruptStack* stack) {
-        Task.CurrentThread.SavedState.SSEInt.Save();
+        Thread.Current.SavedState.SSEInt.Save();
 
         if (stack.IntNumber == 0xE) {
             Paging.PageFaultHandler(*stack);
         } else if (stack.IntNumber < 32) {
-            if (Task.CurrentThread.ID == 1) {
+            if (Thread.Current.ID == 1) {
                 DeviceManager.DumpStack(*stack);
                 Port.Cli();
                 Port.Halt();
             } else
-                Task.CurrentThread.Fault(stack.IntNumber);
+                Thread.Current.Fault(stack.IntNumber);
         } else
             DeviceManager.Handler(*stack);
 
@@ -161,7 +161,7 @@ abstract final class IDT {
         if (stack.IntNumber >= 32)
             DeviceManager.EOI(cast(int)stack.IntNumber - 32);
 
-        Task.CurrentThread.SavedState.SSEInt.Load();
+        Thread.Current.SavedState.SSEInt.Load();
     }
 
     private static void ISRIgnore() {

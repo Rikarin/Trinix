@@ -29,6 +29,8 @@ import ObjectManager;
 import SyscallManager;
 import VFSManager;
 
+import System.Runtime;
+
 
 alias long function(long, long, long, long, long) StaticSyscallCallback;
 
@@ -86,7 +88,7 @@ abstract final class ResourceManager {
      *      true when initialization was successful
      */
     static void Initialize() {
-        m_callTables = new LinkedList!ResouceCallTable();
+        m_callTables = new Dictionary!(string, StaticSyscallCallback)();
         m_resources  = new List!Resource();
     }
 

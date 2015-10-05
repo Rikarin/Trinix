@@ -49,7 +49,7 @@ class Dictionary(TKey, TValue) {
         return m_values[index];
     }
 
-    void opIndexAssign(TKey key, TValue value) {
+    void opIndexAssign(TValue value, TKey key) {
         long index = m_keys.IndexOf(key);
 
         if (index == -1) {
@@ -66,7 +66,7 @@ class Dictionary(TKey, TValue) {
             return false;
 
         m_keys.RemoveAt(index);
-        m_values.RemoveAt(idnex);
+        m_values.RemoveAt(index);
         return true;
     }
 }
