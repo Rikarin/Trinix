@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}</ProjectGuid>
+    <BaseDirectory>.</BaseDirectory>
+    <Compiler>DMD2</Compiler>
+    <PreferOneStepBuild>true</PreferOneStepBuild>
+    <UseDefaultCompiler>true</UseDefaultCompiler>
+    <IncrementalLinking>true</IncrementalLinking>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug</OutputPath>
+    <ObjectsDirectory>obj/Debug</ObjectsDirectory>
+    <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
+    <UnittestMode>false</UnittestMode>
+    <OutputName>Kappa</OutputName>
+    <Target>Executable</Target>
+    <Externalconsole>true</Externalconsole>
+    <DebugLevel>0</DebugLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release</OutputPath>
+    <ObjectsDirectory>obj/Release</ObjectsDirectory>
+    <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
+    <UnittestMode>false</UnittestMode>
+    <OutputName>Kappa</OutputName>
+    <Target>Executable</Target>
+    <Externalconsole>true</Externalconsole>
+    <DebugLevel>0</DebugLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Unittest|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Unittest</OutputPath>
+    <ObjectsDirectory>obj/Unittest</ObjectsDirectory>
+    <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
+    <UnittestMode>true</UnittestMode>
+    <OutputName>Kappa</OutputName>
+    <Target>Executable</Target>
+    <Externalconsole>true</Externalconsole>
+    <DebugLevel>0</DebugLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="System\AsyncCallback.d" />
+    <Compile Include="System\IAsyncResult.d" />
+    <Compile Include="System\package.d" />
+    <Compile Include="System\IO\SeekOrigin.d" />
+    <Compile Include="System\IO\Stream.d" />
+    <Compile Include="System\IO\package.d" />
+    <Compile Include="System\Runtime\FileHandle.d" />
+    <Compile Include="System\Runtime\SafeHandle.d" />
+    <Compile Include="System\Runtime\SyscallReturn.d" />
+    <Compile Include="System\Runtime\SyscallType.d" />
+    <Compile Include="System\Runtime\package.d" />
+    <Compile Include="System\AppKit\Responder.d" />
+    <Compile Include="System\AppKit\Application.d" />
+    <Compile Include="System\AppKit\View.d" />
+    <Compile Include="System\AppKit\package.d" />
+    <Compile Include="System\AppKit\Control.d" />
+    <Compile Include="System\AppKit\Button.d" />
+    <Compile Include="System\AppKit\Window.d" />
+    <Compile Include="System\AppKit\WindowController.d" />
+    <Compile Include="System\AppKit\ViewController.d" />
+    <Compile Include="System\AppKit\TextField.d" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="System\AppKit\" />
+  </ItemGroup>
+</Project>
