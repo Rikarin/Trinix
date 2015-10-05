@@ -23,6 +23,14 @@ Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "PS2KeyboardMouse", "KernelL
 EndProject
 Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "Kernel", "KernelLand\Kernel\Kernel.mdproj", "{95334AE0-8FF5-4824-A1E1-91183A627D46}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Userspace", "Userspace", "{7F753D2D-171B-43A0-B3E9-DFF1874D73DD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{22C00889-39A7-40A0-9EC8-D3443EE3F989}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{5D90A14C-A698-4AC8-9678-97527A903B35}"
+EndProject
+Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "Kappa", "Userspace\Library\Kappa.framework\Kappa.so_src\Kappa.dproj", "{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug DMD|x64 = Debug DMD|x64
@@ -36,8 +44,33 @@ Global
 		Default|Any CPU = Default|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Unittest|Any CPU = Unittest|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Debug DMD|x64.ActiveCfg = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Debug DMD|x64.Build.0 = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Debug DMD|x86.ActiveCfg = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Debug DMD|x86.Build.0 = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Debug GDC|x64.ActiveCfg = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Debug GDC|x64.Build.0 = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Debug GDC|x86.ActiveCfg = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Debug GDC|x86.Build.0 = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Release DMD|x64.ActiveCfg = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Release DMD|x64.Build.0 = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Release DMD|x86.ActiveCfg = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Release DMD|x86.Build.0 = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Release GDC|x64.ActiveCfg = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Release GDC|x64.Build.0 = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Release GDC|x86.ActiveCfg = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Release GDC|x86.Build.0 = Debug|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Unittest|Any CPU.ActiveCfg = Unittest|Any CPU
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}.Unittest|Any CPU.Build.0 = Unittest|Any CPU
 		{7DF2A99B-0DD7-4D6D-9EBB-14FA67DC4716}.Debug DMD|x64.ActiveCfg = Default|Any CPU
 		{7DF2A99B-0DD7-4D6D-9EBB-14FA67DC4716}.Debug DMD|x64.Build.0 = Default|Any CPU
 		{7DF2A99B-0DD7-4D6D-9EBB-14FA67DC4716}.Debug DMD|x86.ActiveCfg = Default|Any CPU
@@ -60,6 +93,8 @@ Global
 		{7DF2A99B-0DD7-4D6D-9EBB-14FA67DC4716}.Release GDC|x86.Build.0 = Default|Any CPU
 		{7DF2A99B-0DD7-4D6D-9EBB-14FA67DC4716}.Release|Any CPU.ActiveCfg = Default|Any CPU
 		{7DF2A99B-0DD7-4D6D-9EBB-14FA67DC4716}.Release|Any CPU.Build.0 = Default|Any CPU
+		{7DF2A99B-0DD7-4D6D-9EBB-14FA67DC4716}.Unittest|Any CPU.ActiveCfg = Default|Any CPU
+		{7DF2A99B-0DD7-4D6D-9EBB-14FA67DC4716}.Unittest|Any CPU.Build.0 = Default|Any CPU
 		{834F80D2-57C2-4E82-B6F8-EF39294A6A4F}.Debug DMD|x64.ActiveCfg = Default|Any CPU
 		{834F80D2-57C2-4E82-B6F8-EF39294A6A4F}.Debug DMD|x64.Build.0 = Default|Any CPU
 		{834F80D2-57C2-4E82-B6F8-EF39294A6A4F}.Debug DMD|x86.ActiveCfg = Default|Any CPU
@@ -82,6 +117,8 @@ Global
 		{834F80D2-57C2-4E82-B6F8-EF39294A6A4F}.Release GDC|x86.Build.0 = Default|Any CPU
 		{834F80D2-57C2-4E82-B6F8-EF39294A6A4F}.Release|Any CPU.ActiveCfg = Default|Any CPU
 		{834F80D2-57C2-4E82-B6F8-EF39294A6A4F}.Release|Any CPU.Build.0 = Default|Any CPU
+		{834F80D2-57C2-4E82-B6F8-EF39294A6A4F}.Unittest|Any CPU.ActiveCfg = Default|Any CPU
+		{834F80D2-57C2-4E82-B6F8-EF39294A6A4F}.Unittest|Any CPU.Build.0 = Default|Any CPU
 		{95334AE0-8FF5-4824-A1E1-91183A627D46}.Debug DMD|x64.ActiveCfg = Default|Any CPU
 		{95334AE0-8FF5-4824-A1E1-91183A627D46}.Debug DMD|x64.Build.0 = Default|Any CPU
 		{95334AE0-8FF5-4824-A1E1-91183A627D46}.Debug DMD|x86.ActiveCfg = Default|Any CPU
@@ -104,6 +141,8 @@ Global
 		{95334AE0-8FF5-4824-A1E1-91183A627D46}.Release GDC|x86.Build.0 = Default|Any CPU
 		{95334AE0-8FF5-4824-A1E1-91183A627D46}.Release|Any CPU.ActiveCfg = Default|Any CPU
 		{95334AE0-8FF5-4824-A1E1-91183A627D46}.Release|Any CPU.Build.0 = Default|Any CPU
+		{95334AE0-8FF5-4824-A1E1-91183A627D46}.Unittest|Any CPU.ActiveCfg = Default|Any CPU
+		{95334AE0-8FF5-4824-A1E1-91183A627D46}.Unittest|Any CPU.Build.0 = Default|Any CPU
 		{C3B6FE2A-E046-477B-9DE5-BFB862FE3298}.Debug DMD|x64.ActiveCfg = Default|Any CPU
 		{C3B6FE2A-E046-477B-9DE5-BFB862FE3298}.Debug DMD|x64.Build.0 = Default|Any CPU
 		{C3B6FE2A-E046-477B-9DE5-BFB862FE3298}.Debug DMD|x86.ActiveCfg = Default|Any CPU
@@ -126,6 +165,8 @@ Global
 		{C3B6FE2A-E046-477B-9DE5-BFB862FE3298}.Release GDC|x86.Build.0 = Default|Any CPU
 		{C3B6FE2A-E046-477B-9DE5-BFB862FE3298}.Release|Any CPU.ActiveCfg = Default|Any CPU
 		{C3B6FE2A-E046-477B-9DE5-BFB862FE3298}.Release|Any CPU.Build.0 = Default|Any CPU
+		{C3B6FE2A-E046-477B-9DE5-BFB862FE3298}.Unittest|Any CPU.ActiveCfg = Default|Any CPU
+		{C3B6FE2A-E046-477B-9DE5-BFB862FE3298}.Unittest|Any CPU.Build.0 = Default|Any CPU
 		{D91728C6-3DEF-4A60-A625-8DD0DDE3CF8B}.Debug DMD|x64.ActiveCfg = Default|Any CPU
 		{D91728C6-3DEF-4A60-A625-8DD0DDE3CF8B}.Debug DMD|x64.Build.0 = Default|Any CPU
 		{D91728C6-3DEF-4A60-A625-8DD0DDE3CF8B}.Debug DMD|x86.ActiveCfg = Default|Any CPU
@@ -148,6 +189,8 @@ Global
 		{D91728C6-3DEF-4A60-A625-8DD0DDE3CF8B}.Release GDC|x86.Build.0 = Default|Any CPU
 		{D91728C6-3DEF-4A60-A625-8DD0DDE3CF8B}.Release|Any CPU.ActiveCfg = Default|Any CPU
 		{D91728C6-3DEF-4A60-A625-8DD0DDE3CF8B}.Release|Any CPU.Build.0 = Default|Any CPU
+		{D91728C6-3DEF-4A60-A625-8DD0DDE3CF8B}.Unittest|Any CPU.ActiveCfg = Default|Any CPU
+		{D91728C6-3DEF-4A60-A625-8DD0DDE3CF8B}.Unittest|Any CPU.Build.0 = Default|Any CPU
 		{E3BCBACF-E623-4E61-96F6-C3B0306B5373}.Debug DMD|x64.ActiveCfg = Default|Any CPU
 		{E3BCBACF-E623-4E61-96F6-C3B0306B5373}.Debug DMD|x64.Build.0 = Default|Any CPU
 		{E3BCBACF-E623-4E61-96F6-C3B0306B5373}.Debug DMD|x86.ActiveCfg = Default|Any CPU
@@ -170,6 +213,8 @@ Global
 		{E3BCBACF-E623-4E61-96F6-C3B0306B5373}.Release GDC|x86.Build.0 = Default|Any CPU
 		{E3BCBACF-E623-4E61-96F6-C3B0306B5373}.Release|Any CPU.ActiveCfg = Default|Any CPU
 		{E3BCBACF-E623-4E61-96F6-C3B0306B5373}.Release|Any CPU.Build.0 = Default|Any CPU
+		{E3BCBACF-E623-4E61-96F6-C3B0306B5373}.Unittest|Any CPU.ActiveCfg = Default|Any CPU
+		{E3BCBACF-E623-4E61-96F6-C3B0306B5373}.Unittest|Any CPU.Build.0 = Default|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{ECC22CF4-7EC8-4857-93E7-343892BD7258} = {D5097E94-3C40-46D9-A46B-F6F32D4E08B4}
@@ -180,6 +225,27 @@ Global
 		{7DF2A99B-0DD7-4D6D-9EBB-14FA67DC4716} = {67F57504-7F2F-4670-BB9E-5801B4DBA99A}
 		{E3BCBACF-E623-4E61-96F6-C3B0306B5373} = {67F57504-7F2F-4670-BB9E-5801B4DBA99A}
 		{D91728C6-3DEF-4A60-A625-8DD0DDE3CF8B} = {67F57504-7F2F-4670-BB9E-5801B4DBA99A}
+		{22C00889-39A7-40A0-9EC8-D3443EE3F989} = {7F753D2D-171B-43A0-B3E9-DFF1874D73DD}
+		{5D90A14C-A698-4AC8-9678-97527A903B35} = {7F753D2D-171B-43A0-B3E9-DFF1874D73DD}
+		{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC} = {5D90A14C-A698-4AC8-9678-97527A903B35}
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.TextStylePolicy = $1
+		$1.inheritsSet = null
+		$1.scope = text/x-d
+		$0.DFormattingPolicy = $2
+		$2.inheritsSet = Mono
+		$2.inheritsScope = text/x-d
+		$2.scope = text/x-d
+		$0.TextStylePolicy = $3
+		$3.FileWidth = 120
+		$3.inheritsSet = VisualStudio
+		$3.inheritsScope = text/plain
+		$3.scope = text/plain
+		$0.StandardHeader = $4
+		$4.Text = @Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.\n\nThis file is part of Trinix Operating System and is released under Trinix \nPublic Source Licence Version 1.0 (the 'Licence'). You may not use this file\nexcept in compliance with the License. The rights granted to you under the\nLicense may not be used to create, or enable the creation or redistribution\nof, unlawful or unlicensed copies of an Trinix operating system, or to\ncircumvent, violate, or enable the circumvention or violation of, any terms\nof an Trinix operating system software license agreement.\n\nYou may obtain a copy of the License at\nhttps://github.com/Bloodmanovski/Trinix and read it before using this file.\n\nThe Original Code and all software distributed under the License are\ndistributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY \nKIND, either express or implied. See the License for the specific language\ngoverning permissions and limitations under the License.\n\nContributors:\n     Matsumoto Satoshi <satoshi@gshost.eu>
+		$4.IncludeInNewFiles = True
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

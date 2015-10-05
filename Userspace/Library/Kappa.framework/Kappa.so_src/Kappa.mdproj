@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Default</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ItemType>GenericProject</ItemType>
+    <ProjectGuid>{7F71BCFB-2057-4ABE-988E-43A4008D9454}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Default|AnyCPU' ">
+    <OutputPath>.\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="System\AsyncCallback.d" />
+    <None Include="System\IAsyncResult.d" />
+    <None Include="System\package.d" />
+    <None Include="System\IO\SeekOrigin.d" />
+    <None Include="System\IO\Stream.d" />
+    <None Include="System\IO\package.d" />
+    <None Include="System\Runtime\FileHandle.d" />
+    <None Include="System\Runtime\SafeHandle.d" />
+    <None Include="System\Runtime\SyscallReturn.d" />
+    <None Include="System\Runtime\SyscallType.d" />
+    <None Include="System\Runtime\package.d" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="System\AppKit\" />
+  </ItemGroup>
+</Project>
