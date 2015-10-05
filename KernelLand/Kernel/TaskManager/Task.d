@@ -32,7 +32,6 @@ import Diagnostics;
 import TaskManager;
 import Architecture;
 import ObjectManager;
-import SyscallManager;
 
 import System.Runtime;
 

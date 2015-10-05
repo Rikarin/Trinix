@@ -26,7 +26,6 @@ module Modules.Input.Keyboard.Main;
 import Core;
 import Diagnostics;
 import ObjectManager;
-import SyscallManager;
 
 import Modules.Input.Keyboard;
 

@@ -21,14 +21,13 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module SyscallManager.Resource;
+module ObjectManager.Resource;
 
 import Core;
 import Library;
 import TaskManager;
 import Architecture;
 import ObjectManager;
-import SyscallManager;
 
 import System.Runtime;
 

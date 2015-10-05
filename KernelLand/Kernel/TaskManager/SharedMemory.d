@@ -24,7 +24,6 @@
 module TaskManager.SharedMemory;
 
 import ObjectManager;
-import SyscallManager;
 
 
 class SharedMemory : Resource {

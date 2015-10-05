@@ -26,7 +26,6 @@ module TaskManager.Mutex;
 import Library;
 import TaskManager;
 import ObjectManager;
-import SyscallManager;
 
 
 class Mutex : Resource {

@@ -21,13 +21,12 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module SyscallManager.ResourceManager;
+module ObjectManager.ResourceManager;
 
 import Core;
 import Library;
-import ObjectManager;
-import SyscallManager;
 import VFSManager;
+import ObjectManager;
 
 import System.Runtime;
 
@@ -36,7 +35,7 @@ alias long function(long, long, long, long, long) StaticSyscallCallback;
 
 /**
  * This static class is a manager for every instance of Resource class.
- * ResourceManager is called by SyscallManager or by internal library.
+ * ResourceManager is called by internal library.
  * 
  */
 abstract final class ResourceManager {
@@ -98,7 +97,7 @@ abstract final class ResourceManager {
     }
 
     /**
-     * This is called only by SyscallManager or by internal library
+     * This is called only by internal library
      * 
      * Params:
      *      resource    =       id of resource or ~0UL when is called static
@@ -109,9 +108,11 @@ abstract final class ResourceManager {
      *      param3      =       TODO
      *      param4      =       TODO
      *      param5      =       TODO
-     * TODO
+     *
+     * TODO:
+     *      o Add package(Architecture)
      */
-    package static long CallResource(long resource, long id, long param1, long param2, long param3, long param4, long param5) {
+    static long CallResource(long resource, long id, long param1, long param2, long param3, long param4, long param5) {
         Log("Syscall ===>");
         Log(" - Resource = %16x | ID = %16x", resource, id);
         Log(" - Param1 = %16x   | Param2 = %16x", param1, param2);

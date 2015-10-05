@@ -29,7 +29,6 @@
  *      o Library: StringBuilder(20%)
  *      o Compile Kappa framework and link it with Kernel
  *      o Move things from Library to Kappa framework
- *      o Merge ObjectManager and SyscallManager
  *
  * DRIVERS:
  *      o Keyboard
@@ -53,7 +52,6 @@ import TaskManager;
 import Architecture;
 import MemoryManager;
 import ObjectManager;
-import SyscallManager;
 
 //==============================================================================
 /* MemoryMap:

@@ -24,7 +24,6 @@
 module TaskManager.EventWaitHandle;
 
 import ObjectManager;
-import SyscallManager;
 
 
 class EventWaitHandle : Resource {

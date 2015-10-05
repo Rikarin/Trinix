@@ -25,7 +25,6 @@ module TaskManager.Semaphore;
 
 import Library;
 import TaskManager;
-import SyscallManager;
 import ObjectManager;
 
 

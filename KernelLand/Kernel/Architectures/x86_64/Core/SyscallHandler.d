@@ -21,13 +21,12 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module SyscallManager.SyscallHandler;
+module Architectures.x86_64.Core.SyscallHandler;
 
 import TaskManager;
 import Architecture;
 import ObjectManager;
 import MemoryManager;
-import SyscallManager;
 
 
 struct SyscallStack {

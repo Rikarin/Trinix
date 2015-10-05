@@ -23,7 +23,6 @@
 
 module TaskManager.ReaderWriterLock;
 
-import SyscallManager;
 import ObjectManager;
 
 
