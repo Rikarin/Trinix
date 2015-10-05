@@ -838,6 +838,7 @@
      <File path="Architectures\x86_64\Core\InterruptStackType.d" />
      <File path="Architectures\x86_64\Core\InterruptType.d" />
      <File path="Architectures\x86_64\Core\package.d" />
+     <File path="Architectures\x86_64\Core\SyscallHandler.d" />
      <File path="Architectures\x86_64\Core\SystemSegmentType.d" />
      <File path="Architectures\x86_64\Core\TSS.d" />
     </Folder>
@@ -901,12 +902,8 @@
    <File path="ObjectManager\IBlockDevice.d" />
    <File path="ObjectManager\ModuleManager.d" />
    <File path="ObjectManager\package.d" />
-  </Folder>
-  <Folder name="SyscallManager">
-   <File path="SyscallManager\package.d" />
-   <File path="SyscallManager\Resource.d" />
-   <File path="SyscallManager\ResourceManager.d" />
-   <File path="SyscallManager\SyscallHandler.d" />
+   <File path="ObjectManager\Resource.d" />
+   <File path="ObjectManager\ResourceManager.d" />
   </Folder>
   <Folder name="TaskManager">
    <File path="TaskManager\EventWaitHandle.d" />
