@@ -1,5 +1,0 @@
-delete v_addr a p_addr
-
-
-pridat logovacie mody
-add `-relocation-model=pic` to /cc/ldc/runtime/CMake... D_FLAGS

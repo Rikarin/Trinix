@@ -7,15 +7,13 @@ _DFLAGS := $(DFLAGS)
 -include $(dir $(lastword $(MAKEFILE_LIST)))../Makefile.cfg
 
 
-DFLAGS := -I$(TRXDIR)/KernelLand/Kernel -I$(TRXDIR)/KernelLand/Kernel/Architectures/$(ARCHDIR) -I$(TRXDIR)/KernelLand -I$(TRXDIR)/Userspace/Library/Kappa.framework/Kappa.so_src
+DFLAGS := -I$(TRXDIR)/KernelLand/Kernel -I$(TRXDIR)/KernelLand/Kernel/Architectures/$(ARCHDIR) -I$(TRXDIR)/KernelLand
 
 ifneq ($(CATEGORY),)
 	FULLNAME := $(CATEGORY)_$(NAME)
 else
 	FULLNAME := $(NAME)
 endif
-
-#DFLAGS += -D _MODULE_NAME_=\"$(FULLNAME)\"
 
 ifneq ($(BUILDTYPE),static)
 	_SUFFIX	:= dyn-$(ARCH)
@@ -35,6 +33,7 @@ DEPFILES := $(OBJ:%=%.dep)
 
 
 all: $(BIN)
+	@true
 
 clean:
 	@$(RM) $(BIN) $(BIN).dsm obj_st-* obj_dyn-* ../$(FULLNAME).* ../$(NAME).*

@@ -11,10 +11,7 @@ ifeq ($(BUILD_NUM),)
 	BUILD_NUM = 0
 endif
 
-
-#DFLAGS		+= -D _MODULE_NAME_=\"Kernel\"
-# -J../../
-DFLAGS		+= -IArchitectures/$(ARCHDIR) -I../ -I$(TRXDIR)/Userspace/Library/Kappa.framework/Kappa.so_src
+DFLAGS		+= -IArchitectures/$(ARCHDIR) -I../
 CFLAGS		+= -fno-stack-protector
 LDFLAGS		:= --script=Architectures/$(ARCHDIR)/LinkerScript.ld -Map=../Linker.$(ARCH).map
 
@@ -55,27 +52,29 @@ IMPORT    := $(addprefix $(IMPORTDIR), $(IMPORT))
 
 DOCFLAGS  := -D -Dd=../APIdoc/
 
-.PHONY: all clean install import xaxa
+.PHONY: all clean install import
 
 
-all:	$(BIN)
-import: $(IMPORT)
+all: $(BIN)
+	@true
+	
+#import: $(IMPORT)
 
 clean:
 	@$(RM) $(BIN) $(GZBIN) $(OBJDIR) $(BIN).dsm ../Linker.$(ARCH).map
 	@$(RM) $(DOCDIR) $(IMPORTDIR) $(DISTROOT)/System/Trinix.gz
 	
 install: $(BIN)
-	@echo --- Kernel was installed to System/Trinix.gz
+	@echo --- Kernel was installed into System/Trinix.gz
 	@cp $(GZBIN) $(DISTROOT)/System/Trinix.gz
 	
-$(IMPORTDIR)%.d: %.d
-	@echo --- Generating import $@
-	@$(MKDIR) $(dir $@)
-	@$(DD) $(DFLAGS) -c -fintfc -fintfc-file=$@ $< -o /dev/null
+#$(IMPORTDIR)%.d: %.d
+#	@echo --- Generating import $@
+#	@$(MKDIR) $(dir $@)
+#	@$(DD) $(DFLAGS) -c -fintfc -fintfc-file=$@ $< -o /dev/null
 
 #$(SYMBOLS_OBJ)	
-$(BIN): $(OBJ) xaxa $(MODS) Architectures/$(ARCHDIR)/LinkerScript.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
+$(BIN): $(OBJ) $(OBJDIR)/Core.o $(MODS) Architectures/$(ARCHDIR)/LinkerScript.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
 	@echo --- LD -o $(BIN)
 	@$(LD) $(LDFLAGS) -o $(BIN) $(shell find $(OBJDIR) -name "*.[o]") $(MODS) ../libdruntime-ldc.a
 #@$(OBJDUMP) -d -S $(BIN) > $(BIN).dsm
@@ -100,13 +99,10 @@ $(OBJDIR)%.c.o: %.c
 	@$(CC) $(CFLAGS) -o $@ -c $<
 #@$(CC) $(CFLAGS) -M -MT $@ -MP -o $@.o.dep $<
 
-xaxa: $(shell find * -name "*.d" -not -path "*Architectures*")
+$(OBJDIR)/Core.o: $(shell find * -name "*.d" -not -path "*Architectures*")
 	@echo --- DD mrdni vsetko dokopy
 	@$(MKDIR) $(dir $@)
 	@$(DD) $(DFLAGS) -oq -od=$(OBJDIR) -c $(shell find * -name "*.d" -not -path "*Architectures*")
-	
-%.xo.$(ARCH):
-	@make -C $* all BUILDTYPE=static
 	
 # Build-time information (git hash and build number)
 $(BUILDINFO_SRC): $(filter-out $(BUILDINFO_OBJ), $(OBJ)) $(MODS)
