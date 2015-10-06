@@ -2,12 +2,10 @@
 # Trinix Module Templater Makefile
 #
 
-_DFLAGS := $(DFLAGS)
-
 -include $(dir $(lastword $(MAKEFILE_LIST)))../Makefile.cfg
 
 
-DFLAGS := -I$(TRXDIR)/KernelLand/Kernel -I$(TRXDIR)/KernelLand/Kernel/Architectures/$(ARCHDIR) -I$(TRXDIR)/KernelLand
+DFLAGS += -I$(TRXDIR)/KernelLand/Kernel -I$(TRXDIR)/KernelLand/Kernel/Architectures/$(ARCHDIR) -I$(TRXDIR)/KernelLand
 
 ifneq ($(CATEGORY),)
 	FULLNAME := $(CATEGORY)_$(NAME)
@@ -16,17 +14,17 @@ else
 endif
 
 ifneq ($(BUILDTYPE),static)
-	_SUFFIX	:= dyn-$(ARCH)
+	SUFFIX	:= dyn-$(ARCH)
 	KEXT	:= ../$(FULLNAME).kext
 	BIN		:= $(KEXT).$(ARCH)
 	DFLAGS	+= $(DYNMOD_DFLAGS)
 else
-	_SUFFIX := st-$(ARCH)
+	SUFFIX := st-$(ARCH)
 	BIN := ../$(NAME).xo.$(ARCH)
 	DFLAGS += $(KERNEL_DFLAGS)
 endif
 
-OBJ 	 := $(addprefix obj_$(_SUFFIX)/,$(OBJ))
+OBJ 	 := $(addprefix obj_$(SUFFIX)/,$(OBJ))
 DEPFILES := $(OBJ:%=%.dep)
 
 .PHONY: all clean install
@@ -62,7 +60,7 @@ $(BIN): %.xo.$(ARCH): $(OBJ)
 	@$(LD) --script=$(TRXDIR)/KernelLand/Modules/link.ld -r -o $@ $(OBJ)
 endif
 	
-obj_$(_SUFFIX)/%.d.o: %.d
+obj_$(SUFFIX)/%.d.o: %.d
 	@echo --- DD -o $@
 	@$(MKDIR) $(dir $@)
 	@$(DD) $(DFLAGS) -of=$@ -c -deps=$@.o.dep $<
