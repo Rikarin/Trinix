@@ -64,6 +64,34 @@
     <Compile Include="System\AppKit\WindowController.d" />
     <Compile Include="System\AppKit\ViewController.d" />
     <Compile Include="System\AppKit\TextField.d" />
+    <Compile Include="System\AppKit\Browser.d" />
+    <Compile Include="System\AppKit\ColorWell.d" />
+    <Compile Include="System\AppKit\DatePicker.d" />
+    <Compile Include="System\AppKit\ImageView.d" />
+    <Compile Include="System\AppKit\LevelIndicator.d" />
+    <Compile Include="System\AppKit\Matrix.d" />
+    <Compile Include="System\AppKit\PathControl.d" />
+    <Compile Include="System\AppKit\RuleEditor.d" />
+    <Compile Include="System\AppKit\Scroller.d" />
+    <Compile Include="System\AppKit\SegmentedControl.d" />
+    <Compile Include="System\AppKit\Slider.d" />
+    <Compile Include="System\AppKit\Stepper.d" />
+    <Compile Include="System\AppKit\TableView.d" />
+    <Compile Include="System\AppKit\Box.d" />
+    <Compile Include="System\AppKit\ClipView.d" />
+    <Compile Include="System\AppKit\OpenGLView.d" />
+    <Compile Include="System\AppKit\ProgressIndicator.d" />
+    <Compile Include="System\AppKit\RulerView.d" />
+    <Compile Include="System\AppKit\ScrollView.d" />
+    <Compile Include="System\AppKit\CollectionView.d" />
+    <Compile Include="System\AppKit\SplitView.d" />
+    <Compile Include="System\AppKit\StackView.d" />
+    <Compile Include="System\AppKit\TabView.d" />
+    <Compile Include="System\AppKit\TableCellView.d" />
+    <Compile Include="System\AppKit\TableHeaderView.d" />
+    <Compile Include="System\AppKit\TableRowView.d" />
+    <Compile Include="System\AppKit\Text.d" />
+    <Compile Include="System\AppKit\VisualEffect.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System\AppKit\" />
