@@ -21,11 +21,22 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module System.AppKit.CollectionView;
+module System.AppKit.RoutedEventArgs;
 
-import System.AppKit;
+import System;
 
 
-class CollectionView : View {
-    
+class RoutedEventArgs : EventArgs {
+    private bool m_handled;
+    private RoutedEvent m_event;
+
+    @property ref bool Handled()   { return m_handled; }
+    @proeprty auto EventInstance() { return m_event;   }
+
+    this() {
+
+    }
 }
+
+
+alias void delegate(object sender, RoutedEventArgs e) RoutedEventHandler;

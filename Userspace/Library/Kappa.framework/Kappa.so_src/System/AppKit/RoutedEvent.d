@@ -21,11 +21,33 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module System.RoutingStrategy;
+module System.AppKit.RoutedEvent;
 
 
-enum RoutingStrategy {
-    Bubble,
-    Tunnel,
-    Direct
+//Must be this template??
+class RoutedEvent {
+    protected RoutingStrategy m_strategy;
+    protected string m_name;
+
+    @property string Name()          { return m_name;     }
+    //@property TypeInfo HandlerType() { return typeid(T);  }
+    @property auto Strategy()        { return m_strategy; }
+
+    this() {
+
+    }
 }
+
+
+/*
+ * try something like this??
+public static immutable RoutedEvent!RoutedEventHandler ClickEvent =
+    EventManager.RegisterRoutedEvent!RoutedEventHandler("Click", RoutingStrategy.Bubble, typeof(ButtonBase));
+
+public Event!RoutedEventHandler ClickEvent;
+
+ClickEvent        = new Event!RoutedEventHandler();
+ClickEvent.Add    = (auto value) => { AddHandler(ClickEvent,value);     }
+ClickEvent.Remove = (auto value) => { RemoveHandler(ClickEvent, value); }
+
+*/

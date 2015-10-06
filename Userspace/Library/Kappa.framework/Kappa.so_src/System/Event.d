@@ -28,13 +28,21 @@ import System.Collections;
 
 
 class Event(T) {
-    private List!T m_list;
-    protected RoutingStrategy m_strategy;
+    alias void delegate(T value) Handler;
 
-    @property RoutingStrategy Strategy() { return m_strategy; }
+    private List!T m_list;
+    private Handler m_addHandler;
+    private Handler m_removeHandler;
+
+    @property {
+        void Add(Handler value)    { m_addHandler    = value; }
+        void Remove(Handler value) { m_removeHandler = value; }
+    }
 
     this() {
-        m_list = new List!T();
+        m_list          = new List!T();
+        m_addHandler    = &AddHandler;
+        m_removeHandler = &RemoveHandler;
     }
 
     ~this() {
@@ -52,23 +60,34 @@ class Event(T) {
     }
 
     void opOpAssign(string TOp)(T event) if (TOp == "+") {
+        m_addHandler(event);
+    }
+
+    void opOpAssign(string TOp)(T event) if (TOp == "-") {
+        m_removeHandler(event);
+    }
+
+
+    private void AddHandler(T value) {
         if (!m_list.Contains(event))
             m_list.Add(event);
     }
 
-    void opOpAssign(string TOp)(T event) if (TOp == "-") {
+    private void RemoveHandler(T value) {
         m_list.Remove(event);
     }
 }
 
 
-unittest {
+unittest { //TODO: test it
     class test {
-        Event!EventHandler events = new Event!EventHandler();
+        Event!EventHandler event = new Event!EventHandler();
 
         this() {
             event += &test_onEvent;
+            event(this, new EventArgs());
 
+            event.Add = (EventHandler v) => {  };
             event(this, new EventArgs());
         }
 

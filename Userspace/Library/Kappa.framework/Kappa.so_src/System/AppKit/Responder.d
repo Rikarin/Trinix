@@ -23,7 +23,44 @@
 
 module System.AppKit.Responder;
 
+import System.AppKit;
+
+//TODO:
+class DragEventArgs : RoutedEventArgs { }
+class KeyboardFocusChangedEventArgs : RoutedEventArgs { }
+class MouseEventArgs : RoutedEventArgs { }
+class DependencyPropertyChangedEventArgs : RoutedEventArgs { }
+class KeyEventArgs : RoutedEventArgs { }
+class MouseButtonEventArgs : RoutedEventArgs { }
+
 
 abstract class Responder {
+    protected void OnGotFocus(RoutedEventArgs e)              { }
+    protected void OnLostFocus(RoutedEventArgs e)             { }
+    protected void OnChildDesiredSizeChanged(Responder child) { }
 
+    protected void OnDragEnter(DragEventArgs e)               { }
+    protected void OnDragLeave(DragEventArgs e)               { }
+    protected void OnDragOver(DragEventArgs e)                { }
+    protected void OnDrop(DragEventArgs e)                    { }
+
+    protected void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e) { }
+    protected void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e) { }
+    protected void OnIsKeyboardFocusedChanged(DependencyPropertyChangedEventArgs e) { }
+    protected void OnIsKeyboardFocusWithinChanged(DependencyPropertyChangedEventArgs e) { }
+    protected void OnKeyDown(KeyEventArgs e) { }
+    protected void OnKeyUp(KeyEventArgs e) { }
+
+    protected void OnMouseCapture(MouseEventArgs e) { }
+    protected void OnLostMouseCapture(MouseEventArgs e) { }
+    protected void OnIsMouseCapturedChanged(DependencyPropertyChangedEventArgs e) { }
+    protected void OnIsMouseCaptureWithinChanged(DependencyPropertyChangedEventArgs e) { }
+    protected void OnIsMouseDirectlyOverChanged(DependencyPropertyChangedEventArgs e) { }
+
+    protected void OnMouseDown(MouseButtonEventArgs e) { }
+    protected void OnMouseEnter(MouseEventArgs e) { }
+    protected void OnMouseLeave(MouseEventArgs e) { }
+    //TODO: tu som skoncil v docu https://msdn.microsoft.com/en-us/library/system.windows.uielement%28v=vs.110%29.aspx
+
+    //TODO: manipulation??
 }

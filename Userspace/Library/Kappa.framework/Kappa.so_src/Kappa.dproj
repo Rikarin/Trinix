@@ -94,10 +94,11 @@
     <Compile Include="System\AppKit\VisualEffect.d" />
     <Compile Include="System\EventArgs.d" />
     <Compile Include="System\Event.d" />
-    <Compile Include="System\EventHandler.d" />
-    <Compile Include="System\RoutingStrategy.d" />
     <Compile Include="System\Collections\List.d" />
     <Compile Include="System\Collections\package.d" />
+    <Compile Include="System\AppKit\RoutedEventArgs.d" />
+    <Compile Include="System\AppKit\RoutedEvent.d" />
+    <Compile Include="System\AppKit\RoutingStrategy.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System\AppKit\" />

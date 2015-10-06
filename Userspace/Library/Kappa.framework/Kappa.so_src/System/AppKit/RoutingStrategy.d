@@ -20,9 +20,12 @@
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
-module System.EventHandler;
 
-import System;
+module System.AppKit.RoutingStrategy;
 
 
-alias void delegate(object sender, EventArgs e) EventHandler;
+enum RoutingStrategy {
+    Bubble,
+    Tunnel,
+    Direct
+}
