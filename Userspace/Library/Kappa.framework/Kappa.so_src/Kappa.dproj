@@ -95,8 +95,12 @@
     <Compile Include="System\EventArgs.d" />
     <Compile Include="System\Event.d" />
     <Compile Include="System\EventHandler.d" />
+    <Compile Include="System\RoutingStrategy.d" />
+    <Compile Include="System\Collections\List.d" />
+    <Compile Include="System\Collections\package.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System\AppKit\" />
+    <Folder Include="System\Collections\" />
   </ItemGroup>
 </Project>

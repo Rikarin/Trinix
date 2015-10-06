@@ -5,6 +5,7 @@ module System;
 public import System.EventHandler;
 
 /* Enums      */
+public import System.RoutingStrategy;
 
 /* Interfaces */
 public import System.IAsyncResult;

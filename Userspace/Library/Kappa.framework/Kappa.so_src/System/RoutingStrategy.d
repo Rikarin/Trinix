@@ -19,26 +19,13 @@
  * 
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
- * 
- * TODO:
- *      o Better name for EventInstance
  */
 
-module System.EventArgs;
+module System.RoutingStrategy;
 
 
-class EventArgs {
-    private bool m_handled;
-    private Event m_event;
-
-    @property ref bool Handled()    { return m_handled; }
-    @proeprty Event EventInstance() { return m_event;   }
-
-    this() {
-
-    }
-
-    package void SetEventInstance(Event event) {
-        m_event = event;
-    }
+enum RoutingStrategy {
+    Bubble,
+    Tunnel,
+    Direct
 }

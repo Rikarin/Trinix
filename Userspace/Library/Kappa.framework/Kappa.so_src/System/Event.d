@@ -24,50 +24,56 @@
 module System.Event;
 
 import System;
+import System.Collections;
 
 
-class Event(T) {  //struct maybe??
-    //TODO: list
+class Event(T) {
+    private List!T m_list;
+    protected RoutingStrategy m_strategy;
+
+    @property RoutingStrategy Strategy() { return m_strategy; }
 
     this() {
-        //new list
+        m_list = new List!T();
     }
 
     ~this() {
-        //delete list
+        delete m_list;
     }
 
     void opCall(object sender, EventArgs e) {
-        //foreach (x; m_list)
-        //x(sender, e)l
+        e.SetEventInstance(this);
+
+        foreach (x; m_list) {
+            if (!e.Handled) {
+                x(sender, e);
+            }
+        }
     }
 
     void opOpAssign(string TOp)(T event) if (TOp == "+") {
-        //if (!m_list.Contains(event))
-        //m_list.Add(event);
+        if (!m_list.Contains(event))
+            m_list.Add(event);
     }
 
     void opOpAssign(string TOp)(T event) if (TOp == "-") {
-        //m_list.Remove(event);
+        m_list.Remove(event);
     }
 }
+
 
 unittest {
     class test {
         Event!EventHandler events = new Event!EventHandler();
 
-
         this() {
             event += &test_onEvent;
 
-            event(EventArgs.Empty);
+            event(this, new EventArgs());
         }
 
-
-
-
         void test_OnEvent(object sender, EventArgs e) {
-            //caled by event.opCall
+            //callsed by event.opCall
         }
     }
 }
