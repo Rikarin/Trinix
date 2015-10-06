@@ -92,6 +92,9 @@
     <Compile Include="System\AppKit\TableRowView.d" />
     <Compile Include="System\AppKit\Text.d" />
     <Compile Include="System\AppKit\VisualEffect.d" />
+    <Compile Include="System\EventArgs.d" />
+    <Compile Include="System\Event.d" />
+    <Compile Include="System\EventHandler.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System\AppKit\" />
