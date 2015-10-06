@@ -1,11 +1,8 @@
-/Externals/Output
-/KernelLand/Kernel/obj-x86_64/buildinfo.c
-/Userspace/tmp/druntime/dmd
 *.o
 *.map
 *.log
 *.userprefs
-*.so
+*.dynlib
 *.dsm
 *.gz
 *.dep
@@ -16,11 +13,5 @@
 *.bin
 *.img
 
-/Externals/CrossCompiler/*build-*
-/Externals/CrossCompiler/binutils-*
-/Externals/CrossCompiler/gcc-*
-/Externals/CrossCompiler/GDC-*
-/Externals/CrossCompiler/gmp-*
-/Externals/CrossCompiler/mpfr-*
-/Externals/CrossCompiler/mpc-*
-/KernelLand/Kernel/obj-x86_64/symbols.s
+/Externals/Output
+/KernelLand/Kernel/obj-*

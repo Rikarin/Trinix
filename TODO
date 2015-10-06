@@ -1,10 +1,11 @@
 version 1.1.0:
 	o Syscall ACL (something like ACL on android??)
-	o framework bundle automatic creator
 	o port LLVM/LDC, binutils/LLD?
 	o Implement multi CPU support
 	o Implement statements such as @trusted nothrow @safe atd...
 	o Garbage collector
 	o ACPI
     o AHCI
+	
+	o framework bundle automatic creator
 	o Create framework as a set of libs and config files

@@ -4,9 +4,8 @@
 
 -include ../../Makefile.cfg
 
-OUTPUT 	= $(TRXROOT)/System/Library/Frameworks/Kappa.framework/crt
-BIN 	= $(OUTPUT)/crt0.o $(OUTPUT)/crt0S.o $(OUTPUT)/crti.o $(OUTPUT)/crtn.o
-CFLAGS := -std=c99
+OUTPUT = $(TRXROOT)/System/Library/Frameworks/Kappa.framework/crt
+BIN    = $(OUTPUT)/crt0.o $(OUTPUT)/crt0S.o $(OUTPUT)/crti.o $(OUTPUT)/crtn.o
 
 .PHONY: all clean install
 
