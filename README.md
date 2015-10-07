@@ -6,6 +6,7 @@
 [![Donate](https://img.shields.io/badge/Bitcoin-Donate-blue.svg)](https://www.coinbase.com/checkouts/ac2ed28efccef2466352283006ef450c)
 [![Pull Request](http://githubbadges.herokuapp.com/Bloodmanovski/Trinix/pulls)](https://github.com/Bloodmanovski/Trinix/issues)
 [![Issues](http://githubbadges.herokuapp.com/Bloodmanovski/Trinix/issues)](https://github.com/Bloodmanovski/Trinix/pulls)
+[![IRC](https://img.shields.io/badge/IRC-%23Trinix-orange.svg)](irc://irc.freenode.net/Trinix)
 
 # Trinix #
 Trinix is a hobby operating system written from scratch. OS is written in D language.
