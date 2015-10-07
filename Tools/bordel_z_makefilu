@@ -1,17 +1,12 @@
-#
-# Trinix FyleSystem creator
-#
 
--include ../Makefile.cfg
 
-.PHONY: install
 
-IMG := $(TRXDIR)/Trinix.img
 
+#### TODO DEPRECATED, REMOVE THIS QUICKLY
+IMG := Trinix.img
+
+#install in FileSystem
 install:
-	@true
-
-install2: $(IMG)
 	@kpartx -a $(IMG)
 	@sleep 1
 	
@@ -24,7 +19,8 @@ install2: $(IMG)
 	@$(RM) mount-tmp
 	@kpartx -d $(IMG)
 
-$(IMG):
+#TODO: Trinix.img
+image42:
 	@dd if=/dev/zero of=/opt/$(IMG) bs=512 count=100000
 	@parted --script /opt/$(IMG) mktable msdos mkpart p ext2 1 40 set 1 boot on
 	@kpartx -a /opt/$(IMG)
@@ -40,3 +36,22 @@ $(IMG):
 	@$(RM) mount-tmp
 	@kpartx -d /opt/$(IMG)
 	@mv /opt/$(IMG) $(IMG)
+	
+	
+	
+#TODO: call install script
+ifeq ($(ARCHDIR),native)
+.PHONY: $(CC) $(DD)
+else
+$(CC):
+	@echo ---
+	@echo $(CC) does not exist, recompiling
+	@echo ---
+	make -C Externals/CrossCompiler/
+	
+$(DD):
+	@echo ---
+	@echo $(DD) does not exist, recompiling
+	@echo ---
+	make -C Externals/CrossCompiler/
+endif

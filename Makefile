@@ -2,7 +2,7 @@
 # Trinix Core Makefile
 #
 # TODO:
-#	o Add some test (for travis etc)
+#	o Add tests (for travis etc)
 
 -include Makefile.cfg
 
@@ -45,7 +45,6 @@ $(call targetvars,USERBUNDLES) \
 $(addprefix clean.KernelLand/Modules/, $(MODULES))
 
 
-#TODO: make core.dynlib as a .o and link it with kernel?
 ai-kmode:      $(AI_MODULES)      $(AI_KERNEL)         $(AI_DYNMODS)
 all-kmode:     $(ALL_MODULES)     $(ALL_KERNEL)        $(ALL_DYNMODS)
 clean-kmode:   $(CLEAN_MODULES)   $(CLEAN_KERNEL)      $(CLEAN_DYNMODS)
@@ -89,86 +88,9 @@ $(eval $(call rules,USERBUNDLES,User Bundle: $$*,$(SUBMAKE) -C Userspace/Bundle/
 install-FileSystem:
 	@$(SUBMAKE) install -C Userspace/FileSystem
 
-
 echo:
 	@echo Version: $(TRINIX_VERSION)
 	@echo ARCH: $(ARCH)
 	@echo ARCHDIR: $(ARCHDIR)
 	@echo BUILD_TYPE: $(BUILD_TYPE)
-#TODO: check this @echo $(call targetvars,MODULES)
-
-
-
-
-
-
-
-
-
-
-
-#### TODO DEPRECATED, REMOVE THIS QUICKLY
-IMG := Trinix.img
-
-install42:
-	@make -C KernelLand/Kernel install
-	@kpartx -a $(IMG)
-	@sleep 1
 	
-	@$(MKDIR) mount-tmp
-	@mount /dev/mapper/loop0p1 mount-tmp
-	
-	@cp -Rf Root/* mount-tmp
-
-	@umount mount-tmp
-	@$(RM) mount-tmp
-	@kpartx -d $(IMG)
-
-image42:
-	@dd if=/dev/zero of=/opt/$(IMG) bs=512 count=100000
-	@parted --script /opt/$(IMG) mktable msdos mkpart p ext2 1 40 set 1 boot on
-	@kpartx -a /opt/$(IMG)
-	@sleep 1
-	@mkfs.ext2 /dev/mapper/loop0p1
-	
-	@$(MKDIR) mount-tmp
-	@mount /dev/mapper/loop0p1 mount-tmp
-	
-	@grub2-install --no-floppy --boot-directory=mount-tmp/System/Boot /dev/loop0
-
-	@umount mount-tmp
-	@$(RM) mount-tmp
-	@kpartx -d /opt/$(IMG)
-	@mv /opt/$(IMG) $(IMG)
-
-	
-clean42: $(addprefix clean.KernelLand/Modules/, $(MODULES))
-	@make -C KernelLand/Kernel clean
-	
-$(addprefix clean.KernelLand/Modules/, $(MODULES))42: clean.%:
-	@make -C $* clean
-	
-
-test42: $(ALL_SYSLIBsS) $(CC)
-	@echo $(ARCH) $(ARCHDIR) $(TRIPLET)
-	@echo aa
-	
-	
-	
-	
-#TODO: call install script
-ifeq ($(ARCHDIR),native)
-.PHONY: $(CC) $(DD)
-else
-$(CC):
-	@echo ---
-	@echo $(CC) does not exist, recompiling
-	@echo ---
-	make -C Externals/CrossCompiler/
-	
-$(DD):
-	@echo ---
-	@echo $(DD) does not exist, recompiling
-	@echo ---
-	make -C Externals/CrossCompiler/
-endif

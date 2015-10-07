@@ -11,14 +11,13 @@ git clone https://github.com/llvm-mirror/clang.git
 cd ../projects
 git clone https://github.com/llvm-mirror/compiler-rt.git
 
-cd ../../
+cd ../
 mkdir build && cd build
-../llvm/configure --enable-optimized -prefix=/llvm
+../configure --enable-optimized -prefix=/llvm
 make -j 4
 make install
 
-cd ../
-
+cd ../../
 
 #Build LDC
 git clone --recursive https://github.com/ldc-developers/ldc.git
@@ -32,6 +31,6 @@ git checkout release-0.16.0
 
 cd ldc
 mkdir build && cd build
-cmake -DLLVM_ROOT_DIR=/llvm/ -DCMAKE_INSTALL_PREFIX=/llvm/ ..
-make -j 4
-make install
+#cmake -DLLVM_ROOT_DIR=/llvm/ -DCMAKE_INSTALL_PREFIX=/llvm/ ..
+#make -j 4
+#make install
