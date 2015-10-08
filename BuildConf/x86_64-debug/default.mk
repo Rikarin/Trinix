@@ -2,6 +2,7 @@
 MODULES        += Storage/ATA
 #MODULES       += FileSystem/Ext2
 MODULES        += Input/PS2KeyboardMouse Input/Keyboard Input/Mouse
+MODULES        += Display/BochsGA
 #MODULES += Terminal/VTY
 
 # Shared Libs copied to System/Module dir and dynamically loaded while booting
