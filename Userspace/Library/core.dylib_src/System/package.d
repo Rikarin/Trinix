@@ -33,6 +33,7 @@ class ArgumentNullException : ArgumentException   { }
 class IOException : SystemException { }
 class UnauthorizedAccessException : SystemException { }
 class NotSupportedException : SystemException { }
+class OverflowException : SystemException { }
 
 class ArgumentOutOfRangeException : ArgumentException {
     this(string paramName, string message) { }
