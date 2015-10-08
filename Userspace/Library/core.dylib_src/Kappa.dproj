@@ -103,6 +103,8 @@
     <Compile Include="System\Threading\package.d" />
     <Compile Include="System\Threading\Mutex.d" />
     <Compile Include="System\IO\MemoryStream.d" />
+    <Compile Include="System\TimeSpan.d" />
+    <Compile Include="System\Threading\Timeout.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System\AppKit\" />

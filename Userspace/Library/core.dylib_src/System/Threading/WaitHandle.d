@@ -23,11 +23,65 @@
 
 module System.Threading.WaitHandle;
 
+import System;
+import System.Threading;
+
 
 abstract class WaitHandle {
+    enum WaitTimeout = 0x102;
+
     protected this() {
 
     }
 
-    bool WaitOne();
+    bool WaitOne(TimeSpan timeout);
+
+    bool WaitOne() {
+        WaitOne(Timeout.Infinite);
+    }
+
+    static bool WaitAll(WaitHandle[] handles) {
+        return WaitAll(handles, Timeout.Infinite);
+    }
+
+    static bool WaitAll(WaitHandle[] handles, TimeSpan timeout) in {
+        if (handles is null)
+            throw new ArgumentNullException(Environment.GetResourceString("ArgumentNull_Waithandles"));
+
+        if (!handles.length)
+            throw new ArgumentNullException(Environment.GetResourceString("Argument_EmptyWaithandleArray"));
+    } body {
+        assert(false);
+        //TODO
+    }
+
+    static int WaitAny(WaitHandle[] handles) {
+        return WaitAny(handles, Timeout.Infinite);
+    }
+    
+    static int WaitAny(WaitHandle[] handles, TimeSpan timeout) in {
+        if (handles is null)
+            throw new ArgumentNullException(Environment.GetResourceString("ArgumentNull_Waithandles"));
+        
+        if (!handles.length)
+            throw new ArgumentNullException(Environment.GetResourceString("Argument_EmptyWaithandleArray"));
+    } body {
+        assert(false);
+        //TODO
+    }
+
+    static bool SignalAndWait(WaitHandle toSignal, WaitHandle toWait) {
+        return SignalAndWait(toSignal, toWait, Timeout.Infinite);
+    }
+
+    static bool SignalAndWait(WaitHandle toSignal, WaitHandle toWaitOn, TimeSpan timeout) in {
+        if (toSignal is null)
+            throw new ArgumentNullException("toSignal");
+
+        if (toWaitOn is null)
+            throw new ArgumentNullException("toWaitOn");
+    } body {
+        assert(false);
+        //TODO
+    }
 }
