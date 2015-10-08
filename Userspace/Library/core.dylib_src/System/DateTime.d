@@ -18,31 +18,36 @@
  * governing permissions and limitations under the License.
  * 
  * Contributors:
- *      Matsumoto Satoshi <satoshi@gshost.eu>
- * 
- * TODO: Access right for named mutexes
+ *       Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module System.Threading.Mutex;
+module System.DateTime;
 
 import System;
-import System.Threading;
 
 
-class Mutex : WaitHandle {
-    this(bool initiallyOwned = false, string name = null) {
-        super();
+struct DateTime {
+
+    @property {
+        static DateTime Now() { return DateTime(); } //TODO
     }
 
-    this(bool initiallyOwned, string name, out bool createdNew, MutexSecurity security = null) {
-        super();
+    this() {
+
     }
 
-    override bool WaitOne(TimeSpan timeout) {
-        return false;
+    DateTime Add(TimeSpan value) {
+        return this;
     }
 
-    void Release() {
+    DateTime Substract(TimeSpan value) {
+        return this;
+    }
 
+    DateTime opBinary(string s)(TimeSpan other) {
+        static if (s == "+")
+            return Add(other);
+        else static if (s == "-")
+            return Substract(other);
     }
 }

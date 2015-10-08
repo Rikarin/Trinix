@@ -19,30 +19,41 @@
  * 
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
- * 
- * TODO: Access right for named mutexes
  */
 
-module System.Threading.Mutex;
+module System.Threading.SpinLock;
 
 import System;
 import System.Threading;
 
 
-class Mutex : WaitHandle {
-    this(bool initiallyOwned = false, string name = null) {
-        super();
+struct SpinLock {
+    private char m_locked;
+
+    void Enter() {
+        while (AtomicExchange(&m_locked)) { }
     }
 
-    this(bool initiallyOwned, string name, out bool createdNew, MutexSecurity security = null) {
-        super();
+    void Exit() {
+        m_locked = false;
     }
 
-    override bool WaitOne(TimeSpan timeout) {
-        return false;
+    bool TryEnter(TimeSpan timeout) {
+        auto waitTo = DateTime.Now + timeout;
+        while (AtomicExchange(&m_locked)) {
+            if (Datetime.Now > waitTo)
+                return false;
+        }
+
+        return true;
     }
 
-    void Release() {
-
+    private char AtomicExchange(char* value) {
+        asm {
+            naked;
+            mov RAX, 1;
+            xchg [RSI], RAX;
+            ret;
+        }
     }
 }

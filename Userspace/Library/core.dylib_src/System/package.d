@@ -10,6 +10,7 @@ public import System.IAsyncResult;
 
 /* Structs    */
 public import System.TimeSpan;
+public import System.DateTime;
 
 /* Classes    */
 public import System.Event;
@@ -43,10 +44,11 @@ class ArgumentOutOfRangeException : ArgumentException {
 /*
  * TODO: co treba v prvej verzii frameworku?
  *      o FileStream, PipeStream, NamedPipeStream, BufferedStream  --- Complete: Stream, NullStream, SyncStream, MemoryStream
- *      o Mutex, Semaphore, ReaderWriterLock, SpinLock             --- Complete: WaitHandle
- *      o Environment
+ *      o Mutex, Semaphore, ReaderWriterLock, SpinLock, Basrrier   --- Complete: WaitHandle
+ *      o EventWaitHandle, AutoResetEvent, ManualResetEvent, CountdownEvent 
+ *      o Environment, Exceptions
  *      o Thread, Process
- *      o TimeSpan DateTime
+ *      o DateTime, String                                         --- Complete: TimeSpan
  * 
  * */
 

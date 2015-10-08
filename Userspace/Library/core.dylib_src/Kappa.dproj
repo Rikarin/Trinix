@@ -105,6 +105,8 @@
     <Compile Include="System\IO\MemoryStream.d" />
     <Compile Include="System\TimeSpan.d" />
     <Compile Include="System\Threading\Timeout.d" />
+    <Compile Include="System\Threading\SpinLock.d" />
+    <Compile Include="System\DateTime.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System\AppKit\" />
