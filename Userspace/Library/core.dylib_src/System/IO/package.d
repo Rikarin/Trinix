@@ -32,6 +32,7 @@ TODO:
 */
 
 
+//T = object ??
 class Task(T = void) { }
 class CancellationToken {
     static const CancellationToken None = null;

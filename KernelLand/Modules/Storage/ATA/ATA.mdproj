@@ -7,7 +7,7 @@
     <ProjectGuid>{834F80D2-57C2-4E82-B6F8-EF39294A6A4F}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Default|AnyCPU' ">
-    <OutputPath>.\</OutputPath>
+    <OutputPath>.</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <None Include="ATAController.d" />

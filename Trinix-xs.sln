@@ -29,7 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{5D90A14C-A698-4AC8-9678-97527A903B35}"
 EndProject
-Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "Kappa", "Userspace\Library\Kappa.framework\Kappa.so_src\Kappa.dproj", "{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}"
+Project("{3947E667-4C90-4C3A-BEB9-7148D6FE0D7C}") = "Kappa", "Userspace\Library\core.dylib_src\Kappa.dproj", "{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

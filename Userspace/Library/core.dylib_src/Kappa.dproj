@@ -99,9 +99,14 @@
     <Compile Include="System\AppKit\RoutedEventArgs.d" />
     <Compile Include="System\AppKit\RoutedEvent.d" />
     <Compile Include="System\AppKit\RoutingStrategy.d" />
+    <Compile Include="System\Threading\WaitHandle.d" />
+    <Compile Include="System\Threading\package.d" />
+    <Compile Include="System\Threading\Mutex.d" />
+    <Compile Include="System\IO\MemoryStream.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System\AppKit\" />
     <Folder Include="System\Collections\" />
+    <Folder Include="System\Threading\" />
   </ItemGroup>
 </Project>

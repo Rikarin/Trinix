@@ -7,7 +7,7 @@
     <ProjectGuid>{7DF2A99B-0DD7-4D6D-9EBB-14FA67DC4716}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Default|AnyCPU' ">
-    <OutputPath>.\</OutputPath>
+    <OutputPath>.</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <None Include="DriverInfo.d" />

@@ -19,37 +19,41 @@
  * 
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
+ * 
+ * TODO:
+ *      o Make async calls in Stream, NullStream, SyncStream
  */
 
 module System.IO.Stream;
 
 import System;
 import System.IO;
+import System.Threading;
 
 
 abstract class Stream {
     static immutable Stream Null = new NullStream();
 
-    private enum DEFAULT_COPY_BUFFER_SIZE = 81920;
+    private enum DefaultCopyBufferSize = 81920;
 
     @property {
-        bool CanRead();
-        bool CanSeek();
-        bool CanWrite();
-        bool CanTimeout() { return false; }
+        bool CanRead() pure;
+        bool CanSeek() pure;
+        bool CanWrite() pure;
+        bool CanTimeout() pure { return false; }
 
         long Length();
         void Length(long value);
         long Position();
         void Position(long value);
 
-        long ReadTimeout()            { return 0; /* TODO: throw */ }
-        void ReadTimeout(long value)  {           /* TODO: throw */ }
-        long WriteTimeout()           { return 0; /* TODO: throw */ }
-        void WriteTimeout(long value) {           /* TODO: throw */ }
+        long ReadTimeout()            { throw new InvalidOperationException(Environment.GetResourceString("InvalidOperation_TimeoutsNotSupported")); }
+        void ReadTimeout(long value)  { throw new InvalidOperationException(Environment.GetResourceString("InvalidOperation_TimeoutsNotSupported")); }
+        long WriteTimeout()           { throw new InvalidOperationException(Environment.GetResourceString("InvalidOperation_TimeoutsNotSupported")); }
+        void WriteTimeout(long value) { throw new InvalidOperationException(Environment.GetResourceString("InvalidOperation_TimeoutsNotSupported")); }
     }
 
-    void CopyTo(Stream destination, int bufferSize = DEFAULT_COPY_BUFFER_SIZE) {
+    void CopyTo(Stream destination, int bufferSize = DefaultCopyBufferSize) {
         byte[] buffer = new byte[bufferSize];
         scope(exit) delete buffer;
 
@@ -80,24 +84,43 @@ abstract class Stream {
     }
 
 
-    Task CopyToAsync(Stream destination, int bufferSize = DEFAULT_COPY_BUFFER_SIZE, CancellationToken ct = CancellationToken.None) {
-        return null; //TODO: call copy to async internal
+    Task CopyToAsync(Stream destination, int bufferSize = DefaultCopyBufferSize, CancellationToken ct = CancellationToken.None) {
+        return null;
     }
 
-    IAsyncResut BeginRead(byte[] buffer, AsyncCallback callback, Object state) { return null; } //TODO
-    IAsyncResut BeginWrite(byte[] buffer, AsyncCallback callback, Object state) { return null; } //TODO
-    int EndRead(IAsyncResult asyncResult) { return 0; } //TODO
-    int EndWrite(IAsyncResult asyncResult) { return 0; } //TODO
+    IAsyncResut BeginRead(byte[] buffer, AsyncCallback callback, Object state) {
+        return null;
+    }
 
-    Task FlushAsync(CancellationToken ct = CancellationToken.None) { return null; } //TODO
-    Task!long ReadAsync(byte[] buffer, CancellationToken ct = CancellationToken.None)  {} //TODO
-    Task!long WriteAsync(byte[] buffer, CancellationToken ct = CancellationToken.None) {} //TODO
+    IAsyncResut BeginWrite(byte[] buffer, AsyncCallback callback, Object state) {
+        return null;
+    }
+
+    int EndRead(IAsyncResult asyncResult) {
+        return 0;
+    }
+
+    int EndWrite(IAsyncResult asyncResult) {
+        return 0;
+    }
+
+    Task FlushAsync(CancellationToken ct = CancellationToken.None) {
+        return null;
+    }
+
+    Task!long ReadAsync(byte[] buffer, CancellationToken ct = CancellationToken.None) {
+        return null;
+    }
+
+    Task!long WriteAsync(byte[] buffer, CancellationToken ct = CancellationToken.None) {
+        return null;
+    }
 
 
-    static Stream Synchronized(Stream stream) {
+    static Stream Synchronized(Stream stream) in {
         if (stream is null)
-        {} //TODO: throw
-
+            throw new ArgumentNullException("stream");
+    } body {
         if (cast(SyncStream)stream !is null)
             return stream;
 
@@ -108,19 +131,14 @@ abstract class Stream {
 
 class NullStream : Stream {
     @property {
-        bool CanRead()            { return true; }
-        bool CanSeek()            { return true; }
-        bool CanWrite()           { return true; }
+        override bool CanRead() pure       { return true; }
+        override bool CanSeek() pure       { return true; }
+        override bool CanWrite() pure      { return true; }
 
-        long Length()             { return 0;    }
-        long Position()           { return 0;    }
-        void Length(long value)   { }
-        void Position(long value) { }
-
-        long ReadTimeout()            { return 0; /* TODO: throw */ }
-        void ReadTimeout(long value)  {           /* TODO: throw */ }
-        long WriteTimeout()           { return 0; /* TODO: throw */ }
-        void WriteTimeout(long value) {           /* TODO: throw */ }
+        override long Length()             { return 0;    }
+        override long Position()           { return 0;    }
+        override void Length(long value)   { }
+        override void Position(long value) { }
     }
 
     override long ReadByte() {
@@ -131,26 +149,165 @@ class NullStream : Stream {
         
     }
 
-    long Seek(long offset, SeekOrigin origin) {
+    override long Seek(long offset, SeekOrigin origin) {
         return 0;
     }
 
-    void Flush() {
+    override void Flush() {
     
     }
 
-    long Read(byte[] buffer) {
+    override long Read(byte[] buffer) {
         return 0;
     }
 
-    void Write(byte[] buffer) {
+    override void Write(byte[] buffer) {
+
+    }
+
+    override long ReadByte() {
+        return -1;
+    }
+    
+    override void WriteByte(byte value) {
 
     }
 }
 
 
 class SyncStream : Stream {
-    this(Stream stream) {
+    private Mutex m_lock;
+    private Stream m_stream;
 
+    this(Stream stream) {
+        m_lock   = new Mutex();
+        m_stream = stream;
+    }
+
+    ~this() {
+        m_lock.WaitOne();
+
+        delete m_stream;
+        delete m_lock;
+    }
+
+    @property {
+        override bool CanRead() pure    { return m_stream.CanRead();  }
+        override bool CanSeek() pure    { return m_stream.CanSeek;    }
+        override bool CanWrite() pure   { return m_stream.CanWrite;   }
+        override bool CanTimeout() pure { return m_stream.CanTimeout; }
+        
+        override long Length() {
+            m_lock.WaitOne();
+            scope(exit) m_lock.Release();
+
+            return m_stream.Length;
+        }
+
+        override void Length(long value) {
+            m_lock.WaitOne();
+            m_stream.Length = value;
+            m_lock.Release();
+        }
+
+        override long Position() {
+            m_lock.WaitOne();
+            scope(exit) m_lock.Release();
+            
+            return m_stream.Position;
+        }
+
+        override void Position(long value) {
+            m_lock.WaitOne();
+            m_stream.Position = value;
+            m_lock.Release();
+        }
+        
+        override long ReadTimeout() {
+            m_lock.WaitOne();
+            scope(exit) m_lock.Release();
+            
+            return m_stream.ReadTimeout;
+        }
+
+        override void ReadTimeout(long value) {
+            m_lock.WaitOne();
+            m_stream.ReadTimeout = value;
+            m_lock.Release();
+        }
+
+        override long WriteTimeout() {
+            m_lock.WaitOne();
+            scope(exit) m_lock.Release();
+            
+            return m_stream.WriteTimeout;
+        }
+
+        override void WriteTimeout(long value) {
+            m_lock.WaitOne();
+            m_stream.WriteTimeout = value;
+            m_lock.Release();
+        }
+    }
+
+    override long Seek(long offset, SeekOrigin origin) {
+        m_lock.WaitOne();
+        scope(exit) m_lock.Release();
+
+        return m_stream.Seek(offset, origin);
+    }
+
+    override void Flush() {
+        m_lock.WaitOne();
+        scope(exit) m_lock.Release();
+
+        m_stream.Flush();
+    }
+
+    override long Read(byte[] buffer) {
+        m_lock.WaitOne();
+        scope(exit) m_lock.Release();
+
+        return m_stream.Read(buffer);
+    }
+
+    override void Write(byte[] buffer) {
+        m_lock.WaitOne();
+        scope(exit) m_lock.Release();
+
+        m_stream.Write(buffer);
+    }
+    
+    override long ReadByte() {
+        m_lock.WaitOne();
+        scope(exit) m_lock.Release();
+
+        return m_stream.ReadByte();
+    }
+    
+    override void WriteByte(byte value) {
+        m_lock.WaitOne();
+        scope(exit) m_lock.Release();
+
+        m_stream.WriteByte();
     }
 }
+
+
+/*
+    @property {
+        override bool CanRead() pure  { return true; }
+        override bool CanSeek() pure  { return true; }
+        override bool CanWrite() pure { return true; }
+        
+        override long Length();
+        override void Length(long value);
+        override long Position();
+        override void Position(long value);
+    }
+
+    override long Seek(long offset, SeekOrigin origin);
+    override void Flush();
+    override long Read(byte[] buffer);
+    override void Write(byte[] buffer);
+    */
