@@ -23,8 +23,10 @@
 
 module Modules.Display.BochsGA.Main;
 
+import Core;
 import Architecture;
 import ObjectManager;
+import MemoryManager;
 
 
 class BochsGA {
@@ -52,6 +54,18 @@ class BochsGA {
     }
 
     static ModuleResult Initialize(string[] args) {
+		Log("test 42  pica: %x", ReadRegister(BochsDispi.IndexID));
+
+        VirtualMemory.MapRegion(cast(p_addr)(BochsDispi.LFBPhysicalAddress), 1);
+
+        //mem[0] = 0;
+
+     //   Log("len: %x", mem.length);
+
+
+        /*foreach (ref x; mem) {
+            x = 0;
+        }*/
 
         return ModuleResult.Successful;
     }

@@ -263,26 +263,6 @@ final class Paging {
     void FreeFrame(v_addr address) {
         PhysicalMemory.FreeFrame(GetPage(address));
     }
-    
-    /*ubyte[] MapRegion(p_addr pAdd, size_t length) { TODO: move this to VirtualMemory
-        ubyte[] result = MapRegion(pAdd, _regions, length);
-        _regions += (length & ~0xFFFUL) + ((length & 0xFFF) ? PAGE_SIZE : 0);
-        return result;
-    }
-    
-    ubyte[] MapRegion(p_addr pAdd, v_addr vAdd, size_t length) {
-        for (ulong i = 0; i < length; i += PAGE_SIZE) {
-            auto pt = &GetPage(vAdd + i);
-            
-            pt.Present = true;
-            pt.ReadWrite = true;
-            pt.User = true;
-            pt.Address = ((cast(ulong)pAdd + i) >> 12);
-        }
-        
-        int diff = cast(int)pAdd & 0xFFF;
-        return (cast(ubyte *)vAdd)[diff .. diff + length];
-    }*/
 
     ref PTE GetPage(v_addr address) {
         return m_root.GetOrCreateTable((address >> 39) & 511)

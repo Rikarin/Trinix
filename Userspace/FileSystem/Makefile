@@ -8,17 +8,14 @@
 
 IMG := $(TRXDIR)/Trinix.img
 
-install:
-	@true
-
-install2: $(IMG)
+install: $(IMG)
 	@kpartx -a $(IMG)
 	@sleep 1
 	
 	@$(MKDIR) mount-tmp
 	@mount /dev/mapper/loop0p1 mount-tmp
 	
-	@cp -Rf Root/* mount-tmp
+	@cp -Rf $(TRXDIR)/Root/* mount-tmp
 
 	@umount mount-tmp
 	@$(RM) mount-tmp

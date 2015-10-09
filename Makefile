@@ -56,9 +56,9 @@ clean-user:    $(CLEAN_USERLIBS)   $(CLEAN_USERBINS)   $(CLEAN_USERAPPS)   $(CLE
 install-user:  $(INSTALL_USERLIBS) $(INSTALL_USERBINS) $(INSTALL_USERAPPS) $(INSTALL_USERFRAMEWORKS) $(INSTALL_USERBUNDLES)
 
 all:           all-user all-kmode
-all-install:   install-FileSystem ai-user ai-kmode
+all-install:   ai-user ai-kmode install-FileSystem
 clean:         clean-user clean-kmode
-install:       install-FileSystem install-user install-kmode
+install:       install-user install-kmode install-FileSystem
 
 
 _build_dynmod := BUILDTYPE=dynamic $(SUBMAKE) -C KernelLand/Modules/

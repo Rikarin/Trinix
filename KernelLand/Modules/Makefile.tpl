@@ -39,7 +39,7 @@ clean:
 
 install: $(BIN)
 ifneq ($(BUILDTYPE),static)
-	@echo --- Module $(NAME) was installed to System/Modules/$(KEXT).gz
+	@echo --- Module $(NAME) was installed to System/Modules/$(FULLNAME).kext.gz
 	@$(MKDIR) $(DISTROOT)/System/Modules
 	@cp $(BIN) $(KEXT)
 	@gzip -c $(KEXT) > $(KEXT).gz

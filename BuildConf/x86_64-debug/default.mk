@@ -1,7 +1,7 @@
 # Staticaly linked into Kernel
 MODULES        += Storage/ATA
 #MODULES       += FileSystem/Ext2
-MODULES        += Input/PS2KeyboardMouse Input/Keyboard Input/Mouse
+#MODULES        += Input/PS2KeyboardMouse Input/Keyboard Input/Mouse
 MODULES        += Display/BochsGA
 #MODULES += Terminal/VTY
 
@@ -9,7 +9,7 @@ MODULES        += Display/BochsGA
 DYNMODS        += FileSystem/Ext2
 
 # Libraries .dylib .a .o
-USERLIBS       += crt0.o core.dylib
+USERLIBS       += #crt0.o core.dylib
 
 # Binaries
 USERBINS       +=

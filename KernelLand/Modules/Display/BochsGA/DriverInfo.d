@@ -24,12 +24,12 @@
 module Modules.Display.BochsGA.DriverInfo;
 
 import ObjectManager;
-import Modules.Display.BochsGA;
+import Modules.Display.BochsGA.Main;
 
 
 extern(C) const ModuleDef _DriverInfo_Display_BochsGA = {
     Magic: MODULE_MAGIC,
-    Type: DeviceType.Display,
+    Type: DeviceType.Video,
     Architecture: ModuleArch.x86_64,
     Flags: 0x00,
     Version: 0x01,

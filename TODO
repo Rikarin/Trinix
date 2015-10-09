@@ -4,6 +4,7 @@ version 1.0.0:
     o Make ELF parser and lib loader
     o Make some default bins like init, login, sh, cd, mkdir, ls, ln, rm
     o Basic GUI
+	o install_script.sh for compilation machine prepare
 
 version 1.1.0:
     o Syscall ACL (something like ACL on android??)

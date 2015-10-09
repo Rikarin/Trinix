@@ -52,6 +52,27 @@ abstract final class VirtualMemory {
         };
     }
 
+    //TODO: Use Mutex
+    static byte[] MapRegion(p_addr pAdd, size_t length) {
+        byte[] result = MapRegion(pAdd, m_regions, length);
+        m_regions += (length & ~0xFFFUL) + ((length & 0xFFF) ? Paging.PAGE_SIZE : 0);// scope(exit)
+        return result;
+    }
+    
+    static byte[] MapRegion(p_addr pAdd, v_addr vAdd, size_t length) {
+        for (ulong i = 0; i < length; i += Paging.PAGE_SIZE) {
+            //PTE* pt = &KernelPaging.GetPage(vAdd + i);
+            //TODO: tu sa to niekde pojebe s tou alokaciou a potom to uz nefici jak ma
+          //  pt.Present   = true;
+            /*pt.ReadWrite = true;
+            pt.User      = true;
+            pt.Address   = ((cast(ulong)pAdd + i) >> 12);*/
+        }
+        
+       // int diff = cast(int)pAdd & 0xFFF;
+        return null;//(cast(byte *)vAdd)[diff .. diff + length];
+    }
+
     static v_addr AllocAlignedBlock(size_t num) {
         if (m_malloc == &TmpAlloc)
             return PhysicalMemory.AllocPage(num);

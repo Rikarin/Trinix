@@ -99,6 +99,9 @@ $(OBJDIR)%.c.o: %.c
 	@$(CC) $(CFLAGS) -o $@ -c $<
 #@$(CC) $(CFLAGS) -M -MT $@ -MP -o $@.o.dep $<
 
+%.xo.$(ARCH):
+	@make -C $* all BUILDTYPE=static
+
 $(OBJDIR)/Core.o: $(shell find * -name "*.d" -not -path "*Architectures*")
 	@echo --- DD mrdni vsetko dokopy
 	@$(MKDIR) $(dir $@)
