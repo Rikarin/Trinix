@@ -107,6 +107,17 @@
     <Compile Include="System\Threading\Timeout.d" />
     <Compile Include="System\Threading\SpinLock.d" />
     <Compile Include="System\DateTime.d" />
+    <Compile Include="System\PlatformID.d" />
+    <Compile Include="System\OperatingSystem.d" />
+    <Compile Include="System\Version.d" />
+    <Compile Include="System\Environment.d" />
+    <Compile Include="System\IComparable.d" />
+    <Compile Include="System\IEquatable.d" />
+    <Compile Include="System\Collections\IEnumerable.d" />
+    <Compile Include="System\Collections\ICollection.d" />
+    <Compile Include="System\Collections\IList.d" />
+    <Compile Include="System\Collections\KeyValuePair.d" />
+    <Compile Include="System\Collections\IDictionary.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System\AppKit\" />

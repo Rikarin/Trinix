@@ -4,8 +4,11 @@ module System;
 /* Delegates  */
 
 /* Enums      */
+public import System.PlatformID;
 
 /* Interfaces */
+public import System.IEquatable;
+public import System.IComparable;
 public import System.IAsyncResult;
 
 /* Structs    */
@@ -14,15 +17,13 @@ public import System.DateTime;
 
 /* Classes    */
 public import System.Event;
+public import System.Version;
 public import System.EventArgs;
 public import System.AsyncCallback;
+public import System.OperatingSystem;
 
 
 //TODO: test Event
-
-class Environment {
-    string GetResourceString(string name) { return name; }
-}
 
 class SystemException : Exception {
     this(string message) { }
@@ -40,16 +41,22 @@ class ArgumentOutOfRangeException : ArgumentException {
     this(string paramName, string message) { }
 }
 
+interface IDictionary { }
 
 /*
  * TODO: co treba v prvej verzii frameworku?
- *      o FileStream, PipeStream, NamedPipeStream, BufferedStream  --- Complete: Stream, NullStream, SyncStream, MemoryStream
- *      o Mutex, Semaphore, ReaderWriterLock, SpinLock, Basrrier   --- Complete: WaitHandle
+ *      o FileStream, PipeStream, NamedPipeStream, BufferedStream
+ *      o Mutex, Semaphore, ReaderWriterLock, SpinLock, Basrrier
  *      o EventWaitHandle, AutoResetEvent, ManualResetEvent, CountdownEvent 
- *      o Environment, Exceptions
- *      o Thread, Process
- *      o DateTime, String                                         --- Complete: TimeSpan
- * 
+ *      o Exceptions
+ *      o Thread, Process, ProcessStartInfo
+ *      o DateTime, String
+ *      o List, LinkedList, Dictionary, Queue, Stack, BitArray
+ *      o File, Directory, DirectoryInfo, FileInfo
+ *
+ * Dalsia Verzia:
+ *      o HashSet, SortedDictionary, SortedSet
+ *      o IConvertible, ISerializable, ISet
  * */
 
 
