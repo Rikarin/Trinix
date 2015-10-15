@@ -118,6 +118,7 @@
     <Compile Include="System\Collections\IList.d" />
     <Compile Include="System\Collections\KeyValuePair.d" />
     <Compile Include="System\Collections\IDictionary.d" />
+    <Compile Include="System\String.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System\AppKit\" />

@@ -18,45 +18,14 @@
  * governing permissions and limitations under the License.
  * 
  * Contributors:
- *       Matsumoto Satoshi <satoshi@gshost.eu>
+ *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module System.DateTime;
-
-import System;
+module System.String;
 
 
-enum DateTimeKind {
-    Unspecified,
-    UTC,
-    Local
-}
+abstract final class String {
+    string Format(string format, ...) {
 
-
-struct DateTime {
-    static immutable DateTime MinValue = DateTime();
-    static immutable DateTime MaxValue = DateTime();
-
-    @property {
-        static DateTime Now() { return DateTime(); } //TODO
-    }
-
-    this() {
-
-    }
-
-    DateTime Add(TimeSpan value) {
-        return this;
-    }
-
-    DateTime Substract(TimeSpan value) {
-        return this;
-    }
-
-    DateTime opBinary(string s)(TimeSpan other) {
-        static if (s == "+")
-            return Add(other);
-        else static if (s == "-")
-            return Substract(other);
     }
 }

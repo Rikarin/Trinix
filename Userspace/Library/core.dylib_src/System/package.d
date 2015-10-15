@@ -41,7 +41,7 @@ class ArgumentOutOfRangeException : ArgumentException {
     this(string paramName, string message) { }
 }
 
-interface IDictionary { }
+class Globalization {}
 
 /*
  * TODO: co treba v prvej verzii frameworku?
@@ -49,7 +49,7 @@ interface IDictionary { }
  *      o Mutex, Semaphore, ReaderWriterLock, SpinLock, Basrrier
  *      o EventWaitHandle, AutoResetEvent, ManualResetEvent, CountdownEvent 
  *      o Exceptions
- *      o Thread, Process, ProcessStartInfo
+ *      o Thread, Process, ProcessStartInfo, Timer
  *      o DateTime, String
  *      o List, LinkedList, Dictionary, Queue, Stack, BitArray
  *      o File, Directory, DirectoryInfo, FileInfo
