@@ -17,9 +17,11 @@ public import System.DateTime;
 
 /* Classes    */
 public import System.Event;
+public import System.Convert;
 public import System.Version;
 public import System.EventArgs;
 public import System.AsyncCallback;
+public import System.StringBuilder;
 public import System.OperatingSystem;
 
 
@@ -46,21 +48,19 @@ class Globalization {}
 /*
  * TODO: co treba v prvej verzii frameworku?
  *      o FileStream, PipeStream, NamedPipeStream, BufferedStream
- *      o Mutex, Semaphore, ReaderWriterLock, SpinLock, Basrrier
+ *      o Mutex, Semaphore, ReaderWriterLock, SpinLock, Barrier
  *      o EventWaitHandle, AutoResetEvent, ManualResetEvent, CountdownEvent 
  *      o Exceptions
  *      o Thread, Process, ProcessStartInfo, Timer
- *      o DateTime, String
- *      o List, LinkedList, Dictionary, Queue, Stack, BitArray
+ *      o DateTime, String, StringBuilder, Convert
+ *      o List(ToArray), LinkedList, Dictionary, Queue, Stack, BitArray
  *      o File, Directory, DirectoryInfo, FileInfo
  *
  * Dalsia Verzia:
  *      o HashSet, SortedDictionary, SortedSet
  *      o IConvertible, ISerializable, ISet
  * */
-
-
-
+ 
 
 
 /* Partial classes

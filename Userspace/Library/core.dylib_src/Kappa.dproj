@@ -119,6 +119,8 @@
     <Compile Include="System\Collections\KeyValuePair.d" />
     <Compile Include="System\Collections\IDictionary.d" />
     <Compile Include="System\String.d" />
+    <Compile Include="System\StringBuilder.d" />
+    <Compile Include="System\Convert.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System\AppKit\" />

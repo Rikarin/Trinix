@@ -65,6 +65,10 @@ class List(T) {
     }
     
     ~this() {
+
+        foreach (x; m_array)
+            delete x;
+
         delete m_array;
     }
     
@@ -89,7 +93,7 @@ class List(T) {
     
     void Clear() {
         m_array[] = null;
-        m_count = 0;
+        m_count   = 0;
     }
     
     bool Contains(T item) {
@@ -156,6 +160,10 @@ class List(T) {
                 return i;
         
         return -1;
+    }
+
+    T[] ToArray() {
+        return null; //TODO
     }
     
     private void Resize() {
