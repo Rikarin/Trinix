@@ -19,6 +19,9 @@
  * 
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
+ * 
+ * TODO:
+ *      o Format, Parse
  */
 
 module System.String;
@@ -32,7 +35,7 @@ import core.vararg;
 abstract final class String {
 static:
     string Format(string format, ...) {
-        //TODO: string builder
+        scope auto sb = new StringBuilder();
 
         long i;
         do {
@@ -48,8 +51,8 @@ static:
                     break;
             }
 
-            if (num >= _arguments.length)
-            {}//throw new Exception....
+            if (num >= _arguments.length) 
+                throw new ArgumentOutOfRangeException();
 
             //TODO: switch by type
             switch (_arguments[num]) {
@@ -66,7 +69,7 @@ static:
 
         } while (i < format.length);
 
-        return null;
+        return sb.ToString();
     }
 
     void Parse(string input, string format, ...) {
@@ -108,33 +111,96 @@ static:
         return sb.ToString();
     }
 
-    private List!string InternalSplit(string str, string delimiter) {
-        auto ret      = new List!string();
-        scope auto sb = new StringBuilder();
+    long IndexOf(string str, string value) {
+        int k;
+        foreach (i, x; str) {
+            if (x == value[k]) {
+                k++;
 
-     /*   int p = 0; TODO
-        foreach (x; str) {
-            if (x == delimiter[p++]) {
-                sb.Append(x);
-
-                if (p == delimiter.length && sb.Length) {
-                    ret.Add(sb.ToString());
-                    sb.Clear();
-                    p = 0;
-                }
+                if (k == value.length)
+                    return i - k;
             }
-        }*/
+        }
+
+        return -1;
+    }
+
+    long LastIndexOf(string str, string value) {
+        int k;
+        foreach_reverse (i, x; str) {
+            if (x == value[k]) {
+                k++;
+                
+                if (k == value.length)
+                    return i - k;
+            }
+        }
+        
+        return -1;
+    }
+
+    long IndexOfAny(string str, char[] anyOf) {
+        long idx = IndexOf(str, anyOf[0]);
+
+        foreach (x; anyOf) {
+            long i = IndexOf(str, x);
+            if (idx == -1 || i < idx)
+                idx = i;
+        }
+
+        return idx;
+    }
+
+    long LastIndexOfAny(string str, char[] anyOf) {
+        long idx = IndexOf(str, anyOf[0]);
+        
+        foreach (x; anyOf) {
+            long i = IndexOf(str, x);
+            if (idx == -1 || i > idx)
+                idx = i;
+        }
+        
+        return idx;
+    }
+
+    string Insert(string str, long index, string value) {
+        auto ret = new string[str.length + value.length];
+
+        ret[0 .. index]                = str[0 .. index];
+        ret[index .. value.length]     = value;
+        ret[index + value.length .. $] = str[index .. $];
+
+        return ret;
+    }
+
+    private List!string InternalSplit(string str, string delimiter) {
+        auto ret = new List!string();
+
+        for (long last, cur; cur < str.length;) {
+            last = cur;
+            cur  = str[cur .. $].IndexOf(delimiter);
+            if (cur == -1) {
+                ret.Add(str[last .. $]);
+                return ret;
+            }
+
+            ret.Add(str[last .. cur]);
+        }
 
         return ret;
     }
 }
 
 // For UTFS calls
-alias Split  = String.Split;
-alias Parse  = String.Parse;
-alias Format = String.Format; //Prilis divny zapis...
-alias Join   = String.Join;
-
+alias Join           = String.Join;
+alias Split          = String.Split;
+alias Parse          = String.Parse;
+alias Format         = String.Format;
+alias Insert         = String.Insert;
+alias IndexOf        = String.IndexOf;
+alias IndexOfAny     = String.IndexOfAny;
+alias LastIndexOf    = String.LastIndexOf;
+alias LastIndexOfAny = String.LastIndexOfAny;
 
 
 
@@ -147,4 +213,6 @@ unittest {
 
     string[5] test;
     string param5 = test.Join("x");
+
+    string param6 = "test".Insert(3, "lalal");
 }

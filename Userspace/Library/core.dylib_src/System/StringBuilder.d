@@ -72,7 +72,14 @@ class StringBuilder {
         //TODO: Implement Insert in List
     }
 
+    void Remove(long start, long length) {
+        //TODO: implement this LOL
+    }
+
     void Clear() {
+        foreach (x; m_list)
+            delete x;
+
         m_list.Clear();
     }
 

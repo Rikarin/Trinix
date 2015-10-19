@@ -25,5 +25,6 @@ module System.PlatformID;
 
 
 enum PlatformID {
-    Trinix
+    Computer,
+    Mobile
 }

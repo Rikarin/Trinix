@@ -52,7 +52,7 @@ class Globalization {}
  *      o EventWaitHandle, AutoResetEvent, ManualResetEvent, CountdownEvent 
  *      o Exceptions
  *      o Thread, Process, ProcessStartInfo, Timer
- *      o DateTime, String, StringBuilder, Convert
+ *      o DateTime, String
  *      o List(ToArray), LinkedList, Dictionary, Queue, Stack, BitArray
  *      o File, Directory, DirectoryInfo, FileInfo
  *
