@@ -65,9 +65,8 @@ class List(T) {
     }
     
     ~this() {
-
-        foreach (x; m_array)
-            delete x;
+        //foreach (x; m_array)
+            //delete x;
 
         delete m_array;
     }

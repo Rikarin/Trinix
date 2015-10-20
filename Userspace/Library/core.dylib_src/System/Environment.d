@@ -27,6 +27,7 @@
 module System.Environment;
 
 import System;
+import System.Collections;
 
 
 abstract final class Environment {
@@ -45,7 +46,7 @@ static:
         string StackTrace()       { assert(false);    }
         TimeSpan TickCount()      { assert(false);    }
         string UserName()         { assert(false);    }
-        Version Version()         { return m_version; }
+        Version GetVersion()      { return m_version; }
         long WorkingSet()         { assert(false);    }
 
         void CurrentDirectory(string value) {
@@ -73,8 +74,8 @@ static:
 
     }
 
-    IDictionary GetEnvironmentVariables() {
-
+    IDictionary!(string, string) GetEnvironmentVariables() {
+        return null;
     }
 
 

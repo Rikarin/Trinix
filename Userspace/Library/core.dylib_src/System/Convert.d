@@ -26,9 +26,16 @@ module System.Convert;
 
 abstract final class Convert {
 static:
-    TOut To(TOut, TIn)(TIn from) {
-        return null; //TODO
-
+    @property TOut To(TOut, TIn)(ref TIn from) {
+        static if (is(TOut == string)) {
+            static if (is(TIn == string))
+                return from.dup;
+            else static if (is(TIn == char))
+                return cast(string)(&from)[0 .. 1];
+            else
+                assert(false);
+        } else
+            assert(false);
 
         //TODO: implement me pls
         //string to string = string.dup

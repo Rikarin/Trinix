@@ -23,6 +23,7 @@
 
 module System.AppKit.RoutedEvent;
 
+import System.AppKit;
 
 //Must be this template??
 class RoutedEvent {

@@ -27,6 +27,9 @@ import System;
 
 
 class Version : IComparable!Version, IEquatable!Version {
+    alias opCmp    = Object.opCmp;
+    alias opEquals = Object.opEquals;
+
     private int m_major;
     private int m_minor;
     private int m_build    = -1;
@@ -34,42 +37,42 @@ class Version : IComparable!Version, IEquatable!Version {
 
     this(int major = 0, int minor = 0) in {
         if (major < 0)
-            throw new ArgumentOutOfRangeException("major",Environment.GetResourceString("ArgumentOutOfRange_Version"));
+            throw new ArgumentOutOfRangeException("major", Environment.GetResourceString("ArgumentOutOfRange_Version"));
         
         if (minor < 0)
-            throw new ArgumentOutOfRangeException("minor",Environment.GetResourceString("ArgumentOutOfRange_Version"));
+            throw new ArgumentOutOfRangeException("minor", Environment.GetResourceString("ArgumentOutOfRange_Version"));
     } body {
         m_major    = major;
         m_minor    = minor;
     }
 
-    this(int major = 0, int minor = 0, int build) in {
+    this(int major, int minor, int build = 0) in {
         if (major < 0)
-            throw new ArgumentOutOfRangeException("major",Environment.GetResourceString("ArgumentOutOfRange_Version"));
+            throw new ArgumentOutOfRangeException("major", Environment.GetResourceString("ArgumentOutOfRange_Version"));
         
         if (minor < 0)
-            throw new ArgumentOutOfRangeException("minor",Environment.GetResourceString("ArgumentOutOfRange_Version"));
+            throw new ArgumentOutOfRangeException("minor", Environment.GetResourceString("ArgumentOutOfRange_Version"));
         
         if (build < 0)
-            throw new ArgumentOutOfRangeException("build",Environment.GetResourceString("ArgumentOutOfRange_Version"));
+            throw new ArgumentOutOfRangeException("build", Environment.GetResourceString("ArgumentOutOfRange_Version"));
     } body {
         m_major    = major;
         m_minor    = minor;
         m_build    = build;
     }
 
-    this(int major = 0, int minor = 0, int build, int revision) in {
+    this(int major, int minor, int build, int revision = 0) in {
         if (major < 0)
-            throw new ArgumentOutOfRangeException("major",Environment.GetResourceString("ArgumentOutOfRange_Version"));
+            throw new ArgumentOutOfRangeException("major", Environment.GetResourceString("ArgumentOutOfRange_Version"));
 
         if (minor < 0)
-            throw new ArgumentOutOfRangeException("minor",Environment.GetResourceString("ArgumentOutOfRange_Version"));
+            throw new ArgumentOutOfRangeException("minor", Environment.GetResourceString("ArgumentOutOfRange_Version"));
 
         if (build < 0)
-            throw new ArgumentOutOfRangeException("build",Environment.GetResourceString("ArgumentOutOfRange_Version"));
+            throw new ArgumentOutOfRangeException("build", Environment.GetResourceString("ArgumentOutOfRange_Version"));
 
         if (revision < 0)
-            throw new ArgumentOutOfRangeException("revision",Environment.GetResourceString("ArgumentOutOfRange_Version"));
+            throw new ArgumentOutOfRangeException("revision", Environment.GetResourceString("ArgumentOutOfRange_Version"));
     } body {
         m_major    = major;
         m_minor    = minor;
@@ -78,12 +81,12 @@ class Version : IComparable!Version, IEquatable!Version {
     }
 
     @property {
-        int Major()           pure { return m_major;             }
-        int Minor()           pure { return m_minor;             }
-        int Build()           pure { return m_build;             }
-        int Revision()        pure { return m_revision;          }
-        short MajorRevision() pure { return m_revision >> 16;    }
-        short MinorRevision() pure { return m_revision & 0xFFFF; }
+        int Major()           pure { return m_major;          }
+        int Minor()           pure { return m_minor;          }
+        int Build()           pure { return m_build;          }
+        int Revision()        pure { return m_revision;       }
+        short MajorRevision() pure { return m_revision >> 16; }
+        short MinorRevision() pure { return cast(short)(m_revision & 0xFFFF); }
     }
 
     bool opEquals(Version other) {

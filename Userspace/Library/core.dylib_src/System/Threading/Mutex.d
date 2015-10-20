@@ -38,7 +38,7 @@ class Mutex : WaitHandle {
         super();
     }
 
-    override bool WaitOne(TimeSpan timeout) {
+    override bool WaitOne(TimeSpan timeout = Timeout.Infinite) {
         return false;
     }
 

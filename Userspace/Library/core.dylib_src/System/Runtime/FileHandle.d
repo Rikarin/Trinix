@@ -21,7 +21,7 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module System.FileHandle;
+module System.Runtime.FileHandle;
 
 import System.Runtime;
 
@@ -34,21 +34,21 @@ class FileHandle : SafeHandle {
 		Open
 	}
 	
-	private this() {
-	
+	package this(long handle) {
+        super(handle);
 	}
 
     static FileHandle CreateFile(string fileName) {
-        return Create!FileHandle(IDENTIFIER, StaticSyscall("com.trinix.VFSManager", StaticCommands.Create, cast(long)fileName.ptr, FileType.File));
+        return Create!FileHandle(IDENTIFIER, StaticSyscall("com.trinix.VFSManager", StaticCommands.Create, cast(long)fileName.ptr, 0/*FileType.File*/));
     }
 
-    alias FileAttributes = int;
+    alias FileAttributes = int; //TODO
     FileAttributes Attributes() {
-        static const auto getAttribs = SafeMethodCall("com.trinix.VFSManager.FSNode.GetAttributes");
+        __gshared auto getAttribs = new SafeMethodCall("com.trinix.VFSManager.FSNode.GetAttributes");
 
         FileAttributes attribs;
         if (getAttribs.Call(cast(long)&attribs) == SyscallReturn.Error)
-            return null;
+            return FileAttributes.init;
 
         return attribs;
     }

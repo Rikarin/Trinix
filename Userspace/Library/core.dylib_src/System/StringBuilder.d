@@ -84,7 +84,7 @@ class StringBuilder {
     }
 
     string ToString() {
-        auto ret = new string[Length];
+        auto ret = new char[Length];
 
         long p;
         foreach (x; m_list) {
@@ -92,6 +92,6 @@ class StringBuilder {
             p += x.length;
         }
 
-        return ret;
+        return cast(string)ret;
     }
 }

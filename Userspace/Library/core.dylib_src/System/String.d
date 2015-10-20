@@ -55,17 +55,9 @@ static:
                 throw new ArgumentOutOfRangeException();
 
             //TODO: switch by type
-            switch (_arguments[num]) {
-                case typeid(char):
-                    break;
-
-                case typeid(int):
-                    break;
-
-                    //...
-                default:
-            }
-
+            if (_arguments[num] is typeid(char)) { }
+            else if (_arguments[num] is typeid(int)) { }
+            else {}
 
         } while (i < format.length);
 
@@ -73,14 +65,25 @@ static:
     }
 
     void Parse(string input, string format, ...) {
-        return null;
+
+    }
+
+    string[] Split(string str, char delimiter) {
+        char[1] c = delimiter;
+        return Split(str, c);
+    }
+
+    string[] Split(string str, string delimiter) {
+        string[1] c = delimiter;
+        return Split(str, c);
     }
 
     string[] Split(string str, char[] delimiter) {
         scope auto ret = new List!string();
 
         foreach (x; delimiter) {
-            auto list = InternalSplit(str, cast(string)x[0 .. 1]);
+            auto list = InternalSplit(str, x.To!string);
+
             ret.AddRange(list);
             delete list;
         }
@@ -111,7 +114,13 @@ static:
         return sb.ToString();
     }
 
-    long IndexOf(string str, string value) {
+    long IndexOf(string str, string value) in {
+        if (str is null)
+            throw new ArgumentNullException("str");
+
+        if (value is null)
+            throw new ArgumentNullException("str");
+    } body {
         int k;
         foreach (i, x; str) {
             if (x == value[k]) {
@@ -140,10 +149,10 @@ static:
     }
 
     long IndexOfAny(string str, char[] anyOf) {
-        long idx = IndexOf(str, anyOf[0]);
+        long idx = IndexOf(str, anyOf[0].To!string);
 
         foreach (x; anyOf) {
-            long i = IndexOf(str, x);
+            long i = IndexOf(str, x.To!string);
             if (idx == -1 || i < idx)
                 idx = i;
         }
@@ -152,10 +161,10 @@ static:
     }
 
     long LastIndexOfAny(string str, char[] anyOf) {
-        long idx = IndexOf(str, anyOf[0]);
+        long idx = IndexOf(str, anyOf[0].To!string);
         
         foreach (x; anyOf) {
-            long i = IndexOf(str, x);
+            long i = IndexOf(str, x.To!string);
             if (idx == -1 || i > idx)
                 idx = i;
         }
@@ -164,13 +173,13 @@ static:
     }
 
     string Insert(string str, long index, string value) {
-        auto ret = new string[str.length + value.length];
+        auto ret = new char[str.length + value.length];
 
         ret[0 .. index]                = str[0 .. index];
         ret[index .. value.length]     = value;
         ret[index + value.length .. $] = str[index .. $];
 
-        return ret;
+        return cast(string)ret;
     }
 
     private List!string InternalSplit(string str, string delimiter) {
@@ -201,7 +210,6 @@ alias IndexOf        = String.IndexOf;
 alias IndexOfAny     = String.IndexOfAny;
 alias LastIndexOf    = String.LastIndexOf;
 alias LastIndexOfAny = String.LastIndexOfAny;
-
 
 
 unittest {

@@ -27,12 +27,12 @@ import System.Collections;
 
 
 interface IDictionary(TKey, TValue) : ICollection!(KeyValuePair!(TKey, TValue)), IEnumerable!(KeyValuePair!(TKey, TValue)) {
-    T opIndex(TKey index);
+    TValue opIndex(TKey index);
     void opIndexAssign(TValue value, TKey index);
 
     @property {
         ICollection!TKey Keys();
-        ICollection!Value Values();
+        ICollection!TValue Values();
     }
 
     void Add(TKey key, TValue value);

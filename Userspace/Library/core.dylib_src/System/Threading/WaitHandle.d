@@ -34,11 +34,7 @@ abstract class WaitHandle {
 
     }
 
-    bool WaitOne(TimeSpan timeout);
-
-    bool WaitOne() {
-        WaitOne(Timeout.Infinite);
-    }
+    bool WaitOne(TimeSpan timeout = Timeout.Infinite);
 
     static bool WaitAll(WaitHandle[] handles) {
         return WaitAll(handles, Timeout.Infinite);

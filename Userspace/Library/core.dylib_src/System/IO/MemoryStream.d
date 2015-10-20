@@ -43,7 +43,7 @@ class MemoryStream : Stream {
         if (capacity < 0)
             throw new ArgumentOutOfRangeException("capacity", Environment.GetResourceString("ArgumentOutOfRange_NegativeCapacity"));
     } body {
-        m_buffer     = capacity;
+        m_buffer     = new byte[capacity];
         m_expandable = true;
         m_writable   = true;
         m_exposable  = true;

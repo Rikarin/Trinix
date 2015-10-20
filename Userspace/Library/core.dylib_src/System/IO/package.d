@@ -33,8 +33,12 @@ TODO:
 
 
 //T = object ??
-class Task(T = void) { }
+class Task(T = Object) {
+
+}
+
+
 class CancellationToken {
-    static const CancellationToken None = null;
+    enum CancellationToken None = null;
 //@property CancellationToken None() { return null; }
 }

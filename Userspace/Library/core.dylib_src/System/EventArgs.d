@@ -31,4 +31,4 @@ class EventArgs {
 }
 
 
-alias void delegate(object sender, EventArgs e) EventHandler;
+alias void delegate(Object sender, EventArgs e) EventHandler;

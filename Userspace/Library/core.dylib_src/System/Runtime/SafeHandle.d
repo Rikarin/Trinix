@@ -29,7 +29,7 @@ import System.Runtime;
 abstract class SafeHandle {
     protected long m_handle;
 
-    private this(int handle) {
+    protected this(long handle) {
         m_handle = handle;
     }
 
@@ -37,7 +37,7 @@ abstract class SafeHandle {
         Syscall(SyscallType.Close);
     }
 	
-	protected T Create(T)(string identifier, int handler) {
+	protected static T Create(T)(string identifier, long handle) {
 		char[256] ident;
 		long length = DoSyscall(handle, SyscallType.Identifier, cast(long)ident.ptr, 0, 0, 0, 0);
 		
@@ -51,8 +51,8 @@ abstract class SafeHandle {
         return DoSyscall(m_handle, id, param1, param2, param3, param4, param5);
     }
 
-    protected static SafeHandle StaticSyscall(string ident, long param1 = 0, long param2 = 0, long param3 = 0, long param4 = 0, long param5 = 0) {
-        return DoSyscall(0xFFFFFFFF_FFFFFFFF, ident.ptr, param1, param2, param3, param4, param5);
+    protected static long StaticSyscall(string ident, long param1 = 0, long param2 = 0, long param3 = 0, long param4 = 0, long param5 = 0) {
+        return DoSyscall(0xFFFFFFFF_FFFFFFFF, cast(long)ident.ptr, param1, param2, param3, param4, param5);
     }
 
     /**
@@ -62,17 +62,19 @@ abstract class SafeHandle {
      *      o do this as a naked call without mov??
      */
     private static long DoSyscall(long resource, long id, long param1, long param2, long param3, long param4, long param5) {
-        asm {
-            mov R9, resource;
-            mov R8, id;
-            mov RDI, pram1;
-            mov RSI, param2;
-            mov RDX, param3;
-            mov RBX, param4;
-            mov RAX, param5;
-            syscall;
-            
-            mov resource, RAX;
+        version (Trinix) {
+            asm {
+                mov R9, resource;
+                mov R8, id;
+                mov RDI, param1;
+                mov RSI, param2;
+                mov RDX, param3;
+                mov RBX, param4;
+                mov RAX, param5;
+                syscall;
+                
+                mov resource, RAX;
+            }
         }
 
         return resource;
@@ -82,14 +84,14 @@ abstract class SafeHandle {
         private long m_id;
 
         this(string identifier) {
-            m_id = Syscall(SyscallType.Translate, cast(long)identifier.ptr);
+//            TODO: m_id = Syscall(SyscallType.Translate, cast(long)identifier.ptr);
 
             if (m_id == SyscallReturn.Error)
             {} // TODO: throw an exception
         }
 
-        long Call(long param1 = 0, long param2 = 0, long param3 = 0, long param4 = 0, long param5 = 0) {
-            return Syscall(m_id, param0, param1, param2, param3, param4, param5);
+        long Call(long param1, long param2 = 0, long param3 = 0, long param4 = 0, long param5 = 0) {
+            return Syscall(m_id, param1, param2, param3, param4, param5);
         }
     }
 }

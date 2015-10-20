@@ -37,6 +37,6 @@ final class OperatingSystem {
 
     @property {
         PlatformID Platform() { return m_platform; }
-        Version Version()     { return m_version;  }
+        Version GetVersion()  { return m_version;  }
     }
 }

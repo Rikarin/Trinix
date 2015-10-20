@@ -53,26 +53,26 @@ struct TimeSpan {
     private enum MaxMilliSeconds     = long.max / TicksPerMillisecond;
     private enum MinMilliSeconds     = long.min / TicksPerMillisecond;
     
-    static const TimeSpan Zero       = new TimeSpan(0);
-    static const TimeSpan MaxValue   = new TimeSpan(long.max);
-    static const TimeSpan MinValue   = new TimeSpan(long.min);
+    static const TimeSpan Zero       = TimeSpan(0);
+    static const TimeSpan MaxValue   = TimeSpan(long.max);
+    static const TimeSpan MinValue   = TimeSpan(long.min);
 
     private long m_ticks;
 
     @property {
-        long Ticks()          { return m_ticks;                                }
-        int Days()            { return m_ticks / TicksPerDay;                  }
-        int Hours()           { return (m_ticks / TicksPerHour)        % 24;   }
-        int Minutes()         { return (m_ticks / TicksPerMinute)      % 60;   }
-        int Seconds()         { return (m_ticks / TicksPerSecond)      % 60;   }
-        int MiLliseconds()    { return (m_ticks / TicksPerMillisecond) % 1000; }
+        long Ticks()          const { return m_ticks;                                }
+        int Days()            const { return cast(int)m_ticks / TicksPerDay;         }
+        int Hours()           const { return (m_ticks / TicksPerHour)        % 24;   }
+        int Minutes()         const { return (m_ticks / TicksPerMinute)      % 60;   }
+        int Seconds()         const { return (m_ticks / TicksPerSecond)      % 60;   }
+        int MiLliseconds()    const { return (m_ticks / TicksPerMillisecond) % 1000; }
 
-        double TotalDays()    { return m_ticks * DaysPerTick;    }
-        double TotalHours()   { return m_ticks * HoursPerTick;   }
-        double TotalMinutes() { return m_ticks * MinutesPerTick; }
-        double TotalSeconds() { return m_ticks * SecondsPerTick; }
+        double TotalDays()    const { return m_ticks * DaysPerTick;    }
+        double TotalHours()   const { return m_ticks * HoursPerTick;   }
+        double TotalMinutes() const { return m_ticks * MinutesPerTick; }
+        double TotalSeconds() const { return m_ticks * SecondsPerTick; }
 
-        double TotalMiLliseconds() {
+        double TotalMiLliseconds() const {
             double tmp = m_ticks * MillisecondsPerTick;
             if (tmp > MaxMilliSeconds)
                 return MaxMilliSeconds;
@@ -120,14 +120,14 @@ struct TimeSpan {
     }
 
     TimeSpan Duration() in {
-        if (Ticks == MinValue.Ticks)
+        if (m_ticks == MinValue.Ticks)
             throw new OverflowException(Environment.GetResourceString("Overflow_Duration"));
     } body {
         return TimeSpan(m_ticks >= 0 ? m_ticks : -m_ticks);
     }
 
     TimeSpan Negate() in {
-        if (Ticks == MinValue.Ticks)
+        if (m_ticks == MinValue.Ticks)
             throw new OverflowException(Environment.GetResourceString("Overflow_Duration"));
     } body {
         return TimeSpan(-m_ticks);
@@ -154,7 +154,7 @@ struct TimeSpan {
     }
 
     int opCmp(TimeSpan other) {
-        return m_ticks - other.m_ticks;
+        return cast(int)(m_ticks - other.m_ticks);
     }
 
     static TimeSpan FromDays(double value) {

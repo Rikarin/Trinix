@@ -57,7 +57,7 @@ abstract class Stream {
         byte[] buffer = new byte[bufferSize];
         scope(exit) delete buffer;
 
-        int read;
+        long read;
         while ((read = Read(buffer)) != 0)
                destination.Write(buffer[0 .. read]);
     }
@@ -84,15 +84,15 @@ abstract class Stream {
     }
 
 
-    Task CopyToAsync(Stream destination, int bufferSize = DefaultCopyBufferSize, CancellationToken ct = CancellationToken.None) {
+    Task!Object CopyToAsync(Stream destination, int bufferSize = DefaultCopyBufferSize, CancellationToken ct = CancellationToken.None) {
         return null;
     }
 
-    IAsyncResut BeginRead(byte[] buffer, AsyncCallback callback, Object state) {
+    IAsyncResult BeginRead(byte[] buffer, AsyncCallback callback, Object state) {
         return null;
     }
 
-    IAsyncResut BeginWrite(byte[] buffer, AsyncCallback callback, Object state) {
+    IAsyncResult BeginWrite(byte[] buffer, AsyncCallback callback, Object state) {
         return null;
     }
 
@@ -104,7 +104,7 @@ abstract class Stream {
         return 0;
     }
 
-    Task FlushAsync(CancellationToken ct = CancellationToken.None) {
+    Task!Object FlushAsync(CancellationToken ct = CancellationToken.None) {
         return null;
     }
 
@@ -162,14 +162,6 @@ class NullStream : Stream {
     }
 
     override void Write(byte[] buffer) {
-
-    }
-
-    override long ReadByte() {
-        return -1;
-    }
-    
-    override void WriteByte(byte value) {
 
     }
 }
@@ -289,7 +281,7 @@ class SyncStream : Stream {
         m_lock.WaitOne();
         scope(exit) m_lock.Release();
 
-        m_stream.WriteByte();
+        m_stream.WriteByte(value);
     }
 }
 

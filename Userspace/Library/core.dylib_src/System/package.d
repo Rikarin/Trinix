@@ -20,6 +20,7 @@ public import System.Event;
 public import System.Convert;
 public import System.Version;
 public import System.EventArgs;
+public import System.Environment;
 public import System.AsyncCallback;
 public import System.StringBuilder;
 public import System.OperatingSystem;
@@ -28,19 +29,30 @@ public import System.OperatingSystem;
 //TODO: test Event
 
 class SystemException : Exception {
-    this(string message) { }
+    this() {
+        super("UNDEFINED EXCEPTION");
+    }
+    this(string message) {
+        super(message);
+    }
 }
 
-class InvalidOperationException : SystemException { }
-class ArgumentException : SystemException         { }
-class ArgumentNullException : ArgumentException   { }
-class IOException : SystemException { }
-class UnauthorizedAccessException : SystemException { }
-class NotSupportedException : SystemException { }
-class OverflowException : SystemException { }
+class InvalidOperationException   : SystemException { this() {} this(string message) { super(message); } }
+class ArgumentException           : SystemException { this() {} this(string message) { super(message); } }
+class IOException                 : SystemException { this() {} this(string message) { super(message); } }
+class UnauthorizedAccessException : SystemException { this() {} this(string message) { super(message); } }
+class NotSupportedException       : SystemException { this() {} this(string message) { super(message); } }
+class OverflowException           : SystemException { this() {} this(string message) { super(message); } }
 
 class ArgumentOutOfRangeException : ArgumentException {
+    this() { }
     this(string paramName, string message) { }
+}
+
+class ArgumentNullException : ArgumentException   {
+    this() {}
+    this(string message) { super(message); }
+    this(string message, string category) { super(message); }
 }
 
 class Globalization {}
@@ -80,3 +92,13 @@ class Test {
     mixin PartialTest;
 }
 */
+
+
+
+version (unittest) {
+    int main() {
+        import core.stdc.stdio;
+        printf("test");
+        return 42;
+    }
+}

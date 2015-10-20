@@ -2,44 +2,43 @@
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <ProjectGuid>{04C9E28B-35A0-46E7-8173-9DBC85F1B5AC}</ProjectGuid>
-    <BaseDirectory>.</BaseDirectory>
     <Compiler>DMD2</Compiler>
     <PreferOneStepBuild>true</PreferOneStepBuild>
     <UseDefaultCompiler>true</UseDefaultCompiler>
     <IncrementalLinking>true</IncrementalLinking>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug</OutputPath>
-    <ObjectsDirectory>obj/Debug</ObjectsDirectory>
-    <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
-    <UnittestMode>false</UnittestMode>
-    <OutputName>Kappa</OutputName>
-    <Target>Executable</Target>
-    <Externalconsole>true</Externalconsole>
-    <DebugLevel>0</DebugLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>bin\Release</OutputPath>
-    <ObjectsDirectory>obj/Release</ObjectsDirectory>
-    <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
-    <UnittestMode>false</UnittestMode>
-    <OutputName>Kappa</OutputName>
-    <Target>Executable</Target>
-    <Externalconsole>true</Externalconsole>
-    <DebugLevel>0</DebugLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Unittest|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Unittest|x64' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Unittest</OutputPath>
-    <ObjectsDirectory>obj/Unittest</ObjectsDirectory>
-    <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
-    <UnittestMode>true</UnittestMode>
-    <OutputName>Kappa</OutputName>
-    <Target>Executable</Target>
     <Externalconsole>true</Externalconsole>
+    <Target>StaticLibrary</Target>
+    <OutputName>Kappa</OutputName>
+    <UnittestMode>true</UnittestMode>
+    <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
+    <ObjectsDirectory>obj/Unittest</ObjectsDirectory>
+    <DebugLevel>0</DebugLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug</OutputPath>
+    <Externalconsole>true</Externalconsole>
+    <Target>StaticLibrary</Target>
+    <OutputName>Kappa</OutputName>
+    <UnittestMode>false</UnittestMode>
+    <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
+    <ObjectsDirectory>obj/Debug</ObjectsDirectory>
+    <DebugLevel>0</DebugLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\Release</OutputPath>
+    <Externalconsole>true</Externalconsole>
+    <Target>StaticLibrary</Target>
+    <OutputName>Kappa</OutputName>
+    <UnittestMode>false</UnittestMode>
+    <LinkinThirdPartyLibraries>false</LinkinThirdPartyLibraries>
+    <ObjectsDirectory>obj/Release</ObjectsDirectory>
     <DebugLevel>0</DebugLevel>
   </PropertyGroup>
   <ItemGroup>

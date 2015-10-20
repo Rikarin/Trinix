@@ -41,7 +41,7 @@ struct SpinLock {
     bool TryEnter(TimeSpan timeout) {
         auto waitTo = DateTime.Now + timeout;
         while (AtomicExchange(&m_locked)) {
-            if (Datetime.Now > waitTo)
+            if (DateTime.Now > waitTo)
                 return false;
         }
 

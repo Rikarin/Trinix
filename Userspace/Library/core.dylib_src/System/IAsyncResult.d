@@ -24,6 +24,7 @@
 module System.IAsyncResult;
 
 import System;
+import System.Threading;
 
 
 interface IAsyncResult {

@@ -21,7 +21,7 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module System.SyscallReturn;
+module System.Runtime.SyscallReturn;
 
 enum SyscallReturn {
     Error      = -1,

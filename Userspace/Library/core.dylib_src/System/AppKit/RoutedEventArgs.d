@@ -24,14 +24,16 @@
 module System.AppKit.RoutedEventArgs;
 
 import System;
-
+import System.AppKit;
 
 class RoutedEventArgs : EventArgs {
     private bool m_handled;
     private RoutedEvent m_event;
 
-    @property ref bool Handled()   { return m_handled; }
-    @proeprty auto EventInstance() { return m_event;   }
+    @property {
+        ref bool Handled()   { return m_handled; }
+        auto EventInstance() { return m_event;   }
+    }
 
     this() {
 
@@ -39,4 +41,4 @@ class RoutedEventArgs : EventArgs {
 }
 
 
-alias void delegate(object sender, RoutedEventArgs e) RoutedEventHandler;
+alias void delegate(Object sender, RoutedEventArgs e) RoutedEventHandler;

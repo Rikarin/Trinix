@@ -28,70 +28,69 @@ import System.Collections;
 
 
 class Event(T) {
-    alias void delegate(T value) Handler;
+    alias void delegate(T value) EventCallHandler;
 
     private List!T m_list;
-    private Handler m_addHandler;
-    private Handler m_removeHandler;
+    private EventCallHandler m_addHandler;
+    private EventCallHandler m_removeHandler;
 
     @property {
-        void Add(Handler value)    { m_addHandler    = value; }
-        void Remove(Handler value) { m_removeHandler = value; }
+        void Add(EventCallHandler value)    { m_addHandler    = value; }
+        void Remove(EventCallHandler value) { m_removeHandler = value; }
     }
 
     this() {
-        m_list          = new List!T();
-        m_addHandler    = &AddHandler;
-        m_removeHandler = &RemoveHandler;
+        m_list = new List!T();
     }
 
     ~this() {
         delete m_list;
     }
 
-    void opCall(object sender, EventArgs e) {
-        e.SetEventInstance(this);
-
+    void opCall(Object sender, EventArgs e) {
         foreach (x; m_list) {
-            if (!e.Handled) {
-                x(sender, e);
-            }
+            x(sender, e);
         }
     }
 
     void opOpAssign(string TOp)(T event) if (TOp == "+") {
-        m_addHandler(event);
+        if (m_addHandler !is null)
+            m_addHandler(event);
+        else
+            AddHandler(event);
     }
 
     void opOpAssign(string TOp)(T event) if (TOp == "-") {
-        m_removeHandler(event);
+        if (m_removeHandler !is null)
+            m_removeHandler(event);
+        else
+            RemoveHandler(event);
     }
 
 
     private void AddHandler(T value) {
-        if (!m_list.Contains(event))
-            m_list.Add(event);
+        if (!m_list.Contains(value))
+            m_list.Add(value);
     }
 
     private void RemoveHandler(T value) {
-        m_list.Remove(event);
+        m_list.Remove(value);
     }
 }
-
 
 unittest { //TODO: test it
     class test {
         Event!EventHandler event = new Event!EventHandler();
 
         this() {
-            event += &test_onEvent;
+            event += &test_OnEvent;
             event(this, new EventArgs());
 
-            event.Add = (EventHandler v) => {  };
+            event += (sender, e) {  };
             event(this, new EventArgs());
         }
 
-        void test_OnEvent(object sender, EventArgs e) {
+        void test_OnEvent(Object sender, EventArgs e) {
             //callsed by event.opCall
         }
     }

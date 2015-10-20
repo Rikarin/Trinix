@@ -21,7 +21,7 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module System.SyscallType;
+module System.Runtime.SyscallType;
 
 enum SyscallType {
     /* Return DeviceType */

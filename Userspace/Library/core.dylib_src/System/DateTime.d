@@ -41,10 +41,6 @@ struct DateTime {
         static DateTime Now() { return DateTime(); } //TODO
     }
 
-    this() {
-
-    }
-
     DateTime Add(TimeSpan value) {
         return this;
     }
@@ -58,5 +54,9 @@ struct DateTime {
             return Add(other);
         else static if (s == "-")
             return Substract(other);
+    }
+
+    int opCmp(DateTime other) {
+        return -1;
     }
 }
