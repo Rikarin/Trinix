@@ -52,7 +52,7 @@ class ArgumentOutOfRangeException : ArgumentException {
 class ArgumentNullException : ArgumentException   {
     this() {}
     this(string message) { super(message); }
-    this(string message, string category) { super(message); }
+    this(string message, string a4242) { super(message); }
 }
 
 class Globalization {}
