@@ -114,7 +114,8 @@ abstract final class Task {
         if (m_spinLock.IsLocked)
             return;
     
-        if (Thread.Current.Remaining--)
+//        Log("remaining: %d", Thread.Current.Remaining);
+        if (--Thread.Current.Remaining)
             return;
 
         void* rsp, rbp;
@@ -140,27 +141,38 @@ abstract final class Task {
         if (next is null || next == Thread.Current)
             return;
 
-        /* Switch to the next thread */
-        m_currentThread = next;
-        Thread.Current.SetKernelStack();
-        Thread.Current.ParentProcess.m_paging.Install();
+        Log("Next: %d, priority: %d, name: %s, total: %d", next.ID, next.Priority, next.Name, ThreadCount);
 
-        with (Thread.Current.SavedState)
-            SwitchTasks(RSP, RBP, RIP);
+        /* Switch to the next thread */
+        with (m_currentThread) {
+            if (State == ThreadState.Running)
+                State = ThreadState.Ready;
+
+            m_currentThread = next;
+            //State = ThreadState.Running;
+
+            SetKernelStack();
+            ParentProcess.m_paging.Install();
+            SwitchTasks(SavedState.RSP, SavedState.RBP, SavedState.RIP);
+        }
     }
 
     private static Thread GetNextToRun() {
         m_spinLock.WaitOne();
         scope(exit) m_spinLock.Release();
 
-        Thread next    = GetRunnable();
-        next.Remaining = next.Quantum;
+        Thread next = GetRunnable();
+        if (!next.Remaining)
+            next.Remaining = next.Quantum;
 
         if (next is Thread.Current)
             return Thread.Current;
 
-        if (Thread.Current.State == ThreadState.Active)
+        Log("state: %d", cast(int)Thread.Current.State);
+        if (Thread.Current.State == ThreadState.Running) {
             m_threads.AddLast(Thread.Current.Node);
+            Log("called");
+        }
 
         return next;
     }
@@ -168,7 +180,7 @@ abstract final class Task {
     private static Thread GetRunnable() {
         for (int i = 0; i < Thread.MIN_PRIORITY; i++) {
             foreach (x; m_threads) {
-                if (x.Value.Priority == i && x.Value.State == ThreadState.Active) {
+                if (x.Value.Priority == i && x.Value.State == ThreadState.Ready) {
                     auto ret = x.Value;
                     m_threads.Remove(x);
                     return ret;

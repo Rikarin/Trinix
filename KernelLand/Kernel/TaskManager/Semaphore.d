@@ -19,6 +19,9 @@
  * 
  * Contributors:
  *      Matsumoto Satoshi <satoshi@gshost.eu>
+ * 
+ * TODO:
+ *      o Fix
  */
 
 module TaskManager.Semaphore;
@@ -83,7 +86,8 @@ class Semaphore : Resource {
             m_value--;
         } else {
             m_waiting.Add(Thread.Current);
-            taken = Thread.Current.Sleep(ThreadState.SemaphoreSleep, cast(void *)this, 1, m_spinLock);
+            m_spinLock.Release();
+            Thread.Current.SetAndWaitForStatusEnd(ThreadState.SemaphoreWait);
             m_spinLock.WaitOne();
         }
 
@@ -97,7 +101,7 @@ class Semaphore : Resource {
 
             m_signaling.RemoveFirst();
             m_spinLock.Release();
-            return taken;
+            //return taken;
         }
 
         return -1;
@@ -111,7 +115,7 @@ class Semaphore : Resource {
 
         if (m_maxValue && m_value == m_maxValue) {
             m_signaling.Add(Thread.Current);
-            added = Thread.Current.Sleep(ThreadState.SemaphoreSleep, cast(void *)this, releaseCount, m_spinLock);
+           // added = Thread.Current.Sleep(ThreadState.SemaphoreSleep, cast(void *)this, releaseCount, m_spinLock);
             m_spinLock.WaitOne();
         } else {
             added    = (m_maxValue && m_value + releaseCount > m_maxValue) ? m_maxValue - m_value : releaseCount;
@@ -133,7 +137,7 @@ class Semaphore : Resource {
         return added;
     }
 
-    package static void ForceWake(Thread thread) {
+   /* package static void ForceWake(Thread thread) {
         if (thread.State != ThreadState.SemaphoreSleep)
             return;
 
@@ -146,5 +150,5 @@ class Semaphore : Resource {
             thread.RetStatus = 0;
             thread.AddActive();
         }
-    }
+    }*/
 }

@@ -56,7 +56,9 @@ class Mutex : Resource {
 
         if (m_owner) {
             m_waiting.Add(Thread.Current);
-            Thread.Current.Sleep(ThreadState.MutexSleep, cast(void *)this, 0, m_spinLock);
+
+            m_spinLock.Release();
+            Thread.Current.SetAndWaitForStatusEnd(ThreadState.MutexWait);
         } else {
             m_owner = Thread.Current;
             m_spinLock.Release();
@@ -72,7 +74,7 @@ class Mutex : Resource {
             m_owner = m_waiting.First.Value;
             m_waiting.RemoveFirst();
 
-            if (m_owner.State == ThreadState.MutexSleep)
+            if (m_owner.State == ThreadState.MutexWait)
                 m_owner.AddActive();
         } else
             m_owner = null;

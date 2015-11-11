@@ -75,7 +75,7 @@ final class Process : Resource {
         Thread t           = new Thread(process);
         with (t) {
             Name           = "Kernel";
-            State          = ThreadState.Active;
+            State          = ThreadState.Running;
             SetKernelStack();
         }
     

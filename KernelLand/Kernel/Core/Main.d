@@ -113,14 +113,14 @@ extern(C) void KernelMain() {
   //  p.Start();
 
     /* Copy curent thread into new one under the same process */
-   // Log("spustam prvu threadu");
-  //  auto t = new Thread(&test_lala);
-  //  t.Start();
-  //  Log("prva threada bola spustena");
+    Log("spustam prvu threadu");
+    auto t = new Thread(&test_lala);
+    t.Start();
+    Log("prva threada bola spustena");
 
     Log("Running, Time = %d", Time.Uptime);
     while (true) {
-   //     Log("Running, Time = %d", Time.Uptime);
+        //Log("Running, Time = %d", Time.Uptime);
     }
 }
 
@@ -138,11 +138,13 @@ void RemapPIC() {
 }
 
 void test_lala() {
-    Log("The new thread %d", Thread.Current.ID);
-    Log("The new process %d", Process.Current.ID);
+   // Log("The new thread %d", Thread.Current.ID);
+    //Log("The new process %d", Process.Current.ID);
 
     while (true) {
         asm {
+        ll:
+            jmp ll;
             //syscall;
         }
     }

@@ -37,33 +37,40 @@ import MemoryManager;
 
 
 enum ThreadState {
-    Null,
-    Active,
-    Sleeping,
-    MutexSleep,
-    RWLockSleep,
-    SemaphoreSleep,
-    QueueSleep,
-    EventSleep,
-    Waiting,
-    PreInit,
-    Zombie,
     Dead,
-    Buried
+    Ready,         /// < Thread is ready to get sheduled
+    Running,       /// < Thread is already running on Core
+    Stopped,       /// < Stopped
+    Join,          /// < Wait to join another thread
+    MutexWait,     /// < Wait for mutex
+    SemaphoreWait, /// < Wait for semaphore
+    ThreadWait,
+    InterruptWait, /// < Wait for interrupt
+    EventWait,
+    Sleep,
+    ReceiveWait,
+    SendWait,
+    ReplyWait
 }
 
-enum ThreadEvent : ulong {
+/*enum ThreadEvent : ulong { //TODO: delete
     VFS       = 0x01,
     IPCMesage = 0x02,
     signal    = 0x04,
     Timer     = 0x08,
     ShortWait = 0x10,
     DeadChild = 0x20
-}
+}*/
 
-struct IPCMessage {
+struct Message {
     Thread Source;
     byte[] Data;
+    bool IsPulse;
+
+    ~this() {
+        if (Data !is null)
+            delete Data;
+    }
 }
 
 
@@ -104,8 +111,8 @@ final class Thread : Resource {
     //package int _curCPU;
 
     /* IPC */
-    private SignalType m_pendingSignal;
-    private LinkedList!(IPCMessage *) m_messages;
+    //private SignalType m_pendingSignal;
+    private LinkedList!(Message *) m_messages;
 
     private ulong m_eventState;
     private void* m_waitPointer; //WTF??
@@ -122,7 +129,7 @@ final class Thread : Resource {
         ];
 
         m_id              = Task.NextTID;
-        m_state           = ThreadState.PreInit;
+        m_state           = ThreadState.Stopped;
         m_process         = process;
         m_remaining       = DEFAULT_QUANTUM;
         m_quantum         = DEFAULT_QUANTUM;
@@ -131,7 +138,7 @@ final class Thread : Resource {
         m_spinLock        = new SpinLock();
         m_lastDeadChild   = new LinkedList!Thread();
         m_deadChildLock   = new Mutex();
-        m_messages        = new LinkedList!(IPCMessage *)();
+        m_messages        = new LinkedList!(Message *)();
         m_node            = new LinkedListNode!Thread(this);
         m_kernelStack     = new ulong[STACK_SIZE / 8];
         m_userStack       = new ulong[USER_STACK_SIZE / 8];//TODO: ParentProcess.AllocUserStack();
@@ -170,8 +177,7 @@ final class Thread : Resource {
     }
 
     ~this() {
-        RemoveActive();
-        m_state = ThreadState.Buried;
+        RemoveActive(ThreadState.Dead);
         m_process.Threads.Remove(this);
 
         if (!m_process.Threads.Count)
@@ -274,7 +280,7 @@ final class Thread : Resource {
         }
     }
 
-    /* WTF is this??? ... */
+    /* WTF is this??? ... Join.. */
 /*  ulong WaitTID(ulong tid, ref ThreadState status) {
         if (tid == -1) {
             ulong events = WaitEvents(ThreadEvent.DeadChild);
@@ -321,7 +327,7 @@ final class Thread : Resource {
             Port.Halt();
     }
 
-    void Kill(ulong status) {
+    void Kill(ulong status) { //TODO
         bool isCurrentThread = this == Current;
 
         m_spinLock.WaitOne();
@@ -334,13 +340,11 @@ final class Thread : Resource {
 
         Task.ThreadLock.WaitOne();
         switch (m_state) {
-            case ThreadState.PreInit:
+            case ThreadState.Dead:
+            case ThreadState.Stopped:
                 break;
 
-            case ThreadState.Sleeping:
-                break;
-
-            case ThreadState.Active:
+            /*case ThreadState.Active:
                 if (!isCurrentThread)
                     Task.Threads.Remove(m_node);
 
@@ -350,34 +354,45 @@ final class Thread : Resource {
 
             case ThreadState.Zombie:
                 Task.ThreadLock.Release();
-                return;
+                return;*/
 
             default:
                 Debugger.Log(LogLevel.Emergency, "Thread", "Threads: Kill - unsupported thread state %d", cast(long)m_state);
         }
 
         m_retStatus = status;
-        m_state     = ThreadState.Zombie;
+        m_state     = ThreadState.Dead;
         Task.ThreadLock.Release();
 
         m_parent.m_deadChildLock.WaitOne();
         m_parent.m_lastDeadChild.Add(this);
-        m_parent.PostEvent(ThreadEvent.DeadChild);
+        m_parent.m_deadChildLock.Release();
 
+        /* Its suicide */
         if (isCurrentThread)
             while (true)
                 Task.Yield();
     }
 
-    void WaitForStatusEnd(ThreadState status) {
-        assert(status != ThreadState.Active);
-        assert(status != ThreadState.Dead);
+    void SetAndWaitForStatusEnd(ThreadState state) {
+        assert(state != ThreadState.Ready);
+        assert(state != ThreadState.Running);
+        assert(state != ThreadState.Dead);
 
-        while (m_state == status)
+        RemoveActive(state);
+        WaitForStatusEnd(state);
+    }
+
+    void WaitForStatusEnd(ThreadState state) {
+        assert(state != ThreadState.Ready);
+        assert(state != ThreadState.Running);
+        assert(state != ThreadState.Dead);
+
+        while (m_state == state)
             Task.Yield();
     }
 
-    ulong Sleep(ThreadState status, void* ptr, ulong num, SpinLock lock) {
+    /*ulong Sleep(ThreadState status, void* ptr, ulong num, SpinLock lock) {
         RemoveActive();
         m_state       = status;
         m_waitPointer = ptr;
@@ -389,27 +404,44 @@ final class Thread : Resource {
         WaitForStatusEnd(status);
         m_waitPointer = null;
         return m_retStatus;
-    }
+    }*/
 
     void Sleep() {
         if (m_messages.Count)
             return;
 
-        RemoveActive();
-        m_state = ThreadState.Sleeping;
-        WaitForStatusEnd(ThreadState.Sleeping);
+        SetAndWaitForStatusEnd(ThreadState.Sleep);
     }
 
+    /*enum ThreadState {
+    Join,          /// < Wait to join another thread
+    MutexWait,     /// < Wait for mutex
+    SemaphoreWait, /// < Wait for semaphore
+    ThreadWait,
+    InterruptWait, /// < Wait for interrupt
+    EventWait,
+    ReceiveWait,
+    SendWait,
+    ReplyWait
+}*/
     bool Wake() {
         switch (m_state) {
-            case ThreadState.Active:
+            case ThreadState.Dead:
+            case ThreadState.Ready:
+            case ThreadState.Running:
                 return false;
 
-            case ThreadState.Sleeping:
+            case ThreadState.Stopped:
+            case ThreadState.Sleep:
                 AddActive();
                 return true;
 
-            case ThreadState.SemaphoreSleep:
+            case ThreadState.ReceiveWait:
+                AddActive(m_remaining ? true : false);
+                return true;
+
+
+           /* case ThreadState.SemaphoreSleep:
                 Semaphore semaphore = cast(Semaphore)m_waitPointer;
                 semaphore.LockInternal();
                 scope(exit) semaphore.UnlockInternal();
@@ -419,33 +451,36 @@ final class Thread : Resource {
                     
                 m_retStatus = 0;
                 AddActive();
-                return true;
-
-            case ThreadState.Waiting:
-                return false;
-
-            case ThreadState.Dead:
-                return false;
+                return true;*/
 
             default:
                 return false;
         }
     }
 
-    void RemoveActive() {
+    void RemoveActive(ThreadState state) {
+        m_state = state;
+
         Task.ThreadLock.WaitOne();
         Task.Threads.Remove(m_node);
         Task.ThreadLock.Release();
     }
 
-    void AddActive() {
-        if (m_state == ThreadState.Active || !m_savedState.RIP)
+    void AddActive(bool addAsFirst = false) {
+        if (m_state == ThreadState.Running ||
+            m_state == ThreadState.Ready   ||
+            m_state == ThreadState.Dead    ||
+            !m_savedState.RIP)
             return;
-        m_state = ThreadState.Active;
 
+        m_state = ThreadState.Ready;
         Task.ThreadLock.WaitOne();
-        if (Current != this)
-            Task.Threads.AddLast(m_node);
+        if (Current != this) {
+            if (addAsFirst)
+                Task.Threads.AddFirst(m_node);
+            else
+                Task.Threads.AddLast(m_node);
+        }
         Task.ThreadLock.Release();
     }
 
@@ -471,14 +506,14 @@ final class Thread : Resource {
     }
 
     /* Signals */
-    void PostSignal(SignalType signal) {
+   /* void PostSignal(SignalType signal) {
         m_pendingSignal = signal;
         PostEvent(ThreadEvent.signal);
-    }
+    }*/
     //TODO
 
     /* Events */
-    void PostEvent(ulong eventMask) {
+   /* void PostEvent(ulong eventMask) {
         m_spinLock.WaitOne();
         scope(exit) m_spinLock.Release();
 
@@ -519,43 +554,53 @@ final class Thread : Resource {
         m_eventState &= ~eventMask;
 
         return ret;
-    }
+    }*/
 
     /* Messages */
-    bool SendMessage(byte[] data) {
+    void SendMessage(byte[] data) {
         m_spinLock.WaitOne();
         scope(exit) m_spinLock.Release();
 
         if (m_state == ThreadState.Dead)
-            return false;
+            return;
 
-        IPCMessage* msg = new IPCMessage();
-        msg.Source      = Current;
-        msg.Data[]      = data;
+        Message* msg = new Message();
+        msg.Source   = Current;
+        msg.Data[]   = data;
         m_messages.Add(msg);
 
-        PostEvent(ThreadEvent.IPCMesage);
-        return true;
+        if (m_state == ThreadState.ReceiveWait) {
+            m_remaining         = Current.m_remaining;
+            Current.m_remaining = 0;
+            Wake();
+        }
+            
+        Current.m_state = ThreadState.SendWait;
+        WaitForStatusEnd(ThreadState.SendWait);
+        WaitForStatusEnd(ThreadState.ReplyWait);
     }
 
-    bool GetMessage(ref Thread source, ref byte[] data) {
-        if (!m_messages.Count)
-            return false;
+    void PulseMessage(byte[] data) {
+        //TODO:
+        assert(false);
+    }
+
+    void ReceiveMessage(ref Thread source, ref byte[] data) {
+        if (!m_messages.Count) {
+            m_state = ThreadState.ReceiveWait;
+            WaitForStatusEnd(ThreadState.ReceiveWait);
+        }
 
         m_spinLock.WaitOne();
         scope(exit) m_spinLock.Release();
 
-        with (m_messages.First.Value) {
-            source = Source;
-            data[] = Data;
+        with (m_messages.First) {
+            source = Value.Source;
+            data[] = Value.Data;
 
-            delete Data;
+            delete Value;
         }
         m_messages.RemoveFirst();
-
-        if (m_messages.Count)
-            m_eventState |= ThreadEvent.IPCMesage;
-
-        return true;
+        source.m_state = ThreadState.ReplyWait;
     }
 }
