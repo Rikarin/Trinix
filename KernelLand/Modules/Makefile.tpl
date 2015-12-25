@@ -1,11 +1,11 @@
 #
-# Trinix Module Templater Makefile
+# Module Template Makefile
 #
 
 -include $(dir $(lastword $(MAKEFILE_LIST)))../Makefile.cfg
 
 
-DFLAGS += -I$(TRXDIR)/KernelLand/Kernel -I$(TRXDIR)/KernelLand/Kernel/Architectures/$(ARCHDIR) -I$(TRXDIR)/KernelLand
+DFLAGS += -I$(SYS_DIR)/KernelLand/Kernel -I$(SYS_DIR)/KernelLand/Kernel/Architectures/$(ARCH) -I$(SYS_DIR)/KernelLand
 
 ifneq ($(CATEGORY),)
 	FULLNAME := $(CATEGORY)_$(NAME)
@@ -29,22 +29,21 @@ DEPFILES := $(OBJ:%=%.dep)
 
 .PHONY: all clean install
 
-
 all: $(BIN)
 	@true
 
 clean:
 	@$(RM) $(BIN) $(BIN).dsm obj_st-* obj_dyn-* ../$(FULLNAME).* ../$(NAME).*
-	@$(RM) $(DISTROOT)/System/Modules/$(FULLNAME).kext.gz
+	@$(RM) $(ROOT_DIR)/System/Modules/$(FULLNAME).kext.gz
 
 install: $(BIN)
 ifneq ($(BUILDTYPE),static)
 	@echo --- Module $(NAME) was installed to System/Modules/$(FULLNAME).kext.gz
-	@$(MKDIR) $(DISTROOT)/System/Modules
+	@$(MKDIR) $(ROOT_DIR)/System/Modules
 	@cp $(BIN) $(KEXT)
 	@gzip -c $(KEXT) > $(KEXT).gz
 	@$(RM) $(KEXT)
-	@cp $(KEXT).gz $(DISTROOT)/System/Modules/$(FULLNAME).kext.gz
+	@cp $(KEXT).gz $(ROOT_DIR)/System/Modules/$(FULLNAME).kext.gz
 else
 	@true
 endif
@@ -57,13 +56,13 @@ $(BIN): $(OBJ)
 else
 $(BIN): %.xo.$(ARCH): $(OBJ)
 	@echo --- LD -o $@
-	@$(LD) --script=$(TRXDIR)/KernelLand/Modules/link.ld -r -o $@ $(OBJ)
+	@$(LD) -T $(SYS_DIR)/KernelLand/Modules/LinkerScript.ld -r -o $@ $(OBJ)
 endif
-	
+
 obj_$(SUFFIX)/%.d.o: %.d
 	@echo --- DD -o $@
 	@$(MKDIR) $(dir $@)
 	@$(DD) $(DFLAGS) -of=$@ -c -deps=$@.o.dep $<
 
-	
+
 -include $(DEPFILES)

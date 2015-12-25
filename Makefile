@@ -89,8 +89,8 @@ install-FileSystem:
 	@$(SUBMAKE) install -C Userspace/FileSystem
 
 echo:
-	@echo Version: $(TRINIX_VERSION)
+	@echo Version: $(SYSTEM_VERSION)
 	@echo ARCH: $(ARCH)
-	@echo ARCHDIR: $(ARCHDIR)
+	@echo ARCHDIR: $(ARCH_DIR)
 	@echo BUILD_TYPE: $(BUILD_TYPE)
-	
+	@echo RC_VERSION: $(RC_VERSION)
