@@ -94,3 +94,11 @@ echo:
 	@echo ARCHDIR: $(ARCH_DIR)
 	@echo BUILD_TYPE: $(BUILD_TYPE)
 	@echo RC_VERSION: $(RC_VERSION)
+	@echo $(DD)
+
+
+$(DD):
+	@echo ---
+	@echo $(CC) or $(DD) does not exist, recompiling
+	@echo ---
+	make -C Externals/CrossCompiler/

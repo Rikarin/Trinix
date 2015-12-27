@@ -58,7 +58,7 @@ enum MultibootFramebufferType {
 }
 
 enum MultibootMemoryType {
-    Avaiable = 1,
+    Available = 1,
     Reserved,
     ACPIReclaimable,
     NVS,

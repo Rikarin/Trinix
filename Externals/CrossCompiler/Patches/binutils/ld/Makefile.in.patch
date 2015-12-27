@@ -1,0 +1,20 @@
+--- binutils-2.24/ld/Makefile.in	2013-11-26 12:37:33.000000000 +0100
++++ Makefile.in	2014-11-16 17:37:00.577923777 +0100
+@@ -830,6 +830,7 @@
+ 	eelf_k1om.c \
+ 	eelf_k1om_fbsd.c \
+ 	eelf_x86_64.c \
++	eelf_x86_64_trinix.c \
+ 	eelf_x86_64_fbsd.c \
+ 	eelf_x86_64_nacl.c \
+ 	eelf_x86_64_sol2.c \
+@@ -3622,6 +3623,9 @@
+ eelf_x86_64.c: $(srcdir)/emulparams/elf_x86_64.sh \
+   $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}
+ 	${GENSCRIPTS} elf_x86_64 "$(tdir_elf_x86_64)"
++eelf_x86_64_trinix.c: $(srcdir)/emulparams/elf_x86_64_trinix.sh \
++  $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}
++	${GENSCRIPTS} elf_x86_64_trinix "$(tdir_elf_x86_64_trinix)"
+ eelf_x86_64_fbsd.c: $(srcdir)/emulparams/elf_x86_64_fbsd.sh \
+   $(srcdir)/emulparams/elf_x86_64.sh \
+   $(ELF_DEPS) $(srcdir)/scripttempl/elf.sc ${GEN_DEPENDS}

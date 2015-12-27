@@ -120,10 +120,17 @@
     <Compile Include="System\String.d" />
     <Compile Include="System\StringBuilder.d" />
     <Compile Include="System\Convert.d" />
+    <Compile Include="System\Template\package.d" />
+    <Compile Include="System\Template\TypeTuple.d" />
+    <Compile Include="System\Template\Traits.d" />
+    <Compile Include="System\Template\TypeOf.d" />
+    <Compile Include="System\Template\TypeCheck.d" />
+    <Compile Include="System\Template\TypeList.d" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="System\AppKit\" />
     <Folder Include="System\Collections\" />
     <Folder Include="System\Threading\" />
+    <Folder Include="System\Template\" />
   </ItemGroup>
 </Project>

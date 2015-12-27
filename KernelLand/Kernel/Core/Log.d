@@ -21,14 +21,27 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module Core.Logger;
+module Core.Logas;
 
-import core.vararg;
 import Architecture;
 import ObjectManager;
 
+import System.Template;
 
-abstract final class Logger {
+
+enum LogLevel {
+    Emergency,
+    Critical,
+    Error,
+    Alert,
+    Warning,
+    Notice,
+    Info,
+    Debug
+}
+
+
+abstract final class Log {
     private __gshared DisplayChar* m_display = cast(DisplayChar *)0xFFFFFFFF800B8000;
     private __gshared int m_iterator;
 
@@ -51,6 +64,30 @@ abstract final class Logger {
         foreach (i; 0 .. 2000)
             m_display[i].Address = 0;
     }
+
+
+    void opCall(string file = __FILE__, string func = __PRETTY_FUNCTION__, int line = __LINE__, Args...)(Args args) {
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     static void Write(string format, ...) {
         char[1024] buffer;

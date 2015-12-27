@@ -69,6 +69,7 @@ abstract final class PhysicalMemory {
 
     static void Initialize() {
         m_frames = new BitArray(0x10_000, false); //Hack: treba zvetsit paging tabulky v Boot.s lebo sa kernel potom nevie premapovat pre nedostatok pamete :/
+        //nastravit vsetky bity, ktore niesu v region infe ako available na true
 
         VirtualMemory.KernelPaging = new Paging();        
         for (v_addr i = 0xFFFFFFFF_80000000; i < 0xFFFFFFFF_8A000000; i += Paging.PAGE_SIZE)

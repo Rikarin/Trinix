@@ -14,4 +14,6 @@
 *.img
 
 /Externals/Output
+/Externals/CrossCompiler/binutils-*
+/Externals/CrossCompiler/build-*
 /KernelLand/Kernel/obj-*

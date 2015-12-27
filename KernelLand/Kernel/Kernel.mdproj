@@ -27,7 +27,6 @@
     <None Include="Architectures\x86_64\Core\SystemSegmentType.d" />
     <None Include="Architectures\x86_64\Core\TSS.d" />
     <None Include="Architectures\x86_64\Core\package.d" />
-    <None Include="Core\Logger.d" />
     <None Include="Core\Main.d" />
     <None Include="Core\Multiboot.d" />
     <None Include="Core\PIT.d" />
@@ -99,5 +98,6 @@
     <None Include="TaskManager\EventWaitHandle.d" />
     <None Include="TaskManager\ReaderWriterLock.d" />
     <None Include="TaskManager\SharedMemory.d" />
+    <None Include="Core\Log.d" />
   </ItemGroup>
 </Project>
