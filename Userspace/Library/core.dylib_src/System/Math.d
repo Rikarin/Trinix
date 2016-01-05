@@ -21,11 +21,40 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module System.AppKit.StackView;
+module System.Math;
 
-import System.AppKit;
+import std.math;
 
+class Math {
+    static T Max(T)(T a, T b) {
+        return a > b ? a : b;
+    }
 
-class StackView : View {
-    
+    static T Min(T)(T a, T b) {
+        return a < b ? a : b;
+    }
+
+    static double Sqrt(double num) {
+        return sqrt(num);
+    }
+
+    static T Abs(T)(T num) {
+        return num < 0 ? -num : num;
+    }
+
+    static T Sgn(T)(T num) {
+        return (num < 0 ? -1 : (num > 0 ? 1 : 0));
+    }
+
+ /*   static T Sin(T)(T num) {
+        return sin(num);
+    }
+
+    static T ACos(T)(T num) {
+        return acos(num);
+    }*/
+
+    static T Floor(T)(T num) {
+        return floor(num);
+    }
 }

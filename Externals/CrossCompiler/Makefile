@@ -11,7 +11,7 @@ PREFIX   := $(SYS_DIR)/Externals/Output
 PARLEVEL := 4
 #TRIPLET := x86_64-unknown-linux
 
-BINUTILS   := binutils-2.25
+BINUTILS   := binutils-2.24
 
 BINUTILS_BDIR := build-$(TRIPLET)
 
@@ -57,5 +57,5 @@ $(BINUTILS_BDIR)/Makefile: $(BINUTILS) $(addprefix $(BINUTILS)/,$(BINUTILS_CHANG
 
 # Make
 $(PREFIX)/bin/$(TRIPLET)-ld: $(BINUTILS_BDIR)/Makefile
-	@make -C $(BINUTILS_BDIR) all -j $(PARLEVEL)
+	@make CFLAGS=-Wno-error  -C $(BINUTILS_BDIR) all -j $(PARLEVEL)
 	@make -C $(BINUTILS_BDIR) install

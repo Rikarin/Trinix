@@ -34,7 +34,7 @@ struct KeyValuePair(TKey, TValue) {
     }
 
     @property {
-        TKey Key()     { return m_key;   }
-        TValue Value() { return m_value; }
+        inout(TKey) Key()     inout { return m_key; }
+        inout(TValue) Value() inout { return m_value; }
     }
 }

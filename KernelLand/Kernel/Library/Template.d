@@ -28,6 +28,6 @@ enum isShort(T) = is(T == short) || is(T == ushort);
 enum isInt(T)   = is(T == int)   || is(T == uint);
 enum isLong(T)  = is(T == long)  || is(T == ulong);
 
-enum isAggregateType(T) = is(T == struct) || is(T == class) || is(T == union) || is(T == interface);
-enum isNumeric(T)       = !isAggregateType!(T) && (isByte!(T) || isShort!(T) || isInt!(T) || isLong!(T)); //TODO
+enum IsAggregate(T) = is(T == struct) || is(T == class) || is(T == union) || is(T == interface);
+enum isNumeric(T)       = !IsAggregate!(T) && (isByte!(T) || isShort!(T) || isInt!(T) || isLong!(T)); //TODO
 //TODO isnumeric

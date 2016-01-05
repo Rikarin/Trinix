@@ -16,3 +16,6 @@ public import System.Collections.KeyValuePair;
 
 /* Classes    */
 public import System.Collections.List;
+public import System.Collections.Stack;
+public import System.Collections.Queue;
+public import System.Collections.Dictionary;

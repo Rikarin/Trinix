@@ -28,15 +28,15 @@ import System.Collections;
 
 interface IDictionary(TKey, TValue) : ICollection!(KeyValuePair!(TKey, TValue)), IEnumerable!(KeyValuePair!(TKey, TValue)) {
     TValue opIndex(TKey index);
-    void opIndexAssign(TValue value, TKey index);
+    void opIndexAssign(TValue value, TKey index, ...);
 
     @property {
-        ICollection!TKey Keys();
-        ICollection!TValue Values();
+        TKey[] Keys();
+        TValue[] Values();
     }
 
     void Add(TKey key, TValue value);
     bool Remove(TKey key);
-    bool Contains(TKey key);
+    bool Contains(TKey key) const;
     bool TryGetValue(TKey key, out TValue value);
 }

@@ -23,23 +23,23 @@
 
 module System.Template.TypeList;
 
+import System.Template;
+
 
 /* Cent is enabled */
 static if (is(ucent)) {
-    alias CentTypeList         = TypeTuple!(cent, ucent);
     alias SignedCentTypeList   = TypeTuple!(cent);
     alias UnsignedCentTypeList = TypeTuple!(ucent);
 } else {
-    alias CentTypeList         = TypeTuple!();
     alias SignedCentTypeList   = TypeTuple!();
     alias UnsignedCentTypeList = TypeTuple!();
 }
 
-alias IntegralTypeList      = TypeTuple!(byte,   ubyte,    short, ushort, int, uint, long, ulong, CentTypeList);
-alias SignedIntTypeList     = TypeTuple!(byte,   short,    int,   long,   SignedCentTypeList);
-alias UnsignedIntTypeList   = TypeTuple!(ubyte,  ushort,   uint,  ulong,  UnsignedCentTypeList);
+alias SignedIntTypeList     = TypeTuple!(byte,   short,    int,   long,  SignedCentTypeList);
+alias UnsignedIntTypeList   = TypeTuple!(ubyte,  ushort,   uint,  ulong, UnsignedCentTypeList);
 alias FloatingPointTypeList = TypeTuple!(float,  double,   real);
 alias ImaginaryTypeList     = TypeTuple!(ifloat, idouble,  ireal);
 alias ComplexTypeList       = TypeTuple!(cfloat, cdouble,  creal);
-alias NumericTypeList       = TypeTuple!(IntegralTypeList, FloatingPointTypeList);
 alias CharTypeList          = TypeTuple!(char,   wchar,    dchar);
+alias IntegralTypeList      = TypeTuple!(SignedIntTypeList, UnsignedIntTypeList);
+alias NumericTypeList       = TypeTuple!(IntegralTypeList,  FloatingPointTypeList);

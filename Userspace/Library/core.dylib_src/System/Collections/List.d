@@ -23,41 +23,73 @@
 
 module System.Collections.List;
 
+import System;
+import System.Collections;
+import core.vararg;
 
-class List(T) {
+
+class List(T) : IList!T {
     private T[] m_array;
     private long m_count;
+
+    @property {
+        long Count()      const { return m_count;        }
+        long Capacity()   const { return m_array.length; }
+        bool IsReadOnly() const { return true;           }
+    }
+
+    T opIndex(long index) {
+        return m_array[index];
+    }
+
+    T[] opSlice(long start, long end) {
+        return m_array[start .. end];
+    }
+
+    long opDollar() {
+        return Count;
+    }
     
-    @property long Capacity()       { return m_array.length;  } 
-    @property long Count()          { return m_count;         }
-    long opDollar()                 { return m_count;         }
-    ref T opIndex(long index)       { return m_array[index];  }
-    T[] opSlice(long i, long j)     { return m_array[i .. j]; }
-    
-    int opApply(int delegate(ref T) dg) {
+    void opIndexAssign(T value, long index, ...) {
+        m_array[index] = value; //TODO varargs
+    }
+
+    void opSliceAssign(T value, long start, long end) {
+        m_array[start .. end] = value;
+    }
+
+    int opApply(ForeachDelegate dg) {
+        return opApply((ulong, ref T x) => dg(x));
+    }
+
+    int opApply(LongForeachDelegate dg) {
         int result;
         
-        foreach (i; 0 .. m_count) {
-            result = dg(m_array[i]);
+        for (ulong i = 0; i < Count; i++) {
+            result = dg(i, m_array[i]);
             if (result)
                 break;
         }
         
         return result;
     }
-    
-    int opApplyReverse(int delegate(ref T) dg) {
+
+    int opApplyReverse(ForeachDelegate dg) {
+        return opApplyReverse((ulong, ref T x) => dg(x));
+    }
+
+    int opApplyReverse(LongForeachDelegate dg) {
         int result;
         
-        for (long i = m_count; i >= 0; i--) {
-            result = dg(m_array[i]);
+        for (long i = Count - 1; i >= 0; i--) {
+            result = dg(i, m_array[i]);
             if (result)
                 break;
         }
         
         return result;
     }
-    
+
     this(long capacity = 4) in {
         assert(capacity > 0);
     } body {
@@ -65,15 +97,15 @@ class List(T) {
     }
     
     ~this() {
-        //foreach (x; m_array)
+        //foreach (x; m_array) TODO
             //delete x;
 
-        delete m_array;
+        //delete m_array;
     }
-    
+        
     void Add(T item) {
         if (Count == Capacity)
-            Resize();
+            Expand();
         
         m_array[m_count++] = item;
     }
@@ -84,23 +116,31 @@ class List(T) {
     } body {
         long tmp = other.m_array.length + Capacity;
         while (Capacity < tmp)
-            Resize();
+            Expand();
         
         m_array[m_count .. (m_count + other.m_count)] = other.m_array[0 .. $];
         m_count += other.m_count;
     }
     
     void Clear() {
+        //foreach (x; m_array) TODO
+            //delete x;
+
         m_array[] = null;
         m_count   = 0;
     }
     
-    bool Contains(T item) {
+    bool Contains(T item) const {
         for (long i = 0; i < m_count; i++)
             if (m_array[i] == item)
                 return true;
         
         return false;
+    }
+
+    void CopyTo(T[] array, long index) {
+        auto min = Math.Min(index + array.length, m_count);
+        array[0 .. min - index] = m_array[index .. min];
     }
     
     bool Remove(T item) {
@@ -116,7 +156,7 @@ class List(T) {
         if (index < 0 || index > m_count)
             assert(false);
     } body {        
-        m_array[index .. $] = m_array[index + 1 .. $];
+        m_array[index .. m_count - 1] = m_array[index + 1 .. m_count];
         m_count--;
     }
     
@@ -161,11 +201,22 @@ class List(T) {
         return -1;
     }
 
-    T[] ToArray() {
-        return null; //TODO
+    void Insert(long index, T item) {
+        if (Count == Capacity)
+            Expand();
+
+        m_array[index + 1 .. m_count] = m_array[index .. m_count];
+        m_array[index] = item;
     }
-    
-    private void Resize() {
+
+    T[] ToArray() {
+        auto ret = new T[Count];
+        ret[]    = m_array;
+
+        return ret;
+    }
+
+    private void Expand() {
         T[] newArray = new T[Capacity * 2];
         newArray[0 .. m_array.length] = m_array[0 .. $];
         
@@ -173,3 +224,5 @@ class List(T) {
         m_array = newArray;
     }
 }
+
+synchronized class SafeList(T) : List!T { }

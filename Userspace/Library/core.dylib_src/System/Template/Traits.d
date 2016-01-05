@@ -25,7 +25,7 @@ module System.Template.Traits;
 
 
 /* Modify qualifiers */
-template MutableOf(T)          { alias MutableOf          = (T);                     }
+template MutableOf(T)          { alias MutableOf          = T;                     }
 template InoutOf(T)            { alias InoutOf            = inout(T);                }
 template ConstOf(T)            { alias ConstOf            = const(T);                }
 template InoutConstOf(T)       { alias InoutConstOf       = inout(const(T));         }
@@ -86,6 +86,33 @@ package template ModifyTypePreservingTQ(alias Modifier, T) {
     else                                             alias ModifyTypePreservingTQ =                    Modifier!T;
 }
 
-
-
 //ReturnType
+
+alias PointerTarget(T : T*) = T;
+
+
+template StaticIndexOf(T, Args...) {
+    enum StaticIndexOf = GenericIndexOf!(T, Args).index;
+}
+
+template StaticIndexOf(T, Args...) {
+    enum StaticIndexOf = GenericIndexOf!(T, Args).index;
+}
+
+private template GenericIndexOf(Args...) if (args.length >= 1) {
+    alias e     = Alias!(Args[0]);
+    alias tuple = Args[1 .. $];
+    
+    static if (tuple.length) {
+        alias head = Alias!(tuple[0]);
+        alias tail = tuple[1 .. $];
+        
+        static if (IsSame!(e, head))
+            enum index = 0;
+        else {
+            enum next  = GenericIndexOf!(e, tail).index;
+            enum index = (next == -1) ? -1 : 1 + next;
+        }
+    } else
+        enum index = -1;
+}

@@ -1,4 +1,4 @@
-﻿    /**
+﻿/**
  * Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
  * 
  * This file is part of Trinix Operating System and is released under Trinix 
@@ -21,7 +21,7 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  */
 
-module Core.Logas;
+module Core.Log;
 
 import Architecture;
 import ObjectManager;
@@ -42,8 +42,12 @@ enum LogLevel {
 
 
 abstract final class Log {
-    private __gshared DisplayChar* m_display = cast(DisplayChar *)0xFFFFFFFF800B8000;
-    private __gshared int m_iterator;
+    private enum Width  = 80;
+    private enum Height = 24;
+
+    private __gshared DisplayChar[] m_display = (cast(DisplayChar *)0xFFFFFFFF800B8000)[0 .. Width * Height];
+    private __gshared int m_x;
+    private __gshared int m_y;
 
     private union DisplayChar {
         struct {
@@ -63,210 +67,290 @@ abstract final class Log {
         /* Clear screen */
         foreach (i; 0 .. 2000)
             m_display[i].Address = 0;
+
+        Serial1 = new Serial(Serial.COM1);
     }
 
+    static void opCall(string file = __FILE__, string func = __PRETTY_FUNCTION__, int line = __LINE__, Args...)(LogLevel level, Args args) if (args.length >= 1) {
+        if (level < LogLevel.Alert)
+            Print("%s @%s(%d): ", file, func, line);
 
-    void opCall(string file = __FILE__, string func = __PRETTY_FUNCTION__, int line = __LINE__, Args...)(Args args) {
-
+        Print(args);
     }
 
+    static void Print(Args...)(Args args) if (args.length >= 1) {
+        alias S = Unqualify!(typeof(args[0]));
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    static void Write(string format, ...) {
-        char[1024] buffer;
-        
-        long len = ParseString(buffer, format, _arguments, _argptr);
-        Put(buffer[0 .. len]);
-    }
-
-    static void WriteLine(string format, ...) {
-        char[1024] buffer;
-        long len = ParseString(buffer, format, _arguments, _argptr);
-        Put(buffer[0 .. len]);
-        Put(cast(char[])"\n");
-    }
-
-    private static void PrintDecimal(ulong value, int width, char[] buffer, ref int ptr) {
-        uint nWidth = 1;
-        ulong i = 9;
-
-        while (value > i && i < ~0UL) {
-            nWidth++;
-            i *= 10;
-            i += 9;
-        }
-
-        while (width-- > nWidth)
-            buffer[ptr++] = '0';
-
-        i = nWidth;
-        while (i-- > 0) {
-            buffer[ptr + i] = (value % 10) + '0';
-            value /= 10;
-        }
-
-        ptr += nWidth;
-    }
-
-    private static void PrintHex(ulong value, int width, char[] buffer, ref int ptr) {
-        uint nWidth = 1;
-        ulong i = 0x0F;
-        
-        while (value > i && i < ~0UL) {
-            nWidth++;
-            i *= 0x10;
-            i += 0x0F;
-        }
-
-        buffer[ptr++] = '0';
-        buffer[ptr++] = 'x';
-
-        while (width-- > nWidth)
-            buffer[ptr++] = '0';
-        
-        i = nWidth;
-        while (i-- > 0) {
-            buffer[ptr + i] = "0123456789ABCDEF"[value % 16];
-            value /= 16;
-        }
-        
-        ptr += nWidth;
-    }
-
-    static long ParseString(char[] buffer, string format, TypeInfo[] _arguments, va_list _argptr) {
-        int ptr, a;
-
-        for (int i = 0, j = 0; i < format.length; i++) {
-            if (format[i] != '%') {
-                buffer[ptr++] = format[i];
-                continue;
+        static if (IsAggregate!S) { 
+            foreach(i, x; args[0].tupleof) {
+                Print("%s = %\n", Args.tupleof[i].stringof, x);
             }
-            i++;
+        } else static if (IsIterable!S) {
+            Print(args[0][0]);
 
-            uint argWidth = 0;
-            while (format[i] >= '0' && format[i] <= '9') {
-                argWidth *= 10;
-                argWidth += format[i]  - '0';
+            foreach (x; args[1 .. $]) {
+                Print(", ");
+                Print(x);
+            }
+        } else {
+            string format = args[0];
+            for (int i = 0, j = 1; i < format.length && j < args.length; i++) {
+                if (format[i] != '%') {
+                    Put(format[i]);
+                    continue;
+                }
                 i++;
-            }
 
-            switch (format[i]) {
-                case '%':
-                    buffer[ptr++] = '%';
-                    break;
+                /* %[flags][width][.precision]specifier */
+                bool flagLeftJustify;
+                bool flagPreceedPlus;
+                bool flagPrefix;
+                bool flagLeftJustifyZero;
+                int width;
+                int precision;
 
-                case 'c':
-                    if (_arguments[j] == typeid(char)) {
-                        auto s = va_arg!char(_argptr);
-                        j++;
-
-                        buffer[ptr++] = s;
+                /* Flags */
+                do {
+                    switch (format[i++]) {
+                        case '-': flagLeftJustify     = true; continue;
+                        case '+': flagPreceedPlus     = true; continue;
+                        case '#': flagPrefix          = true; continue;
+                        case '0': flagLeftJustifyZero = true; continue;
+                        default: i--;
                     }
-                    break;
+                } while (false);
 
-                case 's':
-                    if (_arguments[j] == typeid(string)) {
-                        auto s = va_arg!string(_argptr);
-                        j++;
+                /* Width */
+                while (format[i] >= '0' && format[i] <= '9') {
+                    width *= 10;
+                    width += format[i++]  - '0';
+                }
 
-                        if (s == null)
-                          s = "(null)";
+                /* Precision */
+                if (format[i] == '.') {
+                    i++;
+                    while (format[i] >= '0' && format[i] <= '9') {
+                        precision *= 10;
+                        precision += format[i++]  - '0';
+                    }
+                }
+                
+                /* Specifier */
+                alias T   = Unqualify!(typeof(args[j]));
+                char type = format[i];
+
+            sec:
+                switch (type) {
+                    case '%':
+                        Put("%");
+                        continue;
                         
-                           foreach (x; s)
-                              buffer[ptr++] = x;
-                    }
-                    break;
+                    case 'c':
+                        static if (IsSomeChar!T)
+                            Put((cast(char *)&args[j])[0 .. 1]);
+                        else
+                            static assert(0, T.stringof ~ " cannot be represented as %c");
+                        break;
+                        
+                    case 's':
+                        static if (IsSomeString!T)
+                            Put(args[j] is null ? "(null)" : args[i]);
+                        else
+                            static assert(0, T.stringof ~ " cannot be represented as %c");
+                        break;
 
-                case 'd':
-                    if (_arguments[j] == typeid(byte)  || _arguments[j] == typeid(ubyte)  || //TODO implement isNumeric from phobos
-                        _arguments[j] == typeid(short) || _arguments[j] == typeid(ushort) ||
-                        _arguments[j] == typeid(int)   || _arguments[j] == typeid(uint)   ||
-                        _arguments[j] == typeid(long)  || _arguments[j] == typeid(ulong)) {
-                        auto s = va_arg!long(_argptr);
-                        j++;
+                    case 'd':
+                    case 'u':
+                    case 'o':
+                    case 'x':
+                    case 'X':
+                        static if (IsNumeric!T) {
+                            int base;
 
-                        PrintDecimal(s, argWidth, buffer, ptr);
-                    }
-                    break;
+                            switch (type) {
+                                case 'd': base = 10; break;
+                                case 'u': base = 10; break;
+                                case 'o': base =  8; break;
+                                case 'x': base = 16; break;
+                                case 'X': base = 16; break;
+                                default:  base = 10;
+                            }
 
-                case 'x':
-                    if (_arguments[j] == typeid(byte)  || _arguments[j] == typeid(ubyte)  || //TODO implement isNumeric from phobos
-                        _arguments[j] == typeid(short) || _arguments[j] == typeid(ushort) ||
-                        _arguments[j] == typeid(int)   || _arguments[j] == typeid(uint)   ||
-                        _arguments[j] == typeid(long)  || _arguments[j] == typeid(ulong)) {
-                        auto s = va_arg!long(_argptr);
-                        j++;
+                            char[32] buffer;
+                            int len = args[j].ToCharArray(buffer, base);
 
-                        PrintHex(s, argWidth, buffer, ptr);
-                    }
-                    break;
+                            if (flagPreceedPlus && buffer[0] != '-')
+                                Put("+");
 
-                default:
+                            if (flagPrefix) {
+                                if (type == 'x' || type == 'X')
+                                    Put("0x");
+                                else if (type == 'o')
+                                    Put("0");
+                            }
+
+                            if (flagLeftJustify)
+                                Put(buffer[0 .. len]);
+
+                            foreach (x; 0 .. width - len)
+                                Put(flagLeftJustifyZero ? "0" : " ");
+
+                            
+                            if (!flagLeftJustify)
+                                Put(buffer[0 .. len]);
+                        } else
+                            static assert(0, T.stringof ~ " cannot be represented as %c");
+                        break;
+                        
+                    case 'f':
+                    case 'F':
+
+                        break;
+
+                    default:
+                             static if (IsSigned!T)     type = 'd';
+                        else static if (IsUnsigned!T)   type = 'u';
+                        else static if (IsSomeChar!T)   type = 'c';
+                        else static if (ISSomeString!T) type = 's';
+                        else static assert(0, T.stringof ~ " is unsupported type");
+                        goto sec;
+                }
+                j++;
             }
         }
-
-        return ptr;
     }
 
-    //TODO
+    alias Emergency(string file = __FILE__, string func = __PRETTY_FUNCTION__, int line = __LINE__, Args...)(Args args) = opCall!(file, func, line)(LogLevel.Emergency, args);
+    alias Critical (string file = __FILE__, string func = __PRETTY_FUNCTION__, int line = __LINE__, Args...)(Args args) = opCall!(file, func, line)(LogLevel.Critical,  args);
+    alias Error    (string file = __FILE__, string func = __PRETTY_FUNCTION__, int line = __LINE__, Args...)(Args args) = opCall!(file, func, line)(LogLevel.Error,     args);
+    alias Alert    (string file = __FILE__, string func = __PRETTY_FUNCTION__, int line = __LINE__, Args...)(Args args) = opCall!(file, func, line)(LogLevel.Alert,     args);
+    alias Warning  (string file = __FILE__, string func = __PRETTY_FUNCTION__, int line = __LINE__, Args...)(Args args) = opCall!(file, func, line)(LogLevel.Warning,   args);
+    alias Notice   (string file = __FILE__, string func = __PRETTY_FUNCTION__, int line = __LINE__, Args...)(Args args) = opCall!(file, func, line)(LogLevel.Notice,    args);
+    alias Info     (string file = __FILE__, string func = __PRETTY_FUNCTION__, int line = __LINE__, Args...)(Args args) = opCall!(file, func, line)(LogLevel.Info,      args);
+    alias Debug    (string file = __FILE__, string func = __PRETTY_FUNCTION__, int line = __LINE__, Args...)(Args args) = opCall!(file, func, line)(LogLevel.Debug,     args);
+
+    private static int ToCharArray(T)(T num, char[] buffer, int base = 10) if (IsNumber!T) in {
+        assert(base > 1 && base < 16);
+    } body {
+        Unqualify!T value = num;
+        bool sign;
+        auto pos = buffer.length;
+
+        if (value < 0) {
+            sign = true;
+            value = -value;
+        }
+
+        do {
+            buffer[--pos] = "0123456789ABCDEF"[value % base];
+            value /= base;
+        } while (value);
+
+        if (sign)
+            buffer[--pos] = '-';
+
+        buffer[0 .. $ - pos] = buffer[pos .. $];
+        return buffer.length - pos;
+    }
+
     private static void NewLine() {
-        Scroll();
-        m_iterator += 80 - (m_iterator % 80);
-    }
+        m_y++;
+        m_x = 0;
 
-    private static void Put(char[] str) {
         Scroll();
-        Print(str, 0, m_iterator);
-        m_iterator += str.length;
     }
     
     private static void Scroll() {
-        if (m_iterator > 80 * 25) {
-			for (int i = 0; i < m_iterator - 80; i++)
-				m_display[i] = m_display[i + 80];
-			
-            m_display[m_iterator - 80 .. m_iterator] = cast(DisplayChar)0;
-            m_iterator -= 80;
+        if (m_y == Height || (m_y == Height - 1 && m_x == Width)) { /* If we are on end of terminal */
+            for (int i = 0; i < (m_y - 1) * Width; i++) /* Shift (Height - 1) * Width backwards */
+                m_display[i] = m_display[i + 80];
+            
+            m_display[(m_y - 1) * Width .. $].Address = 0;
+            m_y--;
         }
     }
     
-    private static void Print(char[] str, uint line, uint offset = 0, byte color = 0x7) {
-        foreach (i; 0 .. str.length) {
-            if (str[i] == '\n') {
+    private void Put(char[] str, byte color = 0x7) {
+        Serial1.Write(str);
+
+        foreach (x; str) {
+            if (x == '\n')
                 NewLine();
-                continue;
-            } else if (str[i] == '\t') {
-                int n = (offset + i) % 4;
+            else if (x == '\t') {
+                int n = (m_y + i) % 4;
 
                 foreach (j; 0 .. n) {
-                    m_display[line * 80 + offset + i].Char = str[i];
-                    m_display[line * 80 + offset + i].Color = color;
-                    offset++;
-                    continue;
+                    m_display[m_y * Width + m_x  ].Char  = ' ';
+                    m_display[m_y * Width + m_x++].Color = color;
+                    Scroll();
                 }
+            } else {
+                m_display[m_y * Width + m_x  ].Char  = x;
+                m_display[m_y * Width + m_x++].Color = color;
+                Scroll();
+            }
+        }
+    }
+
+
+
+
+
+
+
+    private __gshared Serial Serial1;
+
+    // TODO: reimplerment this as a common /dev driver later
+    private class Serial {
+        private int m_port;
+
+        enum {
+            COM1 = 0x3F8,
+            COM2 = 0x2F8,
+            COM3 = 0x3E8,
+            COM4 = 0x2E8
+        }
+
+        @property {
+            void BaudRate(int rate) {
+                //TODO: implement this later
+            }
+        }
+
+        this(short port) {
+            m_port = port;
+
+            Port.Write(port + 1, 0x00);
+            Port.Write(port + 3, 0x80);
+            Port.Write(port + 0, 0x03);
+            Port.Write(port + 1, 0x00);
+            Port.Write(port + 3, 0x03);
+            Port.Write(port + 2, 0xC7);
+            Port.Write(port + 4, 0x0B);
+        }
+
+        bool Received() {
+            return (Port.Read(m_port + 5) % 0x01) != 0;
+        }
+
+        bool IsTransmitEmpty() {
+            return (Port.Read(m_port + 5) % 0x20) != 0;
+        }
+
+        void Write(byte[] data) {
+            while (!IsTransmitEmpty) { } /* Wait for transmit is empty */
+            foreach (x; data)
+                Port.Write(port, x);
+        }
+
+        int Read(byte[] data) {
+            int len;
+
+            while (len < data.length && Received()) {
+                data[len++] = Port.Read(port);
             }
 
-            m_display[line * 80 + offset + i].Char = str[i];
-            m_display[line * 80 + offset + i].Color = color;
+            return len;
         }
     }
 }
-
-alias Log = Logger.WriteLine;

@@ -99,5 +99,6 @@
     <None Include="TaskManager\ReaderWriterLock.d" />
     <None Include="TaskManager\SharedMemory.d" />
     <None Include="Core\Log.d" />
+    <None Include="MemoryManager\IPaging.d" />
   </ItemGroup>
 </Project>

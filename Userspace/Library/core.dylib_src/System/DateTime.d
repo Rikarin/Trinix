@@ -34,11 +34,19 @@ enum DateTimeKind {
 
 
 struct DateTime {
-    static immutable DateTime MinValue = DateTime();
-    static immutable DateTime MaxValue = DateTime();
+    static immutable DateTime MinValue = DateTime(0);
+    static immutable DateTime MaxValue = DateTime(~1UL);
+    private long m_timestmap;
+
 
     @property {
-        static DateTime Now() { return DateTime(); } //TODO
+        static DateTime Now() { return DateTime(42); } //TODO
+    }
+
+    @disable this();
+
+    this(long timestamp) {
+        m_timestmap = timestamp;
     }
 
     DateTime Add(TimeSpan value) {

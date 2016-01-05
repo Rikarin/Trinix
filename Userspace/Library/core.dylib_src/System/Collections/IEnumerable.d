@@ -25,6 +25,11 @@ module System.Collections.IEnumerable;
 
 
 interface IEnumerable(T) {
-    int opApply(int delegate(ref T) dg);
-    int opApplyReverse(int delegate(ref T) dg);
+    alias scope int delegate(ref T)        ForeachDelegate;
+    alias scope int delegate(ulong, ref T) LongForeachDelegate;
+
+    int opApply(ForeachDelegate dg);
+    int opApply(LongForeachDelegate dg);
+    int opApplyReverse(ForeachDelegate dg);
+    int opApplyReverse(LongForeachDelegate dg);
 }
