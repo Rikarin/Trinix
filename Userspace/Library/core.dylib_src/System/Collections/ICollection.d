@@ -28,13 +28,13 @@ import System.Collections;
 
 interface ICollection(T) : IEnumerable!T {
     @property {
-        long Count();
-        bool IsReadOnly();
+        long Count() const;
+        bool IsReadOnly() const;
     }
 
     void Add(T item);
     bool Remove(T item);
     void Clear();
-    bool Contains(T item);
-    void CopyTo(T[] array);
+    bool Contains(T item) const;
+    void CopyTo(T[] array, long index);
 }

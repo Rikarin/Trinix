@@ -28,7 +28,7 @@ import System.Collections;
 
 interface IList(T) : ICollection!T {
     T opIndex(long index);
-    T opSlice(long start, long end);
+    T[] opSlice(long start, long end);
     long opDollar();
 
     void opIndexAssign(T value, long index, ...);

@@ -12,21 +12,23 @@ public import System.IComparable;
 public import System.IAsyncResult;
 
 /* Structs    */
+public import System.Event;
 public import System.TimeSpan;
 public import System.DateTime;
 
 /* Classes    */
-public import System.Event;
+public import System.Math;
+public import System.String;
 public import System.Convert;
 public import System.Version;
 public import System.EventArgs;
 public import System.Environment;
 public import System.AsyncCallback;
 public import System.StringBuilder;
+public import System.StringBuilder;
 public import System.OperatingSystem;
+public import System.ResourceManager;
 
-
-//TODO: test Event
 
 class SystemException : Exception {
     this() {
@@ -65,40 +67,14 @@ class Globalization {}
  *      o Exceptions
  *      o Thread, Process, ProcessStartInfo, Timer
  *      o DateTime, String
- *      o List(ToArray), LinkedList, Dictionary, Queue, Stack, BitArray
+ *      o LinkedList, BitArray
  *      o File, Directory, DirectoryInfo, FileInfo
+ *      o MouseDevice
  *
  * Dalsia Verzia:
  *      o HashSet, SortedDictionary, SortedSet
  *      o IConvertible, ISerializable, ISet
  * */
- 
 
 
-/* Partial classes
-
-//In file Test.part.d
-mixin template PartialTest() {
-    void InitializeComponents() {
-        new View();
-        new Button();
-    }
-}
-
-//In file Test.d
-import Application1.PartialTest;
-
-class Test {
-    mixin PartialTest;
-}
-*/
-
-
-
-version (unittest) {
-    int main() {
-        import core.stdc.stdio;
-        printf("test");
-        return 42;
-    }
-}
+enum SDL = "SDL";

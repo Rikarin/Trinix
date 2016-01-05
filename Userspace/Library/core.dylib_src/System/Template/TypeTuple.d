@@ -41,10 +41,5 @@ template Alias(Args...) {
     alias Alias = Args;
 }
 
-unittest {
-    auto TL = TypeTuple!(int, double, int, string);
-
-    int Foo(TL params) {
-        return params[0] + params[2];
-    }
-}
+alias KeyType(V : V[K], K)   = K;
+alias ValueType(V : V[K], K) = V;

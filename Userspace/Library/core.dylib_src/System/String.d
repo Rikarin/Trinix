@@ -21,7 +21,7 @@
  *      Matsumoto Satoshi <satoshi@gshost.eu>
  * 
  * TODO:
- *      o Format, Parse
+ *      o Format, Parse, Replace
  */
 
 module System.String;
@@ -182,6 +182,13 @@ static:
         return cast(string)ret;
     }
 
+ /*   string Replace(string str, string find, string replace) {
+        import std.string;
+        return str.replace(find, replace);
+    }*/
+
+
+
     private List!string InternalSplit(string str, string delimiter) {
         auto ret = new List!string();
 
@@ -198,6 +205,26 @@ static:
 
         return ret;
     }
+
+    immutable(char)* ToStringC(string str) @trusted pure nothrow {
+        auto ret = new char[str.length + 1];
+        ret[0 .. str.length] = str;
+        ret[$ - 1] = '\0';
+
+        return ret.ptr;
+    }
+
+    inout(char)[] FromStringC(inout(char)* str) @trusted @nogc pure nothrow {
+        return str[0 .. str.Length];
+    }
+
+    long Length(const(char)* str) @trusted @nogc pure nothrow {
+        long ret;
+        while (*str++)
+            ret++;
+
+        return ret;
+    }
 }
 
 // For UTFS calls
@@ -211,9 +238,14 @@ alias IndexOfAny     = String.IndexOfAny;
 alias LastIndexOf    = String.LastIndexOf;
 alias LastIndexOfAny = String.LastIndexOfAny;
 
+alias ToStringC      = String.ToStringC;
+alias FromStringC    = String.FromStringC;
+alias Length         = String.Length;
+//alias Replace        = String.Replace;
+
 
 unittest {
-    auto param1 = "test|test2|test3".Split('|');
+  /*  auto param1 = "test|test2|test3".Split('|');
     auto param2 = String.Split("test|test2|test3", '|');
 
     auto param3 = "Format {0} of {1} by {2}".Format(42, "abc", 'c');
@@ -222,5 +254,5 @@ unittest {
     string[5] test;
     string param5 = test.Join("x");
 
-    string param6 = "test".Insert(3, "lalal");
+    string param6 = "test".Insert(3, "lalal");*/
 }

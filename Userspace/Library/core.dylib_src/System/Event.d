@@ -24,10 +24,11 @@
 module System.Event;
 
 import System;
+//private static import System.AppKit.RoutedEventArgs;
 import System.Collections;
 
 
-class Event(T) {
+struct Event(T) {
     alias void delegate(T value) EventCallHandler;
 
     private List!T m_list;
@@ -39,21 +40,28 @@ class Event(T) {
         void Remove(EventCallHandler value) { m_removeHandler = value; }
     }
 
-    this() {
-        m_list = new List!T();
-    }
-
     ~this() {
         delete m_list;
     }
 
-    void opCall(Object sender, EventArgs e) {
+    void opCall(Object sender, EventArgs args) {
+        if (m_list is null)
+            return;
+
+        //auto rArgs = cast(RoutedEventArgs)args;
         foreach (x; m_list) {
-            x(sender, e);
+          //  if (rArgs !is null && rArgs.Handled)
+            //    break;
+
+            if ((cast(EventHandler)x) !is null)
+                (cast(EventHandler)x)(sender, args);
         }
     }
 
     void opOpAssign(string TOp)(T event) if (TOp == "+") {
+        if (m_list is null)
+            m_list = new List!T;
+
         if (m_addHandler !is null)
             m_addHandler(event);
         else
@@ -61,12 +69,14 @@ class Event(T) {
     }
 
     void opOpAssign(string TOp)(T event) if (TOp == "-") {
+        if (m_list is null)
+            return;
+
         if (m_removeHandler !is null)
             m_removeHandler(event);
         else
             RemoveHandler(event);
     }
-
 
     private void AddHandler(T value) {
         if (!m_list.Contains(value))
@@ -80,7 +90,7 @@ class Event(T) {
 
 unittest { //TODO: test it
     class test {
-        Event!EventHandler event = new Event!EventHandler();
+        Event!EventHandler event;
 
         this() {
             event += &test_OnEvent;
