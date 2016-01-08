@@ -1,31 +1,30 @@
-[![Build Status](https://travis-ci.org/Bloodmanovski/Trinix.svg)](https://travis-ci.org/Bloodmanovski/Trinix)
-[![Coverage Status](https://coveralls.io/repos/Bloodmanovski/Trinix/badge.svg?branch=master&service=github)](https://coveralls.io/github/Bloodmanovski/Trinix?branch=master)
-[![Licence](https://img.shields.io/badge/Licence-TPSL-blue.svg)](https://github.com/Bloodmanovski/Trinix/blob/master/LICENCE)
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Bloodmanovski/Trinix?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+# Trinix operating system
 
-[![Donate](https://img.shields.io/badge/Bitcoin-Donate-blue.svg)](https://www.coinbase.com/checkouts/ac2ed28efccef2466352283006ef450c)
-[![Pull Request](http://githubbadges.herokuapp.com/Bloodmanovski/Trinix/pulls)](https://github.com/Bloodmanovski/Trinix/issues)
-[![Issues](http://githubbadges.herokuapp.com/Bloodmanovski/Trinix/issues)](https://github.com/Bloodmanovski/Trinix/pulls)
-[![IRC](https://img.shields.io/badge/IRC-%23Trinix-orange.svg)](irc://irc.freenode.net/Trinix)
+**Welcome to Trinix!**
 
-# Trinix #
-Trinix is a hobby operating system written from scratch. OS is written in D language.  
-Based on OOP standards and implementing modified POSIX standards for the best usage with D. Only x86_64 CPU is supported.  
-Development began one beautiful day in January 2012.  
-We are working on framework based on .NET naming conventions.
+Trinix is a true networking, modular operating system with microkernel architecture written in D language.
+Have own native libraries and framework based on .NET and phobos.
+The main IPC is sync message passing. OS implement POSIX standard library for linux compatibility.
+
+OS is still under development!!!
 
 
-# Community #
-You can join us. Just fork, innovate and pull request.
+## Documentation
 
-Wiki: http://trinix.wikia.com/  
-IRC: `#Trinix` on `Freenode`  
-E-Mail: `satoshi@gshost.eu`
-
-Please use our [Coding Conventions](https://github.com/Bloodmanovski/Trinix/CC.md).
+TODO
 
 
-# How to build #
+## Getting started
+
+TODO
+
+### System Requirements
+
+TODO
+
+### Building Trinix
+
+TODO
 
 variable | options | default |description
 -------- | ------- | ------- | -----------
@@ -35,22 +34,13 @@ BUILD_TYPE | debug, beta, rc, release | debug | Set the build type
 RC_VERION | [number] | 1 | Set the release candidate number
 
 
-# Features #
-* GRUB Multiboot 2 bootloader
-* x86_64 support
-* GDT, IDT, TSS tables
-* CPU cache info
-* PIC, PIT, RTC timer
-* PML4 Paging, Virtual/Physical Memory Manager, Heap
-* Static module loader
-* Resource/Syscall Manager
-* VFS Manager
-* IPC: Spinlock, Mutex, Semaphore, Signal, Event, Message, Reader Writer Lock, Shared Memory
-* Preemtive multitasking
-* Modules: Ext2, Keyboard, Mouse, PS2 Keyboard/Mouse, ATA
+## Contributing to Trinix
+
+Please use our [Coding Conventions](https://github.com/Bloodmanovski/Trinix/CC.md).
 
 
-# Licence #
+## Licence
+
 Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
 
 This file is part of Trinix Operating System and is released under Trinix
