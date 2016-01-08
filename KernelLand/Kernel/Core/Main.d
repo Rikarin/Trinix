@@ -22,13 +22,17 @@
  *
  * TODO:
  *      o Make binutils patch for version 2.25
- *      o Add LLVM build and pathcer to the Externals/CrossCompiler
  *      o parse command line
  *      o Dynamic module loader
  *      o ELF parser, binary loader
  *      o GUI compositor (daemon)
  *      o Compile Kappa framework and link it with Kernel (we needs support for SDL now)
  *      o Move things from Library to Kappa framework
+ *      o Rewrite modules as a deamons/services
+ *      o Implement Message passing (IPC), resource manager, dispatch, message manager, io manager
+ *      o make resource manager (procd) managing thread
+ * 
+ *      Node ID/Procces ID/Channel ID
  *
  *      o Whole concept of the kernel should be moved from monolitic syscalls to sync message passing
  *      o Rewrite MemoryManager/Heap.d, move it to the framework and replace heap from druntime, then we can use GC
@@ -38,24 +42,38 @@
  *      o Keyboard
  *      o Mouse
  *      o PCI
- *      o PipeDev
+ *      o Pipes
  *      o Serial/Parallel
- *      o VTY
+ *      o VTY/TTY
  *      o VGA driver (needs PCI)
+ *      o Sound Driver
+ *      o Network drivers
+ *      o EHCI UHCI XHCI - USB
  *
  * Kernel Parts:
  *      o Memory Manager
  *      o Task manager (IPC)
- *      o VFS - should be a daemon running in user space but "statically linked" with kernel ??
- *      o Network - Like VFS
+ * 
+ * Resource Managers:
+ *      o VFS
+ *      o Network - TCP stack, etc.
+ *      o procd
+ *      o device deamon
  *
  * IPC:
- *      x Shared Memory - should be avoided
+ *      o Shared Memory - deprecated, but usable
  *      o Mutex, Semaphore, RWLock (implement in userspace), SpinLock (userspace implementation)
  *      o Event - something like pthread_cond_lock ??
  *      o synchronous and asynchronous message passing, like in QNX
- *      o Maybe: sysenter/sysexit should be avoided. We can just make a kernel daemon for handling messages
+ *      o Maybe: sysenter/sysexit should be avoided. We will make procd for handling messages
  *               Better fault protection - just run watchdog as a new thread and look for freezing daemons, then restart it
+ * 
+ * Library classes:
+ *      o Message { this(int channelID); long Send(byte[] buffer); int Receive(byte[] buffer); void Reply(byte[] buffer); void Error(int errorCode); static Message Attach(int channelID); }
+ *      o ResourceManager
+ *      o IO Manager - Connect: open, rename | IO: write, read, seek
+ *      o Message Manager
+ *      o Dispatch
  */
 
 module Core.Main;
@@ -94,7 +112,8 @@ extern(C) void KernelMain() {
 
     /**
      * TOOD:
-     *      o Size(const void * ptr) - will return the size of allocateds memory in heap
+     *      - Size(const void * ptr) - will return the size of allocateds memory in heap
+     *      o Implement GC from druntime library
      *
      */
     Log("Virtual Memory");
