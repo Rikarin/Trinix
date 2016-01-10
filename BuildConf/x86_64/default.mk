@@ -1,22 +1,14 @@
-# Staticaly linked into Kernel
-MODULES        += Storage/ATA
-#MODULES       += FileSystem/Ext2
-MODULES        += Input/PS2KeyboardMouse Input/Keyboard Input/Mouse
-
-# Shared Libs copied to System/Module dir and dynamically loaded while booting
-DYNMODS        += FileSystem/Ext2
-
 # Libraries .dylib .a .o
-USERLIBS       += 
+LIBRARIES    +=
 
 # Binaries
-USERBINS       +=
+BINARIES     +=
 
 # Applications .app (Compositor required)
-USERAPPS       += 
+APPLICATIONS +=
 
 # Frameworks .framework (Compositor required)
-USERFRAMEWORKS += 
+FRAMEWORKS   +=
 
 # Bundle .bundle (Autonomus system (bin, lib, doc, share, etc) for ported apps like llvm, ldc, etc.)
-USERBUNDLES    +=
+BUNDLES      +=
