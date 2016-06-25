@@ -2,7 +2,7 @@
 
 **Welcome to Trinix!**
 
-**OLD CODE CAN BE FOUND IN Tools/Garbage**
+**OLD CODE CAN BE FOUND AT Tools/Garbage**
 
 Trinix is a true networking, modular operating system with microkernel architecture written in D language.
 Have own native libraries and framework based on .NET and phobos.
