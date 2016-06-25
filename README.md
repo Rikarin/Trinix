@@ -2,6 +2,8 @@
 
 **Welcome to Trinix!**
 
+**OLD CODE CAN BE FOUND IN Tools/Garbage**
+
 Trinix is a true networking, modular operating system with microkernel architecture written in D language.
 Have own native libraries and framework based on .NET and phobos.
 The main IPC is sync message passing. OS implement POSIX standard library for linux compatibility.
