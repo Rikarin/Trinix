@@ -76,7 +76,7 @@ This Code of Conduct applies both within project spaces and in public spaces
 when an individual is representing the project or its community.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting a project maintainer at satoshi@gshost.eu. All
+reported by contacting a project maintainer at rene.cincura@rikarin.org. All
 complaints will be reviewed and investigated and will result in a response that
 is deemed necessary and appropriate to the circumstances. Maintainers are
 obligated to maintain confidentiality with regard to the reporter of an
@@ -102,7 +102,7 @@ circumvent, violate, or enable the circumvention or violation of, any terms
 of an Trinix operating system software license agreement.
 
 You may obtain a copy of the License at
-https://github.com/Bloodmanovski/Trinix and read it before using this file.
+https://github.com/Rikarin/Trinix and read it before using this file.
 
 The Original Code and all software distributed under the License are
 distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY

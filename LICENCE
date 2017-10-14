@@ -1,61 +1,22 @@
-                         TRINIX PUBLIC SOURCE LICENCE
-                         Version 1.1, 2 November 2015
-						 
-Copyright (c) 2014-2015 Trinix Foundation
-Everyone is permitted to copy and distribute verbatim copies
-of this license document, but changing it is not allowed.
+Copyright (c) 2014-2017 Rikarin and contributors. All rights reserved.
 
-Please read this License carefully before downloading this software. By 
-downloading or using this software, you are agreeing to be bound by the terms of
-this License. If you do not or cannot agree to the terms of this License, please
-do not download or use the software.
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
 
-1.		General Definitions. This License applies to any program or other work
-which Trinix Foundation ('Trinix') makes publicly available and which contains a
-notice placed by Trinix identifying such program or work as "Original Code" and
-stating that it is subject to the terms of this Trinix Public Source License
-Version 1.0 ( the 'License'). As used in this License:
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
 
-1.1		"Contributor" means any person or entity that creates or contributes to
-the creation of Modifications.
-
-1.2		"Covered Code" means the Original Code, Modifications, the combination
-of Original Code and any Modifications, and/or any respective portions thereof.
-
-
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-1. Redistributions of source code must retain the above copyright
-   notice, this list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright
-   notice, this list of conditions and the following disclaimer in the
-   documentation and/or other materials provided with the distribution.
-3. All advertising materials mentioning features or use of this software
-   must display the following acknowledgement:
-   This product includes software developed by the Trinix Foundation.
-4. Source code or binary form of this product can be use for non-commercial purpose only.
-
-
-
-
-
-EXHIBIT A.
-
-"Copyright (c) 2014-2015 Trinix Foundation. All rights reserved.
-
-This file is part of Trinix Operating System and is released under Trinix 
-Public Source Licence Version 1.0 (the 'Licence'). You may not use this file
-except in compliance with the License. The rights granted to you under the
-License may not be used to create, or enable the creation or redistribution
-of, unlawful or unlicensed copies of an Trinix operating system, or to
-circumvent, violate, or enable the circumvention or violation of, any terms
-of an Trinix operating system software license agreement.
-
-You may obtain a copy of the License at
-http://pastebin.com/raw.php?i=ADVe2Pc7 and read it before using this file.
- 
-The Original Code and all software distributed under the License are
-distributed on an 'AS IS' basis, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
-KIND, either express or implied. See the License for the specific language
-governing permissions and limitations under the License."
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
