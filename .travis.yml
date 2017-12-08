@@ -1,0 +1,19 @@
+sudo: false
+dist: trusty
+
+language: d
+
+d:
+ - ldc
+ 
+before_install:
+ - sudo apt-get update -qq
+ - sudo apt-get install -y nasm
+ 
+install:
+# - wget -O doveralls https://github.com/ColdenCullen/doveralls/releases/download/v1.1.5/doveralls_linux_travis
+
+script:
+ - "make"
+# - dub test -b unittest-cov
+# - ./doveralls
