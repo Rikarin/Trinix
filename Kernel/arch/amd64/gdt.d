@@ -12,6 +12,7 @@ import common.bitfield
 
 
 abstract final class GDT {
+@safe: nothrow:
 	private __gshared Base m_base;
 	private __gshared SegmentDescriptor[64] m_tables;
 	private __gshared TaskStateSegment m_tss;
@@ -25,11 +26,11 @@ abstract final class GDT {
 		flush();
     }
 	
-	static void flush() {
+	static void flush() @trusted {
 		auto base = &m_base;
 		auto id = cast(ushort)(m_tssId * SegmentDescriptor.sizeof);
 		
-		asm {
+		asm pure nothrow {
 			mov RAX, base;
             lgdt [RAX];
             call __refresh_iretq;

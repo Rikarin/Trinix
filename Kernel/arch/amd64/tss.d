@@ -7,7 +7,7 @@
 module arch.amd64.tss;
 
 import common.address;
-import common.bitfield
+import common.bitfield;
 
 
 struct TaskStateSegment {

@@ -7,9 +7,10 @@
 module arch.amd64.main;
 
 import arch.amd64.gdt;
+import arch.amd64.idt;
 
 
-extern(C) void main(uint magic, void* info) {
+extern(C) void main(uint magic, void* info) @safe nothrow {
 	/* Initialize SSE for vararg used in Logger */
     //TODO: this is not needed now
 	//Port.InitializeSSE();

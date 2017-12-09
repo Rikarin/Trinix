@@ -29,7 +29,7 @@ template bitfieldImpl(const char[] typeStr, const char[] nameStr, int offset, ar
         const char[] setter = "void " ~ name ~ "(" ~ typeStr ~ " val) { " ~ nameStr ~ " = (" ~ nameStr ~ " & " ~ itoh!(~(mask << offset))
             ~ ") | ((val & " ~ itoh!(mask) ~ ") << " ~ itoh!(offset) ~ "); }\n";
         
-        const char[] ret = getter ~ setter ~ bitfieldImpl!(typeStr, nameStr, offset + Size, args[2 .. $]).ret;
+        const char[] ret = getter ~ setter ~ bitfieldImpl!(typeStr, nameStr, offset + size, args[2 .. $]).ret;
     }
 }
 

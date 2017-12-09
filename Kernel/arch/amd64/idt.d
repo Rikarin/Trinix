@@ -7,29 +7,129 @@
 
 module arch.amd64.idt;
 
+import arch.amd64.registers;
 import common.bitfield;
 
+
+alias irq = (byte x) => cast(byte)(0x20 + x);
 
 
 
 abstract final class IDT {
-    private __gshared IDTBase m_idtBase;
-    private __gshared InterruptGateDescriptor[50] m_entries;
+@safe: nothrow:
+	alias InterruptCallback = @safe void function(Registers* regs);
+	
+    private __gshared Base m_base;
+    private __gshared Descriptor[64] m_entries;
+	private __gshared InterruptCallback[64] m_handlers;
     
 
-    static void init() {
-        m_idtBase.Limit = (InterruptGateDescriptor.sizeof * m_entries.length) - 1;
-        m_idtBase.Base  = cast(ulong)m_entries.ptr;
+    static void init() @trusted {
+        m_base.limit = Descriptor.sizeof * m_entries.length - 1;
+        m_base.base  = cast(ulong)m_entries.ptr;
         
-        mixin(GenerateIDT!50);
+       // mixin(GenerateIDT!50);
+		flush();
         
         SetSystemGate(3, &isr3, InterruptStackType.Debug);
         SetInterruptGate(8, &ISRIgnore);
 
-        asm {
-            lidt m_idtBase;
+		asm pure nothrow {
+			sti;
+		}
+    }
+	
+	static void flush() @trusted {
+		auto base = &m_base;
+	
+		asm pure nothrow {
+			mov RAX, base;
+			lidt [RAX];
+		}
+	}
+	
+	static void register(uint id, InterruptCallback callback) {
+		m_handlers[id] = callback;
+	}
+	
+	
+	
+	
+	extern(C) private static void isrCommon() @trusted {
+        asm pure nothrow {
+            naked;
+            cli;
+
+            /* Save context */
+            push RAX;
+            push RBX;
+            push RCX;
+            push RDX;
+            push RSI;
+            push RDI;
+            push RBP;
+            push R8;
+            push R9;
+            push R10;
+            push R11;
+            push R12;
+            push R13;
+            push R14;
+            push R15;
+            
+            /* Call dispatcher */
+            mov RDI, RSP;
+            call isrHandler;
+            
+            /* Restore context */
+            pop R15;
+            pop R14;
+            pop R13;
+            pop R12;
+            pop R11;
+            pop R10;
+            pop R9;
+            pop R8;
+            pop RBP;
+            pop RDI;
+            pop RSI;
+            pop RDX;
+            pop RCX;
+            pop RBX;
+            pop RAX;
+
+            add RSP, 16;
+            db 0x48, 0xCF; //iretq;
         }
     }
+	
+	extern(C) private static isrHandler(Registers* registers) {
+		// TODO
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
     static void SetInterruptGate(uint num, void* funcPtr, InterruptStackType ist = InterruptStackType.RegisterStack) {
         SetGate(num, SystemSegmentType.InterruptGate, cast(v_addr)funcPtr, 0, ist);
@@ -39,25 +139,6 @@ abstract final class IDT {
         SetGate(num, SystemSegmentType.InterruptGate, cast(v_addr)funcPtr, 3, ist);
     }
 
-    align(1) private struct IDTBase {
-    align(1):
-        ushort Limit;
-        ulong  Base;
-    }
-	static assert(IDTBase.sizeof == 10);
-    
-    align(1) private struct InterruptGateDescriptor {
-    align(1):
-        ushort         TargetLow;
-        ushort         Segment;
-        private ushort _flags;
-        ushort         TargetMid;
-        uint           TargetHigh;
-        private uint   _reserved;
-        
-        mixin(Bitfield!(_flags, "ist", 3, "Zero0", 5, "Type", 4, "Zero1", 1, "dpl", 2, "p", 1));
-    }
-	static assert(InterruptGateDescriptor.sizeof == 16);
     
     private static void SetGate(uint num, SystemSegmentType gateType, ulong funcPtr, ushort dplFlags, ushort istFlags) {
         with (m_entries[num]) {
@@ -158,51 +239,71 @@ abstract final class IDT {
         }
     }
     
-    extern(C) private static void ISRCommon() {
-        asm {
-            naked;
-            cli; /* pre istotu */
 
-            /* Save context */
-            push RAX;
-            push RBX;
-            push RCX;
-            push RDX;
-            push RSI;
-            push RDI;
-            push RBP;
-            push R8;
-            push R9;
-            push R10;
-            push R11;
-            push R12;
-            push R13;
-            push R14;
-            push R15;
-            
-            /* Call dispatcher */
-            mov RDI, RSP;
-            call Dispatch;
-            
-            /* Restore context */
-            pop R15;
-            pop R14;
-            pop R13;
-            pop R12;
-            pop R11;
-            pop R10;
-            pop R9;
-            pop R8;
-            pop RBP;
-            pop RDI;
-            pop RSI;
-            pop RDX;
-            pop RCX;
-            pop RBX;
-            pop RAX;
-
-            add RSP, 16;
-            iretq;
-        }
-    }
 }
+
+
+
+
+enum InterruptStackType : ushort {
+	RegisterStack,
+	StackFault,
+	DoubleFault,
+	NMI,
+	Debug,
+	MCE
+}
+
+enum InterruptType : ubyte {
+	DivisionByZero,
+	Debug,
+	NMI,
+	Breakpoint,
+	Overflow,
+	OutOfBounds,
+	InvalidOpcode,
+	CoprocessorNotAvailable,
+	DoubleFault,
+	CoprocessorSegmentOverrun,
+	InvalidTaskStateSegment,
+	SegmentNotPresent,
+	StackFault,
+	GeneralProtectionFault,
+	PageFault,
+	UnknownInterrupt,
+	CoprocessorFault,
+	AlignmentCheck,
+	MachineCheck,
+	SimdFloatingPointException
+}
+
+enum SystemSegmentType : ubyte {
+    LocalDescriptorTable = 0b0010,
+    AvailableTSS         = 0b1001,
+    BusyTSS              = 0b1011,
+    CallGate             = 0b1100,
+    InterruptGate        = 0b1110,
+    TrapGate             = 0b1111
+}
+
+
+private struct Base {
+align(1):
+	ushort limit;
+	ulong  base;
+}
+
+private struct Descriptor {
+align(1):
+	ushort         targetLo;
+	ushort         segment;
+	private ushort m_flags;
+	ushort         targetMid;
+	uint           targetHi;
+	private uint   _reserved_0;
+	
+	mixin(bitfield!(m_flags, "ist", 3, "zero0", 5, "type", 4, "zero1", 1, "dpl", 2, "p", 1));
+}
+
+static assert(Base.sizeof == 10);
+static assert(Descriptor.sizeof == 16);
