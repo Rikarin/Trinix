@@ -1,1 +1,0 @@
-qemu-system-x86_64 -gdb tcp::1234,ipv4 -S -m 1026
