@@ -2,7 +2,6 @@
 # Kernel Core Makefile
 #
 # TODO:
-#	o Symbol table
 #	o Generate .dep files
 #
 
@@ -10,8 +9,8 @@
 -include Architectures/$(ARCH)/Makefile
 -include Makefile.BuildNum
 
-KERNEL_DFLAGS  += -IArchitectures/$(ARCH) -I../
-KERNEL_LDFLAGS += --script=Architectures/$(ARCH)/LinkerScript.ld -Map=../Linker.$(ARCH).map
+KERNEL_DFLAGS  += -I../
+KERNEL_LDFLAGS += --script=Architectures/$(ARCH)/Kernel.ld -Map=../Linker.$(ARCH).map
 
 ifeq ($(PLATFORM),default)
 	OBJ_DIR := obj-$(ARCH)

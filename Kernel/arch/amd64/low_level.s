@@ -1,10 +1,18 @@
 [bits 64]
 [global __sse_save]
-[global __read_rip] ; this shouldn't be there
 [global __sse_enable]
 [global __sse_restore]
 [global __sse_disable]
 [global __sse_initialize]
+
+[global __read_rip]
+[global __refresh_iretq]
+
+[global __get_cr0]
+[global __get_cr2]
+[global __get_cr3]
+[global __get_cr4]
+
 
 __sse_initialize:
 	mov rax, cr4
@@ -39,3 +47,38 @@ __sse_restore:
 __read_rip:
 	pop rax
 	jmp rax
+	
+__refresh_iretq:
+	mov RAX, 0x10
+	mov DS, AX
+	mov ES, AX
+	mov SS, AX
+
+	mov RDX, RSP
+	push RAX
+	push RDX
+	pushfq
+	push 0x08
+
+	mov RAX, .r
+	push RAX
+	iretq
+
+	.r:
+		ret
+		
+__get_cr0:
+    mov RAX, CR1
+    ret
+
+__get_cr2:
+    mov RAX, CR2
+    ret
+	
+__get_cr3:
+    mov RAX, CR3
+    ret
+
+__get_cr4:
+    mov RAX, CR4
+    ret

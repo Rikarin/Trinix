@@ -4,10 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
- module Architecture.SSE;
+module arch.amd64.sse;
  
  
- final abstract class SSE {
+final abstract class SSE {
+@safe: nothrow:
     static void EnableSSE() {
         __sse_enable();
     }
@@ -29,7 +30,7 @@
     }
 }
 
-private extern(C) extern pure nothrow {
+private extern(C) extern nothrow @trusted {
     void __sse_enable();
     void __sse_disable();
     void __sse_initialize();

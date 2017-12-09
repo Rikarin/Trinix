@@ -51,16 +51,6 @@ SECTIONS {
     .data ALIGN(0x1000) : AT(ADDR(.data) - __linker_kernel_start) {
         *(.padata)
         *(.data .data.*)
-		
-		__linker_modules_start = .;
-		*(.KMODULES)
-		__linker_modules_end = .;
-    }
-	
-	.symbols ALIGN(0x1000) : AT(ADDR(.symbols) - __linker_kernel_start) {
-		__linker_symbols_start = .;
-		*(.symbols .symbols.*)
-		__linker_symbols_end = .;
     }
 	
 	.tdata ALIGN(0x1000) : AT(ADDR(.tdata) - __linker_kernel_start) {

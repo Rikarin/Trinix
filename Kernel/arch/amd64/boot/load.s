@@ -10,7 +10,7 @@
 %define INITIAL_KSTACK_SIZE	8
 KERNEL_BASE	equ	0xFFFFFFFF80000000
 
-[extern ArchMain]
+[extern main]
 
 [extern __multiboot_ptr]
 [extern __multiboot_magic]
@@ -40,7 +40,7 @@ start64:
 	; Call main
 	mov edi, [__multiboot_magic - KERNEL_BASE]
 	mov esi, [__multiboot_ptr - KERNEL_BASE]
-	call ArchMain
+	call main
 	
 	cli
 .hlt:
