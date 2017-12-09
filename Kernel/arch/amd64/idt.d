@@ -5,13 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-module Architectures.x86_64.Core.IDT;
+module arch.amd64.idt;
 
-import Core;
-import Library;
-import Architecture;
-import MemoryManager;
-import Architectures.x86_64.Core;
+import common.bitfield;
+
+
 
 
 abstract final class IDT {
@@ -19,7 +17,7 @@ abstract final class IDT {
     private __gshared InterruptGateDescriptor[50] m_entries;
     
 
-    static void Initialize() {
+    static void init() {
         m_idtBase.Limit = (InterruptGateDescriptor.sizeof * m_entries.length) - 1;
         m_idtBase.Base  = cast(ulong)m_entries.ptr;
         
