@@ -1,14 +1,9 @@
-# Trinix operating system
+# Trinix - the Operating System
 
 **Welcome to Trinix!**
 
-**OLD CODE CAN BE FOUND AT Tools/Garbage**
-
 Trinix is a true networking, modular operating system with microkernel architecture written in D language.
-Have own native libraries and framework based on .NET and phobos.
-The main IPC is sync message passing. OS implement POSIX standard library for linux compatibility.
-
-OS is still under development!!!
+The main IPC is sync message passing. OS implements POSIX standard library for linux compatibility.
 
 
 ## Documentation
@@ -38,7 +33,7 @@ RC_VERION | [number] | 1 | Set the release candidate number
 
 ## Contributing to Trinix
 
-Please use the [Coding Conventions](https://github.com/Bloodmanovski/Trinix/CC.md).
+Please use the [Coding Conventions](https://github.com/Rikarin/Trinix/CC.md).
 
 
 As contributors and maintainers of this project, and in the interest of
@@ -76,14 +71,8 @@ This Code of Conduct applies both within project spaces and in public spaces
 when an individual is representing the project or its community.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting a project maintainer at rene.cincura@rikarin.org. All
+reported by contacting a project maintainer at rene.cincura[at]rikarin[dot]org. All
 complaints will be reviewed and investigated and will result in a response that
 is deemed necessary and appropriate to the circumstances. Maintainers are
 obligated to maintain confidentiality with regard to the reporter of an
 incident.
-
-
-This Code of Conduct is adapted from the [Contributor Covenant][homepage],
-version 1.3.0.
-
-[homepage]: http://contributor-covenant.org
