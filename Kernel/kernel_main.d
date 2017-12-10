@@ -60,7 +60,7 @@
  *      o Dispatch
  */
 
-module Core.Main;
+module kernel_main;
 
 import Core;
 import Library;
@@ -75,7 +75,27 @@ extern(C) extern const int giBuildNumber;
 extern(C) extern const char* gsGitHash;
 extern(C) extern const char* gsBuildInfo;
 
-extern(C) void KernelMain(IArch arch) {
+void kernelMain() {
+    Logger.Initialize();
+	// VGA init
+	// Frame allocator (phys mem)
+	// multiboot2 mem tables
+	// preallocate frames for mem tables
+	// init paging
+	// init heap
+	// init tls
+	// parse multiboot 2
+	// ACPI
+	// IOAPIC
+	// LAPIC and calibration
+	// multi cpu/thread
+	// scheduler init
+	// we are done! Run init.d
+
+    Log("multiboot2");
+    Multiboot.ParseHeader(magic, info);
+	
+	
     Log("Git Hash: %s", gsGitHash.ToString());
     Log("Version: %d", cast(int)giBuildNumber);
     Log("Build Info: %s", gsBuildInfo.ToString());
@@ -108,9 +128,6 @@ extern(C) void KernelMain(IArch arch) {
 
     Log("Remaping PIC");
     RemapPIC();
-
-    Log("Initializing PIT");
-    arch.InitializeTimer(100);
 
     Log("RTC Timer");
     Time.Initialize();
