@@ -33,7 +33,7 @@ RC_VERION | [number] | 1 | Set the release candidate number
 
 ## Contributing to Trinix
 
-Please use the [Coding Conventions](https://github.com/Rikarin/Trinix/CC.md).
+Please follow the [Coding Conventions](https://github.com/Rikarin/Trinix/CC.md).
 
 
 As contributors and maintainers of this project, and in the interest of

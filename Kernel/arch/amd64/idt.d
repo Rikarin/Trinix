@@ -11,12 +11,10 @@ import arch.amd64.pic;
 import common.bitfield;
 import io.ioport;
 
-alias irq = (byte x) => cast(byte)(0x20 + x);
-
 
 abstract final class IDT {
 @safe: nothrow:
-	alias InterruptCallback = @safe void function(Registers* regs);
+	alias InterruptCallback = @safe void function(scope Registers* regs);
 	
     private __gshared Base m_base;
     private __gshared Descriptor[256] m_entries;
@@ -27,7 +25,7 @@ abstract final class IDT {
         m_base.limit = Descriptor.sizeof * m_entries.length - 1;
         m_base.base  = cast(ulong)m_entries.ptr;
         
-		initJumps();
+		initISR();
 		flush();
 		
 		register(0x0D, &onGPF);
@@ -74,8 +72,8 @@ abstract final class IDT {
         }
     }
 	
-	private static void initJumps() {
-		mixin(GenerateIDT!50);
+	private static void initISR() {
+		mixin(addRoutines!(0, 255));
 		
 		setGate(3,      SystemSegmentType.InterruptGate, cast(ulong)&isr3,      3, InterruptStackType.Debug);
 		setGate(8,      SystemSegmentType.InterruptGate, cast(ulong)&isrIgnore, 0, InterruptStackType.RegisterStack);
@@ -83,7 +81,7 @@ abstract final class IDT {
 		setGate(irq(4), SystemSegmentType.InterruptGate, cast(ulong)&isrIgnore, 0, InterruptStackType.RegisterStack);
 	}
 	
-	extern(C) private static void isrCommon() @trusted {
+	private extern(C) static void isrCommon() @trusted {
         asm pure nothrow {
             naked;
             cli;
@@ -143,7 +141,8 @@ abstract final class IDT {
         }
     }
 	
-	extern(C) private static isrHandler(Registers* r) {
+	private extern(C) static isrHandler(Registers* r) {
+		// TODO: save SSE
 		r.intNumber &= 0xFF;
 		
 		if (PIC.isEnabled && irq(0) <= r.intNumber && r.intNumber <= irq(16)) {
@@ -159,9 +158,11 @@ abstract final class IDT {
 		} else {
 			// TODO: print unhandled interrupt
 		}
+		
+		// TODO: load SSE
 	}
 	
-	private void onGPF(Registers* r) {
+	private static void onGPF(scope Registers* r) {
 		// TODO: print GPF
 	
 		while (true) {
@@ -171,90 +172,48 @@ abstract final class IDT {
 		}
 	}
 	
+	private template generateRoutine(ulong id, bool hasError = false) {
+		enum generateRoutine = `
+			private static void isr` ~ id.stringof[0 .. $ - 2] ~ `() @trusted {
+				asm pure nothrow {
+					naked;
+					` ~ (hasError ? "" : "push 0UL;") ~ `
+					push ` ~ id.stringof ~ `;
+					jmp isrCommon;
+				}
+			}
+		`;
+	}
+
+	private template generateRoutines(ulong from, ulong to, bool hasError = false) {
+		static if (from <= to)
+			enum generateRoutines = generateRoutine!(from, hasError) ~ generateRoutine!(from + 1, to, hasError);
+		else
+			enum generateRoutines = "";
+	}
 	
+	private template addRoutine(ulong id) {
+		enum addRoutine = `
+			setGate(` ~ id.stringof[0 .. $ - 2] ~ `, SystemSegmentType.InterruptGate, cast(ulong)&isr`
+				~ id.stringof[0 .. $ - 2] ~ `, 0, InterruptStackType.RegisterStack);`;
+	}
+
+	private template addRoutines(ulong from, ulong to) {
+		static if (from <= to)
+			enum addRoutines = addRoutine!from ~ addRoutines!(from + 1, to);
+		else
+			enum addRoutines = "";
+	}
 	
-	
-	
-	
-	
-
-    
-    private static template GenerateIDT(uint numberISRs, uint idx = 0) {
-        static if (numberISRs == idx)
-            const char[] GenerateIDT = ``;
-        else
-            const char[] GenerateIDT = `SetInterruptGate(` ~ idx.stringof ~ `, &isr` ~ idx.stringof[0 .. $ - 1] ~ `);` ~ GenerateIDT!(numberISRs, idx + 1);
-        //TODO: q{} syntax
-    }
-
-    private static template GenerateISR(ulong num, bool needDummyError = true) {
-        const char[] GenerateISR = `
-            private static void isr` ~ num.stringof[0 .. $ - 2] ~ `() {
-                asm { naked;` ~
-                    (needDummyError ? `push 0UL;` : ``) ~
-                    `push ` ~ num.stringof ~ `;` ~
-                    `jmp ISRCommon;` ~
-                        `
-                }
-            }
-        `;
-        
-        //TODO: q{} syntax
-    }
-
-    private static template GenerateISRs(uint start, uint end, bool needDummyError = true) {
-        static if (start > end)
-            const char[] GenerateISRs = ``;
-        else
-            const char[] GenerateISRs = GenerateISR!(start, needDummyError)
-            ~ GenerateISRs!(start + 1, end, needDummyError);
-    }
-
-    mixin(GenerateISR!0);
-    mixin(GenerateISR!1);
-    mixin(GenerateISR!2);
-    mixin(GenerateISR!3);
-    mixin(GenerateISR!4);
-    mixin(GenerateISR!5);
-    mixin(GenerateISR!6);
-    mixin(GenerateISR!7);
-    mixin(GenerateISR!(8, false));
-    mixin(GenerateISR!9);
-    mixin(GenerateISR!(10, false));
-    mixin(GenerateISR!(11, false));
-    mixin(GenerateISR!(12, false));
-    mixin(GenerateISR!(13, false));
-    mixin(GenerateISR!(14, false));
-    mixin(GenerateISRs!(15, 49));
-    
-    private static void Dispatch(InterruptStack* stack) {
-        Thread.Current.SavedState.SSEInt.Save();
-
-        if (stack.IntNumber == 0xE) { //TODO: remove this. chain: IDT.Dispatch > Task.SendInterruptToThread
-            Log.Emergency(`===> Spadlo to -.-"`);
-            Log(*stack);
-
-            Port.Cli();
-            Port.Hlt();
-        } else if (stack.IntNumber < 32) {
-            if (Thread.Current.ID == 1) {
-                DeviceManager.DumpStack(*stack);
-                Port.Cli();
-                Port.Halt();
-            } else
-                Thread.Current.Fault(stack.IntNumber);
-        } else
-            DeviceManager.Handler(*stack);
-
-        /* We must disable interrupts before sending ACK. Enable it with iretq */
-        Port.Cli();
-        if (stack.IntNumber >= 32)
-            DeviceManager.EOI(cast(int)stack.IntNumber - 32);
-
-        Thread.Current.SavedState.SSEInt.Load();
-    }
+	mixin(generateRoutines!(0, 7));
+	mixin(generateRoutine!(8, true));
+	mixin(generateRoutine!(9));
+	mixin(generateRoutines!(10, 14, true));
+	mixin(generateRoutines!(15, 255));
 }
 
+
+alias irq = (byte x) => cast(byte)(0x20 + x);
 
 enum InterruptStackType : ushort {
 	RegisterStack,

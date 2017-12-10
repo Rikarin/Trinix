@@ -104,7 +104,7 @@ void kernelMain() {
      * TODO:
      *      o Handle memory block from multiboot2 header
      *      o Allocate correct size of BitArray
-     *      o Check if memory mapped regionms work properly
+     *      o Check if memory mapped regions work properly
      * +     o Make interface for Paging and move Paging.d to the arch-specific folder
      */
     Log("Physical Memory");
