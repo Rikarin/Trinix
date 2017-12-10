@@ -10,9 +10,7 @@ module arch.amd64.idt;
 import arch.amd64.registers;
 import common.bitfield;
 
-
 alias irq = (byte x) => cast(byte)(0x20 + x);
-
 
 
 abstract final class IDT {
@@ -20,19 +18,18 @@ abstract final class IDT {
 	alias InterruptCallback = @safe void function(Registers* regs);
 	
     private __gshared Base m_base;
-    private __gshared Descriptor[64] m_entries;
-	private __gshared InterruptCallback[64] m_handlers;
+    private __gshared Descriptor[256] m_entries;
+	private __gshared InterruptCallback[256] m_handlers;
     
 
     static void init() @trusted {
         m_base.limit = Descriptor.sizeof * m_entries.length - 1;
         m_base.base  = cast(ulong)m_entries.ptr;
         
-       // mixin(GenerateIDT!50);
+		initJumps();
 		flush();
-        
-        SetSystemGate(3, &isr3, InterruptStackType.Debug);
-        SetInterruptGate(8, &ISRIgnore);
+		
+		register(0x0D, &onGPF);
 
 		asm pure nothrow {
 			sti;
@@ -52,8 +49,38 @@ abstract final class IDT {
 		m_handlers[id] = callback;
 	}
 	
+	static VAddr registerGate(uint id, VAddr func) {
+		VAddr ret;
+		
+		with (desc[id]) {
+			ret = ((cast(ulong)targetHi << 32UL) | (cast(ulong)targetMid << 16UL) | cast(ulong)targetLo);
+		}
+			
+        setGate(id, SystemSegmentType.InterruptGate, funcPtr, 0, InterruptStackType.RegisterStack);
+		return ret;
+    }
 	
+	private static void setGate(uint id, SystemSegmentType gateType, ulong funcPtr, ushort dplFlags, ushort istFlags) {
+        with (m_entries[num]) {
+            targetLo  = funcPtr & 0xFFFF;
+            segment   = 0x08;
+            ist       = istFlags;
+            p         = true;
+            dpl       = dplFlags;
+            type      = cast(uint)gateType;
+            targetMid = (funcPtr >> 16) & 0xFFFF;
+            targetHi  = (funcPtr >> 32);
+        }
+    }
 	
+	private static void initJumps() {
+		mixin(GenerateIDT!50);
+		
+		setGate(3,      SystemSegmentType.InterruptGate, cast(ulong)&isr3,      3, InterruptStackType.Debug);
+		setGate(8,      SystemSegmentType.InterruptGate, cast(ulong)&isrIgnore, 0, InterruptStackType.RegisterStack);
+		setGate(irq(1), SystemSegmentType.InterruptGate, cast(ulong)&isrIgnore, 0, InterruptStackType.RegisterStack);
+		setGate(irq(4), SystemSegmentType.InterruptGate, cast(ulong)&isrIgnore, 0, InterruptStackType.RegisterStack);
+	}
 	
 	extern(C) private static void isrCommon() @trusted {
         asm pure nothrow {
@@ -99,12 +126,42 @@ abstract final class IDT {
             pop RAX;
 
             add RSP, 16;
-            db 0x48, 0xCF; //iretq;
+            db 0x48, 0xCF; // iretq;
         }
     }
 	
-	extern(C) private static isrHandler(Registers* registers) {
-		// TODO
+	private static void isrIgnore() @trusted {
+        asm pure nothrow {
+            naked;
+			cli;
+            nop;
+            nop;
+            nop;
+
+            db 0x48, 0xCF; // iretq;
+        }
+    }
+	
+	extern(C) private static isrHandler(Registers* r) {
+		r.intNumber &= 0xFF;
+		
+		// TODO: PIC response
+		
+		if (auto x = m_handlers[r.intNumber]) {
+			x(r);
+		} else {
+			// TODO: print unhandled interrupt
+		}
+	}
+	
+	private void onGPF(Registers* r) {
+		// TODO: print GPF
+	
+		while (true) {
+			asm @trusted pure nothrow {
+				hlt;
+			}
+		}
 	}
 	
 	
@@ -113,45 +170,7 @@ abstract final class IDT {
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
-    static void SetInterruptGate(uint num, void* funcPtr, InterruptStackType ist = InterruptStackType.RegisterStack) {
-        SetGate(num, SystemSegmentType.InterruptGate, cast(v_addr)funcPtr, 0, ist);
-    }
-    
-    static void SetSystemGate(uint num, void* funcPtr, InterruptStackType ist = InterruptStackType.RegisterStack) {
-        SetGate(num, SystemSegmentType.InterruptGate, cast(v_addr)funcPtr, 3, ist);
-    }
-
-    
-    private static void SetGate(uint num, SystemSegmentType gateType, ulong funcPtr, ushort dplFlags, ushort istFlags) {
-        with (m_entries[num]) {
-            TargetLow  = funcPtr & 0xFFFF;
-            Segment    = 0x08;
-            ist        = istFlags;
-            p          = true;
-            dpl        = dplFlags;
-            Type       = cast(uint)gateType;
-            TargetMid  = (funcPtr >> 16) & 0xFFFF;
-            TargetHigh = (funcPtr >> 32);
-        }
-    }
     
     private static template GenerateIDT(uint numberISRs, uint idx = 0) {
         static if (numberISRs == idx)
@@ -227,22 +246,7 @@ abstract final class IDT {
 
         Thread.Current.SavedState.SSEInt.Load();
     }
-
-    private static void ISRIgnore() {
-        asm {
-            naked;
-            nop;
-            nop;
-            nop;
-
-            iretq;
-        }
-    }
-    
-
 }
-
-
 
 
 enum InterruptStackType : ushort {

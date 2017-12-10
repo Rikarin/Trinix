@@ -12,7 +12,7 @@ import Library;
 import Architecture;
 import MemoryManager;
 
-private extern(C) ulong _CPU_ret_cr2();
+private extern(C) ulong __ret_cr2();
 
 alias PageTableEntry!"primary" PTE;
 

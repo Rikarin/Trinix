@@ -7,11 +7,7 @@
 module Library.List;
 
 import core.vararg;
-
-
-private T min(T)(T a, T b) {
-	return a < b ? a : b;
-}
+import common.number;
 
 
 class List(T) {
