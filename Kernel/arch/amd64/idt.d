@@ -79,6 +79,7 @@ abstract final class IDT {
 		setGate(8,      SystemSegmentType.InterruptGate, cast(ulong)&isrIgnore, 0, InterruptStackType.RegisterStack);
 		setGate(irq(1), SystemSegmentType.InterruptGate, cast(ulong)&isrIgnore, 0, InterruptStackType.RegisterStack);
 		setGate(irq(4), SystemSegmentType.InterruptGate, cast(ulong)&isrIgnore, 0, InterruptStackType.RegisterStack);
+		setGate(0x80,   SystemSegmentType.InterruptGate, cast(ulong)&isr128,    3, InterruptStackType.RegisterStack);
 	}
 	
 	private extern(C) static void isrCommon() @trusted {

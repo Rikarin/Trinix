@@ -7,16 +7,20 @@
 module arch.amd64.syscall_handler;
 
 import arch.amd64.msr;
+import arch.amd64.idt;
 import arch.amd64.registers;
 
 
 abstract final class SyscallHandler {
 @safe: nothrow:
     static void init() {
-		MSR.write(MSRRegister.LStar, cast(ulong)&onSyscall);
-        MSR.write(MSRRegister.Star, 0x0013_0008_0000_0000);
-        MSR.write(MSRRegister.FMask, 0x200);
-		MSR.write(MSRRegister.SFMask, 1 << 9);
+		// TODO: first fix onSyscall handler (missing registers), then uncoment these
+		//MSR.write(MSRRegister.LStar, cast(ulong)&onSyscall);
+        //MSR.write(MSRRegister.Star, 0x0013_0008_0000_0000);
+        //MSR.write(MSRRegister.FMask, 0x200);
+		//MSR.write(MSRRegister.SFMask, 1 << 9);
+		
+		IDT.register(0x80, &syscallHandler);
     }
 
     private static void syscallHandler(Registers* stack) {
