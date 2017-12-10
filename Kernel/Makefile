@@ -2,16 +2,15 @@
 # Kernel Core Makefile
 #
 # TODO:
-#	o Symbol table
 #	o Generate .dep files
 #
 
 -include ../Makefile.cfg
--include Architectures/$(ARCH)/Makefile
+#-include Architectures/$(ARCH)/Makefile
 -include Makefile.BuildNum
 
-KERNEL_DFLAGS  += -IArchitectures/$(ARCH) -I../
-KERNEL_LDFLAGS += --script=Architectures/$(ARCH)/LinkerScript.ld -Map=../Linker.$(ARCH).map
+KERNEL_DFLAGS  += -I../
+KERNEL_LDFLAGS += --script=arch/$(ARCH)/kernel.ld -Map=../linker.$(ARCH).map
 
 ifeq ($(PLATFORM),default)
 	OBJ_DIR := obj-$(ARCH)
@@ -29,15 +28,12 @@ ifeq ($(BUILD_TYPE),debug)
 	CFLAGS  += -g
 endif
 
-BUILDINFO_OBJ := $(OBJ_DIR)/BuildInfo.c.o
-BUILDINFO_SRC := $(OBJ_DIR)/BuildInfo.c
-#SYMBOLS_OBJ   := $(OBJ_DIR)/Symbols.s.o
-#SYMBOLS_SRC   := $(OBJ_DIR)/Symbols.s
+BUILDINFO_OBJ := $(OBJ_DIR)/build_info.c.o
+BUILDINFO_SRC := $(OBJ_DIR)/build_info.c
 
-OBJ := $(addsuffix .o,$(shell find Architectures/$(ARCH) -name "*.[d|c|s]"))
-OBJ	+= $(addsuffix .o,$(shell find * -name "*.[c|s]" -not -path "*Architectures*"))
+OBJ := $(addsuffix .o,$(shell find arch/$(ARCH) -name "*.[d|c|s]"))
+OBJ	+= $(addsuffix .o,$(shell find * -name "*.[c|s]" -not -path "*arch*"))
 OBJ := $(filter-out $(BUILDINFO_OBJ), $(OBJ))
-OBJ := $(filter-out $(SYMBOLS_OBJ), $(OBJ))
 OBJ := $(addprefix $(OBJ_DIR)/, $(OBJ))
 OBJ += $(BUILDINFO_OBJ)
 
@@ -57,7 +53,7 @@ all: $(BIN)
 	@true
 
 clean:
-	@$(RM) $(BIN) $(GZBIN) $(OBJ_DIR) $(BIN).dsm ../Linker.$(ARCH).map
+	@$(RM) $(BIN) $(GZBIN) $(OBJ_DIR) $(BIN).dsm ../linker.$(ARCH).map
 	@$(RM) $(DOC_DIR) $(IMPORT_DIR) $(ROOT_DIR)/System/System.gz
 
 install: $(BIN)
@@ -69,7 +65,7 @@ install: $(BIN)
 #	@$(MKDIR) $(dir $@)
 #	@$(DD) $(DFLAGS) -c -fintfc -fintfc-file=$@ $< -o /dev/null
 
-$(BIN): $(OBJ) $(OBJ_DIR)/Core.o $(MODS) Architectures/$(ARCH)/LinkerScript.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
+$(BIN): $(OBJ) $(OBJ_DIR)/core.o $(MODS) arch/$(ARCH)/kernel.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
 	@echo --- LD -o $(BIN)
 	@$(LD) $(KERNEL_LDFLAGS) -o $(BIN) $(shell find $(OBJ_DIR) -name "*.[o]") $(MODS) $(SYSTEM_DIR)/Tools/libdruntime-ldc.a
 	@echo BUILD_NUM = $$(( $(BUILD_NUM) + 1 )) > Makefile.BuildNum
@@ -96,7 +92,7 @@ $(OBJ_DIR)/%.c.o: %.c
 %.xo.$(ARCH):
 	@make -C $* all BUILDTYPE=static
 
-$(OBJ_DIR)/Core.o: $(shell find * -name "*.d" -not -path "*Architectures*")
+$(OBJ_DIR)/core.o: $(shell find * -name "*.d" -not -path "*arch*")
 	@echo --- DD zrob bynarku cype
 	@$(MKDIR) $(dir $@)
 	@$(DD) $(KERNEL_DFLAGS) -oq -od=$(OBJ_DIR) -c $<
@@ -114,16 +110,5 @@ $(BUILDINFO_SRC): $(filter-out $(BUILDINFO_OBJ), $(OBJ)) $(MODS)
 $(BUILDINFO_OBJ): $(BUILDINFO_SRC)
 	@echo --- CC -o $@
 	@$(CC) $(KERNEL_CFLAGS) -o $@ -c $<
-
-#$(SYMBOLS_SRC):
-#	@echo --- Generating symbols table
-#	@$(DD) $(KERNEL_DFLAGS) $(LDFLAGS) -o $(BIN) $(filter-out $(SYMBOLS_SRC), $(shell find * -name "*.d" -not -path "*Architectures*")) $(OBJ) $(MODS) $(DRUNTIME)
-#	$(OBJCOPY) -R .tbss $(BIN)
-#	@nm $(BIN) -g | python2 ../../Tools/generate_symbols.py > $@
-
-
-#$(SYMBOLS_OBJ): $(SYMBOLS_SRC)
-#	@echo --- AS -o $@
-#	@$(AS) $(KERNEL_ASFLAGS) -o $@ $<
 
 -include $(DEPFILES)

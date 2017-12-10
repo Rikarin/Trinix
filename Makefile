@@ -1,8 +1,6 @@
 #
 # Trinix Core Makefile
 #
-# TODO:
-#	o Add tests (for travis etc)
 
 -include Makefile.cfg
 

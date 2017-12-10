@@ -1,1 +1,0 @@
-plink -l root -pw root 192.168.1.165 cd /trinix/;%*

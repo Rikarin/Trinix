@@ -4,10 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 module Library.String;
 
-import System.Collections;
+import Library.List;
 
 
 List!string Split(string str, char delimiter) {
@@ -16,12 +15,12 @@ List!string Split(string str, char delimiter) {
     long a = 0;
     foreach (i, x; str) {
         if (x == delimiter) {
-            ret.Add(str[a .. i]);
+            ret.add(str[a .. i]);
             a = i + 1;
         }
     }
 
-    ret.Add(str[a .. $]);
+    ret.add(str[a .. $]);
     return ret;
 }
 
