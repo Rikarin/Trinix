@@ -37,7 +37,7 @@ void kernelMain() {
 
     Log("multiboot2");
     Multiboot.ParseHeader(magic, info);
-	
+
 	
 
 

@@ -12,10 +12,11 @@ import io.ioport;
 
 
 final abstract class PIT {
+static:
 @safe: nothrow:
-	private static __gshared bool m_enabled;
-	private static __gshared uint m_freqency;
-	private static __gshared size_t m_counter;
+	private __gshared bool m_enabled;
+	private __gshared uint m_freqency;
+	private __gshared size_t m_counter;
 	
 	private enum Scale = 1193180;
 	
@@ -27,7 +28,7 @@ final abstract class PIT {
         Set     = 0x36
     }
 
-    static void init(uint frequency = 1000) @trusted {
+    void init(uint frequency = 1000) @trusted {
 		IDT.register(irq(0), &onTick);
 		
 		m_freqency = frequency;
@@ -38,7 +39,7 @@ final abstract class PIT {
         outPort(Register.A, (divisor >> 8) & 0xFF);
     }
 	
-	static void earlySleep(size_t amount) @trusted {
+	void earlySleep(size_t amount) @trusted {
 		size_t endAt = m_counter + amount;
 
 		while (m_counter < endAt) {
@@ -48,7 +49,7 @@ final abstract class PIT {
 		}
 	}
 
-    private static void onTick(Registers* r) @trusted {
+    private void onTick(Registers* r) @trusted {
         m_counter++;
     }
 }

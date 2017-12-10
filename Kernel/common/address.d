@@ -10,3 +10,4 @@ module common.address;
 // TODO: implement this in the future 
 alias VAddr = ulong;
 alias PAddr = ulong;
+alias PAddr32 = uint;

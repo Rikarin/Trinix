@@ -13,15 +13,16 @@ import io.ioport;
 
 
 abstract final class IDT {
-@safe: nothrow:
-	alias InterruptCallback = @safe void function(scope Registers* regs);
+static:
+@safe: nothrow: @nogc:
+	alias InterruptCallback = void function(scope Registers* regs);
 	
     private __gshared Base m_base;
     private __gshared Descriptor[256] m_entries;
 	private __gshared InterruptCallback[256] m_handlers;
     
 
-    static void init() @trusted {
+    void init() @trusted {
         m_base.limit = Descriptor.sizeof * m_entries.length - 1;
         m_base.base  = cast(ulong)m_entries.ptr;
         
@@ -35,7 +36,7 @@ abstract final class IDT {
 		}
     }
 	
-	static void flush() @trusted {
+	void flush() @trusted {
 		auto base = &m_base;
 	
 		asm pure nothrow {
@@ -44,11 +45,11 @@ abstract final class IDT {
 		}
 	}
 	
-	static void register(uint id, InterruptCallback callback) {
+	void register(uint id, InterruptCallback callback) {
 		m_handlers[id] = callback;
 	}
 	
-	static VAddr registerGate(uint id, VAddr func) {
+	VAddr registerGate(uint id, VAddr func) {
 		VAddr ret;
 		
 		with (desc[id]) {
@@ -59,7 +60,7 @@ abstract final class IDT {
 		return ret;
     }
 	
-	private static void setGate(uint id, SystemSegmentType gateType, ulong funcPtr, ushort dplFlags, ushort istFlags) {
+	private void setGate(uint id, SystemSegmentType gateType, ulong funcPtr, ushort dplFlags, ushort istFlags) {
         with (m_entries[num]) {
             targetLo  = funcPtr & 0xFFFF;
             segment   = 0x08;
@@ -72,7 +73,7 @@ abstract final class IDT {
         }
     }
 	
-	private static void initISR() {
+	private void initISR() {
 		mixin(addRoutines!(0, 255));
 		
 		setGate(3,      SystemSegmentType.InterruptGate, cast(ulong)&isr3,      3, InterruptStackType.Debug);
@@ -82,7 +83,7 @@ abstract final class IDT {
 		setGate(0x80,   SystemSegmentType.InterruptGate, cast(ulong)&isr128,    3, InterruptStackType.RegisterStack);
 	}
 	
-	private extern(C) static void isrCommon() @trusted {
+	private extern(C) void isrCommon() @trusted {
         asm pure nothrow {
             naked;
             cli;
@@ -130,7 +131,7 @@ abstract final class IDT {
         }
     }
 	
-	private static void isrIgnore() @trusted {
+	private void isrIgnore() @trusted {
         asm pure nothrow {
             naked;
 			cli;
@@ -142,7 +143,7 @@ abstract final class IDT {
         }
     }
 	
-	private extern(C) static isrHandler(Registers* r) {
+	private extern(C) isrHandler(Registers* r) {
 		// TODO: save SSE
 		r.intNumber &= 0xFF;
 		
@@ -163,7 +164,7 @@ abstract final class IDT {
 		// TODO: load SSE
 	}
 	
-	private static void onGPF(scope Registers* r) {
+	private void onGPF(scope Registers* r) {
 		// TODO: print GPF
 	
 		while (true) {

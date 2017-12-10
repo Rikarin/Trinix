@@ -8,29 +8,30 @@ module arch.amd64.sse;
  
  
 final abstract class SSE {
-@safe: nothrow:
-    static void EnableSSE() {
+static:
+@safe: nothrow: @nogc:
+    void init() {
+        __sse_initialize();
+    }
+	
+    void enable() {
         __sse_enable();
     }
 
-    static void DisableSSE() {
+    void disable() {
         __sse_disable();
     }
 
-    static void InitializeSSE() {
-        __sse_initialize();
-    }
-
-    static void SaveSSE(void* ptr) {
+    void save(void* ptr) {
         __sse_save(ptr);
     }
 
-    static void RestoreSSE(void* ptr) {
+    void restore(void* ptr) {
         __sse_restore(ptr);
     }
 }
 
-private extern(C) extern nothrow @trusted {
+private extern(C) extern nothrow @trusted @nogc {
     void __sse_enable();
     void __sse_disable();
     void __sse_initialize();

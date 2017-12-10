@@ -8,7 +8,7 @@ module arch.amd64.registers;
 
 
 struct Registers {
-@safe: nothrow:
+@safe: nothrow: @nogc:
 align(1):
 	ulong r15, r14, r13, r12, r11, r10, r9, r8;
 	ulong rbp, rdi, rsi, rdx, rcx, rbx, rax;
@@ -32,8 +32,7 @@ align(1):
 	}
 }
 
-
-private extern(C) extern nothrow @trusted {
+private extern(C) extern nothrow @trusted @nogc {
 	ulong __get_cr0();
 	ulong __get_cr2();
 	ulong __get_cr3();

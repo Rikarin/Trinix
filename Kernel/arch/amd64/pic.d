@@ -10,10 +10,12 @@ import io.ioport;
 
 
 final abstract class PIC {
+static:
+@safe: nothrow: @nogc:
 	private enum MasterPort = 0x21;
 	private enum SlavePort  = 0xA1;
 		
-	static ref bool isEnabled() @trusted {
+	ref bool isEnabled() @trusted {
 		__gshared bool enabled = true;
 		return enabled;
 	}

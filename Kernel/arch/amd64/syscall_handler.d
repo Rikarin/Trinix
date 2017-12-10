@@ -12,8 +12,9 @@ import arch.amd64.registers;
 
 
 abstract final class SyscallHandler {
+static:
 @safe: nothrow:
-    static void init() {
+    void init() {
 		// TODO: first fix onSyscall handler (missing registers), then uncoment these
 		//MSR.write(MSRRegister.LStar, cast(ulong)&onSyscall);
         //MSR.write(MSRRegister.Star, 0x0013_0008_0000_0000);
@@ -23,7 +24,7 @@ abstract final class SyscallHandler {
 		IDT.register(0x80, &syscallHandler);
     }
 
-    private static void syscallHandler(Registers* stack) {
+    private void syscallHandler(Registers* stack) {
         //Thread.Current.SavedState.SSESyscall.Save();
         //VirtualMemory.KernelPaging.Install();
 
@@ -34,7 +35,7 @@ abstract final class SyscallHandler {
       //  Thread.Current.SavedState.SSESyscall.Load();
     }
 
-    extern(C) private static void onSyscall() @trusted {
+    extern(C) private void onSyscall() @trusted {
         asm pure nothrow {
             naked;
             swapgs;

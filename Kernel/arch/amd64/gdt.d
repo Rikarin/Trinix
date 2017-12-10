@@ -12,21 +12,22 @@ import common.bitfield
 
 
 abstract final class GDT {
-@safe: nothrow:
+static:
+@safe: nothrow: @nogc:
 	private __gshared Base m_base;
 	private __gshared SegmentDescriptor[64] m_tables;
 	private __gshared TaskStateSegment m_tss;
 	private __gshared ushort m_tssId;
 	
 
-    static void init() {
+    void init() {
 		m_base.limit = SegmentDescriptor.sizeof * setupTable() - 1;
         m_base.base  = cast(ulong)m_tables.ptr;
 		
 		flush();
     }
 	
-	static void flush() @trusted {
+	void flush() @trusted {
 		auto base = &m_base;
 		auto id = cast(ushort)(m_tssId * SegmentDescriptor.sizeof);
 		
@@ -38,11 +39,11 @@ abstract final class GDT {
         }
 	}
 	
-	static void setNull(uint index) {
+	void setNull(uint index) {
 		m_tables[index].value = 0;
 	}
 	
-	static void setCode(uint index, bool conforming, ubyte dpl_, bool present) {
+	void setCode(uint index, bool conforming, ubyte dpl_, bool present) {
 		m_tables[index].code = CodeSegmentDescriptor.init;
 
 		with (m_tables[index].code) {
@@ -54,13 +55,13 @@ abstract final class GDT {
 		}
 	}
 	
-	static void setData(uint index, bool present, ubyte dpl) {
+	void setData(uint index, bool present, ubyte dpl) {
 		m_tables[index].data     = DataSegmentDescriptor.init;
 		m_tables[index].data.p   = present;
 		m_tables[index].data.dpl = dpl;
 	}
 	
-	static void setSystem(uint index, uint limit, void* base, SystemSegmentType segType, ubyte dpl_, bool present, bool available, bool granularity) {
+	void setSystem(uint index, uint limit, void* base, SystemSegmentType segType, ubyte dpl_, bool present, bool available, bool granularity) {
 		m_tables[index].systemLo     = SystemSegmentDescriptor.init;
 		m_tables[index + 1].systemHi = SystemSegmentExtension.init;
 
@@ -82,12 +83,12 @@ abstract final class GDT {
 		m_tables[index + 1].systemHi.baseHi = (base >> 32) & 0xFFFFFFFF;
 	}
 	
-	static void setTSS(uint index, ref TaskStateSegment tss) {
+	void setTSS(uint index, ref TaskStateSegment tss) {
 		m_tables[index].tss1     = TSSDescriptor1(tss);
 		m_tables[index + 1].tss2 = TSSDescriptor2(tss);
 	}
 	
-	private static ushort setupTable() {
+	private ushort setupTable() {
 		ushort i;
 		setNull(i++);
 		

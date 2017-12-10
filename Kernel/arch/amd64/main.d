@@ -13,7 +13,7 @@ import arch.amd64.syscall_handler;
 import kernel_main;
 
 
-extern(C) void main(uint magic, void* info) @safe nothrow {
+extern(C) void main(uint magic, void* info) @safe nothrow { // TODO: nogc?
 	GDT.init();
 	IDT.init();
 	PIT.init();

@@ -8,12 +8,13 @@ module arch.amd64.globals;
 
 
 abstract final class LinkerScript {
-@trusted: nothrow:
-	static const(void *) kernelBase() {
+static:
+@trusted: nothrow: @nogc:
+	const(void *) kernelBase() {
 		return cast(void *)&__linker_kernel_start;
 	}
 	
-	static const(void *) kernelEnd() {
+	const(void *) kernelEnd() {
 		return cast(void *)&__linker_kernel_end;
 	}
 }
