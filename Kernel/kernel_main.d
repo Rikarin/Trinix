@@ -12,7 +12,7 @@
  *      o GUI compositor (daemon)
  *      o Compile Kappa framework and link it with Kernel (we needs support for SDL now)
  *      o Move things from Library to Kappa framework
- *      o Rewrite modules as a deamons/services
+ *      o Rewrite modules as a daemons/services
  *      o Implement Message passing (IPC), resource manager, dispatch, message manager, io manager
  *      o make resource manager (procd) managing thread
  *
@@ -67,6 +67,9 @@ import Library;
 import Architecture;
 import MemoryManager;
 
+import process_manager.scheduler;
+
+
 //==============================================================================
 /* MemoryMap:
     0xFFFFFFFFE0000000 - 0xFFFFFFFFF0000000 - mapped regions
@@ -89,8 +92,10 @@ void kernelMain() {
 	// IOAPIC
 	// LAPIC and calibration
 	// multi cpu/thread
-	// scheduler init
+	Scheduler.init();
 	// we are done! Run init.d
+	
+	
 
     Log("multiboot2");
     Multiboot.ParseHeader(magic, info);
@@ -118,9 +123,6 @@ void kernelMain() {
      */
     Log("Virtual Memory");
     VirtualMemory.Initialize();
-
-    Log("Syscall Handler");
-    SyscallHandler.Initialize();
 
     // Rework...
     Log("Task Manager");
