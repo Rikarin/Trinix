@@ -1,19 +1,20 @@
-# Trinix - the Operating System
+# Trinix
 
 **Welcome to Trinix!**
 
 Trinix is a true networking, modular operating system with microkernel architecture written in D language.
-The main IPC is sync message passing. OS implements POSIX standard library for linux compatibility.
 
 
 ## Documentation
 
-TODO
+Documentation is not available yet.
 
 
 ## Getting started
 
-TODO
+Download repository.
+Install clang, binutils, make and nasm
+Run `make all`
 
 ### System Requirements
 
