@@ -9,6 +9,7 @@ module arch.amd64.main;
 import arch.amd64.gdt;
 import arch.amd64.idt;
 import arch.amd64.pit;
+import arch.amd64.syscall_handler;
 import kernel_main;
 
 
@@ -16,7 +17,7 @@ extern(C) void main(uint magic, void* info) @safe nothrow {
 	GDT.init();
 	IDT.init();
 	PIT.init();
-	// syscallhandler TODO
+	SyscallHandler.init();
 	
 	kernel_main();
 }
