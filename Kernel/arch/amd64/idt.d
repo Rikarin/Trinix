@@ -4,11 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-
 module arch.amd64.idt;
 
 import arch.amd64.registers;
+import arch.amd64.pic;
 import common.bitfield;
+import io.ioport;
 
 alias irq = (byte x) => cast(byte)(0x20 + x);
 
@@ -145,7 +146,13 @@ abstract final class IDT {
 	extern(C) private static isrHandler(Registers* r) {
 		r.intNumber &= 0xFF;
 		
-		// TODO: PIC response
+		if (PIC.isEnabled && irq(0) <= r.intNumber && r.intNumber <= irq(16)) {
+			if (r.intNumber >= irq(8)) {
+				outPort!ubyte(0xA0, 0x20);
+			}
+			
+			outPort!ubyte(0x20, 0x20);
+		}
 		
 		if (auto x = m_handlers[r.intNumber]) {
 			x(r);
