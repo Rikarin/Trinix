@@ -7,7 +7,7 @@
 module io.ioport;
 
 
-T inPort(T = byte)(ushort port) @trusted {
+T inPort(T = byte)(ushort port) @trusted nothrow {
 	T ret;
 	asm {
 		mov DX, port;
@@ -33,7 +33,7 @@ T inPort(T = byte)(ushort port) @trusted {
 	return ret;
 }
 
-void outPort(T = byte)(ushort port, int data) @trusted {
+void outPort(T = byte)(ushort port, int data) @trusted nothrow {
 	asm {
 		mov EAX, data;
 		mov DX, port;
