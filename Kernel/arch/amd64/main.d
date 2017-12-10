@@ -8,17 +8,18 @@ module arch.amd64.main;
 
 import arch.amd64.gdt;
 import arch.amd64.idt;
+import arch.amd64.pit;
 
 
 extern(C) void main(uint magic, void* info) @safe nothrow {
-	/* Initialize SSE for vararg used in Logger */
-    //TODO: this is not needed now
-	//Port.InitializeSSE();
-//	Port.EnableSSE();
-
 	GDT.init();
 	IDT.init();
+	
+	PIT.init();
+	
+	// TODO: now jump into higher kernel
 
+	// everything after this should be moved into kernel main
     Logger.Initialize();
     Log("Cau amigo!");
 
