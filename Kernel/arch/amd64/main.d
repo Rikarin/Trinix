@@ -19,5 +19,5 @@ extern(C) void main(uint magic, void* info) @safe nothrow { // TODO: nogc?
 	PIT.init();
 	SyscallHandler.init();
 	
-	kernel_main();
+	kernelMain();
 }

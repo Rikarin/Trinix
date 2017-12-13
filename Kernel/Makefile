@@ -2,13 +2,12 @@
 # Kernel Core Makefile
 #
 # TODO:
-#	o Generate .dep files
-#
+# Name output binary by version (release only?)
+# remove OBJ/core.o - it didn't work properly 4 years ago
 
 -include ../Makefile.cfg
-#-include Architectures/$(ARCH)/Makefile
--include Makefile.BuildNum
 
+TRAVIS_BUILD_NUMBER ?= 0
 KERNEL_DFLAGS  += -I../
 KERNEL_LDFLAGS += --script=arch/$(ARCH)/kernel.ld -Map=../linker.$(ARCH).map
 
@@ -37,15 +36,7 @@ OBJ := $(filter-out $(BUILDINFO_OBJ), $(OBJ))
 OBJ := $(addprefix $(OBJ_DIR)/, $(OBJ))
 OBJ += $(BUILDINFO_OBJ)
 
-DEPFILES   := $(OBJ:%=%.dep)
-MODS       += $(addprefix ../Modules/, $(addsuffix .xo.$(ARCH),$(MODULES)))
-
-IMPORT_DIR := ../Import
-#IMPORT	  := $(shell find * -name "*.d")
-#IMPORT    := $(addprefix $(IMPORTDIR), $(IMPORT))
-
-DOC_DIR   := ../APIDoc
-DOCFLAGS  := -D -Dd=$(DOC_DIR)
+DEPFILES := $(OBJ:%=%.dep)
 
 .PHONY: all clean install import
 
@@ -54,21 +45,17 @@ all: $(BIN)
 
 clean:
 	@$(RM) $(BIN) $(GZBIN) $(OBJ_DIR) $(BIN).dsm ../linker.$(ARCH).map
-	@$(RM) $(DOC_DIR) $(IMPORT_DIR) $(ROOT_DIR)/System/System.gz
+	@$(RM) $(ROOT_DIR)/System/System.gz
 
 install: $(BIN)
 	@echo --- Kernel was installed into System/System.gz
 	@cp $(GZBIN) $(ROOT_DIR)/System/System.gz
 
-#$(IMPORTDIR)%.d: %.d
-#	@echo --- Generating import $@
-#	@$(MKDIR) $(dir $@)
-#	@$(DD) $(DFLAGS) -c -fintfc -fintfc-file=$@ $< -o /dev/null
-
-$(BIN): $(OBJ) $(OBJ_DIR)/core.o $(MODS) arch/$(ARCH)/kernel.ld Makefile ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
+$(BIN): $(OBJ) $(OBJ_DIR)/core.o arch/$(ARCH)/kernel.ld
+# ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
 	@echo --- LD -o $(BIN)
-	@$(LD) $(KERNEL_LDFLAGS) -o $(BIN) $(shell find $(OBJ_DIR) -name "*.[o]") $(MODS) $(SYSTEM_DIR)/Tools/libdruntime-ldc.a
-	@echo BUILD_NUM = $$(( $(BUILD_NUM) + 1 )) > Makefile.BuildNum
+	@$(LD) $(KERNEL_LDFLAGS) -o $(BIN) $(shell find $(OBJ_DIR) -name "*.[o]")
+	#$(SYSTEM_DIR)/Tools/libdruntime-ldc.a
 	@$(STRIP) $(BIN)
 	@$(GZIP) $(GZBIN) $(BIN)
 
@@ -93,18 +80,13 @@ $(OBJ_DIR)/%.c.o: %.c
 	@make -C $* all BUILDTYPE=static
 
 $(OBJ_DIR)/core.o: $(shell find * -name "*.d" -not -path "*arch*")
-	@echo --- DD zrob bynarku cype
+	@echo --- DD Compile
 	@$(MKDIR) $(dir $@)
-	@$(DD) $(KERNEL_DFLAGS) -oq -od=$(OBJ_DIR) -c $<
+	$(DD) $(KERNEL_DFLAGS) -oq -od=$(OBJ_DIR) -c $<
 
 # Build-time information (git hash and build number)
-$(BUILDINFO_SRC): $(filter-out $(BUILDINFO_OBJ), $(OBJ)) $(MODS)
-	$(eval _GITHASH=$(shell git log -n 1 | head -n 1 | awk '{print $$2}'))
-	$(eval _GITCHANGED=$(shell git status --porcelain | grep -c '^ M '))
-	@echo "const char* gsGitHash   = \"$(_GITHASH)\";" > $@
-	@echo "const int giBuildNumber = $(BUILD_NUM);" >> $@
-	@echo "const char* gsBuildInfo = \"Trinix v$(SYSTEM_VERSION) $(ARCH)-$(PLATFORM)\\\\r\\\\n\"" >> $@
-	@echo " \"Build $(shell hostname --fqdn):$(BUILD_NUM) Git $(_GITHASH) - $(_GITCHANGED) modified\";" >> $@
+$(BUILDINFO_SRC): $(filter-out $(BUILDINFO_OBJ), $(OBJ))
+	@echo "const int BuildNumber = $(TRAVIS_BUILD_NUMBER);" >> $@
 
 # Compile rule for buildinfo (needs a special one because it's not a general source file)
 $(BUILDINFO_OBJ): $(BUILDINFO_SRC)

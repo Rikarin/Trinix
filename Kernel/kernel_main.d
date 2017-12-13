@@ -12,12 +12,12 @@ import memory.frame_allocator;
 import process_manager.scheduler;
 
 
-void kernelMain() {
+void kernelMain() @safe nothrow {
     Log.init();
 	VGA.init();
 	
-	Log.write("Trinix is starting up...");
-    Log("version: %d.%d.%d", 0, 1, cast(int)giBuildNumber); // TODO
+	//Log.write("Trinix is starting up...");
+    //Log("version: %d.%d.%d", 0, 1, cast(int)giBuildNumber); // TODO
 	
 	FrameAllocator.init();
 	
@@ -35,8 +35,8 @@ void kernelMain() {
 	// we are done! Run init.d
 	
 
-    Log("multiboot2");
-    Multiboot.ParseHeader(magic, info);
+    //Log("multiboot2");
+    //Multiboot.ParseHeader(magic, info);
 
 	
 
@@ -48,8 +48,8 @@ void kernelMain() {
      *      o Check if memory mapped regions work properly
      * +     o Make interface for Paging and move Paging.d to the arch-specific folder
      */
-    Log("Physical Memory");
-    PhysicalMemory.Initialize();
+    //Log("Physical Memory");
+    //PhysicalMemory.Initialize();
 
     /**
      * TOOD:
@@ -57,8 +57,8 @@ void kernelMain() {
      *      o Implement GC from druntime library
      *
      */
-    Log("Virtual Memory");
-    VirtualMemory.Initialize();
+    //Log("Virtual Memory");
+    //VirtualMemory.Initialize();
 }
 
 void RemapPIC() {

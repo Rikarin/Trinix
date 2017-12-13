@@ -13,7 +13,7 @@ import io.ioport;
 
 final abstract class PIT {
 static:
-@safe: nothrow:
+@safe: nothrow: @nogc:
 	private __gshared bool m_enabled;
 	private __gshared uint m_freqency;
 	private __gshared size_t m_counter;
@@ -43,13 +43,13 @@ static:
 		size_t endAt = m_counter + amount;
 
 		while (m_counter < endAt) {
-			asm pure nothrow {
+			asm pure nothrow @nogc {
 				hlt;
 			}
 		}
 	}
 
-    private void onTick(Registers* r) @trusted {
+    private void onTick(scope Registers* r) @trusted {
         m_counter++;
     }
 }

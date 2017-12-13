@@ -25,6 +25,7 @@ align(1):
 }
 
 struct TSSDescriptor1 {
+@trusted: nothrow: @nogc:
 align(1):
 	ushort limit0 = 0x67;
 	ushort base0;
@@ -51,6 +52,7 @@ align(1):
 }
 
 struct TSSDescriptor2 {
+@trusted: nothrow: @nogc:
 align(1):
 	uint base32;
 	private uint _reserved_0;

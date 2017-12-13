@@ -8,13 +8,14 @@ module arch.amd64.idt;
 
 import arch.amd64.registers;
 import arch.amd64.pic;
-import common.bitfield;
 import io.ioport;
+import common.bitfield;
+import common.address;
 
 
 abstract final class IDT {
-static:
 @safe: nothrow: @nogc:
+static:
 	alias InterruptCallback = void function(scope Registers* regs);
 	
     private __gshared Base m_base;
@@ -31,7 +32,7 @@ static:
 		
 		register(0x0D, &onGPF);
 
-		asm pure nothrow {
+		asm pure nothrow @nogc {
 			sti;
 		}
     }
@@ -39,29 +40,29 @@ static:
 	void flush() @trusted {
 		auto base = &m_base;
 	
-		asm pure nothrow {
+		asm pure nothrow @nogc {
 			mov RAX, base;
 			lidt [RAX];
 		}
 	}
 	
-	void register(uint id, InterruptCallback callback) {
+	void register(uint id, InterruptCallback callback) @trusted {
 		m_handlers[id] = callback;
 	}
 	
-	VAddr registerGate(uint id, VAddr func) {
+	VAddr registerGate(uint id, VAddr func) @trusted {
 		VAddr ret;
 		
-		with (desc[id]) {
+		with (m_entries[id]) {
 			ret = ((cast(ulong)targetHi << 32UL) | (cast(ulong)targetMid << 16UL) | cast(ulong)targetLo);
 		}
 			
-        setGate(id, SystemSegmentType.InterruptGate, funcPtr, 0, InterruptStackType.RegisterStack);
+        setGate(id, SystemSegmentType.InterruptGate, func, 0, InterruptStackType.RegisterStack);
 		return ret;
     }
 	
-	private void setGate(uint id, SystemSegmentType gateType, ulong funcPtr, ushort dplFlags, ushort istFlags) {
-        with (m_entries[num]) {
+	private void setGate(uint id, SystemSegmentType gateType, ulong funcPtr, ushort dplFlags, ushort istFlags) @trusted {
+        with (m_entries[id]) {
             targetLo  = funcPtr & 0xFFFF;
             segment   = 0x08;
             ist       = istFlags;
@@ -84,7 +85,7 @@ static:
 	}
 	
 	private extern(C) void isrCommon() @trusted {
-        asm pure nothrow {
+        asm pure nothrow @nogc {
             naked;
             cli;
 
@@ -132,7 +133,7 @@ static:
     }
 	
 	private void isrIgnore() @trusted {
-        asm pure nothrow {
+        asm pure nothrow @nogc {
             naked;
 			cli;
             nop;
@@ -143,7 +144,7 @@ static:
         }
     }
 	
-	private extern(C) isrHandler(Registers* r) {
+	private extern(C) void isrHandler(Registers* r) @trusted {
 		// TODO: save SSE
 		r.intNumber &= 0xFF;
 		
@@ -168,7 +169,7 @@ static:
 		// TODO: print GPF
 	
 		while (true) {
-			asm @trusted pure nothrow {
+			asm @trusted pure nothrow @nogc {
 				hlt;
 			}
 		}
@@ -177,7 +178,7 @@ static:
 	private template generateRoutine(ulong id, bool hasError = false) {
 		enum generateRoutine = `
 			private static void isr` ~ id.stringof[0 .. $ - 2] ~ `() @trusted {
-				asm pure nothrow {
+				asm nothrow @nogc {
 					naked;
 					` ~ (hasError ? "" : "push 0UL;") ~ `
 					push ` ~ id.stringof ~ `;
@@ -189,7 +190,7 @@ static:
 
 	private template generateRoutines(ulong from, ulong to, bool hasError = false) {
 		static if (from <= to)
-			enum generateRoutines = generateRoutine!(from, hasError) ~ generateRoutine!(from + 1, to, hasError);
+			enum generateRoutines = generateRoutine!(from, hasError) ~ generateRoutines!(from + 1, to, hasError);
 		else
 			enum generateRoutines = "";
 	}
@@ -266,6 +267,7 @@ align(1):
 }
 
 private struct Descriptor {
+@trusted: nothrow: @nogc:
 align(1):
 	ushort         targetLo;
 	ushort         segment;

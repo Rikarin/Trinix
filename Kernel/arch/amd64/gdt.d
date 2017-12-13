@@ -6,14 +6,15 @@
  */
 module arch.amd64.gdt;
 
+import arch.amd64.idt;
 import arch.amd64.tss;
 import common.address;
-import common.bitfield
+import common.bitfield;
 
 
 abstract final class GDT {
+@trusted: nothrow: @nogc:
 static:
-@safe: nothrow: @nogc:
 	private __gshared Base m_base;
 	private __gshared SegmentDescriptor[64] m_tables;
 	private __gshared TaskStateSegment m_tss;
@@ -21,17 +22,17 @@ static:
 	
 
     void init() {
-		m_base.limit = SegmentDescriptor.sizeof * setupTable() - 1;
+		m_base.limit = cast(ushort)(SegmentDescriptor.sizeof * setupTable() - 1);
         m_base.base  = cast(ulong)m_tables.ptr;
 		
 		flush();
     }
 	
-	void flush() @trusted {
+	void flush() {
 		auto base = &m_base;
 		auto id = cast(ushort)(m_tssId * SegmentDescriptor.sizeof);
 		
-		asm pure nothrow {
+		asm pure nothrow @nogc {
 			mov RAX, base;
             lgdt [RAX];
             call __refresh_iretq;
@@ -61,7 +62,7 @@ static:
 		m_tables[index].data.dpl = dpl;
 	}
 	
-	void setSystem(uint index, uint limit, void* base, SystemSegmentType segType, ubyte dpl_, bool present, bool available, bool granularity) {
+	void setSystem(uint index, uint limit, ulong base, SystemSegmentType segType, ubyte dpl_, bool present, bool available, bool granularity) {
 		m_tables[index].systemLo     = SystemSegmentDescriptor.init;
 		m_tables[index + 1].systemHi = SystemSegmentExtension.init;
 
@@ -103,8 +104,8 @@ static:
 		// User 32
 		setData(i++, true, 3);
 		
-		m_tssId = idx;
-		setTSS(idx, m_tss);
+		m_tssId = i;
+		setTSS(i, m_tss);
 		i += 2;
 		
 		return i;
@@ -119,6 +120,7 @@ align(1):
 }
 
 private struct CodeSegmentDescriptor {
+@trusted: nothrow: @nogc:
 align(1):
 	ushort limit = 0xFFFF;
 	ushort base = 0x0000;
@@ -132,6 +134,7 @@ align(1):
 }
 
 private struct DataSegmentDescriptor {
+@trusted: nothrow: @nogc:
 align(1):
 	ushort limit = 0xFFFF;
 	ushort base = 0x0000;
@@ -144,6 +147,7 @@ align(1):
 }
 
 private struct SystemSegmentDescriptor {
+@trusted: nothrow: @nogc:
 align(1):
 	ushort limitLo;
 	ushort baseLo;

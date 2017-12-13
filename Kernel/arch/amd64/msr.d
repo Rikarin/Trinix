@@ -15,7 +15,7 @@ static:
         lo = value & 0xFFFFFFFF;
         hi = value >> 32UL;
 
-        asm {
+        asm nothrow @nogc @trusted {
             mov RDX, hi;
             mov RAX, lo;
             mov RCX, register;
@@ -26,7 +26,7 @@ static:
     ulong read(MSRRegister register) {
         uint hi, lo;
 
-        asm {
+        asm nothrow @nogc @trusted {
             mov RCX, register;
             rdmsr;
             mov lo, RAX;
