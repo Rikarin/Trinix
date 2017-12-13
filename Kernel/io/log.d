@@ -6,7 +6,9 @@
  */
 module io.log;
 
+
 final abstract class Log {
+@safe: nothrow:
 	static void init() {
 	
 	}

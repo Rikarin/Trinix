@@ -6,7 +6,9 @@
  */
 module memory.frame_allocator;
 
+
 final abstract class FrameAllocator {
+@safe: nothrow:
 	static void init() {
 	
 	}

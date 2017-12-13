@@ -4,20 +4,13 @@
  */
 module object;
 
-/**
- * Functions and object specifications are from: https://dlang.org/phobos/object.html
- */
-
-///
-template from(string moduleName) {
-	mixin("import from = " ~ moduleName ~ ";");
-}
+import utils;
 
 alias string = immutable(char)[];
 alias size_t = ulong;
 alias hash_t = size_t;
 
-///
+
 enum {
 	MIctorstart = 0x1, // we've started constructing it
 	MIctordone = 0x2, // finished construction
@@ -35,7 +28,7 @@ enum {
 	MIname = 0x1000,
 }
 
-///
+
 struct ModuleInfo {
 	uint _flags; ///
 	uint _index; /// index into _moduleinfo_array[]
@@ -99,8 +92,6 @@ const:
 		}
 		if (true || flags & MIname) // always available for now
 		{
-			import utils : strlen;
-
 			if (flag == MIname)
 				return p;
 			p += strlen(cast(immutable char*)p);
@@ -163,8 +154,6 @@ const:
 	@property string name() nothrow pure {
 		if (true || flags & MIname) // always available for now
 		{
-			import utils : strlen;
-
 			auto p = cast(immutable char*)addrOf(MIname);
 			return p[0 .. strlen(p)];
 		}
@@ -616,8 +605,6 @@ class TypeInfo_Struct : TypeInfo {
 	}
 
 	override bool equals(in void* p1, in void* p2) @trusted pure nothrow const {
-		import utils : memcmp;
-
 		if (!p1 || !p2)
 			return false;
 		else if (xopEquals)
@@ -629,8 +616,6 @@ class TypeInfo_Struct : TypeInfo {
 	}
 
 	override int compare(in void* p1, in void* p2) @trusted pure nothrow const {
-		import utils : memcmp;
-
 		if (p1 != p2) {
 			if (p1) {
 				if (!p2)
@@ -971,8 +956,6 @@ class TypeInfo_StaticArray : TypeInfo {
 	}
 
 	override void swap(void* p1, void* p2) const {
-		import utils : memcpy;
-
 		void* tmp;
 		size_t sz = value.tsize;
 		ubyte[16] buffer;
@@ -1126,8 +1109,6 @@ class TypeInfo_Ag : TypeInfo_Array {
 	}
 
 	override bool equals(in void* p1, in void* p2) const {
-		import utils : memcmp;
-
 		byte[] s1 = *cast(byte[]*)p1;
 		byte[] s2 = *cast(byte[]*)p2;
 
@@ -1166,8 +1147,6 @@ class TypeInfo_Ah : TypeInfo_Ag {
 	}
 
 	override int compare(in void* p1, in void* p2) const {
-		import utils : memcmp, strlen;
-
 		size_t s1Len = strlen(cast(char*)p1);
 		size_t s2Len = strlen(cast(char*)p2);
 
@@ -1302,8 +1281,6 @@ class TypeInfo_Al : TypeInfo_Array {
 	}
 
 	override bool equals(in void* p1, in void* p2) const {
-		import utils : memcmp;
-
 		long[] s1 = *cast(long[]*)p1;
 		long[] s2 = *cast(long[]*)p2;
 
@@ -1472,8 +1449,6 @@ extern (C) {
 	}
 
 	void _d_arrayboundsp(immutable(char*) file, uint line) {
-		import data.text : strlen;
-
 		_d_arraybounds(file[0 .. strlen(file)], line);
 	}
 
@@ -1485,8 +1460,6 @@ extern (C) {
 	}
 
 	void _d_assertp(immutable(char)* file, uint line) {
-		import data.text : strlen;
-
 		onAssert("Assertion failure", file[0 .. strlen(file)], line);
 	}
 
@@ -1507,24 +1480,21 @@ extern (C) {
 	}
 
 	void __assert (const char *msg, immutable(char)*file, int line) {
-		import data.text : strlen;
-
 		onAssert("Switch assertion failure", file[0 .. strlen(file)], line);
 	}
 
 	private void onAssert(string msg, string file, uint line) {
-		import io.log : Log, LogLevel;
-
-		Log.log(LogLevel.fatal, file, "", line, msg);
+		//import io.log : Log, LogLevel;
+		// TODO Log.log(LogLevel.fatal, file, "", line, msg);
 	}
 
 	void[] _d_arraycast(size_t newTypeSize, size_t curTypeSize, void[] arr) {
-		import io.log : Log;
+		// import io.log : Log;
 
 		auto len = curTypeSize * arr.length;
 
-		if (len % newTypeSize)
-			Log.fatal("Can't cast array! newTypeSize: ", newTypeSize, ", curTypeSize: ", curTypeSize, ", len: ", len);
+		//if (len % newTypeSize)
+			// TODO Log.fatal("Can't cast array! newTypeSize: ", newTypeSize, ", curTypeSize: ", curTypeSize, ", len: ", len);
 
 		*cast(size_t*)&arr = len / newTypeSize;
 		return arr;

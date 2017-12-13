@@ -61,7 +61,7 @@ void kernelMain() @safe nothrow {
     //VirtualMemory.Initialize();
 }
 
-void RemapPIC() {
+/*void RemapPIC() {
     Port.Write(0x20, 0x11);
     Port.Write(0xA0, 0x11);
     Port.Write(0x21, 0x20);
@@ -72,8 +72,6 @@ void RemapPIC() {
     Port.Write(0xA1, 0x01);
     Port.Write(0x21, 0x00);
     Port.Write(0xA1, 0x00);
-}
+}*/
 
-extern(C) extern const int giBuildNumber;
-extern(C) extern const char* gsGitHash; // TODO: remove these
-extern(C) extern const char* gsBuildInfo;
+extern(C) extern const int BuildNumber;

@@ -8,6 +8,7 @@ module process_manager.scheduler;
 
 
 final abstract class Scheduler {
+@safe: nothrow:
 	static void init() {
 	
 	}

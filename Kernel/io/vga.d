@@ -12,7 +12,7 @@ import common.text;
 
 final abstract class VGA {
 static:
-@safe: nothrow: @nogc:
+@trusted: nothrow: @nogc:
 	private static __gshared VideoSlot[80 * 25]* m_screen;
 	private static __gshared ubyte m_x;
 	private static __gshared ubyte m_y;
@@ -20,8 +20,8 @@ static:
 	private static __gshared int m_blockCursor;
 
 	void init() {
-		m__screen = cast(VideoSlot[80 * 25] *)0xB8000;
-		m_color   = SlotColor(CGAColor.Yellow, CGAColor.Black);
+		m_screen = cast(VideoSlot[80 * 25] *)0xB8000;
+		m_color  = SlotColor(CGAColor.Yellow, CGAColor.Black);
 	}
 	
 	SlotColor color() {
@@ -34,7 +34,7 @@ static:
 	
 	void clear() @trusted {
 		foreach (ref x; *m_screen) {
-			x = CGAVideoSlot('\x02', m_color);
+			x = VideoSlot('\x02', m_color);
 		}
 		
 		m_x = 0;
@@ -125,7 +125,7 @@ static:
 		if (m_y >= 25) {
 			for (int yy = 0; yy < 25 - 1; yy++) {
 				for (int xx = 0; xx < 80; xx++) {
-					(*_screen)[yy * 80 + xx] = (*m_screen)[(yy + 1) * 80 + xx];
+					(*m_screen)[yy * 80 + xx] = (*m_screen)[(yy + 1) * 80 + xx];
 				}
 			}
 
@@ -154,12 +154,12 @@ static:
 
 	private void internalWriteNumber(S = long)(S value, uint base) { // TODO if
 		char[S.sizeof * 8] buf;
-		internalWrite(itoa(value, buf, base));
+		// TODO internalWrite(itoa(value, buf, base));
 	}
 
 	private void internalWritePointer(ulong value) {
 		char[ulong.sizeof * 8] buf;
-		string val = itoa(value, buf, 16, 16);
+		string val = "todo"; // TODO itoa(value, buf, 16, 16);
 		
 		internalWrite("0x");
 		internalWrite(val[0 .. 8]);
@@ -169,7 +169,7 @@ static:
 
 	private void internalWriteFloating(double value, uint base) {
 		char[double.sizeof * 8] buf;
-		internalWrite(dtoa(value, buf, base));
+		// TODO internalWrite(dtoa(value, buf, base));
 	}
 }
 

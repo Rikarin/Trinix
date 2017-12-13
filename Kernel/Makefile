@@ -31,7 +31,7 @@ BUILDINFO_OBJ := $(OBJ_DIR)/build_info.c.o
 BUILDINFO_SRC := $(OBJ_DIR)/build_info.c
 
 OBJ := $(addsuffix .o,$(shell find arch/$(ARCH) -name "*.[d|c|s]"))
-OBJ	+= $(addsuffix .o,$(shell find * -name "*.[c|s]" -not -path "*arch*"))
+OBJ	+= $(addsuffix .o,$(shell find * -name "*.[d|c|s]" -not -path "*arch*"))
 OBJ := $(filter-out $(BUILDINFO_OBJ), $(OBJ))
 OBJ := $(addprefix $(OBJ_DIR)/, $(OBJ))
 OBJ += $(BUILDINFO_OBJ)
@@ -51,7 +51,7 @@ install: $(BIN)
 	@echo --- Kernel was installed into System/System.gz
 	@cp $(GZBIN) $(ROOT_DIR)/System/System.gz
 
-$(BIN): $(OBJ) $(OBJ_DIR)/core.o arch/$(ARCH)/kernel.ld
+$(BIN): $(OBJ) arch/$(ARCH)/kernel.ld
 # ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
 	@echo --- LD -o $(BIN)
 	@$(LD) $(KERNEL_LDFLAGS) -o $(BIN) $(shell find $(OBJ_DIR) -name "*.[o]")
@@ -62,7 +62,7 @@ $(BIN): $(OBJ) $(OBJ_DIR)/core.o arch/$(ARCH)/kernel.ld
 $(OBJ_DIR)/%.d.o: %.d
 	@echo --- DD -o $@
 	@$(MKDIR) $(dir $@)
-	@$(DD) $(KERNEL_DFLAGS) -of=$@ -c -deps=$@.o.dep $<
+	$(DD) $(KERNEL_DFLAGS) -of=$@ -c -deps=$@.o.dep $<
 
 $(OBJ_DIR)/%.s.o: %.s
 	@echo --- AS -o $@
@@ -79,10 +79,10 @@ $(OBJ_DIR)/%.c.o: %.c
 %.xo.$(ARCH):
 	@make -C $* all BUILDTYPE=static
 
-$(OBJ_DIR)/core.o: $(shell find * -name "*.d" -not -path "*arch*")
-	@echo --- DD Compile
-	@$(MKDIR) $(dir $@)
-	$(DD) $(KERNEL_DFLAGS) -oq -od=$(OBJ_DIR) -c $<
+#$(OBJ_DIR)/core.o: $(shell find * -name "*.d" -not -path "*arch*")
+#	@echo --- DD Compile
+#	@$(MKDIR) $(dir $@)
+#	$(DD) $(KERNEL_DFLAGS) -oq -od=$(OBJ_DIR) -c $<
 
 # Build-time information (git hash and build number)
 $(BUILDINFO_SRC): $(filter-out $(BUILDINFO_OBJ), $(OBJ))
