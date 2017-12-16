@@ -1,14 +1,8 @@
 #
 # Kernel Core Makefile
 #
-# TODO:
-# Name output binary by version (release only?)
-# remove OBJ/core.o - it didn't work properly 4 years ago
-
 -include ../Makefile.cfg
 
-TRAVIS_BUILD_NUMBER ?= 0
-KERNEL_DFLAGS  += -I../
 KERNEL_LDFLAGS += --script=arch/$(ARCH)/kernel.ld -Map=../linker.$(ARCH).map
 
 ifeq ($(PLATFORM),default)
@@ -41,7 +35,6 @@ DEPFILES := $(OBJ:%=%.dep)
 .PHONY: all clean install import
 
 all: $(BIN)
-	@echo Building version 0.0.${TRAVIS_BUILD_NUMBER} TODO
 	@true
 
 clean:
@@ -56,29 +49,25 @@ $(BIN): $(OBJ) arch/$(ARCH)/kernel.ld
 # ../../BuildConf/$(ARCH)/Makefile.cfg ../../BuildConf/$(ARCH)/$(PLATFORM).mk
 	@echo --- LD -o $(BIN)
 	@$(LD) $(KERNEL_LDFLAGS) -o $(BIN) $(shell find $(OBJ_DIR) -name "*.[o]")
-	#$(SYSTEM_DIR)/Tools/libdruntime-ldc.a
 	@$(STRIP) $(BIN)
 	@$(GZIP) $(GZBIN) $(BIN)
 
 $(OBJ_DIR)/%.d.o: %.d
-	@echo --- DD -o $@
+	@echo --- DD $@
 	@$(MKDIR) $(dir $@)
-	$(DD) $(KERNEL_DFLAGS) -of=$@ -c -deps=$@.o.dep $<
+	@$(DD) $(KERNEL_DFLAGS) -of=$@ -c -deps=$@.o.dep $<
 
 $(OBJ_DIR)/%.s.o: %.s
-	@echo --- AS -o $@
+	@echo --- AS $@
 	@$(MKDIR) $(dir $@)
 	@$(AS) $(KERNEL_ASFLAGS) -o $@ $<
 #@$(CC) $(CFLAGS) -M -MT $@ -MP -o $@.o.dep $<
 
 $(OBJ_DIR)/%.c.o: %.c
-	@echo --- CC -o $@
+	@echo --- CC $@
 	@$(MKDIR) $(dir $@)
 	@$(CC) $(KERNEL_CFLAGS) -o $@ -c $<
 #@$(CC) $(CFLAGS) -M -MT $@ -MP -o $@.o.dep $<
-
-%.xo.$(ARCH):
-	@make -C $* all BUILDTYPE=static
 
 #$(OBJ_DIR)/core.o: $(shell find * -name "*.d" -not -path "*arch*")
 #	@echo --- DD Compile
@@ -87,9 +76,9 @@ $(OBJ_DIR)/%.c.o: %.c
 
 # Build-time information (git hash and build number)
 $(BUILDINFO_SRC): $(filter-out $(BUILDINFO_OBJ), $(OBJ))
-	@echo "const int BuildNumber = $(TRAVIS_BUILD_NUMBER);" >> $@
+	@echo "const char* TrinixVersion = \"$(SYSTEM_VERSION)\";" >> $@
 
-# Compile rule for buildinfo (needs a special one because it's not a general source file)
+# Compile rule for buildinfo (needs a special one because it's not a generic source file)
 $(BUILDINFO_OBJ): $(BUILDINFO_SRC)
 	@echo --- CC -o $@
 	@$(CC) $(KERNEL_CFLAGS) -o $@ -c $<

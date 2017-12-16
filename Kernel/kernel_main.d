@@ -74,4 +74,4 @@ void kernelMain() @safe nothrow {
     Port.Write(0xA1, 0x00);
 }*/
 
-extern(C) extern const int BuildNumber;
+extern(C) extern immutable(char)* TrinixVersion;
