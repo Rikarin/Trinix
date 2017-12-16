@@ -4,8 +4,6 @@
  */
 module object;
 
-import utils;
-
 alias string = immutable(char)[];
 alias size_t = ulong;
 alias hash_t = size_t;
@@ -92,6 +90,8 @@ const:
 		}
 		if (true || flags & MIname) // always available for now
 		{
+			import utils;
+
 			if (flag == MIname)
 				return p;
 			p += strlen(cast(immutable char*)p);
@@ -154,6 +154,8 @@ const:
 	@property string name() nothrow pure {
 		if (true || flags & MIname) // always available for now
 		{
+			import utils;
+
 			auto p = cast(immutable char*)addrOf(MIname);
 			return p[0 .. strlen(p)];
 		}
@@ -605,6 +607,8 @@ class TypeInfo_Struct : TypeInfo {
 	}
 
 	override bool equals(in void* p1, in void* p2) @trusted pure nothrow const {
+		import utils;
+
 		if (!p1 || !p2)
 			return false;
 		else if (xopEquals)
@@ -616,6 +620,8 @@ class TypeInfo_Struct : TypeInfo {
 	}
 
 	override int compare(in void* p1, in void* p2) @trusted pure nothrow const {
+		import utils;
+
 		if (p1 != p2) {
 			if (p1) {
 				if (!p2)
@@ -956,6 +962,8 @@ class TypeInfo_StaticArray : TypeInfo {
 	}
 
 	override void swap(void* p1, void* p2) const {
+		import utils;
+
 		void* tmp;
 		size_t sz = value.tsize;
 		ubyte[16] buffer;
@@ -1069,7 +1077,7 @@ class TypeInfo_Const : TypeInfo {
 	TypeInfo base;
 }
 
-mixin(makeTypeInfo!(char, wchar, dchar, int, uint, short, ushort, byte, ubyte, long, ulong, float, double, real, void, bool)());
+//mixin(makeTypeInfo!(char, wchar, dchar, int, uint, short, ushort, byte, ubyte, long, ulong, float, double, real, void, bool)());
 
 private string makeTypeInfo(T...)() {
 	if (__ctfe) {
@@ -1109,6 +1117,8 @@ class TypeInfo_Ag : TypeInfo_Array {
 	}
 
 	override bool equals(in void* p1, in void* p2) const {
+		import utils;
+
 		byte[] s1 = *cast(byte[]*)p1;
 		byte[] s2 = *cast(byte[]*)p2;
 
@@ -1147,6 +1157,8 @@ class TypeInfo_Ah : TypeInfo_Ag {
 	}
 
 	override int compare(in void* p1, in void* p2) const {
+		import utils;
+
 		size_t s1Len = strlen(cast(char*)p1);
 		size_t s2Len = strlen(cast(char*)p2);
 
@@ -1281,6 +1293,8 @@ class TypeInfo_Al : TypeInfo_Array {
 	}
 
 	override bool equals(in void* p1, in void* p2) const {
+		import utils;
+
 		long[] s1 = *cast(long[]*)p1;
 		long[] s2 = *cast(long[]*)p2;
 
@@ -1383,6 +1397,8 @@ class Throwable : Object {
 	}
 
 	void toString(scope void delegate(in char[]) sink) const {
+		import utils;
+
 		sink(typeid(this).name);
 		sink("@");
 		sink(file);
@@ -1449,6 +1465,7 @@ extern (C) {
 	}
 
 	void _d_arrayboundsp(immutable(char*) file, uint line) {
+		import utils;
 		_d_arraybounds(file[0 .. strlen(file)], line);
 	}
 
@@ -1460,6 +1477,7 @@ extern (C) {
 	}
 
 	void _d_assertp(immutable(char)* file, uint line) {
+		import utils;
 		onAssert("Assertion failure", file[0 .. strlen(file)], line);
 	}
 
@@ -1480,6 +1498,7 @@ extern (C) {
 	}
 
 	void __assert (const char *msg, immutable(char)*file, int line) {
+		import utils;
 		onAssert("Switch assertion failure", file[0 .. strlen(file)], line);
 	}
 
