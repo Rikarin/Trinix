@@ -55,6 +55,7 @@ install:       install-kernel install-user install-fs
 
 define rules
 $$(ALL_$1): all-%: #$(DD)
+	+@echo Building version 0.0.${TRAVIS_BUILD_NUMBER} TODO
 	+@echo === $2 && $3 all
 $$(AI_$1): allinstall-%: #$(DD)
 	+@echo === $2 && $3 all install

@@ -41,6 +41,7 @@ DEPFILES := $(OBJ:%=%.dep)
 .PHONY: all clean install import
 
 all: $(BIN)
+	@echo Building version 0.0.${TRAVIS_BUILD_NUMBER} TODO
 	@true
 
 clean:
